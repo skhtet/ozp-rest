@@ -1,5 +1,7 @@
 package marketplace
 
+import grails.test.mixin.TestMixin
+
 import java.net.URL
 
 import grails.test.mixin.TestFor

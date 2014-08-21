@@ -33,7 +33,30 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     protected void authorizeCreate(Profile dto) {
-        throw new AccessDeniedException("Profiles cannot be created via the REST interface")
+        if (!accountService.isAdmin()) {
+            throw new AccessDeniedException("Unauthorized attempt to create profile " +
+                "${dto.username} by user ${accountService.loggedInUsername}")
+        }
+    }
+
+    @Transactional
+    public void updateCurrentUserDataByKey(String key, String value) {
+        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+
+        if (profile != null) {
+            profile.userDataMap.put(key, value)
+            profile.save()
+        }
+    }
+
+    @Transactional
+    public void deleteCurrentUserDataByKey(String key) {
+        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+
+        if (profile != null) {
+            profile.userDataMap.remove(key)
+            profile.save()
+        }
     }
 
     @Transactional(readOnly=true)

@@ -1,5 +1,9 @@
 package marketplace.rest
 
+import grails.converters.JSON
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+
 import javax.ws.rs.Path
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
@@ -15,8 +19,14 @@ import marketplace.ServiceItem
 import marketplace.Tag
 import marketplace.ServiceItemActivity
 
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.UriInfo
+
 @Path('/api/profile')
 class ProfileResource extends DomainResource<Profile> {
+    @Context
+    UriInfo uriInfo
+
     @Autowired ServiceItemRestService serviceItemRestService
     @Autowired ItemCommentRestService ItemCommentRestService
     @Autowired ServiceItemTagRestService serviceItemTagRestService
@@ -62,19 +72,41 @@ class ProfileResource extends DomainResource<Profile> {
         getItemCommentsByAuthorId(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/tag')
-    @GET
-    Collection<ProfileServiceItemTagDto> getTagsByProfileId(
-            @PathParam('profileId') long profileId){
-        serviceItemTagRestService.getAllByProfileId(profileId).collect {
-            new ProfileServiceItemTagDto(it)
-        }
-    }
-
     @Path('/self/tag')
     @GET
     Collection<ProfileServiceItemTagDto> getOwnTags() {
         getTagsByProfileId(service.currentUserProfile.id)
+    }
+
+    @Path('/self/userData/{key}')
+    @GET
+    String getCurrentUserDataItem(@PathParam('key') String  key) {
+        String userData = serviceItemTagRestService.getCurrentUserDataItem(key)
+        if (uriInfo != null) {
+            println("absolute url: " + uriInfo.absolutePath)
+        }
+
+        return userData
+    }
+
+    @Path('/self/userData')
+    @POST
+    void postCurrentUserDataItem(String keyValueJson) {
+        def keyValue = new KeyValue(JSON.parse(keyValueJson))
+        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+    }
+
+    @Path('/self/userData')
+    @PUT
+    void putCurrentUserDataItem(String keyValueJson) {
+        def keyValue = new KeyValue(JSON.parse(keyValueJson))
+        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+    }
+
+    @Path('/self/userData/{keyValue}')
+    @DELETE
+    void deleteCurrentUserDataItem(@PathParam('key') String  key) {
+        serviceItemTagRestService.deleteCurrentUserDataByKey(key)
     }
 
     @Path('/{profileId}/activity')
