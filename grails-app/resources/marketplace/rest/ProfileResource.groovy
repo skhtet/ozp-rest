@@ -4,6 +4,7 @@ import grails.converters.JSON
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
+import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
@@ -20,6 +21,8 @@ import marketplace.Tag
 import marketplace.ServiceItemActivity
 
 import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 import javax.ws.rs.core.UriInfo
 
 @Path('/api/profile')
@@ -80,33 +83,71 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/userData/{key}')
     @GET
-    String getCurrentUserDataItem(@PathParam('key') String  key) {
+    Response getCurrentUserDataItem(@PathParam('key') String  key) {
+        println("retrieving user data for key: ${key}")
         String userData = serviceItemTagRestService.getCurrentUserDataItem(key)
-        if (uriInfo != null) {
-            println("absolute url: " + uriInfo.absolutePath)
+        String content
+        Response response
+
+        if (userData != null) {
+
+            if (uriInfo != null) {
+                String hal
+
+                hal = "{";
+                hal = hal + "'_links'':";
+                hal = hal + "{'self':{'href':'${uriInfo.absolutePath}'}";
+                hal = hal + ",'content':'${userData}'}"
+                hal = hal + "}";
+
+                content = hal
+            } else {
+                content = userData
+            }
+
+            response = Response.ok(content, MediaType.APPLICATION_JSON).build();
+        } else {
+            response = Response.status(Response.Status.NOT_FOUND).entity(
+                ("Value not found for key='${key}'").toString()).build();
         }
 
-        return userData
+        return response
     }
 
     @Path('/self/userData')
     @POST
-    void postCurrentUserDataItem(String keyValueJson) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response postCurrentUserDataItem(String keyValueJson) {
         def keyValue = new KeyValue(JSON.parse(keyValueJson))
+
+        println("Creating new key/value pair: ${keyValue.toString()}")
+
         serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+
+        return Response.status(Response.Status.OK).build()
     }
 
     @Path('/self/userData')
     @PUT
-    void putCurrentUserDataItem(String keyValueJson) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putCurrentUserDataItem(String keyValueJson) {
         def keyValue = new KeyValue(JSON.parse(keyValueJson))
+
+        println("Updating new key/value pair: ${keyValue.toString()}")
+
         serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+
+        return Response.status(Response.Status.OK).build()
     }
 
-    @Path('/self/userData/{keyValue}')
+    @Path('/self/userData/{key}')
     @DELETE
-    void deleteCurrentUserDataItem(@PathParam('key') String  key) {
+    Response deleteCurrentUserDataItem(@PathParam('key') String key) {
+        println("Deleting key/value pair for key: ${key}")
+
         serviceItemTagRestService.deleteCurrentUserDataByKey(key)
+
+        return Response.status(Response.Status.OK).build()
     }
 
     @Path('/{profileId}/activity')

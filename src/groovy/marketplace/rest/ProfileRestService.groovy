@@ -33,10 +33,7 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     protected void authorizeCreate(Profile dto) {
-        if (!accountService.isAdmin()) {
-            throw new AccessDeniedException("Unauthorized attempt to create profile " +
-                "${dto.username} by user ${accountService.loggedInUsername}")
-        }
+        throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
     @Transactional
