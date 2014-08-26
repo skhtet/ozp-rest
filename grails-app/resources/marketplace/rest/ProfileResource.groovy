@@ -84,7 +84,6 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/self/userData/{key}')
     @GET
     Response getCurrentUserDataItem(@PathParam('key') String  key) {
-        println("retrieving user data for key: ${key}")
         String userData = serviceItemTagRestService.getCurrentUserDataItem(key)
         String content
         Response response
@@ -120,8 +119,6 @@ class ProfileResource extends DomainResource<Profile> {
     Response postCurrentUserDataItem(String keyValueJson) {
         def keyValue = new KeyValue(JSON.parse(keyValueJson))
 
-        println("Creating new key/value pair: ${keyValue.toString()}")
-
         serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
 
         return Response.status(Response.Status.OK).build()
@@ -133,8 +130,6 @@ class ProfileResource extends DomainResource<Profile> {
     Response putCurrentUserDataItem(String keyValueJson) {
         def keyValue = new KeyValue(JSON.parse(keyValueJson))
 
-        println("Updating new key/value pair: ${keyValue.toString()}")
-
         serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
 
         return Response.status(Response.Status.OK).build()
@@ -143,8 +138,6 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/self/userData/{key}')
     @DELETE
     Response deleteCurrentUserDataItem(@PathParam('key') String key) {
-        println("Deleting key/value pair for key: ${key}")
-
         serviceItemTagRestService.deleteCurrentUserDataByKey(key)
 
         return Response.status(Response.Status.OK).build()
