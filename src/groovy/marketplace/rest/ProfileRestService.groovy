@@ -40,4 +40,19 @@ class ProfileRestService extends RestService<Profile> {
     public Profile getCurrentUserProfile() {
         Profile.findByUsername(accountService.loggedInUsername)
     }
+
+    @Transactional(readOnly=true)
+    public Set<Folder> getApplicationLibraryByProfileId(Long id) {
+        profileRestService.getById(id).applicationLibrary
+    }
+
+    public Set<ServiceItem> addServiceItemToFolder(Long profileId, String folderTitle,
+            Long serviceItemId) {
+        Profile profile = getById(profileId)
+        authorizeUpdate(profile)
+
+        ServiceItem serviceItem = serviceItemRestService.getById(serviceItemId)
+        Folder folder = profile.applicationLibrary.find { it.title == folderTitle }
+        folder.addToServiceItems(serviceItem)
+    }
 }

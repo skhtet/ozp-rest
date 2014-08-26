@@ -23,6 +23,10 @@ class Profile implements Serializable {
         only = ['id', 'sortDisplayName', 'displayName', 'username']
     }
 
+    static hasMany = [applicationLibrary: Folder]
+
+    SortedSet<Folder> applicationLibrary = new TreeSet()
+
     //keep grails from getting confused into thinking that these are opposite sides of the
     //same relationship
     static mappedBy = [createdBy: 'none', editedBy: 'none']
@@ -56,6 +60,7 @@ class Profile implements Serializable {
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
         userRoles(nullable: true)
+        //uniqueness of folders in application library enforced by the fact that its a Set
     }
 
     static mapping = {

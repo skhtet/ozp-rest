@@ -106,4 +106,22 @@ class ProfileResource extends DomainResource<Profile> {
             @QueryParam('offset') Integer offset, @QueryParam('max') Integer max) {
          getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)
     }
+
+    @Path('/{profileId}/applicationLibrary')
+    @GET
+    Set<Folder> getApplicationLibrary(@PathParam('profileId') long profileId) {
+        service.getApplicationLibraryByProfileId(profileId)
+    }
+
+    @Path('/self/applicationLibrary')
+    @GET
+    Set<Folder> getOwnApplicationLibrary() {
+        service.getApplicationLibraryByProfileId(service.currentUserProfile.id)
+    }
+
+    @Path('/{profileId}/applicationLibrary/{serviceItemId}')
+    @POST
+    Set<Folder> addToApplicationLibraryRoot(@PathParam('profileId'), @PathParam('serviceItemId')) {
+        service.addServiceItemToR
+    }
 }
