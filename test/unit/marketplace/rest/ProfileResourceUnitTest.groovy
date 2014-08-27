@@ -1,5 +1,7 @@
 package marketplace.rest
 
+import javax.ws.rs.core.Response
+
 import org.codehaus.groovy.grails.web.json.JSONArray
 
 import marketplace.Profile
@@ -103,7 +105,9 @@ class ProfileResourceUnitTest {
 
             return inKeyValue.value
         }
-        String outValue = resource.getCurrentUserDataItem(inKeyValue.key)
+
+        Response response = resource.getCurrentUserDataItem(inKeyValue.key)
+        String outValue = response.entity
 
         println("@@@@@@@@@@@@@@@@@@@@@@@@ got ${outValue}")
 
