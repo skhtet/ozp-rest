@@ -14,6 +14,7 @@ import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
 import marketplace.ServiceItemActivity
+import marketplace.ApplicationLibraryEntry
 
 @Path('/api/profile')
 class ProfileResource extends DomainResource<Profile> {
@@ -21,6 +22,7 @@ class ProfileResource extends DomainResource<Profile> {
     @Autowired ItemCommentRestService ItemCommentRestService
     @Autowired ServiceItemTagRestService serviceItemTagRestService
     @Autowired ServiceItemActivityRestService serviceItemActivityRestService
+    @Autowired ApplicationLibraryEntryRestService applicationLibraryEntryRestService
 
     @Autowired
     ProfileResource(ProfileRestService profileRestService) {
@@ -109,19 +111,44 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/applicationLibrary')
     @GET
-    Set<Folder> getApplicationLibrary(@PathParam('profileId') long profileId) {
-        service.getApplicationLibraryByProfileId(profileId)
+    List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
+        applicationLibraryEntryRestService.getByParentId(profileId)
     }
 
     @Path('/self/applicationLibrary')
     @GET
-    Set<Folder> getOwnApplicationLibrary() {
-        service.getApplicationLibraryByProfileId(service.currentUserProfile.id)
+    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+        getApplicationLibrary(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/applicationLibrary/{serviceItemId}')
+    @Path('/{profileId}/applicationLibrary')
     @POST
-    Set<Folder> addToApplicationLibraryRoot(@PathParam('profileId'), @PathParam('serviceItemId')) {
-        service.addServiceItemToR
+    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
+            ApplicationLibraryEntry applicationLibraryEntry) {
+        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+            applicationLibraryEntry)
+    }
+
+    @Path('/self/applicationLibrary')
+    @POST
+    ApplicationLibraryEntry addToOwnApplicationLibrary(
+            ApplicationLibraryEntry applicationLibraryEntry) {
+        addToApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntry)
+    }
+
+    @Path('/{profileId}/applicationLibrary/{applicationLibraryEntryId}')
+    @DELETE
+    void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
+            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
+        applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
+    }
+
+    @Path('/self/applicationLibrary/{applicationLibraryEntryId}')
+    @DELETE
+    void removeFromOwnApplicationLibrary(
+            ApplicationLibraryEntry applicationLibraryEntry) {
+        removeFromOwnApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntry)
     }
 }

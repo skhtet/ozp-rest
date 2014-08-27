@@ -23,9 +23,9 @@ class Profile implements Serializable {
         only = ['id', 'sortDisplayName', 'displayName', 'username']
     }
 
-    static hasMany = [applicationLibrary: Folder]
+    static hasMany = [applicationLibrary: ApplicationLibraryEntry]
 
-    SortedSet<Folder> applicationLibrary = new TreeSet()
+    SortedSet<ApplicationLibraryEntry> applicationLibrary = new TreeSet()
 
     //keep grails from getting confused into thinking that these are opposite sides of the
     //same relationship
