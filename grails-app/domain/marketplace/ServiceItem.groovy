@@ -25,12 +25,12 @@ class ServiceItem implements Serializable {
         'categories', 'state',
         'owfProperties', 'customFields',
         'approvalStatus', 'releaseDate',
-        'agency', 'title',
+        'agency', 'title', 'whatIsNew',
         'description', 'requirements',
         'dependencies', 'contacts',
         'versionName', 'imageLargeUrl',
         'imageSmallUrl', 'imageMediumUrl', 'installUrl',
-        'launchUrl', 'docUrls',
+        'launchUrl', 'docUrls', 'descriptionShort',
         'isOutside', 'screenshots',
         'isEnabled', 'techPocs', 'tags',
         'organization', 'relationships',
@@ -91,7 +91,7 @@ class ServiceItem implements Serializable {
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
             'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'editedDate', 'isHidden', 'isOutside', 'tags'
+            'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew'
         ]
     }
 
@@ -159,6 +159,8 @@ class ServiceItem implements Serializable {
     String imageSmallUrl
     String imageMediumUrl
     String imageLargeUrl
+    String whatIsNew
+    String descriptionShort
     Boolean opensInNewBrowserTab = false
     String approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
 
@@ -232,6 +234,8 @@ class ServiceItem implements Serializable {
     }
 
     static constraints = {
+        whatIsNew nullable: true, maxSize: 250
+        descriptionShort nullable: true, maxSize: 150
         isOutside(nullable: true)
         title(blank: false, maxSize: 256)
         description(maxSize: 4000, nullable: true)
@@ -455,7 +459,9 @@ class ServiceItem implements Serializable {
             contacts: contacts.collect { it.asJSON() } as JSONArray,
             opensInNewBrowserTab: opensInNewBrowserTab,
             relationships: relationships.collect{ it.asJSON() } as JSONArray,
-            tags: tags as JSONArray
+            tags: tags as JSONArray,
+            descriptionShort: descriptionShort,
+            whatIsNew: whatIsNew
         )
 
         JSONUtil.addCreatedAndEditedInfo(currJSON, this)
