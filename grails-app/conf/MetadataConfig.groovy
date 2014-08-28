@@ -7,15 +7,6 @@ marketplace {
                 [username: 'System', displayName: 'System']
         ]
 
-        types = [
-                [title: 'Web App', imageFilename: 'default_types_web_apps_icon.png', description: 'web app',
-                        ozoneAware: false, hasLaunchUrl: true, hasIcons: false, isPermanent: false],
-                [title: 'App Component', imageFilename: 'default_types_widget_icon.png', description: 'app component',
-                        ozoneAware: true, hasLaunchUrl: true, hasIcons: true, isPermanent: true],
-				[title: 'OZONE App', imageFilename: 'default_types_stack_icon.png', description: 'OZONE app',
-					ozoneAware: true, hasLaunchUrl: false, hasIcons: false, isPermanent: true]
-        ]
-
         rejectionJustifications = [
                 [title: 'Sustainment', description:'Sustainment'],
                 [title: 'Security Guideline', description:'Security Guideline'],
