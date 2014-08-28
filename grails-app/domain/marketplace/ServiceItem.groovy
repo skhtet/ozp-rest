@@ -32,7 +32,7 @@ class ServiceItem implements Serializable {
         'imageSmallUrl', 'imageMediumUrl', 'installUrl',
         'launchUrl', 'docUrls',
         'isOutside', 'screenshots',
-        'isEnabled', 'techPocs',
+        'isEnabled', 'techPocs', 'tags',
         'organization', 'relationships',
         'isHidden', 'recommendedLayouts',
         'opensInNewBrowserTab', 'satisfiedScoreCardItems'
@@ -48,7 +48,6 @@ class ServiceItem implements Serializable {
         types component: true
         owners component: true
         categories component: true
-        tags component: true, excludeFromAll: false
         state component: true
         owfProperties component: true
         itemComments component: true
@@ -85,14 +84,14 @@ class ServiceItem implements Serializable {
         isHidden index: 'not_analyzed', excludeFromAll: false
         isOutside index: 'not_analyzed', excludeFromAll: false
         only = [
-            'state', 'tags', 'categories', 'owners', 'types', 'id', 'owfProperties',
+            'state', 'categories', 'owners', 'types', 'id', 'owfProperties',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
             'customFields', 'itemComments', 'contacts', 'totalRate1', 'totalRate2',
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
             'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'editedDate', 'isHidden', 'isOutside'
+            'editedDate', 'isHidden', 'isOutside', 'tags'
         ]
     }
 
@@ -186,7 +185,8 @@ class ServiceItem implements Serializable {
 
     static transients = ['sortTitle', 'lastActivityDate', 'isEnabled']
 
-    static hasMany = [categories: Category,
+    static hasMany = [
+        categories: Category,
         owners: Profile,
         recommendedLayouts: RecommendedLayout,
         itemComments: ItemComment,
@@ -198,8 +198,9 @@ class ServiceItem implements Serializable {
         techPocs: String,
         relationships: Relationship,
         contacts: Contact,
-        tags: ServiceItemTag,
-        satisfiedScoreCardItems: ScoreCardItem]
+        satisfiedScoreCardItems: ScoreCardItem,
+        tags: String
+    ]
 
     //so that GORM knows which property of the relationship is the backref
     static mappedBy = [relationships: 'owningEntity']
@@ -225,7 +226,6 @@ class ServiceItem implements Serializable {
         contacts cascade: 'all-delete-orphan'
         relationships cascade: 'all-delete-orphan'
         docUrls cascade: 'all-delete-orphan'
-        tags cascade: 'all-delete-orphan'
         satisfiedScoreCardItems joinTable: [name: 'service_item_score_card_item',
                                             column: 'score_card_item_id',
                                             key: 'service_item_id']
@@ -455,7 +455,7 @@ class ServiceItem implements Serializable {
             contacts: contacts.collect { it.asJSON() } as JSONArray,
             opensInNewBrowserTab: opensInNewBrowserTab,
             relationships: relationships.collect{ it.asJSON() } as JSONArray,
-            tags: (tags?.collect { it.asJSONwithCreatedBy()} ?: []) as JSONArray
+            tags: tags as JSONArray
         )
 
         JSONUtil.addCreatedAndEditedInfo(currJSON, this)
