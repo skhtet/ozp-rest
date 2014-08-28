@@ -159,7 +159,6 @@ grails.project.dependency.resolution = {
         compile ':database-migration:1.4.0'
         compile ':executor:0.3'
         compile ':feeds:1.6'
-        compile ':ui-performance:1.2.2'
         compile ':quartz:1.0.1'
         compile ':pretty-time:2.1.3.Final-1.0.1'
         compile ':cache:1.1.5'

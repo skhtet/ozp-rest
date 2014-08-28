@@ -5,7 +5,7 @@ dataSource {
     driverClassName = 'org.h2.Driver'
     username = 'sa'
     password = ''
-    dbCreate = 'create-drop'
+    dbCreate = 'update'
 }
 
 hibernate {

@@ -95,148 +95,14 @@ grails {
     }
 }
 
-// Configure UI Performance
-uiperformance.enabled = true
-uiperformance.processImages = false
-uiperformance.continueAfterMinifyJsError = true
-uiperformance.keepOriginals = true
-uiperformance.html.compress = false
-uiperformance.exclusions = [
-    "#default#VML", //SEE http://www.codeproject.com/Articles/1742/Introduction-to-VML
-    "**/images/themes/default/market_64x64.png",
-    "**/images/favicon.ico",
-    "**/js-test/**",
-    "**/js-min/**",
-    "**/dojo-.1.2.3-windowname-only/**",
-    "**/eventing/**",
-    "**/i18n/**",
-    "**/jquery/**/*.js",
-    "**/css_browser_selector.js",
-    "**/listbox.js",
-    "**/mp-api.js",
-    "**/pngfix.js",
-    "**/true/**",
-    "**/jblock-style.css",
-    "**/jquery-ui-1.7.2.customOffsite.css",
-    "**/owf-widget-min.js",
-    "**/owf-widget-debug.js",
-    "**/rest/**",
-    "**/quickview/**",
-    "**/dataExchange/**",
-    "**/affiliatedSearch/affiliatedSearch-main/**",
-    "**/listingManagement/**",
-    "**/createEditListing/**"
-]
-
-server.version = appVersion
-def basedir = BuildSettingsHolder.settings?.baseDir
-if (basedir != null) {
-    uiperformance.determineVersion = {->
-        def version = System.getenv('SVN_REVISION')
-
-        if (!version) {
-            //if SVN_REVISION is not defined (it is typically only defined by jenkins),
-            //pick a random number instead
-            version = new Random().nextInt()
-        }
-
-        if (version.toString().charAt(0) != '-') {
-            version = '-' + version
-        }
-
-        uiperformance.exclusions << "**/*${server.version + version}*"
-        server.version + version
-    }
-}
-
-uiperformance.bundles = [
-    [
-        type: "js",
-        name: "service-item-js-bundle",
-        files: [
-            "serviceItem/ServiceItemCarousel"
-        ]
-    ],
-    [
-        type: "js",
-        name: "backbone-with-deps",
-        files: [
-            "../vendor/lodash.compat",
-            "../vendor/backbone/backbone-1.0.0"
-        ]
-    ],
-    [
-        type: "js",
-        name: "require-js",
-        files: [
-            "../vendor/requirejs/requirejs-2.1.9"
-        ]
-    ],
-    [
-        type: "js",
-        name: "handlebars",
-        files: [
-            "../vendor/handlebars/handlebars-1.0.0"
-        ]
-    ],
-    [
-        type: "js",
-        name: "marketplace-js-bundle",
-        files: [
-            "../vendor/lodash.compat",
-            "../vendor/backbone/json2",
-            "../vendor/css_browser_selector",
-            "../vendor/jquery/js/jquery-1.10.2",
-            "../vendor/jquery/jquery.serialize-object",
-            "../vendor/jquery-validation-1.11.1/dist/jquery.validate",
-            "../vendor/jquery/jquery-deparam",
-            "../vendor/jquery/jquery.browser",
-            "../vendor/jquery/jquery.AutoEllipsis",
-            "../vendor/jquery/jquery.highlight-3",
-            "../vendor/jquery/jquery.raty",
-            "../vendor/bxslider/jquery.bxSlider.min",
-            "../vendor/jquery/jquery.dataTables.min",
-            "../vendor/jquery.magnific-popup/jquery.magnific-popup",
-            "../vendor/bootstrap/bootstrap-select",
-            "../vendor/backbone/backbone-1.0.0",
-            "../vendor/backbone/backbone.paginator",
-            "../vendor/bootstrap/bootstrap-2.3.2",
-            "../vendor/bootstrap-editable/bootstrap-editable",
-            "../vendor/bootstrap-datepicker/bootstrap-datepicker",
-            "../vendor/handlebars/handlebars-1.0.0",
-            "../vendor/moment",
-            "../vendor/spin",
-            "application",
-            "listbox",
-            "BootstrapUtil",
-            "../vendor/owf-widget-debug",
-            "marketplace",
-            "patches",
-            "AddWidgetClient",
-            "../vendor/bxslider/jquery.bxSlider.min",
-            // Put this here or in separate section?
-            "../vendor/bootstrap/bootstrap-fileupload",
-            "../vendor/bootstrap/bootstrap-select",
-            "quickview/modal"
-        ]
-    ]
-]
-
 /**
  * ElasticSearch Defaults - override these in an external config as needed
  */
-elasticSearch.client.mode = 'local'
-environments {
-    test {
-        elasticSearch {
-            client.mode = 'local'
-            index.store.type = 'memory'
-        }
-    }
-    production {
-        elasticSearch.client.mode = 'local'
-    }
-}
+ elasticSearch {
+     datastoreImpl = 'hibernateDatastore'
+     client.mode = 'local'
+     index.store.type = 'memory'
+ }
 
 environments {
     test {
@@ -389,10 +255,6 @@ grails.cache.enabled = false
 
 org.grails.jaxrs.doreader.disable=true
 org.grails.jaxrs.dowriter.disable=true
-
-elasticSearch {
-    datastoreImpl = 'hibernateDatastore'
-}
 
 println "Config loaded"
 

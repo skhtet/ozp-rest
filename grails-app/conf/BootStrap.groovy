@@ -90,7 +90,6 @@ class BootStrap {
 		}
 
         registerObjectMashaller(marketplace.ServiceItem)
-        registerObjectMashaller(marketplace.ExtServiceItem)
         registerObjectMashaller(marketplace.Category)
         registerObjectMashaller(marketplace.CustomFieldDefinition)
         registerObjectMashaller(marketplace.RejectionJustification)
