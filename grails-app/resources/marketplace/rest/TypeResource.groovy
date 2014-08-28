@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 class TypeResource extends DomainResource<Types> {
 
     @Autowired
-    public TypeResource(TypeRestService TypeRestService) {
-        super(Types.class, TypeRestService)
+    public TypeResource(TypeRestService typeRestService) {
+        super(Types.class, typeRestService)
     }
 
     TypeResource() {}

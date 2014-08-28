@@ -22,7 +22,7 @@ class ServiceItem implements Serializable {
     //how to handle marshalling of this domain
     final static bindableProperties = [
         'types', 'owners',
-        'categories', 'state',
+        'categories',
         'owfProperties', 'customFields',
         'approvalStatus', 'releaseDate',
         'agency', 'title', 'whatIsNew',
@@ -48,7 +48,6 @@ class ServiceItem implements Serializable {
         types component: true
         owners component: true
         categories component: true
-        state component: true
         owfProperties component: true
         itemComments component: true
         customFields component: true
@@ -84,7 +83,7 @@ class ServiceItem implements Serializable {
         isHidden index: 'not_analyzed', excludeFromAll: false
         isOutside index: 'not_analyzed', excludeFromAll: false
         only = [
-            'state', 'categories', 'owners', 'types', 'id', 'owfProperties',
+            'categories', 'owners', 'types', 'id', 'owfProperties',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
             'customFields', 'itemComments', 'contacts', 'totalRate1', 'totalRate2',
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
@@ -172,7 +171,6 @@ class ServiceItem implements Serializable {
         return "${id}:${title}:${uuid}:${releaseDate}:${approvalStatus}:${types}:${categories}:${customFields}"
     }
 
-    State state
     Types types
     OwfProperties owfProperties
     List customFields
@@ -277,7 +275,6 @@ class ServiceItem implements Serializable {
         }
         )
         categories(nullable: true)
-        state(nullable: true)
         releaseDate(nullable: true)
         owfProperties(nullable:true)
         uuid(nullable:false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/)
@@ -440,7 +437,7 @@ class ServiceItem implements Serializable {
             imageMediumUrl: imageMediumUrl,
             imageLargeUrl: imageLargeUrl,
             installUrl: installUrl,
-            isPublished: state?.isIsPublished(),
+            isPublished: true,
             launchUrl: launchUrl,
             validLaunchUrl: validateUrl(launchUrl),
             organization: organization,
@@ -448,7 +445,6 @@ class ServiceItem implements Serializable {
             recommendedLayouts: (recommendedLayouts?.collect { it.name()} ?: []) as JSONArray,
             requirements: requirements,
             screenshots: (this.screenshots.collect { it?.asJSON() }.findAll { it != null }) as JSONArray,
-            state: state?.asJSONRef(),
             techPocs: (techPocs ?: []) as JSONArray,
             types: types?.asJSON(),
             class: getClass(),
@@ -516,7 +512,6 @@ class ServiceItem implements Serializable {
             versionName: versionName,
             releaseDate: releaseDate,
             lastActivity: lastActivity,
-            state: state,
             types: types
         )
 
@@ -568,7 +563,7 @@ class ServiceItem implements Serializable {
     }
 
     Boolean isOWFCompatible() {
-        return (statApproved() && types.ozoneAware && state?.isPublished)
+        return (statApproved() && types.ozoneAware)
     }
 
     Boolean isOWFAddable() {
@@ -580,13 +575,12 @@ class ServiceItem implements Serializable {
     }
 
     /**
-     * Determines whether a service item can be launched based upon it's approval, published state
+     * Determines whether a service item can be launched based upon it's approval
      * and launch URL.
      * @returns Boolean True, if the item can be launched; false, otherwise
      */
     Boolean isLaunchable() {
-        return (this.statApproved() && state?.isPublished &&
-            (types.hasLaunchUrl && validateUrl(launchUrl)))
+        return (this.statApproved() && (types.hasLaunchUrl && validateUrl(launchUrl)))
     }
 
     @Override

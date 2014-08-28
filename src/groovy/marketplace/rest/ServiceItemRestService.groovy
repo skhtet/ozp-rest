@@ -314,7 +314,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
             owners = owners ?: [profile]
             techPocs = techPocs ?: [profile.username]
             organization = organization ?: user.org
-            state = state ?: State.findByTitle("Active")
         }
     }
 
