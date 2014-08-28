@@ -1,10 +1,12 @@
 // Uncomment to enable SQL logging
 //logSql=true
 
-driverClassName = 'org.h2.Driver'
-username = 'sa'
-password = ''
-dbCreate = 'none'
+dataSource {
+    driverClassName = 'org.h2.Driver'
+    username = 'sa'
+    password = ''
+    dbCreate = 'create-drop'
+}
 
 hibernate {
     cache.use_second_level_cache = false
@@ -15,12 +17,12 @@ hibernate {
 environments {
     development {
         dataSource {
-            url = 'jdbc:h2:file:mktplDevDb'
+            url = 'jdbc:h2:file:mktplDevDb;DB_CLOSE_ON_EXIT=FALSE'
         }
     }
     test {
         dataSource {
-            url = 'jdbc:h2:file:mktplTestDb'
+            url = 'jdbc:h2:file:mktplTestDb;DB_CLOSE_ON_EXIT=FALSE'
         }
     }
     production {

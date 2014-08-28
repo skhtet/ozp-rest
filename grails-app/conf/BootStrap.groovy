@@ -21,7 +21,7 @@ class BootStrap {
     def profileService
     def textService
     def grailsApplication
-
+    def marketplaceApplicationConfigurationService
     def messageSource
     def commonImagesLoc = '/themes/common/images'
     def sessionFactory
@@ -199,6 +199,8 @@ class BootStrap {
 
     def preload = { db ->
         log.info "Preloading Database: ${db}"
+
+        marketplaceApplicationConfigurationService.createRequired()
 
         def system_user = Profile.getSystemUser()
         confHolder.config.system_user_id = system_user.id  //What is this?  conf holder is a singleton, this is bad
