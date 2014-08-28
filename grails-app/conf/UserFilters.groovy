@@ -27,7 +27,7 @@ class UserFilters {
 
 
     def filters = {
-        loginCheck(controller: '*', action: '*') {
+        /*loginCheck(controller: '*', action: '*') {
             before = {
                 UserAccount.withTransaction {
                     log.debug "loginCheck before filter - ${controllerName} ${actionName}"
@@ -260,7 +260,7 @@ class UserFilters {
                     }
                 }
             }
-        }
+        }*/
     }
 
     private def adminCheck(filterName, filterDelegate) {

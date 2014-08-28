@@ -1,1 +1,0 @@
-<tr class="customFieldAdmin IMAGE_URL"></tr>
