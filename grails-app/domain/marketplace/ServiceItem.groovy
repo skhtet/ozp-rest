@@ -161,7 +161,7 @@ class ServiceItem implements Serializable {
     String imageMediumUrl
     String imageLargeUrl
     Boolean opensInNewBrowserTab = false
-    String approvalStatus = Constants.APPROVAL_STATUSES["IN_PROGRESS"]
+    String approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
 
     String toString() {
         return "${id}:${title}:${uuid}:${releaseDate}:${approvalStatus}"

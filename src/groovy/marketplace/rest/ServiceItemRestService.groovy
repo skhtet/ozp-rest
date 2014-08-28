@@ -45,7 +45,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Autowired
     public ServiceItemRestService(GrailsApplication grailsApplication,
             ServiceItemValidator serviceItemValidator) {
-        super(grailsApplication, ServiceItem.class, serviceItemValidator, null)
+        super(grailsApplication, ServiceItem.class, null, null)
     }
 
     //needed for CGLIB
