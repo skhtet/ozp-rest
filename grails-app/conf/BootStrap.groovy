@@ -18,7 +18,6 @@ class BootStrap {
     def marketplaceConversionService
 	def searchableService
 	def imagesService
-	def marketplaceApplicationConfigurationService
     def profileService
     def textService
     def grailsApplication
@@ -34,10 +33,6 @@ class BootStrap {
         org.apache.lucene.search.BooleanQuery.setMaxClauseCount(10 ** 6);
 
         ApplicationContext apc = servletContext.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
-
-        //Register an alias to the configuration service. This provides a common convention for accessing
-        //the service from, for example, a grails plugin
-        grailsApplication.mainContext.registerAlias('marketplaceApplicationConfigurationService', 'ozoneConfiguration')
 
         if (GrailsUtil.environment == 'production') {
             def log4jConfigure
@@ -202,15 +197,8 @@ class BootStrap {
         quartzScheduler?.shutdown()
     }
 
-    //TODO ideally all this would be in one service, probably in applicationConfigurationService so they are all in one transaction
     def preload = { db ->
         log.info "Preloading Database: ${db}"
-
-        marketplaceApplicationConfigurationService.checkThatConfigsExist()
-        messageSource.setBaseNameOrder(marketplaceApplicationConfigurationService.isFranchiseStore())
-
-        marketplaceApplicationConfigurationService.createRequired()
-        marketplaceApplicationConfigurationService.initializeConfigDependentServices()
 
         def system_user = Profile.getSystemUser()
         confHolder.config.system_user_id = system_user.id  //What is this?  conf holder is a singleton, this is bad
@@ -218,9 +206,6 @@ class BootStrap {
         preloadAvatars()
         preloadDefaultServiceItemIcon()
         preloadDefaultMarketplaceIcon()
-
-        //Update isOutside flag if needed
-        marketplaceConversionService.updateIsOutsideFlag()
 
         textService.manageRequiredTexts()
     }
