@@ -12,7 +12,6 @@ import marketplace.OwfSyncUtility
 import ozone.marketplace.enums.MarketplaceApplicationSetting
 
 import marketplace.ServiceItem
-import marketplace.ExtServiceItem
 import marketplace.State
 import marketplace.Tag
 import marketplace.Profile

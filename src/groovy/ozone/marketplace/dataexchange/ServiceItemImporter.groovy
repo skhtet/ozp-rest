@@ -1,7 +1,6 @@
 package ozone.marketplace.dataexchange
 
 import marketplace.Constants
-import marketplace.ExtServiceItem
 import marketplace.ItemComment
 import marketplace.ServiceItem
 import marketplace.Profile
@@ -102,12 +101,12 @@ class ServiceItemImporter extends AbstractImporter {
         // See if listing is from the same Storefront
         if (listingJson.has(Constants.FIELD_SYSTEMURI)) {
             // Listing received is a different SystemUri -- expect external listing (ExtServiceItem) update
-            ExtServiceItem extServiceItem = currentListing // Force an exception if the current listing is not an external listing
+            ServiceItem extServiceItem = currentListing // Force an exception if the current listing is not an external listing
             log.debug "Case 5: Updating ExtServiceItem:: $extServiceItem"
             updateExtServiceItem(extServiceItem, listingJson, username)
         }
         else {
-            if (currentListing instanceof ExtServiceItem) {
+            if (currentListing instanceof ServiceItem) {
                 log.debug "Case 7: Updating ExtServiceItem:: $currentListing"
                 log.warn "Import received matching an ExtServiceItem on UUID [${currentListing.uuid}] but with no systemUri; updating based on uuid"
                 updateExtServiceItem(currentListing, listingJson, username)
@@ -124,7 +123,7 @@ class ServiceItemImporter extends AbstractImporter {
         return currentListing
     }
 
-    def updateExtServiceItem(ExtServiceItem currentListing, def listingJson, def adminName) {
+    def updateExtServiceItem(ServiceItem currentListing, def listingJson, def adminName) {
         // ExtServiceItemService expects these as singular objects
         //   add a serviceItem name to this
         def importItem = new JSONObject(
@@ -144,7 +143,7 @@ class ServiceItemImporter extends AbstractImporter {
 
         def username = accountService.getLoggedInUsername()
         def importFlag = true
-        if (serviceItemIn.instanceOf(ExtServiceItem)) {
+        if (serviceItemIn.instanceOf(ServiceItem)) {
             extServiceItemService.bindFromJSON2(json, serviceItemIn, username, createFlag, importFlag, contextPath)
         }
         else {

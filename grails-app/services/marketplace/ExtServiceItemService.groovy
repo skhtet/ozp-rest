@@ -44,7 +44,7 @@ class ExtServiceItemService {
 
     @Transactional
     def doEnable(boolean enableFl, def itemId, def userName) {
-        def extSvc = ExtServiceItem.get(itemId)
+        def extSvc = ServiceItem.get(itemId)
         if (extSvc) {
             log.debug("retrieved ${extSvc}")
         }
@@ -74,7 +74,7 @@ class ExtServiceItemService {
     @Transactional(noRollbackFor = [ValidationException])
     def create(def json, def username = accountService.getLoggedInUsername(), boolean isImport = false, def contextPath = null) {
         JSONDecoratorService.preProcessJSON(json)
-        def extSvc = new ExtServiceItem()
+        def extSvc = new ServiceItem()
         bindFromJSON(json, extSvc, username, true, isImport, contextPath)
         if (json.serviceItem.approvalStatus == null) {
             // if no approval status is specified, the approval status will be set to pending
@@ -201,7 +201,7 @@ class ExtServiceItemService {
       */
 
     @Transactional(readOnly = true)
-    def bindFromJSON(def json, ExtServiceItem extSvc, def username, def createFlag,
+    def bindFromJSON(def json, ServiceItem extSvc, def username, def createFlag,
                      def importFlag = false, def contextPath = null) {
         log.debug "bindFromJSON - json = ${json}"
         return bindFromJSON2(json?.serviceItem, extSvc, username, createFlag, importFlag, contextPath)
@@ -209,7 +209,7 @@ class ExtServiceItemService {
 
     @Transactional(readOnly = true)
     // TODO Combine bindFromJSON and bindFromJSON2
-    def bindFromJSON2(def json, ExtServiceItem extSvc, def username, def createFlag,
+    def bindFromJSON2(def json, ServiceItem extSvc, def username, def createFlag,
                       def importFlag = false, def contextPath = null) {
         log.debug "bindFromJSON2 - json = ${json}"
         boolean isDirty = bindServiceItemFromJSON(json, extSvc, username, createFlag, importFlag, contextPath)
@@ -233,7 +233,7 @@ class ExtServiceItemService {
      */
 
     @Transactional(noRollbackFor = [ValidationException])
-    private def save(ExtServiceItem extSvc, def username, def createFl) {
+    private def save(ServiceItem extSvc, def username, def createFl) {
         def returnValue = false
 
         extSvc.owfProperties?.owfWidgetType =

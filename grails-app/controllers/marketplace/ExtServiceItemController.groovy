@@ -137,7 +137,7 @@ class ExtServiceItemController extends BaseMarketplaceRestController {
         def total
         try {
             checkExtServiceItemEnabled {
-                def exemplar = new ExtServiceItem()
+                def exemplar = new ServiceItem()
                 result = extServiceItemQueryService.getItems(params, exemplar)
                 result['serviceItemList']?.collect{ model.add(it.asLegacyJSON()) }
                 total = result['listSize']
