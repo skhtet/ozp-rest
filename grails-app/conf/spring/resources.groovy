@@ -19,7 +19,6 @@ beans = {
         sessionFactory = ref('sessionFactory')
         accountService = ref('accountService')
         grailsApplication = ref('grailsApplication')
-        marketplaceApplicationConfigurationService = ref('marketplaceApplicationConfigurationService')
     }
 
     elasticSearchService(MarketplaceElasticSearchService) {

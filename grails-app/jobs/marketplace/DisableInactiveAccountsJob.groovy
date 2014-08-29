@@ -3,7 +3,6 @@ package marketplace
 import grails.util.GrailsUtil
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
-import org.ozoneplatform.appconfig.server.domain.model.ApplicationConfiguration
 import org.quartz.Job
 import org.quartz.JobKey
 import org.quartz.JobBuilder

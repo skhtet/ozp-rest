@@ -2,7 +2,8 @@ import grails.converters.JSON
 import grails.util.*
 
 import marketplace.*
-
+import marketplace.rest.ItemCommentServiceItemDto
+import marketplace.rest.ProfileServiceItemTagDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as confHolder
@@ -20,7 +21,6 @@ class BootStrap {
 	def imagesService
     def profileService
     def grailsApplication
-    def marketplaceApplicationConfigurationService
     def messageSource
     def commonImagesLoc = '/themes/common/images'
     def sessionFactory
@@ -74,7 +74,8 @@ class BootStrap {
                 }
             }
         }
-        preload()
+
+        profileService.createRequired()
 
 		log.info "BootStrap init; GrailsUtil.environment: ${GrailsUtil.environment}"
         if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {
@@ -84,28 +85,26 @@ class BootStrap {
 		}
 
         [
-            marketplace.ServiceItemActivity,
-            marketplace.ModifyRelationshipActivity,
-            marketplace.RejectionActivity,
-            marketplace.ServiceItemTag,
-            marketplace.rest.ItemCommentServiceItemDto,
-            marketplace.rest.ProfileServiceItemTagDto,
-            marketplace.ScoreCardItem,
-            marketplace.ContactType,
-            marketplace.ContactType,
-            marketplace.ItemComment,
-            marketplace.Agency,
-            marketplace.Types,
-            marketplace.OwfWidgetTypes,
-            marketplace.IntentDataType,
-            marketplace.IntentAction,
-            marketplace.ExtProfile,
-            marketplace.Profile,
-            marketplace.Images,
-            marketplace.ServiceItem,
-            marketplace.Category,
-            marketplace.RejectionJustification,
-            marketplace.RejectionListing
+            ServiceItemActivity,
+            ModifyRelationshipActivity,
+            RejectionActivity,
+            ServiceItemTag,
+            ItemCommentServiceItemDto,
+            ProfileServiceItemTagDto,
+            ScoreCardItem,
+            ContactType,
+            ItemComment,
+            Agency,
+            Types,
+            IntentDataType,
+            IntentAction,
+            ExtProfile,
+            Profile,
+            Images,
+            ServiceItem,
+            Category,
+            RejectionJustification,
+            RejectionListing
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
@@ -171,9 +170,5 @@ class BootStrap {
         ApplicationContext apc = servletContext?.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
         def quartzScheduler = apc?.getBean('quartzScheduler')
         quartzScheduler?.shutdown()
-    }
-
-    def preload = { db ->
-        marketplaceApplicationConfigurationService.createRequired()
     }
 }

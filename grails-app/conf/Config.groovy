@@ -245,6 +245,8 @@ cef {
         version = "500-27_L2::1.3"
     }
     version = 0
+    enabled = true
+    verbose = false
 }
 
 

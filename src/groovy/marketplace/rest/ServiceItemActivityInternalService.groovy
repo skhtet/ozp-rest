@@ -12,7 +12,6 @@ import marketplace.RejectionListing
 import marketplace.ServiceItemSnapshot
 import marketplace.ModifyRelationshipActivity
 import marketplace.OwfProperties
-import marketplace.MarketplaceMessagingService
 import marketplace.ChangeDetail
 
 import marketplace.Constants
@@ -28,7 +27,6 @@ import marketplace.Constants
 @Transactional
 class ServiceItemActivityInternalService {
     @Autowired ProfileRestService profileRestService
-    @Autowired MarketplaceMessagingService marketplaceMessagingService
 
     /**
      * Create a changelog entry as needed that consists of a MODIFIED activity and one or more
@@ -73,8 +71,6 @@ class ServiceItemActivityInternalService {
 
         si.addToServiceItemActivities(activity)
         si.lastActivity = activity
-
-        marketplaceMessagingService.sendNotificationOfChange(si, activity);
 
         return activity
     }

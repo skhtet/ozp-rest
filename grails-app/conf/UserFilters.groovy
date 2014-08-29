@@ -1,13 +1,4 @@
 import grails.util.Environment
-import org.apache.commons.lang.StringEscapeUtils
-import static ozone.marketplace.enums.MarketplaceApplicationSetting.*
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper
-import ozone.marketplace.util.event.LogInEvent
-
-import java.util.concurrent.Callable
-import org.ozoneplatform.appconfig.server.service.api.ApplicationConfigurationService
-import org.springframework.security.access.AccessDeniedException
 import marketplace.*
 
 /**
@@ -18,13 +9,6 @@ class UserFilters {
 
     def accountService
     def profileService
-    def themeService
-    def preferencesService
-
-    def marketplaceApplicationConfigurationService
-
-    def config = ConfigurationHolder.config
-
 
     def filters = {
         loginCheck(controller: '*', action: '*') {

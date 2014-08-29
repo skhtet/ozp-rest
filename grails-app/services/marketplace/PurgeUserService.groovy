@@ -1,6 +1,4 @@
 package marketplace
-
-import ozone.marketplace.enums.MarketplaceApplicationSetting
 import ozone.marketplace.service.AuthorizationException
 
 class PurgeUserService {
@@ -9,14 +7,10 @@ class PurgeUserService {
 
     def accountService
     def itemCommentService
-    def marketplaceApplicationConfigurationService
     def grailsApplication
 
     void purgeInactiveAccounts() {
-        def thresholdInDays = marketplaceApplicationConfigurationService.valueOf(MarketplaceApplicationSetting.INACTIVITY_THRESHOLD)
-        if (!thresholdInDays) {
-            return
-        }
+        def thresholdInDays = 90
 
         List<UserAccount> inactiveAccounts = getInactiveAccounts(thresholdInDays)
         inactiveAccounts.each { account ->
@@ -74,8 +68,8 @@ class PurgeUserService {
             it.createdBy = systemProfile
             it.save(flush: true)
         }
-        
-        
+
+
         // The gorm.AuditStamp annotation automatically adds createdBy and editedBy fields to the domain,
         // so we need to make sure we update those wherever they exist.
         grailsApplication.getDomainClasses().each { domainClass ->

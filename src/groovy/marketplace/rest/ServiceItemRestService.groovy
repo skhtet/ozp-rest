@@ -4,30 +4,19 @@ import grails.plugin.executor.PersistenceContextExecutorWrapper
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.GrailsApplication
-
-import marketplace.OwfSyncUtility
-import ozone.marketplace.enums.MarketplaceApplicationSetting
-
 import marketplace.ServiceItem
-import marketplace.State
-import marketplace.Tag
 import marketplace.Profile
 import marketplace.ServiceItemActivity
 import marketplace.Constants
 import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ServiceItemSnapshot
-import marketplace.ServiceItemTag
 import ozone.marketplace.enums.RelationshipType
-
 import ozone.utils.User
-
 import marketplace.AccountService
 import marketplace.validator.ServiceItemValidator
-
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
 

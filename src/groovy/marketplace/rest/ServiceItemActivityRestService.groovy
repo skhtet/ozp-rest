@@ -1,13 +1,10 @@
 package marketplace.rest
 
-import marketplace.CustomField
 import marketplace.OwfProperties
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-
 import org.codehaus.groovy.grails.commons.GrailsApplication
-
 import marketplace.ServiceItem
 import marketplace.ServiceItemActivity
 import marketplace.ModifyRelationshipActivity
@@ -16,7 +13,6 @@ import marketplace.Constants
 import marketplace.RejectionListing
 import marketplace.RejectionActivity
 import marketplace.Profile
-
 import marketplace.Sorter
 
 @Service

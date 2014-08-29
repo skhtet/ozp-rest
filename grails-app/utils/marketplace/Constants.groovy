@@ -98,61 +98,60 @@ class Constants {
     public static final int OLD_MARKETPLACE_ICON_SIZE = 9958
 
     private static Map<String, String> createSiDbNameToListingNameMap(){
-		Map<String, String> siDbNameToListingNameMap = new HashMap<String, String>()
-		//Primary Characteristics
-		siDbNameToListingNameMap.put("title", "Name")
-		siDbNameToListingNameMap.put("types", "Type")
-		siDbNameToListingNameMap.put("state", "State")
-		siDbNameToListingNameMap.put("versionName", "Version")
-		siDbNameToListingNameMap.put("releaseDate", "Release Date")
-		siDbNameToListingNameMap.put("description", "Description")
+        Map<String, String> siDbNameToListingNameMap = new HashMap<String, String>()
+        //Primary Characteristics
+        siDbNameToListingNameMap.put("title", "Name")
+        siDbNameToListingNameMap.put("types", "Type")
+        siDbNameToListingNameMap.put("state", "State")
+        siDbNameToListingNameMap.put("versionName", "Version")
+        siDbNameToListingNameMap.put("releaseDate", "Release Date")
+        siDbNameToListingNameMap.put("description", "Description")
 
-		//Type Properties
-		siDbNameToListingNameMap.put("intents", "Intents")
-		siDbNameToListingNameMap.put("imageSmallUrl", "Small Icon URL")
-		siDbNameToListingNameMap.put("imageLargeUrl", "Large Icon URL")
-		siDbNameToListingNameMap.put("launchUrl", "Launch URL")
-		siDbNameToListingNameMap.put("opensInNewBrowserTab", "Opens in a new browser tab")
-		siDbNameToListingNameMap.put("recommendedLayouts", "Recommended Layouts")
-		siDbNameToListingNameMap.put("customFields", "Custom Fields")
+        //Type Properties
+        siDbNameToListingNameMap.put("intents", "Intents")
+        siDbNameToListingNameMap.put("imageSmallUrl", "Small Icon URL")
+        siDbNameToListingNameMap.put("imageLargeUrl", "Large Icon URL")
+        siDbNameToListingNameMap.put("launchUrl", "Launch URL")
+        siDbNameToListingNameMap.put("opensInNewBrowserTab", "Opens in a new browser tab")
+        siDbNameToListingNameMap.put("recommendedLayouts", "Recommended Layouts")
 
-		//Categories Widget
-		siDbNameToListingNameMap.put("categories", "Categories")
+        //Categories Widget
+        siDbNameToListingNameMap.put("categories", "Categories")
 
-		//Technical Properties
-		siDbNameToListingNameMap.put("installUrl", "Installation URL")
-		siDbNameToListingNameMap.put("docUrls", "Resources")
+        //Technical Properties
+        siDbNameToListingNameMap.put("installUrl", "Installation URL")
+        siDbNameToListingNameMap.put("docUrls", "Resources")
 
-		//Marketplace References
-		siDbNameToListingNameMap.put("author", "Owner")
-		siDbNameToListingNameMap.put("techPocs", "Technical POCs")
-		siDbNameToListingNameMap.put("organization", "Organization")
-		siDbNameToListingNameMap.put("requirements", "Requirements")
-		siDbNameToListingNameMap.put("dependencies", "Dependencies")
-		siDbNameToListingNameMap.put("visibleInLaunch", "Visible")
-		return Collections.unmodifiableMap(siDbNameToListingNameMap)
-	}
+        //Marketplace References
+        siDbNameToListingNameMap.put("author", "Owner")
+        siDbNameToListingNameMap.put("techPocs", "Technical POCs")
+        siDbNameToListingNameMap.put("organization", "Organization")
+        siDbNameToListingNameMap.put("requirements", "Requirements")
+        siDbNameToListingNameMap.put("dependencies", "Dependencies")
+        siDbNameToListingNameMap.put("visibleInLaunch", "Visible")
+        return Collections.unmodifiableMap(siDbNameToListingNameMap)
+    }
 
-	public static String getSiListingName(String fieldName){
-		String siListingName = SERVICE_ITEM_DB_NAME_TO_LISTING_NAME_MAP.get(fieldName);
-		if(StringUtils.isEmpty(siListingName)){
-			return fieldName
-		}
-		return siListingName
-	}
+    public static String getSiListingName(String fieldName){
+        String siListingName = SERVICE_ITEM_DB_NAME_TO_LISTING_NAME_MAP.get(fieldName);
+        if(StringUtils.isEmpty(siListingName)){
+            return fieldName
+        }
+        return siListingName
+    }
 
-	public static final String translateApprovalStatus(String approvalStatusToTranslate){
-		String translatedString = approvalStatusToTranslate
-		if(StringUtils.isNotEmpty(approvalStatusToTranslate)){
-			String foundKey = APPROVAL_STATUSES[approvalStatusToTranslate.toUpperCase()]
-			if(StringUtils.isNotEmpty(foundKey)){
-				translatedString = foundKey
-			}
-		}
-		return translatedString
-	}
+    public static final String translateApprovalStatus(String approvalStatusToTranslate){
+        String translatedString = approvalStatusToTranslate
+        if(StringUtils.isNotEmpty(approvalStatusToTranslate)){
+            String foundKey = APPROVAL_STATUSES[approvalStatusToTranslate.toUpperCase()]
+            if(StringUtils.isNotEmpty(foundKey)){
+                translatedString = foundKey
+            }
+        }
+        return translatedString
+    }
 
-	public static final enum Action{
+    public static final enum Action{
             //TODO This really should go in the resource bundle
             CREATED("Created"),
             MODIFIED("Modified"),
@@ -202,7 +201,7 @@ class Constants {
             public JSONObject asJSON() {
                 new JSONObject(name: name(), description: description)
             }
-	}
+    }
 
     /**
      * An enumeration of valid sorting directions
@@ -211,44 +210,15 @@ class Constants {
         ASC, DESC;
     }
 
-	public static final enum CustomFieldDefinitionStyleType {
-		TEXT("Text", TextCustomFieldDefinition.class, TextCustomField.class),
-		TEXT_AREA("Text Area", TextAreaCustomFieldDefinition.class, TextAreaCustomField.class),
-		DROP_DOWN("Drop Down", DropDownCustomFieldDefinition.class, DropDownCustomField.class),
-		IMAGE_URL("Image URL", ImageURLCustomFieldDefinition.class, ImageURLCustomField.class),
-		CHECK_BOX("Checkbox", CheckBoxCustomFieldDefinition.class, CheckBoxCustomField.class)
 
-		CustomFieldDefinitionStyleType(String styleTypeName, Class<CustomFieldDefinition> cfdClass, Class<CustomField> cfClass){
-			this.styleTypeName = styleTypeName
-			this.fieldDefinitionClass = cfdClass
-			this.fieldClass = cfClass
-		}
-
-		private final String styleTypeName
-		public final Class<CustomFieldDefinition> fieldDefinitionClass
-		public final Class<CustomField> fieldClass
-
-		public String styleTypeName(){ return styleTypeName }
-		public CustomFieldDefinition newFieldDefinition(def params) {  return fieldDefinitionClass.newInstance(params) }
-		public CustomField newField(def params) { return fieldClass.newInstance(params) }
-	}
-
-	public static final String getCFDStyleTypeListString(){
-		StringBuffer styleTypeBuff = new StringBuffer()
-		for(def styleType : CustomFieldDefinitionStyleType.values()){
-			styleTypeBuff.append("${styleType},")
-		}
-		return styleTypeBuff.toString().substring(0, (styleTypeBuff.length() - 1))
-	}
-
-	public static final List<String> translateApprovalStatusList(List<String> approvalStatusListToTranslate){
-		if(approvalStatusListToTranslate != null){
-			List<String> translatedList = new ArrayList<String>()
-			for(String currApprovalStatusToTranslate : approvalStatusListToTranslate){
-				translatedList.add(translateApprovalStatus(currApprovalStatusToTranslate))
-			}
-			return translatedList
-		}
-		return null
-	}
+    public static final List<String> translateApprovalStatusList(List<String> approvalStatusListToTranslate){
+        if(approvalStatusListToTranslate != null){
+            List<String> translatedList = new ArrayList<String>()
+            for(String currApprovalStatusToTranslate : approvalStatusListToTranslate){
+                translatedList.add(translateApprovalStatus(currApprovalStatusToTranslate))
+            }
+            return translatedList
+        }
+        return null
+    }
 }

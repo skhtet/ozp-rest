@@ -5,18 +5,17 @@ import static org.codehaus.groovy.grails.commons.ConfigurationHolder.config
 
 class ScoreCardService {
 
-    def marketplaceApplicationConfigurationService
     def accountService
     def profileService
     def serviceItemActivityInternalService
-    
+
     // Score Card Question Section
-    
+
     @Transactional(readOnly=true)
     def getScoreCardItem(id){
         return ScoreCardItem.get(id)
     }
-    
+
     @Transactional(readOnly=false)
     def saveScoreCardQuestion(ScoreCardItem scoreCardQuestion){
         try {
@@ -27,8 +26,8 @@ class ScoreCardService {
             throw new Exception(e)
         }
     }
-    
-    // Delete an existing ScoreCardQuestion 
+
+    // Delete an existing ScoreCardQuestion
     @Transactional(readOnly=false)
     def deleteScoreCardQuestion(ScoreCardItem scoreCardQuestion){
         try {
