@@ -183,7 +183,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Override
     protected void preprocess(ServiceItem si) {
         super.preprocess(si)
-        si.processCustomFields()
         si.checkOwfProperties()
     }
 

@@ -22,8 +22,7 @@ class ServiceItem implements Serializable {
     //how to handle marshalling of this domain
     final static bindableProperties = [
         'types', 'owners',
-        'categories',
-        'owfProperties', 'customFields',
+        'categories', 'owfProperties',
         'approvalStatus', 'releaseDate',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
@@ -40,7 +39,7 @@ class ServiceItem implements Serializable {
 
     final static modifiableReferenceProperties = [
         'owfProperties', 'docUrls',
-        'customFields', 'screenshots',
+        'screenshots',
         'relationships', 'contacts'
     ]
 
@@ -50,7 +49,6 @@ class ServiceItem implements Serializable {
         categories component: true
         owfProperties component: true
         itemComments component: true
-        customFields component: true
         lastActivityDate index: 'not_analyzed', excludeFromAll: true
         approvedDate index: 'not_analyzed', excludeFromAll: true
         // Yes we need this much precision unless you want to see rounding errors between the short and detailed view
@@ -85,7 +83,7 @@ class ServiceItem implements Serializable {
         only = [
             'categories', 'owners', 'types', 'id', 'owfProperties',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
-            'customFields', 'itemComments', 'contacts', 'totalRate1', 'totalRate2',
+            'itemComments', 'contacts', 'totalRate1', 'totalRate2',
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
@@ -122,7 +120,6 @@ class ServiceItem implements Serializable {
         'isOutside',
 
         //the following fields are audited as a special case in ServiceItemRestService
-        'customFields',
         'owfProperties'
     ]]
 
@@ -168,12 +165,11 @@ class ServiceItem implements Serializable {
     }
 
     String prettyPrint() {
-        return "${id}:${title}:${uuid}:${releaseDate}:${approvalStatus}:${types}:${categories}:${customFields}"
+        return "${id}:${title}:${uuid}:${releaseDate}:${approvalStatus}:${types}:${categories}"
     }
 
     Types types
     OwfProperties owfProperties
-    List customFields
     Set itemComments
     Integer totalComments = 0
     List categories
@@ -190,7 +186,6 @@ class ServiceItem implements Serializable {
         owners: Profile,
         recommendedLayouts: RecommendedLayout,
         itemComments: ItemComment,
-        customFields: CustomField,
         rejectionListings: RejectionListing,
         serviceItemActivities: ServiceItemActivity,
         docUrls: ServiceItemDocumentationUrl,
@@ -211,13 +206,11 @@ class ServiceItem implements Serializable {
         recommendedLayouts joinTable: 'si_recommended_layouts'
         recommendedLayouts batchSize: 50
         categories batchSize: 50
-        customFields batchSize: 50
         serviceItemActivities batchSize: 50
         itemComments batchSize: 50
         itemComments cascade: "all-delete-orphan"
         rejectionListings batchSize: 50
         categories index: 'svc_item_cat_id_idx'
-        customFields index:'svc_item_cst_fld_id_idx', cascade: 'all-delete-orphan'
         techPocs joinTable: [
             table: 'service_item_tech_pocs',
             column: 'tech_poc'
@@ -303,20 +296,6 @@ class ServiceItem implements Serializable {
         lastActivity(nullable:true)
         approvedDate(nullable:true)
         recommendedLayouts(nullable:true)
-        // Need to validate each custom field and propagate any errors up to serviceItem
-        customFields(validator: { cf, si, errs ->
-            def valid = true
-            cf?.every {
-                if (!it?.validate()){
-                    valid = false
-                    it?.errors?.allErrors.each{error->
-                        si.errors.rejectValue('customFields',error.code + ".CustomField",error.arguments,error.defaultMessage)
-                    }
-                }
-            }
-            return valid
-        }
-        )
         owners( validator: { val ->
             if (val == null || val.isEmpty()) {
                 return 'empty'
@@ -325,16 +304,6 @@ class ServiceItem implements Serializable {
     }
 
     void cleanBeforeSave() {
-        if (log.isDebugEnabled()) {
-            log.debug 'cleanBeforeSave: this.types = ' + this.types
-            customFields?.each { log.debug "${it} - ${it.customFieldDefinition?.types}" }
-        }
-
-        if (this.customFields?.retainAll({ it.customFieldDefinition.belongsToType(this.types) })) {
-            log.debug 'something was removed by service item type test!'
-            customFields?.each { log.debug it }
-        }
-
         this.scrubCR()
     }
 
@@ -428,7 +397,6 @@ class ServiceItem implements Serializable {
             totalRate1: totalRate1,
             totalComments: totalComments,
             categories: (categories?.collect { it.asJSONRef()} ?: []) as JSONArray,
-            customFields: (customFields?.collect { it.asJSON() } ?: []) as JSONArray,
             owners: (owners?.collect { it.username } ?: []) as JSONArray,
             dependencies: dependencies,
             description: description,
@@ -615,37 +583,6 @@ class ServiceItem implements Serializable {
     }
 
     /**
-     * Set the value of a custom field
-     * @param name
-     * @param value
-     * @return
-     */
-    def propertyMissing(String name, value) {
-        setCustomFieldValue(name, value)
-    }
-
-    public void setCustomFieldValue(String name, value) {
-        // Verify the existence of a custom field with the given name
-        CustomFieldDefinition customFieldDefinition = CustomFieldDefinition.findByName(name)
-        if (customFieldDefinition) {
-            CustomField customField = customFieldDefinition.styleType.newField([:])
-            customField.customFieldDefinition = customFieldDefinition
-            customField.setValue(value)
-
-            if (!this.customFields) {
-                this.customFields = new ArrayList<CustomField>()
-            } else {
-                // Search for an existing value and remove it
-                CustomField existingField = this.customFields.find { it.customFieldName == name }
-                if (existingField) this.customFields.remove(existingField)
-            }
-            this.customFields.add customField
-        } else {
-            throw new MissingPropertyException("Could not find custom field named " + name)
-        }
-    }
-
-    /**
      * the flag internally known as 'hidden' is externally known as 'enabled'
      */
     public void setIsEnabled(boolean enabled) {
@@ -661,28 +598,6 @@ class ServiceItem implements Serializable {
 
     public void setReleaseDate(Date date) {
         releaseDate = date
-    }
-
-    /**
-     * Get the value of a custom field
-     * @param name
-     * @return
-     */
-    String propertyMissing(String name) {
-        getCustomFieldValue(name)
-    }
-
-    public boolean hasCustomField(String name) {
-        return (this.customFields.find { it?.customFieldDefinition?.name == name }) as boolean
-    }
-
-    private String getCustomFieldValue(String name) {
-        CustomField customField = this.customFields.find { it?.customFieldDefinition?.name == name }
-        if (customField) {
-            customField.fieldValueText
-        } else {
-            throw new MissingPropertyException("Could not find custom field named " + name)
-        }
     }
 
     static boolean findDuplicates(def obj) {
@@ -718,28 +633,6 @@ class ServiceItem implements Serializable {
                     it.beforeValidate()
                 }
             }
-        }
-    }
-
-    /**
-     * Validates that the custom field values specified in the JSON
-     * are for custom fields that this service item should actually
-     * have. Any custom fields that shouldn't be there are silently deleted, since its possible
-     * that they used to be valid for this type and were removed
-     *
-     * Also, make sure that all custom fields have been fully marshalled
-     *
-     * @param dto The ServiceItem being validated
-     */
-    public void processCustomFields() {
-        Types type = this.types
-
-        this.customFields?.retainAll { it.customFieldDefinition?.belongsToType(type) }
-
-        //make sure that all FieldValues are transformed from DTOs into
-        //proper FieldValues
-        this.customFields?.grep {it instanceof DropDownCustomField}?.each {
-            it.marshallAllFieldValues()
         }
     }
 

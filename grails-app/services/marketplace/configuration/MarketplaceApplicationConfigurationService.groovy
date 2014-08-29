@@ -19,7 +19,6 @@ class MarketplaceApplicationConfigurationService extends ApplicationConfiguratio
     def scoreCardService
     def serviceItemService
     def typesService
-    def stateService
     def rejectionJustificationService
     def owfWidgetTypesService
     def intentActionService
@@ -240,14 +239,6 @@ class MarketplaceApplicationConfigurationService extends ApplicationConfiguratio
 
         // populate metadata - the listing parameter options
         profileService.createRequired()
-        stateService.createRequired()
-        typesService.createRequired()
-        rejectionJustificationService.createRequired()
-        owfWidgetTypesService.createRequired()
-        intentActionService.createRequired()
-        intentDataTypeService.createRequired()
-        intentDirectionService.createRequired()
-        CustomFieldUtility.createPreConfiguredCustomFields()
     }
 
     @Transactional(readOnly = false)

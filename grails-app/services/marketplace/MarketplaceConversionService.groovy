@@ -8,45 +8,6 @@ class MarketplaceConversionService {
     def sessionFactory
     def owfWidgetTypesService
 
-    /* Account for database changes resulting from changing the customFields member of serviceItem from
-    a Map to List. With the Map the relationship was stored in the table service_item_custom_fields and
-    with the List the relationship is stored in the table service_item_custom_field.
-    */
-
-    void migrateCustomFields() {
-        log.debug 'migrateCustomFields:'
-        def sql = new groovy.sql.Sql(sessionFactory.currentSession.connection())
-        def currentServiceItemId = -1
-        def results = []
-        sql.eachRow("select * from service_item_custom_fields order by service_item_custom_fields_id") {
-            log.debug "processing row2 - ${it}"
-            results << [it.SERVICE_ITEM_CUSTOM_FIELDS_ID, it.CUSTOM_FIELD_ID, it.CUSTOM_FIELDS_IDX]
-        }
-
-        def currentPos = 0
-        results.each {
-            log.debug it
-            def service_item_custom_fields_id = it[0]
-            if (service_item_custom_fields_id != currentServiceItemId) {
-                currentPos = 0
-                currentServiceItemId = service_item_custom_fields_id
-            }
-            def statement = "insert into service_item_custom_field values (${it[0]},${it[1]},${currentPos})"
-            sql.execute(statement)
-            currentPos++
-        }
-
-        // delete table that was used to store the relationship as a Map
-        try {
-            sql.execute('drop table service_item_custom_fields')
-            log.debug 'dropped table service_item_custom_fields'
-        } catch (Exception e) {
-            log.info e
-        }
-
-        sessionFactory.currentSession.clear()
-    }
-
     boolean upgrade11To20() {
 
         if (Text.findByName("version")) {
@@ -173,12 +134,6 @@ class MarketplaceConversionService {
         }
         def profiles = Profile.findAllByUuid(null)
         profiles.each {
-            log.info "setting uuid for ${it}"
-            it.uuid = Utils.generateUUID()
-            it.save()
-        }
-        def customFieldDefinitions = CustomFieldDefinition.findAllByUuid(null)
-        customFieldDefinitions.each {
             log.info "setting uuid for ${it}"
             it.uuid = Utils.generateUUID()
             it.save()
