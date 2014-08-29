@@ -19,7 +19,6 @@ class BootStrap {
 	def searchableService
 	def imagesService
     def profileService
-    def textService
     def grailsApplication
     def marketplaceApplicationConfigurationService
     def messageSource
@@ -76,11 +75,6 @@ class BootStrap {
             }
         }
         preload()
-        if (!marketplaceConversionService.upgrade11To20()) {
-            throw new Exception("Failed to upgrade database to 2.0")
-        }
-        marketplaceConversionService.setOwfPropertiesDefault()
-        marketplaceConversionService.setUUIDs()
 
 		log.info "BootStrap init; GrailsUtil.environment: ${GrailsUtil.environment}"
         if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {
@@ -89,34 +83,29 @@ class BootStrap {
 			new Profile(username:username).save()
 		}
 
-        registerObjectMashaller(marketplace.ServiceItem)
-        registerObjectMashaller(marketplace.Category)
-        registerObjectMashaller(marketplace.CustomFieldDefinition)
-        registerObjectMashaller(marketplace.RejectionJustification)
-        registerObjectMashaller(marketplace.RejectionListing)
-        registerObjectMashaller(marketplace.State)
-        registerObjectMashaller(marketplace.Text)
-        registerObjectMashaller(marketplace.Images)
-        registerObjectMashaller(marketplace.Profile)
-        registerObjectMashaller(marketplace.ExtProfile)
-        registerObjectMashaller(marketplace.IntentAction)
-        registerObjectMashaller(marketplace.IntentDataType)
-        registerObjectMashaller(marketplace.OwfWidgetTypes)
-        registerObjectMashaller(marketplace.Types)
-        registerObjectMashaller(marketplace.Agency)
-        registerObjectMashaller(marketplace.ItemComment)
-        registerObjectMashaller(marketplace.AffiliatedMarketplace, "${servletContext.contextPath}")
-        registerObjectMashaller(marketplace.Contact)
-        registerObjectMashaller(marketplace.ContactType)
-        registerObjectMashaller(marketplace.ScoreCardItem)
-
         [
             marketplace.ServiceItemActivity,
             marketplace.ModifyRelationshipActivity,
             marketplace.RejectionActivity,
             marketplace.ServiceItemTag,
             marketplace.rest.ItemCommentServiceItemDto,
-            marketplace.rest.ProfileServiceItemTagDto
+            marketplace.rest.ProfileServiceItemTagDto,
+            marketplace.ScoreCardItem,
+            marketplace.ContactType,
+            marketplace.ContactType,
+            marketplace.ItemComment,
+            marketplace.Agency,
+            marketplace.Types,
+            marketplace.OwfWidgetTypes,
+            marketplace.IntentDataType,
+            marketplace.IntentAction,
+            marketplace.ExtProfile,
+            marketplace.Profile,
+            marketplace.Images,
+            marketplace.ServiceItem,
+            marketplace.Category,
+            marketplace.RejectionJustification,
+            marketplace.RejectionListing
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
@@ -179,16 +168,6 @@ class BootStrap {
 
     }
 
-    //private method to register marshallers for domain objects
-    def registerObjectMashaller(def clazz, def contextPath = null) {
-        JSON.registerObjectMarshaller(clazz) { object ->
-            JSONObject returnValue = contextPath != null ? object.asJSON(contextPath) : object.asJSON()
-            // TODO: probably should just do this in the asJSON methods!
-            JSONUtil.addCreatedAndEditedInfo(returnValue, object)
-            return returnValue
-        }
-    }
-
     def destroy = { servletContext ->
         log.info "Bootstrap destroy"
         ApplicationContext apc = servletContext?.getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
@@ -207,8 +186,6 @@ class BootStrap {
         preloadAvatars()
         preloadDefaultServiceItemIcon()
         preloadDefaultMarketplaceIcon()
-
-        textService.manageRequiredTexts()
     }
 
     def preloadDefaultServiceItemIcon() {
