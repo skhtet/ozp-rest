@@ -108,61 +108,6 @@ class BootStrap {
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
-
-        def importTasks
-        InterfaceConfiguration.withTransaction {
-            // Ensure that well-known InterfaceConfigurations exist in the database
-            def configs = InterfaceConfiguration.list()
-            if (!configs || (InterfaceConfiguration.findByName(Constants.FILE_BASED_IMPORT_EXECUTOR) == null)) {
-                InterfaceConfiguration.FILE_IMPORT.save(flush: true, failOnError: true)
-            }
-            if (!configs || (InterfaceConfiguration.findByName(Constants.OMP_IMPORT_EXECUTOR) == null)) {
-                InterfaceConfiguration.OMP_INTERFACE.save(flush: true, failOnError: true)
-            }
-
-            // Ensure that well-known ImportTasks in the database
-            importTasks = ImportTask.findByName(Constants.FILE_BASED_IMPORT_TASK)
-            if (!importTasks) {
-                // Find the correlated InterfaceConfig
-                def fileConfig = InterfaceConfiguration.findByName(Constants.FILE_BASED_IMPORT_EXECUTOR)
-                new ImportTask(name: Constants.FILE_BASED_IMPORT_TASK, updateType: Constants.IMPORT_TYPE_FULL,
-                    enabled: false, interfaceConfig: fileConfig).save(flush: true, failOnError: true)
-            }
-        }
-
-        // Look up all active ImportTasks and schedule for execution
-        //   This requires the QuartzScheduler
-        def quartzScheduler = apc?.getBean('quartzScheduler')
-        if (quartzScheduler) {
-            importTasks = ImportTask.findAll()
-            importTasks.each { task ->
-                if (task.enabled) {
-                    try {
-                        ImportJob job = new ImportJob(task)
-                        job.schedule(quartzScheduler)
-                    } catch (Exception e) {
-                        def emessage = e.getMessage()
-                        log.error emessage
-
-                        ImportTaskResult result = new ImportTaskResult()
-                        result.runDate = new java.util.Date()
-                        result.result = false
-                        result.message = (emessage.length() < 4000 ? emessage : emessage.substring(0, 3998))
-                        result.task = task
-                        task.addToRuns(result);
-                        task.lastRunResult = result;
-                        try {
-                            task = task.save(flush: true)
-                        } catch (Exception ee) {
-                            log.warn "Error saving ImportTask: ${ee.message}"
-                        }
-                        return task
-                    }
-                }
-            }
-        } else {
-            log.error "Unable to schedule import tasks; bean quartzScheduler not available"
-        }
     }
 
     def destroy = { servletContext ->
