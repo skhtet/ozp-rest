@@ -104,7 +104,8 @@ class BootStrap {
             ServiceItem,
             Category,
             RejectionJustification,
-            RejectionListing
+            RejectionListing,
+            ApplicationLibraryEntry
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }

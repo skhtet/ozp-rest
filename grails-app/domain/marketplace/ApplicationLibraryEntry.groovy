@@ -1,5 +1,7 @@
 package marketplace
 
+import org.codehaus.groovy.grails.web.json.JSONObject
+
 /**
  * An association between a Profile and a ServiceItem, representing that the
  * Profile has the ServiceItem in their Application Library, in the given folder
@@ -45,5 +47,12 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
 
         ownerCompare != 0 ? ownerCompare :
             (folderCompare != 0 ? folderCompare : serviceItemCompare)
+    }
+
+    JSONObject asJSON() {
+        new JSONObject(
+            folder: folder,
+            serviceItem: serviceItem.asJSONMinimum()
+        )
     }
 }

@@ -178,7 +178,9 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/{profileId}/applicationLibrary')
     @GET
     List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
-        applicationLibraryEntryRestService.getByParentId(profileId)
+        //it comes out as a PageResultList even though paging isn't supported, which affects
+        //the way it serializes.  Create a new plain ArrayList to avoid that
+        new ArrayList(applicationLibraryEntryRestService.getByParentId(profileId))
     }
 
     @Path('/self/applicationLibrary')
