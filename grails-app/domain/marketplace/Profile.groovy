@@ -27,9 +27,14 @@ class Profile implements Serializable {
 
     SortedSet<ApplicationLibraryEntry> applicationLibrary = new TreeSet()
 
-    //keep grails from getting confused into thinking that these are opposite sides of the
-    //same relationship
-    static mappedBy = [createdBy: 'none', editedBy: 'none']
+    static mappedBy = [
+        //keep grails from getting confused into thinking that these are opposite sides of the
+        //same relationship
+        createdBy: 'none',
+        editedBy: 'none',
+
+        applicationLibrary: 'owner'
+    ]
 
     String username
     String displayName = ''
