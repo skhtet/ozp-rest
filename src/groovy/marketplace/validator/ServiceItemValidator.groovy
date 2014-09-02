@@ -5,10 +5,6 @@ import javax.annotation.PostConstruct
 import marketplace.AccountService
 import marketplace.Constants
 import marketplace.ServiceItem
-import marketplace.DropDownCustomField
-import marketplace.CustomFieldDefinition
-import marketplace.FieldValue
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -53,21 +49,6 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
                         " ${oldApprovalStatus} to ${newApprovalStatus}")
                 }
             }
-
-            if (newApprovalStatus == approved && dto.isOutside == null) {
-                throw new IllegalArgumentException("Cannot approve listing ${existing.id} " +
-                    "because isOutside is null")
-            }
-        }
-    }
-
-    /**
-     * Ensures that once set, isOutside cannot be unset
-     */
-    private void validateInsideOutside(ServiceItem existing, ServiceItem dto) {
-      if (existing.isOutside != null && dto.isOutside == null) {
-            throw new IllegalArgumentException("Attempt to unset isOutside on ServiceItem " +
-                "${existing.id}")
         }
     }
 
@@ -81,78 +62,14 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
         }
     }
 
-    /**
-     * Validate custom fields.  Currently this validation consists of making sure that disabled
-     * DropDownCustomField values cannot be selected.
-     */
-    private void validateDisabledCustomFields(ServiceItem existing, ServiceItem dto) {
-        def findCustomField = { ServiceItem item, CustomFieldDefinition definition ->
-            item?.customFields?.find { it.customFieldDefinition == definition }
-        }
-
-        dto.customFields.eachWithIndex { customField, i ->
-            if (customField instanceof DropDownCustomField) {
-                def existingField = findCustomField(existing, customField.customFieldDefinition)
-
-                Collection<FieldValue> existingValues = existingField?.value ?
-                    [existingField.value] : existingField?.fieldValueList
-                Collection<FieldValue> currentValues = customField.value ?
-                    [customField.value] : customField.fieldValueList
-
-                //values that are disabled and that weren't already selected are not allowed
-                //to be selected
-                List<FieldValue> notAllowed = currentValues.grep { !it.isEnabled } -
-                    existingValues
-
-                if (notAllowed.size()) {
-                    throw new IllegalArgumentException("Value <${notAllowed[0]}> for " +
-                        "Custom Field <$customField> is disabled")
-                }
-            }
-        }
-    }
-
-    private void validateRequiredCustomFields(ServiceItem existing, ServiceItem dto) {
-        Set<CustomFieldDefinition> requiredCustomFields =
-                CustomFieldDefinition.findAllRequiredByType(dto.types) as Set,
-            oldFields = existing ? existing.customFields*.customFieldDefinition as Set : null,
-
-            /*
-             * Fields which are marked required and which previously existed on this listing.
-             * Fields which were not previously present on this listing are not required in order
-             * to allow unrelated updates to still occur without having to mess with the
-             * custom fields.  Specifically, this allows the Inside/Outside switch and similar
-             * elements in the UI to work.
-             */
-            currentlyRequiredFields = existing ? requiredCustomFields.intersect(oldFields) :
-                requiredCustomFields,
-
-            dtoFields = dto.customFields*.customFieldDefinition as Set,
-            missingRequiredFields = currentlyRequiredFields - dtoFields
-
-
-        if (!missingRequiredFields.isEmpty()) {
-            throw new IllegalArgumentException("Missing the following required Custom Fields: " +
-                missingRequiredFields*.name.join(', '))
-        }
-    }
-
-    private void validateCustomFields(ServiceItem existing, ServiceItem dto) {
-        validateDisabledCustomFields(existing, dto)
-        validateRequiredCustomFields(existing, dto)
-    }
-
     @Override
     public void validateNew(ServiceItem dto) {
         validateNewApprovalStatus(dto)
-        validateCustomFields(null, dto)
     }
 
 
     @Override
     public void validateChanges(ServiceItem existing, ServiceItem dto) {
-        validateInsideOutside(existing, dto)
         validateApprovalStatus(existing, dto)
-        validateCustomFields(existing, dto)
     }
 }

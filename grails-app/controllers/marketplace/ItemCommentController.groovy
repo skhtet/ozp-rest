@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse
 class ItemCommentController extends BaseMarketplaceRestController {
 
     def config = ConfigurationHolder.config
-    def serviceItemService
     def itemCommentService
     def searchableService
     def profileService

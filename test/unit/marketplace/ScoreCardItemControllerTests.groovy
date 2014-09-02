@@ -1,5 +1,6 @@
 package marketplace
 
+import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 

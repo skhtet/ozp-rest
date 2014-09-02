@@ -4,32 +4,19 @@ import grails.plugin.executor.PersistenceContextExecutorWrapper
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.GrailsApplication
-
-import marketplace.OwfSyncUtility
-import org.ozoneplatform.appconfig.server.service.api.ApplicationConfigurationService
-import ozone.marketplace.enums.MarketplaceApplicationSetting
-
 import marketplace.ServiceItem
-import marketplace.ExtServiceItem
-import marketplace.State
-import marketplace.Tag
 import marketplace.Profile
 import marketplace.ServiceItemActivity
 import marketplace.Constants
 import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ServiceItemSnapshot
-import marketplace.ServiceItemTag
 import ozone.marketplace.enums.RelationshipType
-
 import ozone.utils.User
-
 import marketplace.AccountService
 import marketplace.validator.ServiceItemValidator
-
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
 
@@ -38,14 +25,13 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Autowired AccountService accountService
     @Autowired ProfileRestService profileRestService
     @Autowired ServiceItemActivityInternalService serviceItemActivityInternalService
-    @Autowired ApplicationConfigurationService marketplaceApplicationConfigurationService
     @Autowired PersistenceContextExecutorWrapper executorService
     @Autowired SessionFactory sessionFactory
 
     @Autowired
     public ServiceItemRestService(GrailsApplication grailsApplication,
             ServiceItemValidator serviceItemValidator) {
-        super(grailsApplication, ServiceItem.class, serviceItemValidator, null)
+        super(grailsApplication, ServiceItem.class, null, null)
     }
 
     //needed for CGLIB
@@ -152,8 +138,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
                 "id ${existing.id} by user ${profile.username}")
         }
 
-        boolean ownerCanAlwaysEdit =
-            marketplaceApplicationConfigurationService.is(MarketplaceApplicationSetting.ALLOW_OWNER_TO_EDIT_APPROVED_LISTING)
+        boolean ownerCanAlwaysEdit = true
 
         //admins can always edit
         if (!(accountService.isAdmin())) {
@@ -187,8 +172,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Override
     protected void preprocess(ServiceItem si) {
         super.preprocess(si)
-        si.updateInsideOutsideFlag(marketplaceApplicationConfigurationService.valueOf(MarketplaceApplicationSetting.INSIDE_OUTSIDE_BEHAVIOR))
-        si.processCustomFields()
         si.checkOwfProperties()
     }
 
@@ -214,7 +197,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         }
 
         updateRelationshipsServiceItemActivity(updated, original)
-        syncServiceItemWithOwf(updated)
 
     }
 
@@ -319,7 +301,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
             owners = owners ?: [profile]
             techPocs = techPocs ?: [profile.username]
             organization = organization ?: user.org
-            state = state ?: State.findByTitle("Active")
         }
     }
 
@@ -396,14 +377,5 @@ class ServiceItemRestService extends RestService<ServiceItem> {
 
         //unhook all ServiceItemSnapshots
         (ServiceItemSnapshot.findAllByServiceItem(item) as Set).each { it.serviceItem = null }
-    }
-
-    private void syncServiceItemWithOwf(ServiceItem item) {
-        if (item.isOWFCompatible() && !item.isHidden()) {
-            List<String> ozoneUrls = marketplaceApplicationConfigurationService.valueOf(MarketplaceApplicationSetting.OWF_SYNC_URLS)?.split(",")
-            ozoneUrls.each { ozoneUrl ->
-                executorService.execute(OwfSyncUtility.newSyncRequest(ozoneUrl, item.uuid))
-            }
-        }
     }
 }

@@ -7,6 +7,9 @@ import ozone.utils.Utils
 
 @gorm.AuditStamp
 class IntentAction implements Serializable {
+    final static bindableProperties = ['title', 'description']
+    final static modifiableReferenceProperties = []
+
     static searchable = {
         root false
         title index: 'analyzed'

@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.grails.plugins.elasticsearch.ElasticSearchAdminService
 
 import marketplace.ServiceItem
-import marketplace.ExtServiceItem
 import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ServiceItemActivity
@@ -151,6 +150,6 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
 
     private void refreshElasticSearch() {
         //ensure elastic search is finished updating before returning response
-        elasticSearchAdminService.refresh(ServiceItem, ExtServiceItem)
+        elasticSearchAdminService.refresh(ServiceItem)
     }
 }

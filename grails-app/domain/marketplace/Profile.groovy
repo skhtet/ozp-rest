@@ -44,6 +44,7 @@ class Profile implements Serializable {
     Date createdDate
     Avatar avatar
     String uuid
+    Map userDataMap
 
     //Essentially to track if the current user is a user, admin or external admin
     String userRoles
@@ -71,7 +72,10 @@ class Profile implements Serializable {
     static mapping = {
         cache true
         tablePerHierarchy false
+        userDataMap type: 'text'
     }
+    
+   // static hasMany = [userDataItems: UserDataItem]
 
     static transients = ['sortDisplayName']
 

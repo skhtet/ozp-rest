@@ -8,14 +8,14 @@ import org.apache.commons.lang.builder.EqualsBuilder
 
 @gorm.AuditStamp
 class Category implements Serializable {
+    final static bindableProperties = ['title', 'description']
+    final static modifiableReferenceProperties = []
+
     static searchable = {
         root false
         title index: 'analyzed'
         only = ['id', 'title']
     }
-
-    static bindableProperties = ['title', 'description']
-    static modifiableReferenceProperties = []
 
     String title
     String description

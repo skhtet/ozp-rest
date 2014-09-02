@@ -4,7 +4,6 @@ import grails.util.Holders
 import grails.web.JSONBuilder
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.codehaus.groovy.grails.web.json.JSONObject
-import ozone.marketplace.enums.MarketplaceApplicationSetting
 import grails.converters.JSON
 
 import javax.servlet.http.HttpServletResponse
@@ -13,8 +12,6 @@ class BaseMarketplaceRestController {
 
     def config = Holders.config
     def JSONDecoratorService
-
-    def marketplaceApplicationConfigurationService
 
 
     protected handleException(Exception e, method) {

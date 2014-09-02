@@ -11,9 +11,7 @@ import marketplace.RejectionActivity
 import marketplace.RejectionListing
 import marketplace.ServiceItemSnapshot
 import marketplace.ModifyRelationshipActivity
-import marketplace.CustomField
 import marketplace.OwfProperties
-import marketplace.MarketplaceMessagingService
 import marketplace.ChangeDetail
 
 import marketplace.Constants
@@ -29,7 +27,6 @@ import marketplace.Constants
 @Transactional
 class ServiceItemActivityInternalService {
     @Autowired ProfileRestService profileRestService
-    @Autowired MarketplaceMessagingService marketplaceMessagingService
 
     /**
      * Create a changelog entry as needed that consists of a MODIFIED activity and one or more
@@ -54,8 +51,6 @@ class ServiceItemActivityInternalService {
         if(updated.owfProperties)
             OwfProperties.changeLogProperties.each(owfPropsChangeLogger)
 
-        handleCustomFieldsChangeLog(updated, original, activity)
-
         activity.changeDetails ? addServiceItemActivity(updated, activity) : activity
     }
 
@@ -76,8 +71,6 @@ class ServiceItemActivityInternalService {
 
         si.addToServiceItemActivities(activity)
         si.lastActivity = activity
-
-        marketplaceMessagingService.sendNotificationOfChange(si, activity);
 
         return activity
     }
@@ -148,36 +141,6 @@ class ServiceItemActivityInternalService {
 
         activity.addToChangeDetails(changeDetail)
         return addServiceItemActivity(serviceItemTag.serviceItem, activity)
-    }
-
-    /**
-     * Create the necessary changelogs for the customfields on this serviceitem
-     */
-    private void handleCustomFieldsChangeLog(ServiceItem updated, Map old,
-            ServiceItemActivity activity) {
-        //a function that returns true if the customField has the definition specified
-        def findField = { customFieldDef, customField ->
-            customField.customFieldDefinition == customFieldDef
-        }
-
-        //get a list of all customFieldDefinitions in either ServiceItem
-        Set customFieldDefinitions = [updated, old].sum {
-            //returns a list of customFieldDefinitions.
-            //The sum function above acts a a union of the two lists
-            (it.customFields ?: [])*.customFieldDefinition
-        } as Set
-
-        //go through each of the definitions, find the matching field on each listing, and
-        //if their values are not the same, create a changelog
-        customFieldDefinitions.each { customFieldDefinition ->
-            def finder = findField.curry(customFieldDefinition)
-
-            CustomField updatedField = updated.customFields.find(finder)
-            CustomField oldField = old.customFields.find(finder)
-            String label = (updatedField ?: oldField).customFieldDefinition.label
-
-            logIfDifferent(activity, updatedField, oldField, 'fieldValueText', label)
-        }
     }
 
     /**

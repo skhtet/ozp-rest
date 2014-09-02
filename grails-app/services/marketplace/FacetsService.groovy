@@ -30,15 +30,6 @@ class FacetsService {
                 }
             }
 
-            if (facets.state) {
-                termCounts = facets.state.termCounts
-                returnValue['states'] = new TreeMap<State, Integer>(comparator)
-                termCounts.each { entry ->
-                    State state = State.get(Integer.valueOf(entry.term))
-                    returnValue['states'][(state)] = entry.count
-                }
-            }
-
             if (facets.categories) {
                 termCounts = facets.categories.termCounts
                 returnValue['categories'] = new TreeMap<Category, Integer>(comparator)
@@ -56,41 +47,6 @@ class FacetsService {
                     Agency agency = Agency.get(Integer.valueOf(entry.term))
                     returnValue['agencies'][(agency)] = entry.count
                 }
-            }
-
-            // Get custom field facets. Currently these are the only queryfacets  AML-726
-            Map customFieldFacets = facets.findAll {
-                it.value.type == 'query'
-            }
-
-            // Get domain facet subset of custom field facets.  AML-726
-            if (customFieldFacets.size() > 0) {
-                // domainFacets are facets whose names begin with "domain."
-                Map domainFacets = customFieldFacets.findAll {
-                    it.key.startsWith("domain.")
-                }
-                // If domain facets exist, get them.
-                if (domainFacets.size() > 0) {
-                    returnValue['domain'] = new TreeMap<String, Integer>(comparator)
-                    for (it in domainFacets) {
-                        termCounts = it.value.termCounts
-                        termCounts.each { entry ->
-                            // QueryFacets are retrieved for every defined value of a custom field.
-                            // We ignore any counts that are not greater than 0, since we don't
-                            // want to display them
-                            if (entry.count > 0) {
-                                def domain = new Expando()
-                                // Name is the string that follows the "domain." in the term field
-                                String name = entry.term.tokenize('.')[1]
-                                domain.id = name
-                                domain.title = name
-                                domain.titleDisplay = { title }
-                                returnValue['domain'][(domain)] = entry.count
-                            }
-                        }
-                    }
-                }
-
             }
 
             // Reverse the rating order

@@ -1,14 +1,13 @@
 package marketplace.rest
 
+import javax.ws.rs.core.Response
+
 import org.codehaus.groovy.grails.web.json.JSONArray
 
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.ItemComment
-import marketplace.ServiceItemTag
 import marketplace.ServiceItemActivity
-import marketplace.Tag
-
 import marketplace.Constants
 
 import marketplace.testutil.FakeAuditTrailHelper
@@ -45,6 +44,93 @@ class ProfileResourceUnitTest {
     void testGetOwnProfile() {
         currentUser = Profile.get(1)
         assert resource.getOwnProfile() == currentUser
+    }
+
+    void testPostCurrentUserDataItem() {
+        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
+        KeyValue outKeyValue = new KeyValue()
+        String keyValueString = "{'key': ${inKeyValue.key}, 'value' : ${inKeyValue.value}}"
+
+        currentUser = Profile.get(1)
+        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+
+        serviceItemTagRestServiceMock.demand.updateCurrentUserDataByKey(1..1)  { key, value ->
+            outKeyValue.key = key
+            outKeyValue.value = value
+        }
+        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+        resource.postCurrentUserDataItem(keyValueString)
+
+        serviceItemTagRestServiceMock.verify()
+
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ post in ${inKeyValue}")
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ post out ${outKeyValue}")
+
+        assert outKeyValue.value == inKeyValue.value
+    }
+
+    void testPutCurrentUserDataItem() {
+        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
+        KeyValue outKeyValue = new KeyValue()
+        String keyValueString = "{'key': ${inKeyValue.key}, 'value' : ${inKeyValue.value}}"
+
+        currentUser = Profile.get(1)
+        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+
+        serviceItemTagRestServiceMock.demand.updateCurrentUserDataByKey(1..1)  { key, value ->
+            outKeyValue.key = key
+            outKeyValue.value = value
+        }
+        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+        resource.putCurrentUserDataItem(keyValueString)
+
+        serviceItemTagRestServiceMock.verify()
+
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ put in ${inKeyValue}")
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ put out ${outKeyValue}")
+
+        assert outKeyValue.value == inKeyValue.value
+    }
+
+    void testGetCurrentUserDataItem() {
+        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
+
+        currentUser = Profile.get(1)
+        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+
+        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+
+        serviceItemTagRestServiceMock.demand.getCurrentUserDataItem(1..1)  { key ->
+            inKeyValue.key = key
+
+            return inKeyValue.value
+        }
+
+        Response response = resource.getCurrentUserDataItem(inKeyValue.key)
+        String outValue = response.entity
+
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ got ${outValue}")
+
+        assert outValue == inKeyValue.value
+    }
+
+    void testDeleteCurrentUserDataItem() {
+        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
+        KeyValue outKeyValue = new KeyValue()
+
+        currentUser = Profile.get(1)
+        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+
+        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+
+        serviceItemTagRestServiceMock.demand.deleteCurrentUserDataByKey(1..1)  { key ->
+            outKeyValue=null;
+        }
+        resource.deleteCurrentUserDataItem(inKeyValue.key)
+
+        println("@@@@@@@@@@@@@@@@@@@@@@@@ delete ${outKeyValue}")
+
+        assert outKeyValue == null
     }
 
     void testGetServiceItemsByAuthorId() {
@@ -141,83 +227,83 @@ class ProfileResourceUnitTest {
         assert json[0].rate == 1
     }
 
-    void testGetTagsByProfileId() {
-        def idPassedIn
+//    void testGetTagsByProfileId() {
+//        def idPassedIn
+//
+//        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+//        serviceItemTagRestServiceMock.demand.getAllByProfileId(1..1) { id ->
+//            idPassedIn = id
+//
+//            def tag = new Tag(title: 'tag 1')
+//            tag.id = 1
+//
+//            def serviceItem = new ServiceItem(title: 'listing 1')
+//            serviceItem.id = 2
+//
+//            return [new ServiceItemTag(
+//                createdBy: Profile.get(id),
+//                tag: tag,
+//                serviceItem: serviceItem
+//            )] as Set
+//        }
+//
+//        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+//
+//        def idToPass = 1
+//
+//        def dtos = resource.getTagsByProfileId(idToPass)
+//        def json = dtos.collect {
+//            assert it instanceof ProfileServiceItemTagDto
+//            it.asJSON()
+//        } as JSONArray
+//
+//        assert idPassedIn == idToPass
+//
+//        assert json.size() == 1
+//        assert json[0].tag.title == 'tag 1'
+//        assert json[0].tag.id == 1
+//        assert json[0].serviceItem.title == 'listing 1'
+//        assert json[0].serviceItem.id == 2
+//    }
 
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-        serviceItemTagRestServiceMock.demand.getAllByProfileId(1..1) { id ->
-            idPassedIn = id
-
-            def tag = new Tag(title: 'tag 1')
-            tag.id = 1
-
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
-
-            return [new ServiceItemTag(
-                createdBy: Profile.get(id),
-                tag: tag,
-                serviceItem: serviceItem
-            )] as Set
-        }
-
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-
-        def idToPass = 1
-
-        def dtos = resource.getTagsByProfileId(idToPass)
-        def json = dtos.collect {
-            assert it instanceof ProfileServiceItemTagDto
-            it.asJSON()
-        } as JSONArray
-
-        assert idPassedIn == idToPass
-
-        assert json.size() == 1
-        assert json[0].tag.title == 'tag 1'
-        assert json[0].tag.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
-    }
-
-    void testOwnTags() {
-        currentUser = Profile.get(1)
-
-        def idPassedIn
-
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-        serviceItemTagRestServiceMock.demand.getAllByProfileId(1..1) { id ->
-            idPassedIn = id
-
-            def tag = new Tag(title: 'tag 1')
-            tag.id = 1
-
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
-
-            return [new ServiceItemTag(
-                createdBy: Profile.get(id),
-                tag: tag,
-                serviceItem: serviceItem
-            )] as Set
-        }
-
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-
-        def dtos = resource.getOwnTags()
-        def json = dtos.collect {
-            assert it instanceof ProfileServiceItemTagDto
-            it.asJSON()
-        } as JSONArray
-
-        assert idPassedIn == currentUser.id
-
-        assert json.size() == 1
-        assert json[0].tag.title == 'tag 1'
-        assert json[0].tag.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
-    }
+//    void testOwnTags() {
+//        currentUser = Profile.get(1)
+//
+//        def idPassedIn
+//
+//        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
+//        serviceItemTagRestServiceMock.demand.getAllByProfileId(1..1) { id ->
+//            idPassedIn = id
+//
+//            def tag = new Tag(title: 'tag 1')
+//            tag.id = 1
+//
+//            def serviceItem = new ServiceItem(title: 'listing 1')
+//            serviceItem.id = 2
+//
+//            return [new ServiceItemTag(
+//                createdBy: Profile.get(id),
+//                tag: tag,
+//                serviceItem: serviceItem
+//            )] as Set
+//        }
+//
+//        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
+//
+//        def dtos = resource.getOwnTags()
+//        def json = dtos.collect {
+//            assert it instanceof ProfileServiceItemTagDto
+//            it.asJSON()
+//        } as JSONArray
+//
+//        assert idPassedIn == currentUser.id
+//
+//        assert json.size() == 1
+//        assert json[0].tag.title == 'tag 1'
+//        assert json[0].tag.id == 1
+//        assert json[0].serviceItem.title == 'listing 1'
+//        assert json[0].serviceItem.id == 2
+//    }
 
     void testGetServiceItemActivitiesByProfileId() {
         def idPassedIn, offsetPassedIn, maxPassedIn

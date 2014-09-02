@@ -1,5 +1,6 @@
 package marketplace
 
+import grails.test.mixin.TestMixin
 import org.hibernate.classic.Session
 import org.hibernate.SessionFactory
 

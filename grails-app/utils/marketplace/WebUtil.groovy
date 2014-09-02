@@ -12,7 +12,6 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest
 import org.codehaus.groovy.grails.web.context.ServletContextHolder;
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;
 import org.springframework.context.ApplicationContext;
-import static ozone.marketplace.enums.MarketplaceApplicationSetting.*
 
 class WebUtil {
 

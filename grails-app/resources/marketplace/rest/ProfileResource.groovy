@@ -1,5 +1,10 @@
 package marketplace.rest
 
+import grails.converters.JSON
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+
+import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
@@ -16,8 +21,16 @@ import marketplace.Tag
 import marketplace.ServiceItemActivity
 import marketplace.ApplicationLibraryEntry
 
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriInfo
+
 @Path('/api/profile')
 class ProfileResource extends DomainResource<Profile> {
+    @Context
+    UriInfo uriInfo
+
     @Autowired ServiceItemRestService serviceItemRestService
     @Autowired ItemCommentRestService ItemCommentRestService
     @Autowired ServiceItemTagRestService serviceItemTagRestService
@@ -64,19 +77,72 @@ class ProfileResource extends DomainResource<Profile> {
         getItemCommentsByAuthorId(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/tag')
-    @GET
-    Collection<ProfileServiceItemTagDto> getTagsByProfileId(
-            @PathParam('profileId') long profileId){
-        serviceItemTagRestService.getAllByProfileId(profileId).collect {
-            new ProfileServiceItemTagDto(it)
-        }
-    }
-
     @Path('/self/tag')
     @GET
     Collection<ProfileServiceItemTagDto> getOwnTags() {
         getTagsByProfileId(service.currentUserProfile.id)
+    }
+
+    @Path('/self/userData/{key}')
+    @GET
+    Response getCurrentUserDataItem(@PathParam('key') String  key) {
+        String userData = serviceItemTagRestService.getCurrentUserDataItem(key)
+        String content
+        Response response
+
+        if (userData != null) {
+
+            if (uriInfo != null) {
+                String hal
+
+                hal = "{";
+                hal = hal + "'_links'':";
+                hal = hal + "{'self':{'href':'${uriInfo.absolutePath}'}";
+                hal = hal + ",'content':'${userData}'}"
+                hal = hal + "}";
+
+                content = hal
+            } else {
+                content = userData
+            }
+
+            response = Response.ok(content, MediaType.APPLICATION_JSON).build();
+        } else {
+            response = Response.status(Response.Status.NOT_FOUND).entity(
+                ("Value not found for key='${key}'").toString()).build();
+        }
+
+        return response
+    }
+
+    @Path('/self/userData')
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response postCurrentUserDataItem(String keyValueJson) {
+        def keyValue = new KeyValue(JSON.parse(keyValueJson))
+
+        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+
+        return Response.status(Response.Status.OK).build()
+    }
+
+    @Path('/self/userData')
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response putCurrentUserDataItem(String keyValueJson) {
+        def keyValue = new KeyValue(JSON.parse(keyValueJson))
+
+        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
+
+        return Response.status(Response.Status.OK).build()
+    }
+
+    @Path('/self/userData/{key}')
+    @DELETE
+    Response deleteCurrentUserDataItem(@PathParam('key') String key) {
+        serviceItemTagRestService.deleteCurrentUserDataByKey(key)
+
+        return Response.status(Response.Status.OK).build()
     }
 
     @Path('/{profileId}/activity')

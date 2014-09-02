@@ -1,7 +1,5 @@
 package marketplace.search
 
-import marketplace.CustomFieldDefinition
-
 class QueryStringPredicate extends SingleValuePredicate {
 
     QueryStringPredicate() {
@@ -52,21 +50,10 @@ class QueryStringPredicate extends SingleValuePredicate {
                     {
                         def matcher = it =~ /([\w]+):([\w]+)/
                         if (matcher) {
-                            String fieldName = matcher[0][1]
-                            String fieldValue = matcher[0][2]
-                            if (isCustomFieldName(fieldName)) {
-                                return "(customFieldName:${fieldName} AND fieldValueText:${fieldValue})"
-                            }
-                            else {
-                                return it
-                            }
+                            return it
                         }
                     })
         }
         return originalString
-    }
-
-    private boolean isCustomFieldName(String name) {
-        CustomFieldDefinition.findByName(name) != null
     }
 }

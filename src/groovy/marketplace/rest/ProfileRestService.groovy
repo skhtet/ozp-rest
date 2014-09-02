@@ -36,6 +36,26 @@ class ProfileRestService extends RestService<Profile> {
         throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
+    @Transactional
+    public void updateCurrentUserDataByKey(String key, String value) {
+        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+
+        if (profile != null) {
+            profile.userDataMap.put(key, value)
+            profile.save()
+        }
+    }
+
+    @Transactional
+    public void deleteCurrentUserDataByKey(String key) {
+        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+
+        if (profile != null) {
+            profile.userDataMap.remove(key)
+            profile.save()
+        }
+    }
+
     @Transactional(readOnly=true)
     public Profile getCurrentUserProfile() {
         Profile.findByUsername(accountService.loggedInUsername)
