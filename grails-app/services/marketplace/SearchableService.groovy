@@ -71,19 +71,6 @@ class SearchableService {
             try {
                 def i = 0
                 serviceItems.each() {
-                    if (it.types.ozoneAware && !it.owfProperties) {
-                        log.debug "adding OwfProperties to serviceItem ${it.title}"
-                        OwfProperties owfProperties = new OwfProperties()
-                        owfProperties.save()
-                        it.owfProperties = owfProperties
-                        it.save()
-                    } else if (!it.types.ozoneAware && it.owfProperties) {
-                        log.debug "removing OwfProperties from serviceItem ${it.title}"
-                        OwfProperties owfProperties = it.owfProperties
-                        it.owfProperties = null
-                        owfProperties.delete()
-                        it.save()
-                    }
                     it.index()
                     if ((i % 100) == 0) {
                         log.info "Indexed ${i} out of ${total}"
@@ -108,4 +95,3 @@ class SearchableService {
         elasticSearchService.unindex([:])
     }
 }
-

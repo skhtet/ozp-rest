@@ -11,7 +11,6 @@ import marketplace.RejectionActivity
 import marketplace.RejectionListing
 import marketplace.ServiceItemSnapshot
 import marketplace.ModifyRelationshipActivity
-import marketplace.OwfProperties
 import marketplace.ChangeDetail
 
 import marketplace.Constants
@@ -41,15 +40,10 @@ class ServiceItemActivityInternalService {
      */
     public ServiceItemActivity createChangeLog(ServiceItem updated, Map original) {
         def activity = new ServiceItemActivity(action: Constants.Action.MODIFIED)
-        def owfPropsChangeLogger = (ServiceItemActivityInternalService.&logIfDifferent).curry(
-                activity, updated.owfProperties, original.owfProperties)
         def propsChangeLogger = (ServiceItemActivityInternalService.&logIfDifferent).curry(
                 activity, updated, original)
 
         (ServiceItem.bindableProperties - ServiceItem.auditable.ignore).each(propsChangeLogger)
-
-        if(updated.owfProperties)
-            OwfProperties.changeLogProperties.each(owfPropsChangeLogger)
 
         activity.changeDetails ? addServiceItemActivity(updated, activity) : activity
     }

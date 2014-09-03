@@ -18,25 +18,21 @@ class Intent implements Serializable {
     static bindableProperties = ['send', 'receive', 'action', 'dataType']
     static modifiableReferenceProperties = []
 
-    static belongsTo = OwfProperties
-
     IntentAction action
     IntentDataType dataType
-    Boolean send
-    Boolean receive
+    Boolean send = false
+    Boolean receive = false
 
     static constraints = {
         action nullable: false
         dataType nullable: false
     }
 
+    static belongsTo = [serviceItem: ServiceItem]
+
     static mapping = {
         cache true
         batchSize 50
-        owfProperties joinTable: [
-            name: 'owf_properties_intent',
-            key: 'intent_id'
-        ]
     }
 
     String toString() {

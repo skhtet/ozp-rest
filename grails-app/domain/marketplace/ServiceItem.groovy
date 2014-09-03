@@ -22,7 +22,7 @@ class ServiceItem implements Serializable {
     //how to handle marshalling of this domain
     final static bindableProperties = [
         'types', 'owners',
-        'categories', 'owfProperties',
+        'categories', 'intents',
         'approvalStatus', 'releaseDate',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
@@ -38,7 +38,7 @@ class ServiceItem implements Serializable {
     ]
 
     final static modifiableReferenceProperties = [
-        'owfProperties', 'docUrls',
+        'intents', 'docUrls',
         'screenshots',
         'relationships', 'contacts'
     ]
@@ -47,7 +47,7 @@ class ServiceItem implements Serializable {
         types component: true
         owners component: true
         categories component: true
-        owfProperties component: true
+        intents component: true
         itemComments component: true
         lastActivityDate index: 'not_analyzed', excludeFromAll: true
         approvedDate index: 'not_analyzed', excludeFromAll: true
@@ -81,7 +81,7 @@ class ServiceItem implements Serializable {
         isHidden index: 'not_analyzed', excludeFromAll: false
         isOutside index: 'not_analyzed', excludeFromAll: false
         only = [
-            'categories', 'owners', 'types', 'id', 'owfProperties',
+            'categories', 'owners', 'types', 'id', 'intents',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
             'itemComments', 'contacts', 'totalRate1', 'totalRate2',
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
@@ -117,10 +117,7 @@ class ServiceItem implements Serializable {
         'relationships',
         'isEnabled',
         'approvalStatus',
-        'isOutside',
-
-        //the following fields are audited as a special case in ServiceItemRestService
-        'owfProperties'
+        'isOutside'
     ]]
 
     Date releaseDate
@@ -137,13 +134,10 @@ class ServiceItem implements Serializable {
     /** Hidden: administrator can unhide, no one else can see **/
     //TODO why is this an Integer?
     Integer isHidden = 0
-
     String requirements
     String dependencies
     String organization
-
     Agency agency
-
     Float avgRate = 0F
     Integer totalVotes = 0
     Integer totalRate5 = 0
@@ -159,6 +153,7 @@ class ServiceItem implements Serializable {
     String descriptionShort
     Boolean opensInNewBrowserTab = false
     String approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+    Set intents = new HashSet()
 
     String toString() {
         return "${id}:${title}:${uuid}:${releaseDate}:${approvalStatus}"
@@ -169,7 +164,6 @@ class ServiceItem implements Serializable {
     }
 
     Types types
-    OwfProperties owfProperties
     Set itemComments
     Integer totalComments = 0
     List categories
@@ -194,7 +188,8 @@ class ServiceItem implements Serializable {
         relationships: Relationship,
         contacts: Contact,
         satisfiedScoreCardItems: ScoreCardItem,
-        tags: String
+        tags: String,
+        intents: Intent
     ]
 
     //so that GORM knows which property of the relationship is the backref
@@ -269,7 +264,6 @@ class ServiceItem implements Serializable {
         )
         categories(nullable: true)
         releaseDate(nullable: true)
-        owfProperties(nullable:true)
         uuid(nullable:false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/)
         imageSmallUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
             if(val?.trim()?.size() > 0 && !validateUrl(val)) {
@@ -370,14 +364,9 @@ class ServiceItem implements Serializable {
         json
     }
 
-    // TODO: it would be nice if we just used the JSON marshaller registered in BootStrap.groovy
-    def asJSON() {
-        return asJSON(null)
-    }
-
     // The parameter requires allows the caller to pass in a list of required listings which will be
     // add to the JSON structure being returned.
-    def asJSON(def requires) {
+    def asJSON(requires = null) {
         def currJSON = new JSONObject(
             id: id,
             title: title,
@@ -419,7 +408,7 @@ class ServiceItem implements Serializable {
             uuid: uuid,
             ozoneAware: types?.ozoneAware,
             isEnabled: isEnabled,
-            intents: new JSONArray(),
+            intents: intents as JSONArray,
             contacts: contacts.collect { it.asJSON() } as JSONArray,
             opensInNewBrowserTab: opensInNewBrowserTab,
             relationships: relationships.collect{ it.asJSON() } as JSONArray,
@@ -435,12 +424,6 @@ class ServiceItem implements Serializable {
             }))
         }
 
-        if (owfProperties != null) {
-            currJSON.put("owfProperties", owfProperties.asJSON())
-            //TODO remove this once the non-REST API is gone
-            currJSON.put("intents", ((owfProperties.intents == null) ? new JSONArray() :
-                new JSONArray(owfProperties.intents?.collect { it.asJSON()})))
-        }
         if (requires != null) {
             currJSON.put("requires", new JSONArray(requires?.collect {
                 new JSONObject(id: it.id, title: it.title, uuid: it.uuid)
@@ -483,10 +466,6 @@ class ServiceItem implements Serializable {
             types: types
         )
 
-        if (owfProperties != null) {
-            json.put("owfProperties", owfProperties.asJSON())
-        }
-
         return json
     }
 
@@ -528,14 +507,6 @@ class ServiceItem implements Serializable {
 
     boolean submittable() {
         return !(this.statApproved() || this.statPending())
-    }
-
-    Boolean isOWFCompatible() {
-        return (statApproved() && types.ozoneAware)
-    }
-
-    Boolean isOWFAddable() {
-        return (isOWFCompatible() && (owfProperties?.isStack() || (types.hasLaunchUrl && validateUrl(launchUrl))))
     }
 
     Boolean isHidden() {
@@ -600,11 +571,6 @@ class ServiceItem implements Serializable {
         releaseDate = date
     }
 
-    static boolean findDuplicates(def obj) {
-        !!(findByUuid(obj?.uuid) ?:
-            OwfProperties.findByUniversalName(obj?.owfProperties?.universalName))
-    }
-
     boolean isAuthor(Profile user) {
         isAuthor(user.username)
     }
@@ -633,22 +599,6 @@ class ServiceItem implements Serializable {
                     it.beforeValidate()
                 }
             }
-        }
-    }
-
-    public void checkOwfProperties() {
-        def owfProperties = this.owfProperties
-        boolean ozoneAware = !!this.types?.ozoneAware
-
-        //if ozoneAware we should always have an OwfProperties
-        if (ozoneAware && !owfProperties) {
-            owfProperties = this.owfProperties = new OwfProperties()
-        }
-        //of not ozoneAware we should never have an OwfProperties
-        else if (!ozoneAware && owfProperties) {
-            //since this method is called on the dto, the owfProperties is still
-            //transient and all we have to do is null it out
-            owfProperties = this.owfProperties = null
         }
     }
 

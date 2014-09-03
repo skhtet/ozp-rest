@@ -170,12 +170,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     @Override
-    protected void preprocess(ServiceItem si) {
-        super.preprocess(si)
-        si.checkOwfProperties()
-    }
-
-    @Override
     protected void postprocess(ServiceItem updated, Map original = null) {
 
         if (original) {
@@ -183,12 +177,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
             updateHiddenServiceItemActivity(updated, original)
             updateApprovalStatus(updated, original)
             serviceItemActivityInternalService.createChangeLog(updated, original)
-
-            // OP-4599: since item -> owfProperties is not a one-many, we can't
-            // depend on orphan-delete here, so explicitly delete the old owfProperties
-            if (original.owfProperties && !original.owfProperties.is(updated.owfProperties)) {
-                original.owfProperties.delete()
-            }
         }
         else {
             //create
@@ -237,17 +225,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         accountService.checkAdmin()
 
         si.approvedDate = activity.activityDate
-
-        // set the OWF approved flag in the stack descriptor if it's a stack
-        if (si?.owfProperties?.stackDescriptor) {
-            def stackDescriptorJSON = JSON.parse(si.owfProperties.stackDescriptor)
-            stackDescriptorJSON.approved = true
-            si.owfProperties.stackDescriptor = stackDescriptorJSON.toString();
-        }
-
-        if (si.owfProperties?.isStack()) {
-            approveStackRequirements(si)
-        }
     }
 
     /**
