@@ -153,6 +153,10 @@ grails.project.dependency.resolution = {
         compile("org.ozoneplatform:ozone-security:${config.mp.security.rev}") {
             excludes([group: 'org.springframework'])
         }
+
+        compile 'com.google.guava:guava:18.0'
+
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.3.3'
     }
 
     plugins {

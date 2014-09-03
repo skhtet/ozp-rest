@@ -1,12 +1,20 @@
 package marketplace.rest
 
-import org.codehaus.groovy.grails.web.json.JSONObject
+import java.lang.reflect.Type
+
 import javax.ws.rs.core.UriBuilder
+import javax.ws.rs.core.MediaType
+
+import org.springframework.stereotype.Component
+
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 import marketplace.ServiceItem
 import marketplace.ApplicationLibraryEntry
 
-class ApplicationLibraryDto {
+class ApplicationLibraryRepresentation
+        extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
+
     //map from folder name to list of Listings
     Map<String, Collection<ServiceItem>> library
     UriBuilder uriBuilder
@@ -15,12 +23,13 @@ class ApplicationLibraryDto {
      * A UriBuilder that should be initialized to the application root
      * (e.g. https://localhost:8443/marketplace)
      */
-    ApplicationLibraryDto(Collection<ApplicationLibraryEntry> entries, UriBuilder uriBuilder) {
+    private ApplicationLibraryRepresentation(Collection<ApplicationLibraryEntry> entries,
+            UriBuilder uriBuilder) {
         setLibrary(entries)
         this.uriBuilder = uriBuilder.clone()
     }
 
-    public void setLibrary(Collection<ApplicationLibraryEntry> entries) {
+    private void setLibrary(Collection<ApplicationLibraryEntry> entries) {
         library = entries.inject([:]) { map, ent ->
             Collection<ServiceItem> list = map[ent.folder]
             map[ent.folder] = list ? (list + ent.serviceItem) : [ent.serviceItem]
@@ -74,6 +83,26 @@ class ApplicationLibraryDto {
         }
         else {
             new JSONObject()
+        }
+    }
+
+    @Component
+    public static class Factory
+            implements RepresentationFactory<Collection<ApplicationLibraryEntry>> {
+
+        private static final Set<MediaType> MEDIA_TYPES =
+            [
+                new MediaType('application', 'vnd.ozp.library+json'),
+                MediaType.APPLICATION_JSON_TYPE
+            ] as Set
+
+
+        Set<MediaType> getMediaTypes() { MEDIA_TYPES }
+        Type getSupportedType() { null }
+
+        ApplicationLibraryRepresentation toRepresentation(
+                Collection<ApplicationLibraryEntry> entries, UriBuilder uriBuilder) {
+            new ApplicationLibraryRepresentation(entries, uriBuilder)
         }
     }
 }
