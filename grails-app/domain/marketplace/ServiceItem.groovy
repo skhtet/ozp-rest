@@ -30,7 +30,7 @@ class ServiceItem implements Serializable {
         'versionName', 'imageLargeUrl',
         'imageSmallUrl', 'imageMediumUrl', 'installUrl',
         'launchUrl', 'docUrls', 'descriptionShort',
-        'isOutside', 'screenshots',
+        'isOutside', 'screenshots', 'imageXlargeUrl',
         'isEnabled', 'techPocs', 'tags',
         'organization', 'relationships',
         'isHidden', 'recommendedLayouts',
@@ -72,6 +72,7 @@ class ServiceItem implements Serializable {
         imageSmallUrl index: 'not_analyzed', excludeFromAll: true
         imageMediumUrl index: 'not_analyzed', excludeFromAll: true
         imageLargeUrl index: 'not_analyzed', excludeFromAll: true
+        imageXlargeUrl index: 'not_analyzed', excludeFromAll: true
         installUrl index: 'not_analyzed', excludeFromAll: true
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
@@ -87,7 +88,7 @@ class ServiceItem implements Serializable {
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
-            'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
+            'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
             'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew'
         ]
     }
@@ -149,6 +150,7 @@ class ServiceItem implements Serializable {
     String imageSmallUrl
     String imageMediumUrl
     String imageLargeUrl
+    String imageXlargeUrl
     String whatIsNew
     String descriptionShort
     Boolean opensInNewBrowserTab = false
@@ -286,6 +288,13 @@ class ServiceItem implements Serializable {
                 ]
             }
         })
+        imageXlargeUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
+            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
+                return [
+                    'serviceItem.imageXlargeUrl.url.invalid'
+                ]
+            }
+        })
         approvalStatus(inList:Constants.APPROVAL_STATUSES.values().toList())
         lastActivity(nullable:true)
         approvedDate(nullable:true)
@@ -393,6 +402,7 @@ class ServiceItem implements Serializable {
             imageSmallUrl: imageSmallUrl,
             imageMediumUrl: imageMediumUrl,
             imageLargeUrl: imageLargeUrl,
+            imageXlargeUrl: imageXlargeUrl,
             installUrl: installUrl,
             isPublished: true,
             launchUrl: launchUrl,
