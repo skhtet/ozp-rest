@@ -15,6 +15,8 @@ import javax.ws.rs.QueryParam
 
 import org.springframework.beans.factory.annotation.Autowired
 
+import static org.grails.jaxrs.response.Responses.*
+
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
@@ -183,21 +185,21 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @GET
-    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
-        getApplicationLibrary(service.currentUserProfile.id)
+    ApplicationLibraryDto getOwnApplicationLibrary(@Context UriInfo uriInfo) {
+        getApplicationLibrary(service.currentUserProfile.id, uriInfo)
     }
 
     @Path('/{profileId}/library')
     @POST
-    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
+    Response addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntry applicationLibraryEntry) {
-        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+        created applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
             applicationLibraryEntry)
     }
 
     @Path('/self/library')
     @POST
-    ApplicationLibraryEntry addToOwnApplicationLibrary(
+    Response addToOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {
         addToApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntry)
