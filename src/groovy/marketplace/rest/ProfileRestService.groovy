@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
+import marketplace.rest.DomainObjectNotFoundException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -36,24 +37,27 @@ class ProfileRestService extends RestService<Profile> {
         throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
-    @Transactional
-    public void updateCurrentUserDataByKey(String key, String value) {
-        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+    @Transactional(readOnly=true)
+    public String getCurrentUserDataItem(String key) {
+        Profile currentUser = getCurrentUserProfile()
 
-        if (profile != null) {
-            profile.userDataMap.put(key, value)
-            profile.save()
-        }
+        currentUser.userDataMap.get(key)
     }
 
     @Transactional
-    public void deleteCurrentUserDataByKey(String key) {
-        Profile profile = Profile.findByUsername(accountService.loggedInUsername)
+    public String updateCurrentUserDataByKey(String key, String value) {
+        Profile currentUser = getCurrentUserProfile()
+        String putValue = currentUser.userDataMap.put(key, value)
 
-        if (profile != null) {
-            profile.userDataMap.remove(key)
-            profile.save()
-        }
+        putValue
+    }
+
+    @Transactional
+    public String deleteCurrentUserDataByKey(String key) {
+        Profile currentUser = getCurrentUserProfile()
+        String value = currentUser.userDataMap.remove(key)
+
+        value
     }
 
     @Transactional(readOnly=true)

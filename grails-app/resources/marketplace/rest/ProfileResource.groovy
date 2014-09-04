@@ -5,6 +5,7 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 import javax.ws.rs.Consumes
+import javax.ws.rs.Produces
 import javax.ws.rs.Path
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
@@ -12,6 +13,8 @@ import javax.ws.rs.GET
 import javax.ws.rs.DELETE
 import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
+import javax.ws.rs.core.UriBuilder
+import javax.ws.rs.core.Response.Status
 
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -28,8 +31,6 @@ import javax.ws.rs.core.UriInfo
 
 @Path('/api/profile')
 class ProfileResource extends DomainResource<Profile> {
-    @Context
-    UriInfo uriInfo
 
     @Autowired ServiceItemRestService serviceItemRestService
     @Autowired ItemCommentRestService ItemCommentRestService
@@ -83,66 +84,31 @@ class ProfileResource extends DomainResource<Profile> {
         getTagsByProfileId(service.currentUserProfile.id)
     }
 
-    @Path('/self/userData/{key}')
+    @Path('/self/userData/{key:.+}')
     @GET
-    Response getCurrentUserDataItem(@PathParam('key') String  key) {
-        String userData = serviceItemTagRestService.getCurrentUserDataItem(key)
-        String content
-        Response response
+    @Produces(MediaType.TEXT_PLAIN)
+    Response getCurrentUserDataItem(@PathParam('key') String key) {
+        String value = service.getCurrentUserDataItem(key)
 
-        if (userData != null) {
-
-            if (uriInfo != null) {
-                String hal
-
-                hal = "{";
-                hal = hal + "'_links'':";
-                hal = hal + "{'self':{'href':'${uriInfo.absolutePath}'}";
-                hal = hal + ",'content':'${userData}'}"
-                hal = hal + "}";
-
-                content = hal
-            } else {
-                content = userData
-            }
-
-            response = Response.ok(content, MediaType.APPLICATION_JSON).build();
-        } else {
-            response = Response.status(Response.Status.NOT_FOUND).entity(
-                ("Value not found for key='${key}'").toString()).build();
-        }
-
-        return response
+        value != null ? userDataFound(value) : userDataNotFound()
     }
 
-    @Path('/self/userData')
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response postCurrentUserDataItem(String keyValueJson) {
-        def keyValue = new KeyValue(JSON.parse(keyValueJson))
-
-        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
-
-        return Response.status(Response.Status.OK).build()
-    }
-
-    @Path('/self/userData')
+    @Path('/self/userData/{key:.+}')
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    Response putCurrentUserDataItem(String keyValueJson) {
-        def keyValue = new KeyValue(JSON.parse(keyValueJson))
+    @Consumes(MediaType.WILDCARD)
+    Response putCurrentUserDataItem(@PathParam('key') String  key, String value) {
+        String putValue = service.updateCurrentUserDataByKey(key, value)
 
-        serviceItemTagRestService.updateCurrentUserDataByKey(keyValue.key, keyValue.value)
-
-        return Response.status(Response.Status.OK).build()
+        putValue != null ? userDataFound() : userDataCreated(key)
     }
 
-    @Path('/self/userData/{key}')
+    @Path('/self/userData/{key:.+}')
     @DELETE
+    @Consumes(MediaType.WILDCARD)
     Response deleteCurrentUserDataItem(@PathParam('key') String key) {
-        serviceItemTagRestService.deleteCurrentUserDataByKey(key)
+        String value = service.deleteCurrentUserDataByKey(key)
 
-        return Response.status(Response.Status.OK).build()
+        value != null ? userDataFound() : userDataNotFound()
     }
 
     @Path('/{profileId}/activity')
@@ -235,5 +201,25 @@ class ProfileResource extends DomainResource<Profile> {
             @PathParam('serviceItemId') long applicationLibraryEntryId) {
         removeFromApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntryId)
+    }
+
+    /**
+     *  The following helper methods exist because at the moment we don't have
+     *  generic handling for text/plain
+     */
+
+    //By default returns 204, indicating success without an entity. If value is
+    //provided, returns 200 with the value as the entity
+    private Response userDataFound(String value = null) {
+        value ? Response.ok().entity(value).build() : Response.noContent().build()
+    }
+
+    private Response userDataNotFound() {
+        Response.status(Status.NOT_FOUND).entity('Resource Does Not Exist').build()
+    }
+
+    private Response userDataCreated(String key) {
+        URI uri = UriBuilder.fromPath(key).build()
+        Response.created(uri).build()
     }
 }
