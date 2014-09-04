@@ -20,8 +20,7 @@ class ApplicationLibraryEntryRestService
             ProfileRestService profileRestService) {
         super(Profile.class, 'owner', 'applicationLibrary',
             grailsApplication, ApplicationLibraryEntry.class,
-            profileRestService, null,
-            new Sorter<ApplicationLibraryEntry>(Constants.SortDirection.ASC, 'folder'))
+            profileRestService, null, null)
     }
 
     ApplicationLibraryEntryRestService() {}
@@ -29,5 +28,28 @@ class ApplicationLibraryEntryRestService
     @Override
     protected void authorizeUpdate(ApplicationLibraryEntry entry) {
         parentClassRestService.authorizeUpdate(getParent(entry))
+    }
+
+    /**
+     * Override the default implementation to keep the inherent List ordering instead of
+     * using the Sorter
+     */
+    @Override
+    public List<ApplicationLibraryEntry> getByParentId(Long parentId) {
+        parentClassRestService.getById(parentId).applicationLibrary
+    }
+
+    @Override
+    protected ApplicationLibraryEntry save(ApplicationLibraryEntry entry) {
+        Profile owner = entry.owner
+
+        //if its not already in the parent list, add it
+        if (!owner.applicationLibrary.contains(entry)) {
+            owner.addToApplicationLibrary(entry)
+        }
+
+        parentClassRestService.save(owner)
+
+        return entry
     }
 }

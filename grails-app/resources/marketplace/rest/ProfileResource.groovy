@@ -178,9 +178,7 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/{profileId}/applicationLibrary')
     @GET
     List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
-        //it comes out as a PageResultList even though paging isn't supported, which affects
-        //the way it serializes.  Create a new plain ArrayList to avoid that
-        new ArrayList(applicationLibraryEntryRestService.getByParentId(profileId))
+        applicationLibraryEntryRestService.getByParentId(profileId)
     }
 
     @Path('/self/applicationLibrary')
@@ -205,6 +203,24 @@ class ProfileResource extends DomainResource<Profile> {
             applicationLibraryEntry)
     }
 
+    /**
+     * For the application library, PUT replaces the whole library, POST adds a single new entry.
+     */
+    @Path('/{profileId}/applicationLibrary')
+    @PUT
+    List<ApplicationLibraryEntry> replaceApplicationLibrary(
+            @PathParam('profileId') long profileId,
+            List<ApplicationLibraryEntry> library) {
+        applicationLibraryEntryRestService.replaceAllByParentIdAndDto(profileId, library)
+    }
+
+    @Path('/self/applicationLibrary')
+    @PUT
+    List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
+            List<ApplicationLibraryEntry> library) {
+        replaceApplicationLibrary(service.currentUserProfile.id, library)
+    }
+
     @Path('/{profileId}/applicationLibrary/{applicationLibraryEntryId}')
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
@@ -215,8 +231,8 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/self/applicationLibrary/{applicationLibraryEntryId}')
     @DELETE
     void removeFromOwnApplicationLibrary(
-            ApplicationLibraryEntry applicationLibraryEntry) {
-        removeFromOwnApplicationLibrary(service.currentUserProfile.id,
-            applicationLibraryEntry)
+            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
+        removeFromApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntryId)
     }
 }
