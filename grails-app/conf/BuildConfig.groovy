@@ -155,8 +155,8 @@ grails.project.dependency.resolution = {
         }
 
         compile 'com.google.guava:guava:18.0'
-
         compile 'com.fasterxml.jackson.core:jackson-databind:2.3.3'
+        compile 'com.github.fge:uri-template:0.9"
     }
 
     plugins {
