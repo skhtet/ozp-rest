@@ -12,7 +12,6 @@ import marketplace.ApplicationLibraryEntry
 class ApplicationLibraryRepresentationWriter
         extends AbstractRepresentationWriter<Collection<ApplicationLibraryEntry>> {
     ApplicationLibraryRepresentationWriter() {
-        super(null,
-            new ApplicationLibraryRepresentation.Factory())
+        super(new ApplicationLibraryRepresentation.Factory())
     }
 }

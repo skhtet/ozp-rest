@@ -185,8 +185,8 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @GET
-    ApplicationLibraryDto getOwnApplicationLibrary(@Context UriInfo uriInfo) {
-        getApplicationLibrary(service.currentUserProfile.id, uriInfo)
+    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+        getApplicationLibrary(service.currentUserProfile.id)
     }
 
     @Path('/{profileId}/library')
