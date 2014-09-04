@@ -175,19 +175,19 @@ class ProfileResource extends DomainResource<Profile> {
          getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)
     }
 
-    @Path('/{profileId}/applicationLibrary')
+    @Path('/{profileId}/library')
     @GET
     List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
         applicationLibraryEntryRestService.getByParentId(profileId)
     }
 
-    @Path('/self/applicationLibrary')
+    @Path('/self/library')
     @GET
     List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
         getApplicationLibrary(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/applicationLibrary')
+    @Path('/{profileId}/library')
     @POST
     ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntry applicationLibraryEntry) {
@@ -195,7 +195,7 @@ class ProfileResource extends DomainResource<Profile> {
             applicationLibraryEntry)
     }
 
-    @Path('/self/applicationLibrary')
+    @Path('/self/library')
     @POST
     ApplicationLibraryEntry addToOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {
@@ -206,7 +206,7 @@ class ProfileResource extends DomainResource<Profile> {
     /**
      * For the application library, PUT replaces the whole library, POST adds a single new entry.
      */
-    @Path('/{profileId}/applicationLibrary')
+    @Path('/{profileId}/library')
     @PUT
     List<ApplicationLibraryEntry> replaceApplicationLibrary(
             @PathParam('profileId') long profileId,
@@ -214,21 +214,21 @@ class ProfileResource extends DomainResource<Profile> {
         applicationLibraryEntryRestService.replaceAllByParentIdAndDto(profileId, library)
     }
 
-    @Path('/self/applicationLibrary')
+    @Path('/self/library')
     @PUT
     List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
             List<ApplicationLibraryEntry> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)
     }
 
-    @Path('/{profileId}/applicationLibrary/{applicationLibraryEntryId}')
+    @Path('/{profileId}/library/{applicationLibraryEntryId}')
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
             @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
         applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
     }
 
-    @Path('/self/applicationLibrary/{applicationLibraryEntryId}')
+    @Path('/self/library/{applicationLibraryEntryId}')
     @DELETE
     void removeFromOwnApplicationLibrary(
             @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
