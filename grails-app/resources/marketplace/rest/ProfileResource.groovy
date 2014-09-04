@@ -15,8 +15,6 @@ import javax.ws.rs.QueryParam
 
 import org.springframework.beans.factory.annotation.Autowired
 
-import static org.grails.jaxrs.response.Responses.*
-
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
@@ -177,44 +175,44 @@ class ProfileResource extends DomainResource<Profile> {
          getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)
     }
 
-    @Path('/{profileId}/library')
+    @Path('/{profileId}/applicationLibrary')
     @GET
-    ApplicationLibraryDto getApplicationLibrary(@PathParam('profileId') long profileId,
-            @Context UriInfo uriInfo) {
-        new ApplicationLibraryDto(applicationLibraryEntryRestService.getByParentId(profileId),
-            uriInfo.baseUriBuilder)
+    List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
+        //it comes out as a PageResultList even though paging isn't supported, which affects
+        //the way it serializes.  Create a new plain ArrayList to avoid that
+        new ArrayList(applicationLibraryEntryRestService.getByParentId(profileId))
     }
 
-    @Path('/self/library')
+    @Path('/self/applicationLibrary')
     @GET
-    ApplicationLibraryDto getOwnApplicationLibrary(@Context UriInfo uriInfo) {
-        getApplicationLibrary(service.currentUserProfile.id, uriInfo)
+    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+        getApplicationLibrary(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/library')
+    @Path('/{profileId}/applicationLibrary')
     @POST
-    Response addToApplicationLibrary(@PathParam('profileId') long profileId,
+    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntry applicationLibraryEntry) {
-        created applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
             applicationLibraryEntry)
     }
 
-    @Path('/self/library')
+    @Path('/self/applicationLibrary')
     @POST
-    Response addToOwnApplicationLibrary(
+    ApplicationLibraryEntry addToOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {
         addToApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntry)
     }
 
-    @Path('/{profileId}/library/{applicationLibraryEntryId}')
+    @Path('/{profileId}/applicationLibrary/{applicationLibraryEntryId}')
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
             @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
         applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
     }
 
-    @Path('/self/library/{applicationLibraryEntryId}')
+    @Path('/self/applicationLibrary/{applicationLibraryEntryId}')
     @DELETE
     void removeFromOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {

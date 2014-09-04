@@ -31,8 +31,7 @@ class CustomDomainObjectWriter extends DomainObjectWriterSupport {
     boolean isWriteable(Class type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
 
-        //TODO find a better way than explicitly listing supported misc classes here
         super.isWriteable(type, genericType, annotations, mediaType) ||
-            Map.class.isAssignableFrom(type) || ApplicationLibraryDto.isAssignableFrom(type)
+            Map.class.isAssignableFrom(type)
     }
 }

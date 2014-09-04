@@ -4,7 +4,6 @@ import grails.util.*
 import marketplace.*
 import marketplace.rest.ItemCommentServiceItemDto
 import marketplace.rest.ProfileServiceItemTagDto
-import marketplace.rest.ApplicationLibraryDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as confHolder
@@ -106,8 +105,7 @@ class BootStrap {
             Category,
             RejectionJustification,
             RejectionListing,
-            ApplicationLibraryEntry,
-            ApplicationLibraryDto
+            ApplicationLibraryEntry
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
