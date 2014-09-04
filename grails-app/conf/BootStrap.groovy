@@ -98,6 +98,7 @@ class BootStrap {
             Types,
             IntentDataType,
             IntentAction,
+            Intent,
             ExtProfile,
             Profile,
             Images,

@@ -25,7 +25,7 @@ class Profile implements Serializable {
 
     static hasMany = [applicationLibrary: ApplicationLibraryEntry]
 
-    SortedSet<ApplicationLibraryEntry> applicationLibrary = new TreeSet()
+    List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
 
     static mappedBy = [
         //keep grails from getting confused into thinking that these are opposite sides of the
@@ -74,7 +74,7 @@ class Profile implements Serializable {
         tablePerHierarchy false
         userDataMap type: 'text'
     }
-    
+
    // static hasMany = [userDataItems: UserDataItem]
 
     static transients = ['sortDisplayName']
@@ -177,5 +177,9 @@ class Profile implements Serializable {
 
     private UserDomainInstance getUserDomainInstance() {
         UserDomainInstance.findByUsername(this.username)
+    }
+
+    def beforeValidate() {
+        applicationLibrary.each { it.beforeValidate() }
     }
 }

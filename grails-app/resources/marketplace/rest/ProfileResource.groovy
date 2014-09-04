@@ -15,8 +15,6 @@ import javax.ws.rs.QueryParam
 
 import org.springframework.beans.factory.annotation.Autowired
 
-import static org.grails.jaxrs.response.Responses.*
-
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
@@ -179,45 +177,63 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/library')
     @GET
-    Collection<ApplicationLibraryEntry> getApplicationLibrary(
-            @PathParam('profileId') long profileId) {
+    List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
         applicationLibraryEntryRestService.getByParentId(profileId)
     }
 
     @Path('/self/library')
     @GET
-    Collection<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
         getApplicationLibrary(service.currentUserProfile.id)
     }
 
     @Path('/{profileId}/library')
     @POST
-    Response addToApplicationLibrary(@PathParam('profileId') long profileId,
+    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntry applicationLibraryEntry) {
-        created applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
             applicationLibraryEntry)
     }
 
     @Path('/self/library')
     @POST
-    Response addToOwnApplicationLibrary(
+    ApplicationLibraryEntry addToOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {
         addToApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntry)
     }
 
-    @Path('/{profileId}/library/{applicationLibraryEntryId}')
-    @DELETE
-    void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
-            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
-        applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
+    /**
+     * For the application library, PUT replaces the whole library, POST adds a single new entry.
+     */
+    @Path('/{profileId}/library')
+    @PUT
+    List<ApplicationLibraryEntry> replaceApplicationLibrary(
+            @PathParam('profileId') long profileId,
+            List<ApplicationLibraryEntry> library) {
+        applicationLibraryEntryRestService.replaceAllByParentIdAndDto(profileId, library)
     }
 
-    @Path('/self/library/{applicationLibraryEntryId}')
+    @Path('/self/library')
+    @PUT
+    List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
+            List<ApplicationLibraryEntry> library) {
+        replaceApplicationLibrary(service.currentUserProfile.id, library)
+    }
+
+    @Path('/{profileId}/library/{serviceItemId}')
+    @DELETE
+    void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
+            @PathParam('serviceItemId') long applicationLibraryEntryId) {
+        applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(profileId,
+            applicationLibraryEntryId)
+    }
+
+    @Path('/self/library/{serviceItemId}')
     @DELETE
     void removeFromOwnApplicationLibrary(
-            ApplicationLibraryEntry applicationLibraryEntry) {
-        removeFromOwnApplicationLibrary(service.currentUserProfile.id,
-            applicationLibraryEntry)
+            @PathParam('serviceItemId') long applicationLibraryEntryId) {
+        removeFromApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntryId)
     }
 }

@@ -211,10 +211,6 @@ httpsession.timeout = 120
 marketplace.defaultSearchPageSize = 24
 marketplace.defaultLandingPageSize = 18
 
-grails.plugin.databasemigration.changelogFileName = "changelog_master.groovy"
-grails.plugin.databasemigration.updateOnStart = false
-grails.plugin.databasemigration.updateOnStartFileNames = ["changelog_master.groovy"]
-
 marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 // A value of null means export all
 //marketplace.maxListingsToExport=25
