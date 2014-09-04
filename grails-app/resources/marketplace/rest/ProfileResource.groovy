@@ -19,6 +19,7 @@ import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
 import marketplace.ServiceItemActivity
+import marketplace.ApplicationLibraryEntry
 
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
@@ -34,6 +35,7 @@ class ProfileResource extends DomainResource<Profile> {
     @Autowired ItemCommentRestService ItemCommentRestService
     @Autowired ServiceItemTagRestService serviceItemTagRestService
     @Autowired ServiceItemActivityRestService serviceItemActivityRestService
+    @Autowired ApplicationLibraryEntryRestService applicationLibraryEntryRestService
 
     @Autowired
     ProfileResource(ProfileRestService profileRestService) {
@@ -171,5 +173,66 @@ class ProfileResource extends DomainResource<Profile> {
     List<ServiceItemActivity> getServiceItemActivitiesOnOwnServiceItems(
             @QueryParam('offset') Integer offset, @QueryParam('max') Integer max) {
          getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)
+    }
+
+    @Path('/{profileId}/library')
+    @GET
+    List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
+        applicationLibraryEntryRestService.getByParentId(profileId)
+    }
+
+    @Path('/self/library')
+    @GET
+    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+        getApplicationLibrary(service.currentUserProfile.id)
+    }
+
+    @Path('/{profileId}/library')
+    @POST
+    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
+            ApplicationLibraryEntry applicationLibraryEntry) {
+        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+            applicationLibraryEntry)
+    }
+
+    @Path('/self/library')
+    @POST
+    ApplicationLibraryEntry addToOwnApplicationLibrary(
+            ApplicationLibraryEntry applicationLibraryEntry) {
+        addToApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntry)
+    }
+
+    /**
+     * For the application library, PUT replaces the whole library, POST adds a single new entry.
+     */
+    @Path('/{profileId}/library')
+    @PUT
+    List<ApplicationLibraryEntry> replaceApplicationLibrary(
+            @PathParam('profileId') long profileId,
+            List<ApplicationLibraryEntry> library) {
+        applicationLibraryEntryRestService.replaceAllByParentIdAndDto(profileId, library)
+    }
+
+    @Path('/self/library')
+    @PUT
+    List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
+            List<ApplicationLibraryEntry> library) {
+        replaceApplicationLibrary(service.currentUserProfile.id, library)
+    }
+
+    @Path('/{profileId}/library/{applicationLibraryEntryId}')
+    @DELETE
+    void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
+            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
+        applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
+    }
+
+    @Path('/self/library/{applicationLibraryEntryId}')
+    @DELETE
+    void removeFromOwnApplicationLibrary(
+            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
+        removeFromApplicationLibrary(service.currentUserProfile.id,
+            applicationLibraryEntryId)
     }
 }

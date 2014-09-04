@@ -23,9 +23,18 @@ class Profile implements Serializable {
         only = ['id', 'sortDisplayName', 'displayName', 'username']
     }
 
-    //keep grails from getting confused into thinking that these are opposite sides of the
-    //same relationship
-    static mappedBy = [createdBy: 'none', editedBy: 'none']
+    static hasMany = [applicationLibrary: ApplicationLibraryEntry]
+
+    List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
+
+    static mappedBy = [
+        //keep grails from getting confused into thinking that these are opposite sides of the
+        //same relationship
+        createdBy: 'none',
+        editedBy: 'none',
+
+        applicationLibrary: 'owner'
+    ]
 
     String username
     String displayName = ''
@@ -57,6 +66,7 @@ class Profile implements Serializable {
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
         userRoles(nullable: true)
+        //uniqueness of folders in application library enforced by the fact that its a Set
     }
 
     static mapping = {
@@ -64,7 +74,7 @@ class Profile implements Serializable {
         tablePerHierarchy false
         userDataMap type: 'text'
     }
-    
+
    // static hasMany = [userDataItems: UserDataItem]
 
     static transients = ['sortDisplayName']
@@ -167,5 +177,9 @@ class Profile implements Serializable {
 
     private UserDomainInstance getUserDomainInstance() {
         UserDomainInstance.findByUsername(this.username)
+    }
+
+    def beforeValidate() {
+        applicationLibrary.each { it.beforeValidate() }
     }
 }

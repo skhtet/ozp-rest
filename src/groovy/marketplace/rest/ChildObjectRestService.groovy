@@ -78,6 +78,18 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
         }
     }
 
+    @Transactional
+    public List<T> replaceAllByParentIdAndDto(Long parentId, List<T> list) {
+        P parent = parentClassRestService.getById(parentId)
+
+        //delete all current children
+        Collection<T> existing = new ArrayList(parent[parentBackrefPropertyName])
+        parent[parentBackrefPropertyName].clear()
+        existing.each { deleteById(it.id) }
+
+        return list.collect { createFromParentIdAndDto(parentId, it) }
+    }
+
     /**
      * Directly creating a child object with this method is not supported. Use
      * createFromParentIdAndDto instead
