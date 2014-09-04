@@ -221,17 +221,18 @@ class ProfileResource extends DomainResource<Profile> {
         replaceApplicationLibrary(service.currentUserProfile.id, library)
     }
 
-    @Path('/{profileId}/library/{applicationLibraryEntryId}')
+    @Path('/{profileId}/library/{serviceItemId}')
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
-            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
-        applicationLibraryEntryRestService.deleteById(applicationLibraryEntryId)
+            @PathParam('serviceItemId') long applicationLibraryEntryId) {
+        applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(profileId,
+            applicationLibraryEntryId)
     }
 
-    @Path('/self/library/{applicationLibraryEntryId}')
+    @Path('/self/library/{serviceItemId}')
     @DELETE
     void removeFromOwnApplicationLibrary(
-            @PathParam('applicationLibraryEntryId') long applicationLibraryEntryId) {
+            @PathParam('serviceItemId') long applicationLibraryEntryId) {
         removeFromApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntryId)
     }

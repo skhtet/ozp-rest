@@ -39,6 +39,30 @@ class ApplicationLibraryEntryRestService
         parentClassRestService.getById(parentId).applicationLibrary
     }
 
+    public void deleteByParentIdAndServiceItemId(Long profileId, Long serviceItemId) {
+        //ensure access to profile
+        Profile profile = parentClassRestService.getById(profileId)
+
+        Collection<ApplicationLibraryEntry> entries =
+            ApplicationLibraryEntry.createCriteria().list {
+                serviceItem {
+                    eq('id', serviceItemId)
+                }
+                owner {
+                    eq('id', profileId)
+                }
+            }
+
+        if (!entries.size()) {
+            throw new DomainObjectNotFoundException(ApplicationLibraryEntry)
+        }
+
+        entries.each {
+            profile.applicationLibrary.remove(it)
+            it.delete(flush:true)
+        }
+    }
+
     @Override
     protected ApplicationLibraryEntry save(ApplicationLibraryEntry entry) {
         Profile owner = entry.owner

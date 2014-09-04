@@ -11,6 +11,10 @@ class DomainObjectNotFoundException extends RuntimeException {
         super(notFoundMessage(clazz, id))
     }
 
+    DomainObjectNotFoundException(clazz) {
+        super("${clazz.simpleName} not found")
+    }
+
     private static String notFoundMessage(clazz, id) {
         "${clazz.simpleName} with id $id not found"
     }
