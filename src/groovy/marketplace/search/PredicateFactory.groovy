@@ -38,7 +38,8 @@ class PredicateFactory implements Serializable {
                 owfWidgetType: new SingleValuePredicate(predicateName: "owfWidgetType", indexFieldName: "owfProperties.owfWidgetType", paramName: "owfWidgetType"),
                 type: new ExactValuePredicate(predicateName: "types", indexFieldName: "types.title", paramName: "type"),
                 category: new MultiExactValuePredicate(predicateName: "type", indexFieldName: "categories.title", paramName: "category"),
-                agency: new MultiValuePredicate(predicateName: "type", indexFieldName: "agency.title", paramName: "agency")
+                agency: new MultiValuePredicate(predicateName: "type", indexFieldName: "agency.title", paramName: "agency"),
+                isFeatured: new SingleValuePredicate(predicateName: "isFeatured", indexFieldName: "isFeatured", paramName: "isFeatured")
         ]
     }
 
