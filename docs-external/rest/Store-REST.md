@@ -1252,3 +1252,67 @@ A key value store for storing/retrieving application specific data. Data can be 
 
 + Response 200
     [ProfileServiceItemActivities][]
+
+## ApplicationLibrary [/api/profile/{profileId}/library]
+The user's Application Library - a personal list of "favorite" Applications (ServiceItems).  Each Application may be specified as being in a folder, indicated by the string value of the "folder" property fo the model.  A folder value of null indicates that the Application is not in a folder and should be displayed at the top level of the Application Library.
+
++ Parameters
+    + profileId (string) ... The id of the profile being retrieved, or "self"
+
++ Model
+    + Body
+
+        [{
+            "folder": "folder 2",
+            "serviceItem": {
+                "id": 1,
+                "title": "serviceItem 1",
+                "imageSmallUrl": null
+            }
+        }]
+
+### Retrieve this user's Application Library [GET]
+
++ Response 200
+    [ApplicationLibrary][]
+
+### Replace user's Application Library [PUT]
+
++ Request
+    [ApplicationLibrary][]
+
++ Response 200
+    [ApplicationLibrary][]
+
+### Append to a user's Application Library [POST]
+
++ Request
+
+        {
+            "folder": "folder 2",
+            "serviceItem": {
+                "id": 1,
+                "title": "serviceItem 1",
+                "imageSmallUrl": null
+            }
+        }
+
++ Response 200
+
+        {
+            "folder": "folder 2",
+            "serviceItem": {
+                "id": 1,
+                "title": "serviceItem 1",
+                "imageSmallUrl": null
+            }
+        }
+
+## ApplicationLibraryEntry [/api/profile/{profileId}/library/{serviceItemId}]
+
++ Parameters
+    + profileId (string) ... The id of the profile being retrieved, or "self"
+    + serviceItemId (string) ... The id of the ServiceItem associated with the Profile in it's Application Library
+
+### Remove a ServiceItem from a user's Application Library [DELETE]
++ Response 204
