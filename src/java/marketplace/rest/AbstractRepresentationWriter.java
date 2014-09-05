@@ -20,13 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
     @Context UriInfo uriInfo;
-    //@Autowired RepresentationRegistry representationRegistry
     @Autowired ObjectMapper objectMapper;
 
     private TypeToken<T> type;
-    private RepresentationFactory factory;
+    private RepresentationFactory<T> factory;
 
-    public AbstractRepresentationWriter(RepresentationFactory factory) {
+    public AbstractRepresentationWriter(RepresentationFactory<T> factory) {
         if (factory == null)
             throw new NullPointerException("RepresentationFactory should not be null");
 
@@ -52,7 +51,7 @@ abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
             throws IOException {
-        AbstractHalRepresentation representation = factory.toRepresentation(
+        AbstractHalRepresentation<T> representation = factory.toRepresentation(
             t, uriInfo.getBaseUriBuilder());
 
         objectMapper.writeValue(entityStream, representation);
