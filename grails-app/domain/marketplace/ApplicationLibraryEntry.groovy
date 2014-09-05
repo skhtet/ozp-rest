@@ -16,6 +16,10 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
     static bindableProperties = ['folder', 'owner', 'serviceItem']
     static modifiableReferenceProperties = []
 
+    static mapping = {
+        serviceItem fetch: 'join' //we will pretty much always want the ServiceItem
+    }
+
     static constraints = {
         folder(nullable: true, maxLength: 256)
         owner(nullable: false, unique: ['folder', 'serviceItem'])

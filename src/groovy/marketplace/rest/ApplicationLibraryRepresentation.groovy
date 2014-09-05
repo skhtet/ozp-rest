@@ -15,18 +15,56 @@ import marketplace.ApplicationLibraryEntry
 class ApplicationLibraryRepresentation
         extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
 
-    //map from folder name to list of Listings
-    Map<String, Collection<ServiceItem>> library
-    UriBuilder uriBuilder
+    /**
+     * {
+     *     "title": "folder 1",
+     *     "_links": {
+     *         "item": [
+     *             {"href": "https://localhost:8443/marketplace/api/serviceItem/1"},
+     *             {"href": "https://localhost:8443/marketplace/api/serviceItem/2"}
+     *         ]
+     *     }
+     * }
+     */
+    private static class FolderRepresentation
+            extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
+        final String title
+
+        FolderRepresentation(String title, Collection<ApplicationLibraryEntry> entries,
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            this.title = title
+
+            addLinks(entries, uriBuilderHolder)
+        }
+
+        private HalLinks addLinks(Collection<ApplicationLibraryEntry> entries,
+                ApplicationRootUriBuilder uriBuilderHolder) {
+            entries.inject([:]) { linkMap, entry ->
+                assert entry.folder == title
+
+                URI href = uriBuilderHolder.builder.path(ServiceItemResource.class, 'read')
+                    .buildFromMap(id: entry.serviceItem.id)
+
+                _links.put(RegisteredRelationType.ITEM,
+                    new Link(href, entry.serviceItem.id.toString()))
+            }
+        }
+    }
 
     /**
      * A UriBuilder that should be initialized to the application root
      * (e.g. https://localhost:8443/marketplace)
      */
     private ApplicationLibraryRepresentation(Collection<ApplicationLibraryEntry> entries,
-            UriBuilder uriBuilder) {
-        setLibrary(entries)
-        this.uriBuilder = uriBuilder.clone()
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(null, createFolders(entries, uriBuilderHolder))
+    }
+
+    private HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        entries.groupBy([{ it.folder }]).collect {folderName, entries ->
+           _embedded.put(OzpRelationType.FOLDER, new FolderRepresentation(folderName, entries))
+        }
     }
 
     private void setLibrary(Collection<ApplicationLibraryEntry> entries) {
@@ -36,6 +74,10 @@ class ApplicationLibraryRepresentation
 
             return map
         }
+    }
+
+    Map<String, Collection<ServiceItem>> getLibrary() {
+        Collections.unmodifiedMap(library)
     }
 
     /**
@@ -101,7 +143,8 @@ class ApplicationLibraryRepresentation
         Type getSupportedType() { null }
 
         ApplicationLibraryRepresentation toRepresentation(
-                Collection<ApplicationLibraryEntry> entries, UriBuilder uriBuilder) {
+                Collection<ApplicationLibraryEntry> entries,
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ApplicationLibraryRepresentation(entries, uriBuilder)
         }
     }

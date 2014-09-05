@@ -2,7 +2,6 @@ package marketplace.rest
 
 import java.lang.reflect.Type
 
-import javax.ws.rs.core.UriBuilder
 import javax.ws.rs.core.MediaType
 
 interface RepresentationFactory<T> {
@@ -11,5 +10,6 @@ interface RepresentationFactory<T> {
      * @param uriBuilder a UriBuilder that should be initialized to the application base URI.
      * @return A representation of the sourceObj, appropriate for this factory's MediaType
      */
-    AbstractHalRepresentation<T> toRepresentation(T sourceObj, UriBuilder uriBuilder)
+    AbstractHalRepresentation<T> toRepresentation(T sourceObj,
+            ApplicationRootUriBuilderHolder uriBuilderHolder)
 }

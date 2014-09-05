@@ -26,7 +26,11 @@ class HalLinks {
 
     void addLinks(HalLinks otherLinks) {
         curies.addAll(otherLinks.@curies)
-        linkMap.putAll(otherLinks.@linkMap)
+        otherLinks.@linkMap.each { relationType, links ->
+            links.each { link ->
+                this.put(relationType, link)
+            }
+        }
     }
 
     HalLinks(Map<RelationType, List<Link>> linkMap) {

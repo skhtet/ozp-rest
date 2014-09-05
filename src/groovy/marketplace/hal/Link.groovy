@@ -16,6 +16,30 @@ class Link {
     //consider using the RFC 5646 library present in Java 8 or 9, if we ever upgrade that far
     final String hreflang
 
+    Link(URI href) {
+        this(href, null)
+    }
+
+    Link(URI href, String name) {
+        this(href, null, null, name, null, null, null)
+    }
+
+    Link(URI href, MediaType type, URI deprecation, String name,
+            URI profile, String title, String hreflang) {
+        if (!href) {
+            throw new NullPointerException("Link must have an href")
+        }
+
+        this.href = href
+        this.templated = false
+        this.type = type
+        this.deprecation = deprecation
+        this.name = name
+        this.profile = profile
+        this.title = title
+        this.hreflang = hreflang
+    }
+
     Link(String href, Boolean templated, MediaType type, URI deprecation, String name,
             URI profile, String title, String hreflang) {
         if (!href) {

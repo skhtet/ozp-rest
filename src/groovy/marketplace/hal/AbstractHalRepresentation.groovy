@@ -4,6 +4,8 @@ abstract class AbstractHalRepresentation<T> {
     private HalLinks _links = new HalLinks()
     private HalEmbedded _embedded = new HalEmbedded()
 
+    private UriBuilder uriBuilder
+
     AbstractHalRepresentation() {}
 
     AbstractHalRepresentation(HalLinks links, HalEmbedded embedded) {
@@ -13,14 +15,6 @@ abstract class AbstractHalRepresentation<T> {
 
     HalLinks get_links() { _links.isEmpty() ? null : _links }
     HalEmbedded get_embedded() { _embedded.isEmpty() ? null : _embedded }
-
-    Map<RelationType, List<Link>> getLinkMap() {
-        getLinkMap(true)
-    }
-
-    Map<RelationType, List<Link>> getLinkMap(boolean includeCuries) {
-        _links.toMap(includeCuries)
-    }
 
     protected void addLinks(HalLinks links) {
         _links.addLinks(links)
