@@ -84,13 +84,11 @@ enum RegisteredRelationType implements RelationType {
     WORKING_COPY('working-copy'),
     WORKING_COPY_OF('working-copy-of')
 
-    private String name
+    final String name
 
     private RegisteredRelation(String name) {
         this.name = name
     }
-
-    String getName() { name }
 
     int compareTo(RelationType other) {
         this.name <=> other.name
