@@ -44,7 +44,6 @@ class IntentDataType implements Serializable {
     def asJSON() {
         new JSONObject(
             id: id,
-            uuid: uuid,
             title: title,
             description: description
         )

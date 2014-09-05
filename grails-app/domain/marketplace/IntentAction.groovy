@@ -51,7 +51,6 @@ class IntentAction implements Serializable {
     def asJSON() {
         return new JSONObject(
             id: id,
-            uuid: uuid,
             title: title,
             description: description
         )

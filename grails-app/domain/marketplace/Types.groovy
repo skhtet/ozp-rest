@@ -124,13 +124,8 @@ class Types implements Serializable {
     def asJSON() {
         return new JSONObject(
             id: id,
-            uuid: uuid,
             title: title,
             description: description,
-            ozoneAware: ozoneAware,
-            hasLaunchUrl: hasLaunchUrl,
-            hasIcons: hasIcons,
-            isPermanent: isPermanent,
         )
     }
 
