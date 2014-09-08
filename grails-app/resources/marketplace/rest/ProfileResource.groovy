@@ -176,6 +176,7 @@ class ProfileResource extends DomainResource<Profile> {
      */
     @Path('/{profileId}/library')
     @PUT
+    @Produces(['application/json', 'application/vnd.ozp.library+json'])
     List<ApplicationLibraryEntry> replaceApplicationLibrary(
             @PathParam('profileId') long profileId,
             List<ApplicationLibraryEntry> library) {
@@ -184,6 +185,7 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @PUT
+    @Produces(['application/json', 'application/vnd.ozp.library+json'])
     List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
             List<ApplicationLibraryEntry> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)

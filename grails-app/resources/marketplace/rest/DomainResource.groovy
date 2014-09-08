@@ -23,7 +23,7 @@ import marketplace.rest.RestService
  */
 
 @Consumes(['application/json'])
-@Produces(['application/json'])
+//@Produces(['application/json'])
 class DomainResource<T> {
 
     private Class<T> DomainClass

@@ -90,7 +90,7 @@ class HalLinks {
     protected Map<RelationType, List<Link>> toMap(boolean includeCuries) {
         Map<RelationType, List<Link>> retval = new TreeMap(linkMap)
 
-        if (includeCuries) {
+        if (includeCuries && !curies.isEmpty()) {
             retval.put(CurieRelationType.CURIE, curies.collect { it.toLink() })
         }
 
