@@ -38,6 +38,16 @@ class HalLinks {
         linkMap.keySet().each { addCurieForRelation(it) }
     }
 
+    /**
+     * A potentially more convenient constructor allowing individual RelationType -> Link
+     * pairings to be passed in
+     */
+    HalLinks(Collection<Map.Entry<RelationType, Link>> links) {
+        links.each { link ->
+            put(link.key, link.value)
+        }
+    }
+
     HalLinks() {}
 
     boolean isEmpty() {
