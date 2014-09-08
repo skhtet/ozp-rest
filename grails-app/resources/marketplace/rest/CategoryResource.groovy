@@ -1,9 +1,6 @@
 package marketplace.rest
 
 import javax.ws.rs.Path
-
-import org.springframework.beans.factory.annotation.Autowired
-
 import marketplace.Category
 import org.springframework.beans.factory.annotation.Autowired
 

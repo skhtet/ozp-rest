@@ -34,7 +34,7 @@ class ServiceItem implements Serializable {
         'isEnabled', 'techPocs', 'tags',
         'organization', 'relationships',
         'isHidden', 'recommendedLayouts',
-        'opensInNewBrowserTab', 'satisfiedScoreCardItems'
+        'opensInNewBrowserTab', 'satisfiedScoreCardItems', 'isFeatured'
     ]
 
     final static modifiableReferenceProperties = [
@@ -81,6 +81,7 @@ class ServiceItem implements Serializable {
         contacts component: true, excludeFromAll: true
         isHidden index: 'not_analyzed', excludeFromAll: false
         isOutside index: 'not_analyzed', excludeFromAll: false
+        isFeatured index: 'not_analyzed', excludeFromAll: false
         only = [
             'categories', 'owners', 'types', 'id', 'intents',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
@@ -89,7 +90,7 @@ class ServiceItem implements Serializable {
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
             'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew'
+            'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew', 'isFeatured'
         ]
     }
 
@@ -118,7 +119,8 @@ class ServiceItem implements Serializable {
         'relationships',
         'isEnabled',
         'approvalStatus',
-        'isOutside'
+        'isOutside',
+        'isFeatured'
     ]]
 
     Date releaseDate
@@ -154,6 +156,7 @@ class ServiceItem implements Serializable {
     String whatIsNew
     String descriptionShort
     Boolean opensInNewBrowserTab = false
+    Boolean isFeatured = false
     String approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
     Set intents = new HashSet()
 
@@ -225,6 +228,7 @@ class ServiceItem implements Serializable {
         whatIsNew nullable: true, maxSize: 250
         descriptionShort nullable: true, maxSize: 150
         isOutside(nullable: true)
+        isFeatured(nullable: true)
         title(blank: false, maxSize: 256)
         description(maxSize: 4000, nullable: true)
         versionName(maxSize: 256, nullable: true)
@@ -385,6 +389,7 @@ class ServiceItem implements Serializable {
             lastActivity: new JSONObject(activityDate: lastActivity?.activityDate),
             approvalStatus: approvalStatus,
             isOutside: isOutside,
+            isFeatured: isFeatured,
             avgRate: avgRate,
             agency: agency?.asJSON(),
             totalVotes: totalVotes,

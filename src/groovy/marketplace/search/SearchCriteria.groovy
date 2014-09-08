@@ -21,7 +21,7 @@ class SearchCriteria implements Cloneable, Serializable {
 
     static final Integer DEFAULT_FACET_SIZE = 100
 
-    static final Collection<String> TYPES_TO_SEARCH = ['marketplace.ServiceItem', 'marketplace.ExtServiceItem']
+    static final Collection<String> TYPES_TO_SEARCH = ['marketplace.ServiceItem']
 
     static final String[] TERM_FACETS = ['types', 'categories', 'agency']
 

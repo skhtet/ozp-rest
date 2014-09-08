@@ -63,7 +63,6 @@ class Category implements Serializable {
     def asJSON() {
         return new JSONObject(
             id: id,
-            uuid: uuid,
             title: title,
             description: description
         )
@@ -72,7 +71,6 @@ class Category implements Serializable {
     def asJSONRef() {
         return new JSONObject(
             id: id,
-            uuid: uuid,
             title: title
         )
     }

@@ -44,7 +44,7 @@ class Profile implements Serializable {
     Date createdDate
     Avatar avatar
     String uuid
-    Map userDataMap
+    Map userDataMap = new HashMap()
 
     //Essentially to track if the current user is a user, admin or external admin
     String userRoles

@@ -56,7 +56,7 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
                 eq('id', t.id)
             }
         }
-        
+
         if (siTagsForId.isEmpty()) {
             t.delete(flush: true)
         }
@@ -132,27 +132,5 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
 
         ServiceItemTag.findAllByCreatedBy(profile)
             .grep { serviceItemRestService.canView(it.serviceItem) }.sort { it.tag }
-    }
-
-    @Transactional
-    public void updateCurrentUserDataByKey(String key, String value) {
-        profileRestService.updateCurrentUserDataByKey(key, value)
-    }
-
-    @Transactional
-    public void deleteCurrentUserDataByKey(String key) {
-        profileRestService.deleteCurrentUserDataByKey(key)
-    }
-
-    @Transactional(readOnly=true)
-    public String getCurrentUserDataItem(String dataKey) {
-        Profile profile = profileRestService.getCurrentUserProfile()
-        String value
-
-        if (profile != null) {
-             value = profile.getUserDataMap().get(dataKey)
-        }
-
-        return value
     }
 }
