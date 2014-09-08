@@ -4,7 +4,8 @@
 marketplace {
     metadata {
         profiles = [
-                [username: 'System', displayName: 'System']
+                [username: 'System', displayName: 'System'],
+                [username: 'slackbot', displayName: 'Slackbot']
         ]
 
         states = [

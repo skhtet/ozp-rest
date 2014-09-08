@@ -7,7 +7,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.dependency.resolver = "maven"
 
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/marketplace.war"
 
 coverage {
     exclusions = [
@@ -69,10 +69,6 @@ def warExcludes = [
 ]
 
 grails.war.resources = { stagingDir ->
-    // this class is only used for development to simulate login so we don't need cas
-    // remove it from the war so it doesn't get out
-    delete(file: "${stagingDir}/WEB-INF/classes/AutoLoginAccountService.class")
-    delete(file: "${stagingDir}/WEB-INF/classes/ehcache.xml")
     def libDir = "${stagingDir}/WEB-INF/lib"
     warExcludes.each { exclude ->
         delete(file: "${libDir}/${exclude}")
@@ -121,38 +117,18 @@ grails.project.dependency.resolution = {
         runtime('dom4j:dom4j:1.6.1') { excludes 'xml-apis' }
         runtime('org.hibernate:hibernate-ehcache:3.3.1.GA') { excludes 'ehcache', 'hibernate-core' }
 
-        //runtime "hsqldb:hsqldb:1.8.0.10"
+        runtime 'mysql:mysql-connector-java:5.1.32'
 
         //Rome-modules
         compile 'rome:modules:0.3.2'
 
-        //only include these jdbc drivers for non production
-        if (Environment.current != Environment.PRODUCTION) {
-            runtime 'com.oracle:ojdbc14:10.2.0.1.0'
-            runtime 'mysql:mysql-connector-java:5.1.6'
-            runtime 'net.sourceforge.jtds:jtds:1.2.4'
-            runtime 'postgresql:postgresql:9.1-901.jdbc3'
-        }
-
-        // HTTP Client
-        compile('org.apache.httpcomponents:httpcore:4.1.1', 'org.apache.httpcomponents:httpclient:4.1.1')
-
-        compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.0") {
-            excludes "xml-apis", "asm", "groovy", "http-core", "httpclient"
-        }
+        compile 'org.springframework.security:spring-security-core:3.2.5.RELEASE'
 
         //upgrade commons-validator to get correct validation of localhost URLs (OP-420)
         compile('commons-validator:commons-validator:1.4.0')
 
         //Fix for ClassNotFoundException: javax.ws.rs.ApplicationPath
         runtime('javax.ws.rs:jsr311-api:1.1.1')
-
-        //phone number validation
-        compile 'com.googlecode.libphonenumber:libphonenumber:4.3'
-
-        compile("org.ozoneplatform:ozone-security:${config.mp.security.rev}") {
-            excludes([group: 'org.springframework'])
-        }
     }
 
     plugins {

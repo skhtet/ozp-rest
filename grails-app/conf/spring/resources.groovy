@@ -33,46 +33,12 @@ beans = {
         bean.factoryMethod = 'getInstance'
     }
 
-    // wire up a different account service if -Duser=something and environment is development
-    if (GrailsUtil.environment != "production") {
-        //empty sprint security bean
-        springSecurityFilterChain(FilterChainProxy, [])
-
-        switch (System.properties.user) {
-            case "testUser1":
-                println("Using AutoLoginAccountService - you will be logged in as testUser1")
-                accountService(AutoLoginAccountService) {
-                    autoAccountUsername = "testUser1"
-                    autoAccountName = "Test User 1"
-                    autoAccountEmail = "testuser1@nowhere.com"
-                    autoOrganization = DEFAULT_AGENCY
-                    autoRoles = [Constants.USER]
-                }
-                break
-            default:
-                if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {
-                    println("Using AutoLoginAccountService - you will be logged in as testUser1")
-                    accountService(AutoLoginAccountService) {
-                        autoAccountUsername = "testUser1"
-                        autoAccountName = "Test User 1"
-                        autoAccountEmail = "testuser1@nowhere.com"
-                        autoRoles = [Constants.USER]
-                    }
-                } else {
-                    println("Using AutoLoginAccountService - you will be logged in as testAdmin1")
-                    accountService(AutoLoginAccountService) {
-                        autoAccountUsername = "testAdmin1"
-                        autoAccountName = "Test Administrator 1"
-                        autoAccountEmail = "testadmin1@nowhere.com"
-                        autoOrganization = DEFAULT_AGENCY
-                        autoRoles = [Constants.USER, Constants.ADMIN, Constants.EXTERNADMIN]
-                    }
-                }
-                break
-        }
-
-    } else {
-        accountService(AccountService)
+    accountService(AccountService) {
+        loggedInUsername = "slackbot"
+        loggedInDisplayName = "Slackbot"
+        loggedInEmail = "slackbot@nowhere.com"
+        loggedInOrganization = DEFAULT_AGENCY
+        loggedInUserRoles = [Constants.USER, Constants.ADMIN]
     }
 
     customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)
