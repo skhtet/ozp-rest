@@ -1265,9 +1265,11 @@ The user's Application Library - a personal list of "favorite" Applications (Ser
         [{
             "folder": "folder 2",
             "serviceItem": {
+                "imageLargeUrl": null,
                 "id": 1,
-                "title": "serviceItem 1",
-                "imageSmallUrl": null
+                "title": "Listing 1",
+                "launchUrl": "https:///",
+                "imageMediumUrl": null
             }
         }]
 
@@ -1291,9 +1293,11 @@ The user's Application Library - a personal list of "favorite" Applications (Ser
         {
             "folder": "folder 2",
             "serviceItem": {
+                "imageLargeUrl": null,
                 "id": 1,
-                "title": "serviceItem 1",
-                "imageSmallUrl": null
+                "title": "Listing 1",
+                "launchUrl": "https:///",
+                "imageMediumUrl": null
             }
         }
 
@@ -1302,9 +1306,11 @@ The user's Application Library - a personal list of "favorite" Applications (Ser
         {
             "folder": "folder 2",
             "serviceItem": {
+                "imageLargeUrl": null,
                 "id": 1,
-                "title": "serviceItem 1",
-                "imageSmallUrl": null
+                "title": "Listing 1",
+                "launchUrl": "https:///",
+                "imageMediumUrl": null
             }
         }
 

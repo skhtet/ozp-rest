@@ -52,7 +52,13 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
     JSONObject asJSON() {
         new JSONObject(
             folder: folder,
-            serviceItem: serviceItem.asJSONMinimum()
+            serviceItem: new JSONObject(
+                id: serviceItem.id,
+                title: serviceItem.title,
+                imageMediumUrl: serviceItem.imageMediumUrl,
+                imageLargeUrl: serviceItem.imageLargeUrl,
+                launchUrl: serviceItem.launchUrl
+            )
         )
     }
 }
