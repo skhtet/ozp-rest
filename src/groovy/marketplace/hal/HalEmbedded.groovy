@@ -5,6 +5,16 @@ package marketplace.hal
  */
 class HalEmbedded extends TreeMap<RelationType, List<AbstractHalRepresentation<?>>> {
     /**
+     * A potentially more convenient constructor allowing individual RelationType -> Rep
+     * pairings to be passed in
+     */
+    HalEmbedded(Collection<Map.Entry<RelationType, AbstractHalRepresentation<?>>> links) {
+        links.each { link ->
+            put(link.key, link.value)
+        }
+    }
+
+    /**
      * Add the specified link to the specified relation
      */
     Link put(RelationType relationType, AbstractHalRepresentation<?> rep) {

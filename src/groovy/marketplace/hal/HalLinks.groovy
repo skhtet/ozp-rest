@@ -1,5 +1,7 @@
 package marketplace.hal
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 /**
  * The _links object within a HAL representation
  */
@@ -21,7 +23,7 @@ class HalLinks {
     }
 
     void addCuries(Collection<? extends HalRelationCurie> curies) {
-        curies.addAll(curies)
+        this.curies.addAll(curies)
     }
 
     void addLinks(HalLinks otherLinks) {
@@ -74,6 +76,7 @@ class HalLinks {
     /**
      * Output the links as a Map, including the "curies" section
      */
+    @JsonValue
     Map<RelationType, List<Link>> toMap() {
         toMap(true)
     }

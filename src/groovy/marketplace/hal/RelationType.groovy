@@ -1,12 +1,8 @@
 package marketplace.hal
 
-/**
- * A relation as defined in RFC 5988.  Note that the separation into namespace and name is
- * not part of RFC 5988 but was included to easily support curies
- */
 //all RelationType subclasses must be comparable to each other, based on their name
 interface RelationType extends Comparable<RelationType> {
-    String getName()
+    String getRelationName()
 }
 
 /**
@@ -84,14 +80,16 @@ enum RegisteredRelationType implements RelationType {
     WORKING_COPY('working-copy'),
     WORKING_COPY_OF('working-copy-of')
 
-    final String name
+    final String relationName
 
-    private RegisteredRelationType(String name) {
-        this.name = name
+    public String toString() { relationName }
+
+    private RegisteredRelationType(String relationName) {
+        this.relationName = relationName
     }
 
     int compareTo(RelationType other) {
-        this.name <=> other.name
+        this.relationName <=> other.relationName
     }
 }
 
@@ -101,10 +99,11 @@ enum RegisteredRelationType implements RelationType {
 enum CurieRelationType implements RelationType {
     CURIE
 
-    String getName() { 'curies' }
+    String getRelationName() { 'curies' }
+    public String toString() { relationName }
 
     int compareTo(RelationType other) {
-        this.name <=> other.name
+        this.relationName <=> other.relationName
     }
 }
 
@@ -112,24 +111,25 @@ enum CurieRelationType implements RelationType {
  * A non-standard, non-curied relation, which must be represented by a URI
  */
 class ExtensionRelationType implements RelationType {
-    private URI name
+    private URI relationName
 
-    ExtensionRelationType(String name) {
-        ExtensionRelation(new URI(name))
+    ExtensionRelationType(String relationName) {
+        ExtensionRelation(new URI(relationName))
     }
 
-    ExtensionRelationType(URI name) {
-        if (!name) {
+    ExtensionRelationType(URI relationName) {
+        if (!relationName) {
             throw new NullPointerException()
         }
 
-        this.name = name
+        this.relationName = relationName
     }
 
-    String getName() { name.toString() }
+    String getRelationName() { relationName.toString() }
+    public String toString() { relationName }
 
     int compareTo(RelationType other) {
-        this.name <=> other.name
+        this.relationName <=> other.relationName
     }
 }
 
@@ -146,7 +146,7 @@ interface HalCuriedRelationType extends RelationType {
      * @return the curied name of the relation type.  This name is not valid unless the curie
      * link is present alongside it
      */
-    String getName()
+    String getRelationName()
 }
 
 enum OzpRelationType implements HalCuriedRelationType {
@@ -163,9 +163,10 @@ enum OzpRelationType implements HalCuriedRelationType {
 
     //TODO determine if this can be put somewhere else so it doesn't need to be re-implemented
     //in each HalCuriedRelationType
-    String getName() { "${CURIE.name}:${name}" }
+    String getRelationName() { "${halRelationCurie.name}:${name}" }
+    public String toString() { relationName }
 
     int compareTo(RelationType other) {
-        this.name <=> other.name
+        this.relationName <=> other.relationName
     }
 }

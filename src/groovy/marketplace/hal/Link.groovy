@@ -2,11 +2,15 @@ package marketplace.hal
 
 import javax.ws.rs.core.MediaType;
 
-import com.github.fge.uritemplate.URITemplate
+import com.damnhandy.uri.template.UriTemplate
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+
+@JsonInclude(Include.NON_NULL)
 class Link {
     //The following two variables both represent the href property. Only one should be non-null
-    private URITemplate hrefTemplate
+    private UriTemplate hrefTemplate
     private URI href
 
     final MediaType type
@@ -17,6 +21,29 @@ class Link {
 
     //consider using the RFC 5646 library present in Java 8 or 9, if we ever upgrade that far
     final String hreflang
+
+    Link(UriTemplate href) {
+        this(href, null)
+    }
+
+    Link(UriTemplate href, String name) {
+        this(href, null, null, name, null, null, null)
+    }
+
+    Link(UriTemplate hrefTemplate, MediaType type, URI deprecation, String name,
+            URI profile, String title, String hreflang) {
+        if (!hrefTemplate) {
+            throw new NullPointerException("Link must have an href")
+        }
+
+        this.hrefTemplate = hrefTemplate
+        this.type = type
+        this.deprecation = deprecation
+        this.name = name
+        this.profile = profile
+        this.title = title
+        this.hreflang = hreflang
+    }
 
     Link(URI href) {
         this(href, null)
@@ -33,7 +60,6 @@ class Link {
         }
 
         this.href = href
-        this.templated = false
         this.type = type
         this.deprecation = deprecation
         this.name = name
@@ -49,7 +75,7 @@ class Link {
         }
 
         if (templated) {
-            hrefTemplate = new URITemplate(href)
+            hrefTemplate = new UriTemplate(href)
         }
         else {
             this.href = new URI(href)
@@ -64,7 +90,7 @@ class Link {
     }
 
     public String getHref() {
-        hrefTemplate?.toString() ?: href.toString()
+        hrefTemplate?.template ?: href.toString()
     }
 
     public Boolean getTemplated() {

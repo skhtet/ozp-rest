@@ -19,6 +19,6 @@ class ApplicationRootUriBuilderHolder {
      * Provides a fresh UriBuilder initialized to the application root URI
      */
     UriBuilder getBuilder() {
-        urlBuilder.clone()
+        uriBuilder.clone()
     }
 }

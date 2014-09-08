@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
+public abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
     @Context UriInfo uriInfo;
     @Autowired ObjectMapper objectMapper;
 

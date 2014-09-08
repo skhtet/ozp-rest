@@ -17,6 +17,8 @@ import marketplace.hal.HalEmbedded
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
 import marketplace.hal.RepresentationFactory
+import marketplace.hal.OzpRelationType
+import marketplace.hal.RegisteredRelationType
 
 class ApplicationLibraryRepresentation
         extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
@@ -38,12 +40,12 @@ class ApplicationLibraryRepresentation
 
         FolderRepresentation(String title, Collection<ApplicationLibraryEntry> entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            super(createLinks(entries, uriBuilderHolder), null)
+            super(createLinks(entries, uriBuilderHolder, title), null)
             this.title = title
         }
 
-        private HalLinks createLinks(Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        private static HalLinks createLinks(Collection<ApplicationLibraryEntry> entries,
+                ApplicationRootUriBuilderHolder uriBuilderHolder, String title) {
             new HalLinks(entries.collect { entry ->
                 assert entry.folder == title
 
@@ -65,16 +67,12 @@ class ApplicationLibraryRepresentation
         super(null, createFolders(entries, uriBuilderHolder))
     }
 
-    private HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries,
+    private static HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
-           _embedded.put(OzpRelationType.FOLDER,
-                new FolderRepresentation(folderName, folderEntries))
-        }
-    }
-
-    Map<String, Collection<ServiceItem>> getLibrary() {
-        Collections.unmodifiedMap(library)
+        new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
+           new AbstractMap.SimpleEntry(OzpRelationType.FOLDER,
+                new FolderRepresentation(folderName, folderEntries, uriBuilderHolder))
+        })
     }
 
     public static class Factory
@@ -82,7 +80,7 @@ class ApplicationLibraryRepresentation
         ApplicationLibraryRepresentation toRepresentation(
                 Collection<ApplicationLibraryEntry> entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationLibraryRepresentation(entries, uriBuilder)
+            new ApplicationLibraryRepresentation(entries, uriBuilderHolder)
         }
     }
 }
