@@ -1,4 +1,4 @@
-package marketplace.rest;
+package marketplace.hal;
 
 import java.io.OutputStream;
 import java.io.IOException;
@@ -36,8 +36,7 @@ abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return factory.getMediaTypes().contains(mediaType) &&
-            this.type.isAssignableFrom(genericType);
+        return this.type.isAssignableFrom(genericType);
     }
 
     @Override

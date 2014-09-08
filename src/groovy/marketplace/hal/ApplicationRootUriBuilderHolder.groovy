@@ -1,4 +1,7 @@
-package marketplace.rest
+package marketplace.hal
+
+import javax.ws.rs.core.UriBuilder
+import javax.ws.rs.core.UriInfo
 
 /**
  * A class that safely enforces access to UriBuilders that are initialized to the application
@@ -8,7 +11,7 @@ package marketplace.rest
 class ApplicationRootUriBuilderHolder {
     private UriBuilder uriBuilder
 
-    ApplicationRootUriBuilder(UriInfo uriInfo) {
+    ApplicationRootUriBuilderHolder(UriInfo uriInfo) {
         uriBuilder = uriInfo.getBaseUriBuilder()
     }
 

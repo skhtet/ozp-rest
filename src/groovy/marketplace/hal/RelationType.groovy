@@ -86,7 +86,7 @@ enum RegisteredRelationType implements RelationType {
 
     final String name
 
-    private RegisteredRelation(String name) {
+    private RegisteredRelationType(String name) {
         this.name = name
     }
 
@@ -114,11 +114,11 @@ enum CurieRelationType implements RelationType {
 class ExtensionRelationType implements RelationType {
     private URI name
 
-    ExtensionRelation(String name) {
+    ExtensionRelationType(String name) {
         ExtensionRelation(new URI(name))
     }
 
-    ExtensionRelation(URI name) {
+    ExtensionRelationType(URI name) {
         if (!name) {
             throw new NullPointerException()
         }

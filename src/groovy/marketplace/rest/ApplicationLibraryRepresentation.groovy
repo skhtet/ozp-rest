@@ -2,7 +2,6 @@ package marketplace.rest
 
 import java.lang.reflect.Type
 
-import javax.ws.rs.core.UriBuilder
 import javax.ws.rs.core.MediaType
 
 import org.springframework.stereotype.Component
@@ -11,6 +10,13 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 import marketplace.ServiceItem
 import marketplace.ApplicationLibraryEntry
+
+import marketplace.hal.ApplicationRootUriBuilderHolder
+import marketplace.hal.AbstractHalRepresentation
+import marketplace.hal.HalEmbedded
+import marketplace.hal.HalLinks
+import marketplace.hal.Link
+import marketplace.hal.RepresentationFactory
 
 class ApplicationLibraryRepresentation
         extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
@@ -37,7 +43,7 @@ class ApplicationLibraryRepresentation
         }
 
         private HalLinks createLinks(Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilder uriBuilderHolder) {
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new HalLinks(entries.collect { entry ->
                 assert entry.folder == title
 
@@ -46,7 +52,7 @@ class ApplicationLibraryRepresentation
 
                 new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                     new Link(href, entry.serviceItem.id.toString()))
-            }
+            })
         }
     }
 
@@ -59,10 +65,11 @@ class ApplicationLibraryRepresentation
         super(null, createFolders(entries, uriBuilderHolder))
     }
 
-    private HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries
+    private HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        entries.groupBy([{ it.folder }]).collect {folderName, entries ->
-           _embedded.put(OzpRelationType.FOLDER, new FolderRepresentation(folderName, entries))
+        entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
+           _embedded.put(OzpRelationType.FOLDER,
+                new FolderRepresentation(folderName, folderEntries))
         }
     }
 
@@ -70,7 +77,6 @@ class ApplicationLibraryRepresentation
         Collections.unmodifiedMap(library)
     }
 
-    @Component
     public static class Factory
             implements RepresentationFactory<Collection<ApplicationLibraryEntry>> {
         ApplicationLibraryRepresentation toRepresentation(

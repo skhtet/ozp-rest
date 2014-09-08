@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.hal
 
 import java.lang.reflect.Type
 

@@ -4,8 +4,6 @@ abstract class AbstractHalRepresentation<T> {
     private HalLinks _links = new HalLinks()
     private HalEmbedded _embedded = new HalEmbedded()
 
-    private UriBuilder uriBuilder
-
     AbstractHalRepresentation() {}
 
     AbstractHalRepresentation(HalLinks links, HalEmbedded embedded) {

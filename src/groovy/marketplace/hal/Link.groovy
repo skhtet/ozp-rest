@@ -1,5 +1,7 @@
 package marketplace.hal
 
+import javax.ws.rs.core.MediaType;
+
 import com.github.fge.uritemplate.URITemplate
 
 class Link {

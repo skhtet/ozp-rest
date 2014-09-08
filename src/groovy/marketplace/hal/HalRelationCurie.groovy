@@ -1,5 +1,7 @@
 package marketplace.hal
 
+import com.github.fge.uritemplate.URITemplate
+
 /**
  * A "namespace" for extension link relations.  Per HAL specs, this is defined as a
  * name and a URI template.
@@ -44,13 +46,5 @@ enum HalRelationCurie {
             throw new IllegalArgumentException(
                 "HAL relation URI templates must have a parameter named 'rel'")
         }
-    }
-
-    boolean equals(other) {
-        other instanceof HalRelationCurie && href == other.href
-    }
-
-    int hashCode() {
-        href.hashCode()
     }
 }

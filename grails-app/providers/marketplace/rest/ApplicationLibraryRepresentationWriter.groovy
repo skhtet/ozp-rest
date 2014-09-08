@@ -7,6 +7,8 @@ import com.google.common.reflect.TypeToken
 
 import marketplace.ApplicationLibraryEntry
 
+import marketplace.hal.AbstractRepresentationWriter
+
 @Provider
 @Produces(['application/vnd.ozp.library+json', 'application/json'])
 class ApplicationLibraryRepresentationWriter

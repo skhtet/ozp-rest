@@ -4,7 +4,6 @@ import grails.util.*
 import marketplace.*
 import marketplace.rest.ItemCommentServiceItemDto
 import marketplace.rest.ProfileServiceItemTagDto
-import marketplace.rest.ApplicationLibraryDto
 import marketplace.rest.ApplicationDto
 import marketplace.rest.IntentDto
 import org.apache.log4j.helpers.*
@@ -110,7 +109,6 @@ class BootStrap {
             RejectionJustification,
             RejectionListing,
             ApplicationLibraryEntry,
-            ApplicationLibraryDto
             ApplicationDto,
             IntentDto
         ].each { Class ->
