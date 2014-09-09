@@ -3,7 +3,10 @@ import grails.util.GrailsUtil
 import org.springframework.security.web.FilterChainProxy
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import marketplace.*
+import marketplace.rest.*
 import marketplace.search.MarketplaceElasticSearchService
 import ozone.utils.ApplicationContextHolder
 
@@ -43,10 +46,13 @@ beans = {
 
     customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)
 
+    objectMapper(ObjectMapper)
+
     /**
      * OP-5818: Use the Spring class instead of the default Grails subclass of it.
      */
     openSessionInViewInterceptor(OpenSessionInViewInterceptor) {
         sessionFactory = ref('sessionFactory')
     }
+
 }

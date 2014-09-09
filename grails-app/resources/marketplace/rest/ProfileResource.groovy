@@ -18,6 +18,8 @@ import javax.ws.rs.core.Response.Status
 
 import org.springframework.beans.factory.annotation.Autowired
 
+import static org.grails.jaxrs.response.Responses.*
+
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.Tag
@@ -155,15 +157,15 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/library')
     @POST
-    ApplicationLibraryEntry addToApplicationLibrary(@PathParam('profileId') long profileId,
+    Response addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntry applicationLibraryEntry) {
-        applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
+        created applicationLibraryEntryRestService.createFromParentIdAndDto(profileId,
             applicationLibraryEntry)
     }
 
     @Path('/self/library')
     @POST
-    ApplicationLibraryEntry addToOwnApplicationLibrary(
+    Response addToOwnApplicationLibrary(
             ApplicationLibraryEntry applicationLibraryEntry) {
         addToApplicationLibrary(service.currentUserProfile.id,
             applicationLibraryEntry)
@@ -174,6 +176,7 @@ class ProfileResource extends DomainResource<Profile> {
      */
     @Path('/{profileId}/library')
     @PUT
+    @Produces(['application/json', 'application/vnd.ozp.library+json'])
     List<ApplicationLibraryEntry> replaceApplicationLibrary(
             @PathParam('profileId') long profileId,
             List<ApplicationLibraryEntry> library) {
@@ -182,6 +185,7 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @PUT
+    @Produces(['application/json', 'application/vnd.ozp.library+json'])
     List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
             List<ApplicationLibraryEntry> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)

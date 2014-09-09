@@ -129,6 +129,10 @@ grails.project.dependency.resolution = {
 
         //Fix for ClassNotFoundException: javax.ws.rs.ApplicationPath
         runtime('javax.ws.rs:jsr311-api:1.1.1')
+
+        compile 'com.google.guava:guava:18.0'
+        compile 'com.fasterxml.jackson.core:jackson-databind:2.3.3'
+        compile 'com.damnhandy:handy-uri-templates:2.0.2'
     }
 
     plugins {
