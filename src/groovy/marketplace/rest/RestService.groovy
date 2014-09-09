@@ -76,6 +76,27 @@ abstract class RestService<T> {
         obj.delete(flush: true)
     }
 
+    public T updateById(Long id, InputRepresentation<T> rep) {
+        T toUpdate = getById(id)
+
+        //we need an extra copy that doesn't get changed by the update
+        //so we can pass it to postprocess.  This creates a shallow copy
+        Map old = new HashMap()
+        old.putAll(toUpdate.properties)
+        old.id = toUpdate.id   //the above does not copy the id
+        copyCollections(old)
+
+        //TODO make validator compatible with InputRepresentation
+        validator?.validateChanges(toUpdate, dto)
+        authorizeUpdate(toUpdate)
+
+        merge(toUpdate, rep)
+
+        postprocess(toUpdate, old)
+
+        return save(toUpdate)
+    }
+
     public T updateById(Long id, T dto) {
         //ensure that the ID from the request body and the ID
         //from the URL match
@@ -208,6 +229,67 @@ abstract class RestService<T> {
         }
     }
 
+    private T merge(T object, InputRepresentation<T> representation) {
+        /**
+         * return the object from the database represented by this rep
+         */
+        def getFromDb = { IdRefRepresentation rep ->
+            T retval = repValue.representedClass().get(repValue.id)
+
+            if (retval == null) {
+                throw new IllegalArgumentException("Attempted to find non-existant object " +
+                    "of type ${obj.class} with id ${obj.id}")
+            }
+
+            return retval
+        }
+
+        /**
+         * get the new value from the representation
+         * @param repValue The value taken from the InputRepresentation
+         * @param existingValue The value on the existing object
+         */
+        def getNestedValue = { repValue, existingValue ->
+            if (repValue instanceof IdRefRepresentation) {
+                getFromDb(repValue)
+            }
+            else if (repValue instanceof InputRepresentation) {
+                merge(existingValue, repValue)
+            }
+            else if (repValue instanceof Collection) {
+                Iterator existingIter = existingValue?.iterator()
+                def existing
+
+                repValue.collect {
+                    if (existingIter?.hasNext()) {
+                        existing = existingIter.next()
+                    }
+
+
+                    getNestedValue(it, existing)
+                }
+            }
+            else {
+                repValue
+            }
+        }
+
+        Map<String, Object> props = representation.properties.collectEntries { name, val ->
+            getNestedValue(val, object ? object[name] : null)
+        }
+
+        if (object) {
+            props.each { propName, propValue ->
+                object[propName] = propValue
+            }
+
+            return object
+        }
+        else {
+            representation.representedClass().metaClass.invokeConstructor(props)
+        }
+    }
+
     /**
      * DTOs for a PUT will often come in with subobjects which may
      * or may not be missing fields, and which shouldn't be taken
@@ -324,6 +406,20 @@ abstract class RestService<T> {
                 order(sorter.sortField, sorter.direction.name().toLowerCase())
             }
         }
+    }
+
+    public T createFromRepresentation(InputRepresentation<T> rep) {
+        T object = DomainClass.metaClass.invokeConstructor()
+
+        populateDefaults(object)
+        //validator?.validateNew(rep)
+        authorizeCreate(dto)
+
+        merge(object, rep)
+
+        postprocess(object)
+
+        return save(object)
     }
 
     public T createFromDto(T dto) {

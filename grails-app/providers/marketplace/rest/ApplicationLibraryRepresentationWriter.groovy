@@ -10,7 +10,7 @@ import marketplace.ApplicationLibraryEntry
 import marketplace.hal.AbstractRepresentationWriter
 
 @Provider
-@Produces(['application/vnd.ozp.library+json'])
+@Produces(['application/vnd.ozp.library+hal'])
 class ApplicationLibraryRepresentationWriter
         extends AbstractRepresentationWriter<Collection<ApplicationLibraryEntry>> {
     ApplicationLibraryRepresentationWriter() {

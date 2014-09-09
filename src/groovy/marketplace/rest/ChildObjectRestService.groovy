@@ -49,6 +49,23 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
 
     protected ChildObjectRestService() {}
 
+    public T createFromParentIdAndRepresentation(Long parentId, InputRepresentation rep) {
+        T object = DomainClass.metaClass.invokeConstructor()
+        P parent = parentClassRestService.getById(parentId)
+
+        populateDefaults(object)
+        //validator?.validateNew(rep)
+        authorizeCreate(dto)
+
+        merge(object, rep)
+
+        parent[parentBackrefPropertyName] << object
+
+        postprocess(object)
+
+        return object
+    }
+
     public T createFromParentIdAndDto(Long parentId, T dto) {
         dto[parentPropertyName] = makeParentDto(parentId)
         return super.createFromDto(dto)
