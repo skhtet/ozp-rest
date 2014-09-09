@@ -27,6 +27,10 @@ abstract class AbstractHalRepresentation<T> {
         this.links.addLinks(links)
     }
 
+    protected void addLink(RelationType relationType, Link link) {
+        this.links.put(relationType, link)
+    }
+
     protected void addEmbedded(HalEmbedded embedded) {
         this.embedded.putAll((Map)embedded)
 

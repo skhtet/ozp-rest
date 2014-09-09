@@ -51,7 +51,7 @@ public abstract class AbstractRepresentationWriter<T> implements MessageBodyWrit
             MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
             throws IOException {
         AbstractHalRepresentation<T> representation = factory.toRepresentation(
-            t, new ApplicationRootUriBuilderHolder(uriInfo));
+            t, new ApplicationRootUriBuilderHolder(uriInfo), uriInfo.getRequestUri());
 
         objectMapper.writeValue(entityStream, representation);
     }

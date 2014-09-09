@@ -13,6 +13,7 @@ import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.AbstractHalRepresentation
+import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.HalEmbedded
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -21,7 +22,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
 class ApplicationLibraryRepresentation
-        extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
+        extends SelfRefRepresentation<Collection<ApplicationLibraryEntry>> {
 
     /**
      * {
@@ -63,8 +64,9 @@ class ApplicationLibraryRepresentation
      * (e.g. https://localhost:8443/marketplace)
      */
     private ApplicationLibraryRepresentation(Collection<ApplicationLibraryEntry> entries,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(null, createFolders(entries, uriBuilderHolder))
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            URI requestUri) {
+        super(requestUri, null, createFolders(entries, uriBuilderHolder))
     }
 
     private static HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries,
@@ -79,8 +81,9 @@ class ApplicationLibraryRepresentation
             implements RepresentationFactory<Collection<ApplicationLibraryEntry>> {
         ApplicationLibraryRepresentation toRepresentation(
                 Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationLibraryRepresentation(entries, uriBuilderHolder)
+                ApplicationRootUriBuilderHolder uriBuilderHolder,
+                URI requestUri) {
+            new ApplicationLibraryRepresentation(entries, uriBuilderHolder, requestUri)
         }
     }
 }
