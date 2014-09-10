@@ -1,12 +1,8 @@
-import grails.util.GrailsUtil
-
-import org.springframework.security.web.FilterChainProxy
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import marketplace.*
-import marketplace.rest.*
 import marketplace.search.MarketplaceElasticSearchService
 import ozone.utils.ApplicationContextHolder
 

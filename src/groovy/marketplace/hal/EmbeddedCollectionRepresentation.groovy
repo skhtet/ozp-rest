@@ -8,7 +8,7 @@ import marketplace.rest.DomainResource
  *
  * TODO: This representation could probably support optional paging (next/prev links) as well
  */
-class EmbeddedCollectionRepresentation extends SelfRefRepresentation {
+class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<?>> {
     @JsonIgnore
     final Class<? extends AbstractHalRepresentation> embeddedRepresentationType
     @JsonIgnore
@@ -46,7 +46,7 @@ class EmbeddedCollectionRepresentation extends SelfRefRepresentation {
      * @param the Class of the Resource for the items in the collection
      * @return
      */
-    public static RepresentationFactory createFactory(
+    public static RepresentationFactory<Collection<?>> createFactory(
             Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
             Class<? extends DomainResource> embeddedResourceType) {
 

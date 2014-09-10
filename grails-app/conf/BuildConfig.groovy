@@ -1,5 +1,3 @@
-import grails.util.Environment
-
 System.setProperty "ivy.checksums", ""
 grails.project.plugins.dir = "${basedir}/plugins"
 grails.project.class.dir = "target/classes"
@@ -40,12 +38,6 @@ new File("application.properties").withInputStream { stream ->
 }
 def config = new ConfigSlurper().parse(props)
 
-def overlayConfigFile = new File("grails-app/conf/OverlayConfig.groovy")
-if (overlayConfigFile.exists()) {
-    def slurpedConfig = new ConfigSlurper().parse(overlayConfigFile.toURI().toURL())
-    config.merge(slurpedConfig)
-}
-
 def warExcludes = [
     'aopalliance-1.0-sources.jar',
     'asm-3.0.jar',
@@ -61,10 +53,8 @@ def warExcludes = [
     'jasper-compiler-jdt-5.5.15.jar',
     'jasper-runtime-5.5.15',
     'jsp-api-2.0-6.1.21.jar',
-    //'jstl-1.1.2.jar',
     'standard-1.1.2.jar',
-    'servlet-api-2.5-20081211.jar',
-    "${config.mp.security.module}-project-${config.mp.security.rev}.zip",
+    'servlet-api*.jar',
     "rome-0.9.jar"
 ]
 
@@ -72,18 +62,6 @@ grails.war.resources = { stagingDir ->
     def libDir = "${stagingDir}/WEB-INF/lib"
     warExcludes.each { exclude ->
         delete(file: "${libDir}/${exclude}")
-    }
-    delete(dir: "${stagingDir}/js-test/doh")
-    delete(dir: "${stagingDir}/js-test/dojo-release-1.6.0-src")
-    delete(dir: "${stagingDir}/themes/accessibility-bow")
-    delete(dir: "${stagingDir}/themes/accessibility-wob")
-    delete(dir: "${stagingDir}/themes/marketplace")
-    delete(dir: "${stagingDir}/themes/template")
-
-    def overlayResources = config.overlay.war.resources
-    overlayResources.each {
-        it.tofile = "${stagingDir}/${it.tofile}"
-        copy(it)
     }
 }
 

@@ -6,18 +6,14 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 def userConfig = System.properties.userConfig ?: "${userHome}/.ozone/MarketplaceConfig.groovy"
-grails.config.locations = ["file:resources/MarketplaceConfig.groovy",
-    "file:resources/OzoneConfig.properties",
-    OverlayConfig,
-    MetadataConfig,
-    "file:${userConfig}"]
+grails.config.locations = [
+        MetadataConfig,
+        'classpath:MarketplaceConfig.groovy',
+        "file:${userConfig}"
+]
 
 environments {
     production {
-        grails.config.locations = ["classpath:MarketplaceConfig.groovy",
-            "classpath:OzoneConfig.properties",
-            OverlayConfig,
-            MetadataConfig]
         log4j = {
             appenders {
                 rollingFile name: 'stacktrace',
