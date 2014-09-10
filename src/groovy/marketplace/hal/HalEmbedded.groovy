@@ -23,7 +23,8 @@ class HalEmbedded extends TreeMap<RelationType, List<AbstractHalRepresentation<?
     /**
      * Add the specified representation to the specified relation
      */
-    List<AbstractHalRepresentation<?>> put(RelationType relationType, AbstractHalRepresentation<?> rep) {
+    List<AbstractHalRepresentation<?>> put(RelationType relationType,
+            AbstractHalRepresentation<?> rep) {
         List<AbstractHalRepresentation<?>> representations = get(relationType)
         if (representations) {
             representations << rep
@@ -33,5 +34,9 @@ class HalEmbedded extends TreeMap<RelationType, List<AbstractHalRepresentation<?
             representations << rep
             put(relationType, representations)
         }
+    }
+
+    public void setIncludeCuries(boolean includeCuries) {
+        values().flatten().each { it.setIncludeCuries(includeCuries) }
     }
 }

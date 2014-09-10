@@ -32,6 +32,8 @@ abstract class AbstractHalRepresentation<T> {
     }
 
     protected void addEmbedded(HalEmbedded embedded) {
+        embedded.includeCuries = false
+
         this.embedded.putAll((Map)embedded)
 
         //curies from embedded HAL representations must be defined on the
@@ -40,5 +42,9 @@ abstract class AbstractHalRepresentation<T> {
         this.links.addCuries(embedded.keySet().grep {
             it instanceof HalCuriedRelationType
         }.collect { it.halRelationCurie })
+    }
+
+    public void setIncludeCuries(boolean includeCuries) {
+        links.includeCuries = includeCuries
     }
 }

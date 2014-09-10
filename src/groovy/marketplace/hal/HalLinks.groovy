@@ -9,6 +9,11 @@ class HalLinks {
     private Set<HalRelationCurie> curies = new TreeSet()
     private Map<RelationType, List<Link>> linkMap = new TreeMap()
 
+    /**
+     * Whether or not curies should be added to the serialized _links object
+     */
+    boolean includeCuries = true
+
     private void addCurieForRelation(RelationType relationType) {
         if (relationType instanceof HalCuriedRelationType) {
             addCurie(relationType.halRelationCurie)
@@ -60,7 +65,7 @@ class HalLinks {
     HalLinks() {}
 
     boolean isEmpty() {
-        curies.isEmpty() && linkMap.isEmpty()
+        (!includeCuries || curies.isEmpty()) && linkMap.isEmpty()
     }
 
     /**
@@ -81,20 +86,10 @@ class HalLinks {
     }
 
     /**
-     * Output the links as a Map, including the "curies" section
+     * Output the links as a Map
      */
     @JsonValue
     Map<RelationType, List<Link>> toMap() {
-        toMap(true)
-    }
-
-    /**
-     * Output the links as a Map, but optionally do not include the "curies" section.  Not
-     * including the curies is useful when this HalLinks is on a representation that is
-     * embedded within another, in which case the curies should be added to the root
-     * representation
-     */
-    protected Map<RelationType, List<Link>> toMap(boolean includeCuries) {
         Map<RelationType, List<Link>> retval = new TreeMap(linkMap)
 
         if (includeCuries && !curies.isEmpty()) {
