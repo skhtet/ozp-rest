@@ -1,6 +1,7 @@
 package marketplace.rest
 
 import marketplace.Intent
+import marketplace.Profile
 import marketplace.ServiceItem
 
 import javax.ws.rs.GET
@@ -30,9 +31,8 @@ class IwcResource {
     }
 
     @GET
-    Map readCurrentUserProfile() {
-        def profile = profileRestService.currentUserProfile
-        [user: [userName: profile.username, name: profile.displayName]]
+    Profile readIwcApi() {
+        profileRestService.currentUserProfile
     }
 
 }
