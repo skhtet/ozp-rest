@@ -1,13 +1,13 @@
 package marketplace.rest
 
+import marketplace.Intent
+import marketplace.ServiceItem
+
 import javax.ws.rs.GET
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
 import org.springframework.beans.factory.annotation.Autowired
-import marketplace.ApplicationLibraryEntry
 
 @Path('/api/iwc')
-@Produces(['application/json'])
 class IwcResource {
 
     @Autowired ApplicationLibraryEntryRestService libraryRestService
@@ -15,18 +15,18 @@ class IwcResource {
 
     @GET
     @Path('/application')
-    Collection<ApplicationDto> readApplicationsForCurrentUser() {
+    Collection<ServiceItem> readApplicationsForCurrentUser() {
         libraryRestService.getByParentId(profileRestService.currentUserProfile.id).collect {
-            new ApplicationDto(it.serviceItem)
+            it.serviceItem
         }
     }
 
     @GET
     @Path('/intent')
-    Collection<IntentDto> readIntentsForApplicationsOfCurrentUser() {
+    Collection<Intent> readIntentsForApplicationsOfCurrentUser() {
         libraryRestService.getByParentId(profileRestService.currentUserProfile.id).collect {
-            it.serviceItem.intents.collect { intent -> new IntentDto(intent) }
-        }.flatten().unique()
+            it.serviceItem.intents
+        }.flatten()
     }
 
     @GET
