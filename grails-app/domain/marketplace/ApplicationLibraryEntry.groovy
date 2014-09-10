@@ -22,8 +22,7 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
 
     static constraints = {
         folder(nullable: true, maxLength: 256)
-        owner(nullable: false, unique: ['folder', 'serviceItem'])
-        serviceItem(nullable: false)
+        serviceItem(nullable: false, unique: ['owner'])
     }
 
     public boolean equals(other) {

@@ -32,7 +32,6 @@ class CustomDomainObjectReader extends DomainObjectReaderSupport {
 
     @Override
     boolean isReadable(Class type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-return false
         return isEnabled() && grailsApplication.isDomainClass(type.getName() == List.getName() ? genericType.actualTypeArguments.getAt(0) : type) && (isXmlType(mediaType) || isJsonType(mediaType))
     }
 

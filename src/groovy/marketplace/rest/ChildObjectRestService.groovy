@@ -55,13 +55,16 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
 
         populateDefaults(object)
         //validator?.validateNew(rep)
-        authorizeCreate(dto)
 
         merge(object, rep)
 
-        parent[parentBackrefPropertyName] << object
+        authorizeCreate(object)
+
+        String addMethodName = "addTo${parentBackrefPropertyName.capitalize()}"
+        parent."$addMethodName"(object)
 
         postprocess(object)
+        save(object)
 
         return object
     }

@@ -1,11 +1,16 @@
 package marketplace.rest
 
-import com.google.common.reflect.TypeToken;
-
 abstract class AbstractInputRepresentation<T> implements InputRepresentation<T> {
-    private Class<T> representedClass = new TypeToken<T>(getClass()) {}.getRawType()
+    private Class<T> representedClass;
 
-    Class<T> representedClass() { representedClass }
+    AbstractInputRepresentation(Class<T> representedClass) {
+        this.representedClass = representedClass
+    }
 
-    Map<String, Object> getProperties() { this.properties }
+    public Class<T> representedClass() { representedClass }
+
+    Map<String, Object> getInputProperties() {
+        //filter out inputProperties from properties
+        this.properties.findAll { k, v -> !(k in ['inputProperties', 'class']) }
+    }
 }

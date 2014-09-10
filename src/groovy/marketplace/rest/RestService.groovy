@@ -234,11 +234,11 @@ abstract class RestService<T> {
          * return the object from the database represented by this rep
          */
         def getFromDb = { IdRefRepresentation rep ->
-            T retval = repValue.representedClass().get(repValue.id)
+            T retval = rep.representedClass().get(rep.id)
 
             if (retval == null) {
                 throw new IllegalArgumentException("Attempted to find non-existant object " +
-                    "of type ${obj.class} with id ${obj.id}")
+                    "of type ${rep.representedClass} with id ${rep.id}")
             }
 
             return retval
@@ -274,8 +274,8 @@ abstract class RestService<T> {
             }
         }
 
-        Map<String, Object> props = representation.properties.collectEntries { name, val ->
-            getNestedValue(val, object ? object[name] : null)
+        Map<String, Object> props = representation.inputProperties.collectEntries { name, val ->
+            [name, getNestedValue(val, object ? object[name] : null)]
         }
 
         if (object) {

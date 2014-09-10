@@ -160,15 +160,15 @@ class ProfileResource extends DomainResource<Profile> {
     Response addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntryInputRepresentation representation) {
         created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(profileId,
-            applicationLibraryEntry)
+            representation)
     }
 
     @Path('/self/library')
     @POST
     Response addToOwnApplicationLibrary(
-            ApplicationLibraryEntry applicationLibraryEntry) {
+            ApplicationLibraryEntryInputRepresentation representation) {
         addToApplicationLibrary(service.currentUserProfile.id,
-            applicationLibraryEntry)
+            representation)
     }
 
     /**

@@ -62,18 +62,4 @@ class ApplicationLibraryEntryRestService
             it.delete(flush:true)
         }
     }
-
-    @Override
-    protected ApplicationLibraryEntry save(ApplicationLibraryEntry entry) {
-        Profile owner = entry.owner
-
-        //if its not already in the parent list, add it
-        if (!owner.applicationLibrary.contains(entry)) {
-            owner.addToApplicationLibrary(entry)
-        }
-
-        parentClassRestService.save(owner)
-
-        return entry
-    }
 }
