@@ -151,7 +151,6 @@ interface HalCuriedRelationType extends RelationType {
 
 enum OzpRelationType implements HalCuriedRelationType {
     //defined relations for OZP should be enumerated here
-    FOLDER('folder'),
     APPLICATION('application'),
     INTENT('intent')
 

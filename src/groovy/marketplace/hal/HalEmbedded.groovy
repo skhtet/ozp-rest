@@ -14,6 +14,12 @@ class HalEmbedded extends TreeMap<RelationType, List<AbstractHalRepresentation<?
         }
     }
 
+    HalEmbedded(RelationType relationType, AbstractHalRepresentation<?> rep) {
+        put(relationType, rep)
+    }
+
+    HalEmbedded() {}
+
     /**
      * Add the specified representation to the specified relation
      */

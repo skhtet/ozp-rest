@@ -50,6 +50,13 @@ class HalLinks {
         }
     }
 
+    /**
+     * Convenience constructor for a HalLinks that only contains one link
+     */
+    HalLinks(RelationType relationType, Link link) {
+        put(relationType, link)
+    }
+
     HalLinks() {}
 
     boolean isEmpty() {
