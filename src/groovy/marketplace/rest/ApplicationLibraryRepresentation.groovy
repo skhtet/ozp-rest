@@ -37,13 +37,13 @@ class ApplicationLibraryRepresentation
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder, String title, URI requestUri) {
             RepresentationFactory<ApplicationLibraryEntry> factory =
-                new ApplicationLibraryEntryRepresentation.Factory()
+                new LibraryApplicationRepresentation.Factory()
 
             new HalEmbedded(entries.collect { entry ->
                 assert entry.folder == title
 
                 new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
-                    factory.toRepresentation(entry, uriBuilderHolder, requestUri))
+                    factory.toRepresentation(entry.serviceItem, uriBuilderHolder, requestUri))
             })
         }
     }

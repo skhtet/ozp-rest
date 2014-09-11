@@ -1,5 +1,8 @@
 package marketplace.rest
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 abstract class AbstractInputRepresentation<T> implements InputRepresentation<T> {
     private Class<T> representedClass;
 
