@@ -99,6 +99,24 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
     }
 
     @Transactional
+    public List<T> replaceAllByParentIdAndRepresentation(Long parentId,
+            List<InputRepresentation<T>> list) {
+        P parent = parentClassRestService.getById(parentId)
+
+        //delete all current children
+        Collection<T> existing = new ArrayList(parent[parentBackrefPropertyName])
+        parent[parentBackrefPropertyName].clear()
+        existing.each {
+            if (it) {
+                authorizeUpdate(it)
+                deleteById(it.id)
+            }
+        }
+
+        return list.collect { createFromParentIdAndRepresentation(parentId, it) }
+    }
+
+    @Transactional
     public List<T> replaceAllByParentIdAndDto(Long parentId, List<T> list) {
         P parent = parentClassRestService.getById(parentId)
 

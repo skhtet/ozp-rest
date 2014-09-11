@@ -178,14 +178,15 @@ class ProfileResource extends DomainResource<Profile> {
     @PUT
     List<ApplicationLibraryEntry> replaceApplicationLibrary(
             @PathParam('profileId') long profileId,
-            List<ApplicationLibraryEntry> library) {
-        applicationLibraryEntryRestService.replaceAllByParentIdAndDto(profileId, library)
+            List<ApplicationLibraryEntryInputRepresentation> library) {
+        applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
+            library)
     }
 
     @Path('/self/library')
     @PUT
     List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
-            List<ApplicationLibraryEntry> library) {
+            List<ApplicationLibraryEntryInputRepresentation> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)
     }
 

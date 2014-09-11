@@ -22,7 +22,9 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
     private LibraryApplicationRepresentation(ServiceItem serviceItem,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(
-            uriBuilderHolder.builder.path(ServiceItemResource.class, 'read')
+            uriBuilderHolder.builder
+                .path(ServiceItemResource.class)
+                .path(ServiceItemResource.class, 'read')
                 .buildFromMap(id: serviceItem.id),
             createLinks(serviceItem, uriBuilderHolder),
             null

@@ -1,5 +1,7 @@
 package marketplace.rest;
 
+import java.util.List;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -18,15 +20,14 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-abstract class AbstractRepresentationReader<T extends InputRepresentation<?>>
-        implements MessageBodyReader<T> {
+abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
 
     @Autowired ObjectMapper objectMapper;
 
     private TypeToken<T> type;
     private JavaType jacksonType;
 
-    public AbstractRepresentationReader() {
+    public AbstractJacksonReader() {
         this.type = new TypeToken<T>(getClass()) {};
         this.jacksonType = TypeFactory.defaultInstance().constructType(this.type.getType());
     }
@@ -42,3 +43,10 @@ abstract class AbstractRepresentationReader<T extends InputRepresentation<?>>
         return objectMapper.readValue(entityStream, jacksonType);
     }
 }
+
+abstract class AbstractRepresentationReader<T extends InputRepresentation<?>>
+        extends AbstractJacksonReader<T> {}
+
+abstract class
+        AbstractRepresentationCollectionReader<T extends InputRepresentation<?>>
+        extends AbstractJacksonReader<List<T>> {}

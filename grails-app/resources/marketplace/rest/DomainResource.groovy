@@ -22,8 +22,6 @@ import marketplace.rest.RestService
  * objects.  It contains basic CRUD functionality
  */
 
-@Consumes(['application/json'])
-//@Produces(['application/json'])
 class DomainResource<T> {
 
     private Class<T> DomainClass
