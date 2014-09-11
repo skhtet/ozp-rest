@@ -1,4 +1,4 @@
-[Licensing Info](./README.txt)
+## [Licensing Info](./README.txt)
 
 ## Run
 
@@ -21,9 +21,10 @@ The output (./target/marketplace.war) can generally be dropped in any servlet co
 ## Configure
 
 Marketplace default configurations can be override with an external configuration file. That file can reside at the following locations:
-    - A path passed to the application as a Java System variable called userConfig (e.g -DuserConfig=/path/to/my/custom/config.groovy)
-    - $USER_HOME/.ozone/MarketplaceConfig.groovy
-    - A file called MarketplaceConfig.groovy on the classpath (e.g. $TOMCAT_HOME/lib)
+
+- A path passed to the application as a Java System variable called userConfig (e.g -DuserConfig=/path/to/my/custom/config.groovy)
+- $USER_HOME/.ozone/MarketplaceConfig.groovy
+- A file called MarketplaceConfig.groovy on the classpath (e.g. $TOMCAT_HOME/lib)
 
 An important characteristic of these external config locations is that if multiple configs exists the settings will be merged, with duplicate settings overriding those of less precedence. Configuration precedence follows the order above - that is the first overrides the second which overrides the third which overrides the internal defaults. The external configurations should be in Groovy config slurper format and can contain environment specific blocks. Here is an example:
 
@@ -44,6 +45,8 @@ environments {
 ```
 
 It is best practice to define all external configs in environment specific blocks.
+
+### Configuring the Data Source
 
 The most commonly needed custom configuration is the dataSource. The following example shows an example dataSource block to configure the internal H2 instance to save changes across application restart in dev mode.
 
