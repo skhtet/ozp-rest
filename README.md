@@ -67,7 +67,7 @@ With the above url config, Grails will keep track of data changes and dump the c
 
 ### Configuring the ElasticSearch Index
 
-By default Marketplace uses an in memory, embedded ElasticSearch index. It development mode, it can help with application start up time to run ElasticSearch separately and configure Marketplace to use it. The following example demonstrates this.
+By default Marketplace uses an in memory, embedded ElasticSearch index. In development mode, it can help with application start up time to run ElasticSearch separately and configure Marketplace to use it. The following example demonstrates this.
 
 ```
 environments {
