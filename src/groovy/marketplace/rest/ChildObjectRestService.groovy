@@ -69,6 +69,7 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
         return object
     }
 
+    @Deprecated //use createFromParentIdAndRepresentation
     public T createFromParentIdAndDto(Long parentId, T dto) {
         dto[parentPropertyName] = makeParentDto(parentId)
         return super.createFromDto(dto)
@@ -117,6 +118,7 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
     }
 
     @Transactional
+    @Deprecated //use replaceAllByParentIdAndRepresentation
     public List<T> replaceAllByParentIdAndDto(Long parentId, List<T> list) {
         P parent = parentClassRestService.getById(parentId)
 

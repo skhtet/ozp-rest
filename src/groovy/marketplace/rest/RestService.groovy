@@ -86,17 +86,17 @@ abstract class RestService<T> {
         old.id = toUpdate.id   //the above does not copy the id
         copyCollections(old)
 
-        //TODO make validator compatible with InputRepresentation
-        validator?.validateChanges(toUpdate, dto)
         authorizeUpdate(toUpdate)
 
         merge(toUpdate, rep)
 
+        validator?.validateChanges(old, toUpdate)
         postprocess(toUpdate, old)
 
         return save(toUpdate)
     }
 
+    @Deprecated //use updateById(Long, InputRepresentation<T>)
     public T updateById(Long id, T dto) {
         //ensure that the ID from the request body and the ID
         //from the URL match
@@ -115,11 +115,11 @@ abstract class RestService<T> {
         copyCollections(old)
 
         preprocess(dto)
-        validator?.validateChanges(toUpdate, dto)
         authorizeUpdate(toUpdate)
 
         bind(toUpdate, dto)
 
+        validator?.validateChanges(old, toUpdate)
         postprocess(toUpdate, old)
 
         return save(toUpdate)
@@ -134,6 +134,7 @@ abstract class RestService<T> {
      * updates
      * @param skipValidation If true, the DomainValidator is not run
      */
+    @Deprecated
     protected T update(T existing, Map updates, boolean skipValidation = false) {
         T old = makeOldCopy(existing)
         authorizeUpdate(existing)
@@ -147,7 +148,7 @@ abstract class RestService<T> {
         }
 
         if (!skipValidation) {
-            validator?.validateChanges(old, existing)
+            validator?.validateChanges(old.properties, existing)
         }
 
         postprocess(existing, old)
@@ -412,11 +413,11 @@ abstract class RestService<T> {
         T object = DomainClass.metaClass.invokeConstructor()
 
         populateDefaults(object)
-        //validator?.validateNew(rep)
         authorizeCreate(dto)
 
         merge(object, rep)
 
+        validator?.validateNew(object)
         postprocess(object)
 
         return save(object)
@@ -425,7 +426,6 @@ abstract class RestService<T> {
     public T createFromDto(T dto) {
         populateDefaults(dto)
         preprocess(dto)
-        validator?.validateNew(dto)
         authorizeCreate(dto)
 
         //we cannot just save the dto because we need to make sure
@@ -433,7 +433,7 @@ abstract class RestService<T> {
         T newObj = DomainClass.metaClass.invokeConstructor()
         bind(newObj, dto)
 
-
+        validator?.validateNew(dto)
         postprocess(newObj)
 
         return save(newObj)

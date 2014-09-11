@@ -19,8 +19,8 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
      * Ensures that any change in approval status is valid and allowed for this user.
      * Also ensures that approval preprequisites are met
      */
-    private void validateApprovalStatus(ServiceItem existing, ServiceItem dto) {
-        def newApprovalStatus = dto.approvalStatus
+    private void validateApprovalStatus(Map existing, ServiceItem updated) {
+        def newApprovalStatus = updated.approvalStatus
         def oldApprovalStatus = existing.approvalStatus
 
         def inProgress = Constants.APPROVAL_STATUSES['IN_PROGRESS']
@@ -55,21 +55,21 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
     /**
      * Ensures that a new ServiceItem does not have an approval status other that In Progress
      */
-    private void validateNewApprovalStatus(dto) {
-       if (dto.approvalStatus != Constants.APPROVAL_STATUSES['IN_PROGRESS']) {
+    private void validateNewApprovalStatus(ServiceItem newObj) {
+       if (newObj.approvalStatus != Constants.APPROVAL_STATUSES['IN_PROGRESS']) {
             throw new IllegalArgumentException("New ServiceItems cannot have an " +
                 "approvalStatus other than ${Constants.APPROVAL_STATUSES['IN_PROGRESS']}")
         }
     }
 
     @Override
-    public void validateNew(ServiceItem dto) {
-        validateNewApprovalStatus(dto)
+    public void validateNew(ServiceItem newObj) {
+        validateNewApprovalStatus(newObj)
     }
 
 
     @Override
-    public void validateChanges(ServiceItem existing, ServiceItem dto) {
-        validateApprovalStatus(existing, dto)
+    public void validateChanges(Map existing, ServiceItem updated) {
+        validateApprovalStatus(existing, updated)
     }
 }
