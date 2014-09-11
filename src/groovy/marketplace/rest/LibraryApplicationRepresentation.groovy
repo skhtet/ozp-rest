@@ -49,7 +49,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
             small: serviceItem.imageSmallUrl,
             large: serviceItem.imageMediumUrl,
             banner: serviceItem.imageLargeUrl,
-            "featured-banner": serviceItem.imageXlargeUrl
+            featuredBanner: serviceItem.imageXlargeUrl
         ]
     }
     public long getId() { serviceItem.id }
