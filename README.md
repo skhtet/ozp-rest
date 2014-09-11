@@ -20,6 +20,8 @@ The output (./target/marketplace.war) can generally be dropped in any servlet co
 
 ## Configure
 
+Note the following information, while generally applicable is geared towards a development environment.
+
 Marketplace default configurations can be override with an external configuration file. That file can reside at the following locations:
 
 - A path passed to the application as a Java System variable called userConfig (e.g -DuserConfig=/path/to/my/custom/config.groovy)
@@ -46,7 +48,7 @@ environments {
 
 It is best practice to define all external configs in environment specific blocks.
 
-### Configuring the Data Source
+### Configuring the Data Source for Persistent Data
 
 The most commonly needed custom configuration is the dataSource. The following example shows an example dataSource block to configure the internal H2 instance to save changes across application restart in dev mode.
 
@@ -61,4 +63,21 @@ environments {
 }
 ```
 
-With the above url config, Grails will keep track of data changes and dump the contents to a file when shutting down. The dbCreate property governs the degree to which Grails keeps the schema in sync with domain classes, possible values are 'none', 'create', 'update', 'create-drop'.
+With the above url config, Grails will keep track of data changes and dump the contents to a file when shutting down. The dbCreate property governs the degree to which Grails keeps the schema in sync with domain classes, possible values are 'none', 'create', 'update', 'create-drop'. Consult the [Grails Docs](http://grails.org/doc/latest/guide/conf.html#dataSource) for more information, but the above config is usually sufficient for dev mode happiness.
+
+### Configuring the ElasticSearch Index
+
+By default Marketplace uses an in memory, embedded ElasticSearch index. It development mode, it can help with application start up time to run ElasticSearch separately and configure Marketplace to use it. The following example demonstrates this.
+
+```
+environments {
+    development {
+        elasticSearch {
+            client.mode = 'transport'
+            client.hosts = [
+                [host:'192.168.59.103', port:9300]
+            ]
+        }
+    }
+}
+```
