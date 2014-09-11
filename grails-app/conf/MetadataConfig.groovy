@@ -7,10 +7,6 @@ marketplace {
                 [username: 'System', displayName: 'System'],
                 [username: 'slackbot', displayName: 'Slackbot']
         ]
-
-        states = [
-                [title: 'Active', description:'Active description', isPublished: true],
-        ]
     }
 }
 

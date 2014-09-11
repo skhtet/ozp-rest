@@ -3,7 +3,12 @@ package marketplace.hal
 import com.fasterxml.jackson.annotation.JsonIgnore
 import marketplace.rest.DomainResource
 
-class EmbeddedCollectionRepresentation extends SelfRefRepresentation {
+/**
+ * Representation of a collection where all of the elements are embedded representations
+ *
+ * TODO: This representation could probably support optional paging (next/prev links) as well
+ */
+class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<?>> {
     @JsonIgnore
     final Class<? extends AbstractHalRepresentation> embeddedRepresentationType
     @JsonIgnore
@@ -30,12 +35,18 @@ class EmbeddedCollectionRepresentation extends SelfRefRepresentation {
                     .path(embeddedResourceType, 'read')
                     .buildFromMap(id: entity.id)
 
-            new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
+            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                     embeddedRepresentationType.newInstance(entity, uriBuilderHolder, href))
         })
     }
 
-    public static RepresentationFactory createFactory(
+    /**
+     *
+     * @param the Class of the representation for the items in the collection
+     * @param the Class of the Resource for the items in the collection
+     * @return
+     */
+    public static RepresentationFactory<Collection<?>> createFactory(
             Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
             Class<? extends DomainResource> embeddedResourceType) {
 

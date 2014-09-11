@@ -152,7 +152,8 @@ interface HalCuriedRelationType extends RelationType {
 enum OzpRelationType implements HalCuriedRelationType {
     //defined relations for OZP should be enumerated here
     APPLICATION('application'),
-    INTENT('intent')
+    INTENT('intent'),
+    USER('user')
 
     private String name
 

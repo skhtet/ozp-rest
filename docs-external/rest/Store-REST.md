@@ -16,39 +16,6 @@ FORMAT: 1A
             {"name":"Marketplace","version":"7.5.0","buildNumber":"1","buildDate":"2013-11-20T05:00:00Z"}
 
 
-# Group Tag
-
-## Tags [/api/tag{?max,offset}]
-
-### Returns all of the Tag objects in the system [GET]
-+ Parameters
-    + max (optional, number) ... The maximum number of Tags to return
-    + offset (optional, number) ... The offset into the full list of Tags to start at
-
-+ Response 200
-    + Content-Type:application/json;charset=utf-8
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "title": "MAP",
-                    "itemCount": 2
-                },
-                {
-                    "id": 2,
-                    "title": "BOOK",
-                    "itemCount": 5
-                }
-            ]
-
-## Tag [/api/tag/{tagId}]
-
-### Removes the Tag from all service items and deletes the tag if executed by admin or owner [DELETE]
-+ Response 204
-
-
 # Group Agency
 
 ## Agencies [/api/agency]
@@ -285,6 +252,7 @@ The following enum-based properties have the following valid values
                     "id": 19,
                     "title": "Search"
                 }],
+                "tags": ["blue", "green"],
                 "imageSmallUrl": "https://www.owfgoss.org/demodata/Favorites.png"
             }
 
@@ -413,6 +381,7 @@ The following enum-based properties have the following valid values
                         "id": 19,
                         "title": "Search"
                     }],
+                    "tags": ["blue", "green"],
                     "imageSmallUrl": "https://www.owfgoss.org/demodata/Favorites.png"
                 }]
             }
@@ -635,6 +604,7 @@ The following enum-based properties have the following valid values
                     "id": 19,
                     "title": "Search"
                 }],
+                "tags": ["blue", "green"],
                 "imageSmallUrl": "https://www.owfgoss.org/demodata/Favorites.png"
             }]
 
@@ -765,71 +735,13 @@ The following enum-based properties have the following valid values
                     "title": "Search",
                     "uuid": "84ff9f28-28da-485f-b55e-875d52c194fd"
                 }],
+                "tags": ["blue", "green"],
                 "imageSmallUrl": "https://www.owfgoss.org/demodata/Favorites.png"
             }]
 
 ### Retrieve a list of ServiceItems which directly require this ServiceItem.  Note that this is unlike the requiredServiceItems called, which checks indirect relationships, aka. transitive dependencies, as well. If the Referer header indicates that this call is from a foreign system, "Inside" ServiceItems will be filtered from the results.  This call supports JSONP [GET]
 + Response 200
     [RequiredListings][]
-
-## optional_title [/api/serviceItem/{serviceItemId}/tag/]
-
-### Retrieve tags for this ServiceItem [GET]
-
-+ Response 200
-    + Content-Type:application/json;charset=utf-8
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "createdBy": {
-                        "id": 2,
-                        "username": "testAdmin1"
-                    },
-                    "tag": {
-                        "id": 1,
-                        "title": "MAP"
-                    }
-                }
-            ]
-
-
-## optional_title [/api/serviceItem/{serviceItemId}/tag]
-
-### Create a tag or tags for this ServiceItem [POST]
-
-+ Request
-    + Body
-
-            [{"serviceItemId":5,"title":"tag1","createdBy":{"id":2}}]
-
-+ Response 201
-    + Content-Type:application/json;charset=utf-8
-
-    + Body
-
-            [
-                {
-                    "id": 3,
-                    "createdBy": {
-                        "id": 2,
-                        "username": "testAdmin1"
-                    },
-                    "tag": {
-                        "id": 3,
-                        "title": "tag1"
-                    }
-                }
-            ]
-
-## optional_title [/api/serviceItem/{serviceItemId}/tag/{tagId}]
-
-### Delete a tag for this ServiceItem [DELETE]
-
-+ Response 204
-
 
 # Group Contact Type
 
@@ -1262,16 +1174,16 @@ The user's Application Library - a personal list of "favorite" Applications (Ser
 + Model
     + Body
 
-        [{
-            "folder": "folder 2",
-            "serviceItem": {
-                "imageLargeUrl": null,
-                "id": 1,
-                "title": "Listing 1",
-                "launchUrl": "https:///",
-                "imageMediumUrl": null
-            }
-        }]
+            [{
+                "folder": "folder 2",
+                "serviceItem": {
+                    "imageLargeUrl": null,
+                    "id": 1,
+                    "title": "Listing 1",
+                    "launchUrl": "https:///",
+                    "imageMediumUrl": null
+                }
+            }]
 
 ### Retrieve this user's Application Library [GET]
 
