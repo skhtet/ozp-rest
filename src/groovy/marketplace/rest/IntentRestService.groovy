@@ -13,4 +13,12 @@ class IntentRestService extends RestService<Intent> {
     }
 
     IntentRestService() {}
+
+    public Collection<Intent> getByMainType(String mainType) {
+        Intent.findAllByMainType(mainType)
+    }
+
+    public Collection<Intent> getByDataType(String mainType, String subType) {
+        Intent.findAllByMainTypeAndSubType(mainType, subType)
+    }
 }

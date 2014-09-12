@@ -1,22 +1,39 @@
 package marketplace.rest
 
 import marketplace.Intent
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
+import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
+import javax.ws.rs.QueryParam
+import javax.ws.rs.core.Response
+
+import static org.grails.jaxrs.response.Responses.created
 
 @Path('api/intent')
-class IntentResource extends DomainResource<Intent> {
-    @Autowired
-    IntentResource(IntentRestService intentRestService) {
-        super(Intent.class, intentRestService)
-    }
+class IntentResource {
+    @Autowired IntentRestService intentRestService
 
     IntentResource() {}
+
+    @GET
+    @Path('/{mainType}/{subType}')
+    Collection<Intent> readBySubType(@PathParam('mainType') String mainType,
+                                     @PathParam('subType') String subType) {
+
+        intentRestService.getByDataType(mainType, subType)
+    }
+
+    @GET
+    @Path('/{mainType}')
+    Collection<Intent> read(@PathParam('mainType') String mainType) {
+        intentRestService.getByMainType(mainType)
+    }
 
     @GET
     @Path('/{mainType}/{subType}/{action}')
@@ -24,7 +41,7 @@ class IntentResource extends DomainResource<Intent> {
                 @PathParam('subType') String subType,
                 @PathParam('action') String action) {
 
-        service.getById("$mainType/$subType/$action")
+        intentRestService.getById("$mainType/$subType/$action")
     }
 
     @PUT
@@ -34,7 +51,7 @@ class IntentResource extends DomainResource<Intent> {
                   @PathParam('action') String action,
                   Intent dto) {
 
-        service.updateById("$mainType/$subType/$action", dto)
+        intentRestService.updateById("$mainType/$subType/$action", dto)
     }
 
     @DELETE
@@ -43,6 +60,18 @@ class IntentResource extends DomainResource<Intent> {
                 @PathParam('subType') String subType,
                 @PathParam('action') String action) {
 
-        service.deleteById("$mainType/$subType/$action")
+        intentRestService.deleteById("$mainType/$subType/$action")
+    }
+
+    @POST
+    Response create(Intent dto) {
+        created intentRestService.createFromDto(dto)
+    }
+
+    @GET
+    Collection<Intent> readAll(@QueryParam('offset') Integer offset,
+                               @QueryParam('max') Integer max) {
+
+        intentRestService.getAll(offset, max)
     }
 }
