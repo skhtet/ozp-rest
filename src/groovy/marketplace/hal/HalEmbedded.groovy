@@ -1,5 +1,7 @@
 package marketplace.hal
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 /**
  * Represents the _embedded section of a HAL object
  */
@@ -38,5 +40,12 @@ class HalEmbedded extends TreeMap<RelationType, List<AbstractHalRepresentation<?
 
     public void setIncludeCuries(boolean includeCuries) {
         values().flatten().each { it.setIncludeCuries(includeCuries) }
+    }
+
+    @JsonValue
+    public Map<RelationType, Object> toMap() {
+        this.collectEntries { relType, objects ->
+            objects.size() == 1 ? [relType, objects[0]] : [relType, objects]
+        }
     }
 }

@@ -1,6 +1,7 @@
 package marketplace.hal
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 
@@ -23,6 +24,11 @@ abstract class AbstractHalRepresentation<T> {
     @JsonInclude(Include.NON_NULL)
     HalEmbedded getEmbedded() { embedded.isEmpty() ? null : embedded }
 
+    @JsonIgnore
+    Set<HalRelationCurie> getCuries() {
+        links.curies
+    }
+
     protected void addLinks(HalLinks links) {
         this.links.addLinks(links)
     }
@@ -38,7 +44,9 @@ abstract class AbstractHalRepresentation<T> {
 
         //curies from embedded HAL representations must be defined on the
         //root representation
-        this.links.addCuries(embedded.collect { k, rep -> rep.links.curies }.flatten())
+        this.links.addCuries(embedded.collect { k, reps ->
+            reps.collect { it.curies }
+        }.flatten())
         this.links.addCuries(embedded.keySet().grep {
             it instanceof HalCuriedRelationType
         }.collect { it.halRelationCurie })

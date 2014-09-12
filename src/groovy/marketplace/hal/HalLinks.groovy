@@ -89,14 +89,17 @@ class HalLinks {
      * Output the links as a Map
      */
     @JsonValue
-    Map<RelationType, List<Link>> toMap() {
-        Map<RelationType, List<Link>> retval = new TreeMap(linkMap)
+    Map<RelationType, Object> toMap() {
+        Map<RelationType, Object> retval = new TreeMap(linkMap)
 
         if (includeCuries && !curies.isEmpty()) {
             retval.put(CurieRelationType.CURIE, curies.collect { it.toLink() })
         }
 
-        return retval
+        //if there is only one item in the list, remove the list wrapper
+        return retval.collectEntries { relType, links ->
+            links.size() == 1 ? [relType, links[0]] : [relType, links]
+        }
     }
 
     /**
