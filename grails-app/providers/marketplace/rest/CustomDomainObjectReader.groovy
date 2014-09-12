@@ -79,15 +79,17 @@ class CustomDomainObjectReader extends DomainObjectReaderSupport {
         }
     }
 
-    static Long idFromMap(Map map) {
+    static Object idFromMap(Map map) {
         def id = map.id
         if (id == null || id == '') {
             return null
         }
+
         if(id instanceof Number){
             return id.toLong()
         }
-        return Long.parseLong(id as String)
+
+        (id as String).isNumber() ? Long.parseLong(id as String) : id
     }
 
     /**

@@ -65,7 +65,7 @@ abstract class RestService<T> {
     //Keep CGLIB happy
     protected RestService() {}
 
-    public void deleteById(Long id) {
+    public void deleteById(Object id) {
         T obj = getById(id)
 
         authorizeUpdate(obj)
@@ -76,7 +76,7 @@ abstract class RestService<T> {
         obj.delete(flush: true)
     }
 
-    public T updateById(Long id, InputRepresentation<T> rep) {
+    public T updateById(Object id, InputRepresentation<T> rep) {
         T toUpdate = getById(id)
 
         //we need an extra copy that doesn't get changed by the update
@@ -97,7 +97,7 @@ abstract class RestService<T> {
     }
 
     @Deprecated //use updateById(Long, InputRepresentation<T>)
-    public T updateById(Long id, T dto) {
+    public T updateById(Object id, T dto) {
         //ensure that the ID from the request body and the ID
         //from the URL match
         if (dto.id != id) {
@@ -388,7 +388,7 @@ abstract class RestService<T> {
 
 
     @Transactional(readOnly=true)
-    public T getById(Long id) {
+    public T getById(Object id) {
         T obj = DomainClass.get(id)
 
         if (!obj) {
