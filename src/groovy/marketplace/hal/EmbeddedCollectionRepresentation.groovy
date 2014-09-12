@@ -8,19 +8,26 @@ import marketplace.rest.DomainResource
  *
  * TODO: This representation could probably support optional paging (next/prev links) as well
  */
-class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<?>> {
+class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collection<T>> {
     @JsonIgnore
-    final Class<? extends AbstractHalRepresentation> embeddedRepresentationType
+    final Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType
     @JsonIgnore
-    final Class<? extends DomainResource> embeddedResourceType
+    final Class<? extends DomainResource<T>> embeddedResourceType
 
-    EmbeddedCollectionRepresentation(Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
-            Class<? extends DomainResource> embeddedResourceType,
-            Collection entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            URI requestUri) {
+    EmbeddedCollectionRepresentation(
+            Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType,
+            Class<? extends DomainResource<T>> embeddedResourceType,
+            Collection<T> entities,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
-        super(requestUri, null, null)
+        super(
+            uriBuilderHolder.builder
+                .path(embeddedResourceType)
+                .path(embeddedResourceType, 'readAll')
+                .build(),
+            null,
+            null
+        )
 
         this.embeddedRepresentationType = embeddedRepresentationType
         this.embeddedResourceType = embeddedResourceType
@@ -28,7 +35,8 @@ class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<
         this.addEmbedded(embedEntities(entities, uriBuilderHolder))
     }
 
-    private HalEmbedded embedEntities(Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private HalEmbedded embedEntities(Collection entities,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(entities.collect { Object entity ->
             Map props = entity.properties as HashMap
             props.id = entity.id
@@ -53,9 +61,9 @@ class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<
             Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
             Class<? extends DomainResource> embeddedResourceType) {
 
-        { Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri ->
+        { Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder ->
             new EmbeddedCollectionRepresentation(embeddedRepresentationType,
-                    embeddedResourceType, entities, uriBuilderHolder, requestUri)
+                    embeddedResourceType, entities, uriBuilderHolder)
         } as RepresentationFactory
     }
 }

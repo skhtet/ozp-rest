@@ -22,20 +22,20 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
 class ApplicationLibraryRepresentation
-        extends SelfRefRepresentation<Collection<ApplicationLibraryEntry>> {
+        extends SelfRefRepresentation<ApplicationLibrary> {
 
     private static class FolderRepresentation
             extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
         final String title
 
         FolderRepresentation(String title, Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
-            super(null, createItems(entries, uriBuilderHolder, title, requestUri))
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            super(null, createItems(entries, uriBuilderHolder, title))
             this.title = title
         }
 
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder, String title, URI requestUri) {
+                ApplicationRootUriBuilderHolder uriBuilderHolder, String title) {
             RepresentationFactory<ApplicationLibraryEntry> factory =
                 new LibraryApplicationRepresentation.Factory()
 
@@ -43,7 +43,7 @@ class ApplicationLibraryRepresentation
                 assert entry.folder == title
 
                 new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
-                    factory.toRepresentation(entry.serviceItem, uriBuilderHolder, requestUri))
+                    factory.toRepresentation(entry.serviceItem, uriBuilderHolder))
             })
         }
     }
@@ -52,27 +52,49 @@ class ApplicationLibraryRepresentation
      * A UriBuilder that should be initialized to the application root
      * (e.g. https://localhost:8443/marketplace)
      */
-    private ApplicationLibraryRepresentation(Collection<ApplicationLibraryEntry> entries,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            URI requestUri) {
-        super(requestUri, null, createFolders(entries, uriBuilderHolder, requestUri))
+    private ApplicationLibraryRepresentation(ApplicationLibrary library,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(
+            uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'getApplicationLibrary')
+                .buildFromMap(profileId: library.profileId),
+            createLinks(library, uriBuilderHolder),
+            createFolders(library, uriBuilderHolder)
+        )
     }
 
-    private static HalEmbedded createFolders(Collection<ApplicationLibraryEntry> entries,
-            ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
+    private static HalLinks createLinks(ApplicationLibrary library,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        URI viaUri = uriBuilderHolder.builder
+            .path(ProfileResource.class)
+            .path(ProfileResource.class, 'read')
+            .buildFromMap(id: library.profileId)
+
+        new HalLinks(RegisteredRelationType.VIA, new Link(viaUri))
+    }
+
+    private static HalEmbedded createFolders(ApplicationLibrary library,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        List<ApplicationLibraryEntry> entries = library.entries
+        URI collectionUri = uriBuilderHolder.builder
+            .path(ProfileResource.class)
+            .path(ProfileResource.class, 'read')
+            .buildFromMap(id: library.profileId)
+
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
-                new FolderRepresentation(folderName, folderEntries, uriBuilderHolder, requestUri))
+                new FolderRepresentation(folderName, folderEntries, uriBuilderHolder))
         })
     }
 
     public static class Factory
-            implements RepresentationFactory<Collection<ApplicationLibraryEntry>> {
+            implements RepresentationFactory<ApplicationLibrary> {
+        @Override
         ApplicationLibraryRepresentation toRepresentation(
-                Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder,
-                URI requestUri) {
-            new ApplicationLibraryRepresentation(entries, uriBuilderHolder, requestUri)
+                ApplicationLibrary entries,
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new ApplicationLibraryRepresentation(entries, uriBuilderHolder)
         }
     }
 }

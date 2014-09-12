@@ -18,10 +18,9 @@ class ApplicationLibraryEntryRepresentation
     private ApplicationLibraryEntry entry
 
     private ApplicationLibraryEntryRepresentation(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            URI requestUri) {
-        super(createCollectionLink(entry, uriBuilderHolder),
-            createEmbeddedServiceItem(entry, uriBuilderHolder, requestUri))
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(createLinks(entry, uriBuilderHolder),
+            createEmbeddedServiceItem(entry, uriBuilderHolder))
 
         assert entry != null
         assert entry.serviceItem != null
@@ -40,13 +39,12 @@ class ApplicationLibraryEntryRepresentation
     }
 
     private static HalEmbedded createEmbeddedServiceItem(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            URI requestUri) {
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
         RepresentationFactory<ServiceItem> factory =
             new LibraryApplicationRepresentation.Factory()
 
         new HalEmbedded(OzpRelationType.APPLICATION, factory.toRepresentation(entry.serviceItem,
-            uriBuilderHolder, requestUri))
+            uriBuilderHolder))
     }
 
     public String getFolder() { entry.folder }
@@ -56,9 +54,8 @@ class ApplicationLibraryEntryRepresentation
 
         @Override
         ApplicationLibraryEntryRepresentation toRepresentation(ApplicationLibraryEntry entry,
-                ApplicationRootUriBuilderHolder uriBuilderHolder,
-                URI requestUri) {
-            new ApplicationLibraryEntryRepresentation(entry, uriBuilderHolder, requestUri)
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new ApplicationLibraryEntryRepresentation(entry, uriBuilderHolder)
         }
     }
 }

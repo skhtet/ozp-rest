@@ -145,18 +145,49 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/library')
     @GET
-    List<ApplicationLibraryEntry> getApplicationLibrary(@PathParam('profileId') long profileId) {
+    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    ApplicationLibrary getApplicationLibrary(@PathParam('profileId') long profileId) {
+        new ApplicationLibrary(profileId,
+            applicationLibraryEntryRestService.getByParentId(profileId))
+    }
+
+    /**
+     * Remove after the demo and add application/json to the Produces annotation of
+     * getApplicationLibrary
+     */
+    @Path('/{profileId}/library')
+    @GET
+    @Produces(['application/json'])
+    @Deprecated
+    List<ApplicationLibraryEntry> getNonHalApplicationLibrary(
+            @PathParam('profileId') long profileId) {
         applicationLibraryEntryRestService.getByParentId(profileId)
     }
 
     @Path('/self/library')
     @GET
-    List<ApplicationLibraryEntry> getOwnApplicationLibrary() {
+    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    ApplicationLibrary getOwnApplicationLibrary() {
         getApplicationLibrary(service.currentUserProfile.id)
+    }
+
+    /** Remove after demo */
+    @Path('/self/library')
+    @GET
+    @Produces(['application/json'])
+    @Deprecated
+    List<ApplicationLibraryEntry> getOwnNonHalApplicationLibrary() {
+        getNonHalApplicationLibrary(service.currentUserProfile.id)
     }
 
     @Path('/{profileId}/library')
     @POST
+    @Produces([
+        'application/vnd.ozp.library.entry+hal',
+        'application/hal+json',
+        'application/json'
+    ])
+    @Consumes(['application/vnd.ozp.library.entry+json', 'application/json'])
     Response addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntryInputRepresentation representation) {
         created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(profileId,
@@ -165,6 +196,12 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @POST
+    @Produces([
+        'application/vnd.ozp.library.entry+hal',
+        'application/hal+json',
+        'application/json'
+    ])
+    @Consumes(['application/vnd.ozp.library.entry+json', 'application/json'])
     Response addToOwnApplicationLibrary(
             ApplicationLibraryEntryInputRepresentation representation) {
         addToApplicationLibrary(service.currentUserProfile.id,
@@ -176,7 +213,23 @@ class ProfileResource extends DomainResource<Profile> {
      */
     @Path('/{profileId}/library')
     @PUT
-    List<ApplicationLibraryEntry> replaceApplicationLibrary(
+    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    ApplicationLibrary replaceApplicationLibrary(
+            @PathParam('profileId') long profileId,
+            List<ApplicationLibraryEntryInputRepresentation> library) {
+        new ApplicationLibrary(profileId,
+            applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
+                library))
+    }
+
+    /** remove after the demo */
+    @Path('/{profileId}/library')
+    @PUT
+    @Produces(['application/json'])
+    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Deprecated
+    List<ApplicationLibraryEntry> replaceNonHalApplicationLibrary(
             @PathParam('profileId') long profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
         applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
@@ -185,9 +238,22 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @PUT
-    List<ApplicationLibraryEntry> replaceOwnApplicationLibrary(
+    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    ApplicationLibrary replaceOwnApplicationLibrary(
             List<ApplicationLibraryEntryInputRepresentation> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)
+    }
+
+    /** remove after demo */
+    @Path('/self/library')
+    @PUT
+    @Produces(['application/json'])
+    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Deprecated
+    List<ApplicationLibraryEntry> replaceNonHalOwnApplicationLibrary(
+            List<ApplicationLibraryEntryInputRepresentation> library) {
+        replaceNonHalApplicationLibrary(service.currentUserProfile.id, library)
     }
 
     @Path('/{profileId}/library/{serviceItemId}')

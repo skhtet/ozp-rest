@@ -9,8 +9,16 @@ class UserRepresentation extends SelfRefRepresentation<Profile> {
     final String userName
     final String name
 
-    UserRepresentation(Profile user, ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
-        super(requestUri, null, null)
+    UserRepresentation(Profile user, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(
+            uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'read')
+                .buildFromMap(id: user.id),
+            null,
+            null
+        )
+
         this.name = user.displayName
         this.userName = user.username
     }
@@ -18,9 +26,8 @@ class UserRepresentation extends SelfRefRepresentation<Profile> {
     static class Factory implements RepresentationFactory<Profile> {
         public UserRepresentation toRepresentation(
                     Profile user,
-                    ApplicationRootUriBuilderHolder uriBuilderHolder,
-                    URI requestUri) {
-            new UserRepresentation(user, uriBuilderHolder, requestUri)
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new UserRepresentation(user, uriBuilderHolder)
         }
     }
 }

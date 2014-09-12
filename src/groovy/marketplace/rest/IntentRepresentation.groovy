@@ -13,8 +13,15 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
     final String icon
 
     IntentRepresentation(Intent intent,
-                         ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
-        super(requestUri, null, null)
+                         ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(
+            uriBuilderHolder.builder
+                .path(IntentResource.class)
+                .path(IntentResource.class, 'read')
+                .buildFromMap(id: intent.id),
+            null,
+            null
+        )
 
         this.dataType = intent.dataType
         this.action = intent.action
@@ -24,9 +31,8 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
 
     public static class Factory implements RepresentationFactory<Intent> {
         public IntentRepresentation toRepresentation(Intent intent,
-                                                     ApplicationRootUriBuilderHolder uriBuilderHolder,
-                                                     URI requestUri) {
-            new IntentRepresentation(intent, uriBuilderHolder, requestUri)
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new IntentRepresentation(intent, uriBuilderHolder)
         }
     }
 }

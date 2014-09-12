@@ -58,8 +58,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
         @Override
         public LibraryApplicationRepresentation toRepresentation(
                     ServiceItem serviceItem,
-                    ApplicationRootUriBuilderHolder uriBuilderHolder,
-                    URI requestUri) {
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new LibraryApplicationRepresentation(serviceItem, uriBuilderHolder)
         }
     }

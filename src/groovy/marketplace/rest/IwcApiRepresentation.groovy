@@ -11,9 +11,15 @@ import marketplace.hal.SelfRefRepresentation
 
 class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
     IwcApiRepresentation(Profile profile,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            URI requestUri) {
-        super(requestUri, linkResources(uriBuilderHolder), embedUser(profile, uriBuilderHolder))
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(
+            uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'read')
+                .buildFromMap(id: profile.id),
+            linkResources(uriBuilderHolder),
+            embedUser(profile, uriBuilderHolder)
+        )
     }
 
     private static HalEmbedded embedUser(Profile profile, ApplicationRootUriBuilderHolder uriBuilderHolder) {
@@ -43,9 +49,8 @@ class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
     static class Factory implements RepresentationFactory<Profile> {
         public IwcApiRepresentation toRepresentation(
                     Profile profile,
-                    ApplicationRootUriBuilderHolder uriBuilderHolder,
-                    URI requestUri) {
-            new IwcApiRepresentation(profile, uriBuilderHolder, requestUri)
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new IwcApiRepresentation(profile, uriBuilderHolder)
         }
     }
 }

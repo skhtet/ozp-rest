@@ -26,8 +26,15 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     ]
 
     ApplicationRepresentation(ServiceItem serviceItem,
-            ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
-        super(requestUri, null, embedIntents(serviceItem.intents, uriBuilderHolder))
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        super(
+            uriBuilderHolder.builder
+                .path(ServiceItemResource.class)
+                .path(ServiceItemResource.class, 'read')
+                .buildFromMap(id: serviceItem.id),
+            null,
+            embedIntents(serviceItem.intents, uriBuilderHolder)
+        )
 
         this.name = serviceItem.title
         this.launchUrls.put('default', serviceItem.launchUrl)
@@ -57,9 +64,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     public static class Factory implements RepresentationFactory<ServiceItem> {
         public ApplicationRepresentation toRepresentation(
                     ServiceItem serviceItem,
-                    ApplicationRootUriBuilderHolder uriBuilderHolder,
-                    URI requestUri) {
-            new ApplicationRepresentation(serviceItem, uriBuilderHolder, requestUri)
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            new ApplicationRepresentation(serviceItem, uriBuilderHolder)
         }
     }
 }
