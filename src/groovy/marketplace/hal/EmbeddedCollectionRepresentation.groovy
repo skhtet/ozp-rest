@@ -30,10 +30,13 @@ class EmbeddedCollectionRepresentation extends SelfRefRepresentation<Collection<
 
     private HalEmbedded embedEntities(Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(entities.collect { Object entity ->
+            Map props = entity.properties as HashMap
+            props.id = entity.id
+
             URI href = uriBuilderHolder.builder
                     .path(embeddedResourceType)
                     .path(embeddedResourceType, 'read')
-                    .buildFromMap(id: entity.id)
+                    .buildFromMap(props)
 
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                     embeddedRepresentationType.newInstance(entity, uriBuilderHolder, href))

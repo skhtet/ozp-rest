@@ -9,13 +9,17 @@ import marketplace.hal.SelfRefRepresentation
 class IntentRepresentation extends SelfRefRepresentation<Intent> {
     final String dataType
     final String action
+    final String label
+    final String icon
 
     IntentRepresentation(Intent intent,
                          ApplicationRootUriBuilderHolder uriBuilderHolder, URI requestUri) {
         super(requestUri, null, null)
 
-        this.dataType = intent.dataType.title
-        this.action = intent.action.title
+        this.dataType = intent.dataType
+        this.action = intent.action
+        this.label = intent.label
+        this.icon = intent.icon
     }
 
     public static class Factory implements RepresentationFactory<Intent> {

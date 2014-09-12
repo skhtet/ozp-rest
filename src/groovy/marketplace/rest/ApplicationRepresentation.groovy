@@ -47,7 +47,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
             URI href = uriBuilderHolder.builder
                     .path(IntentResource.class)
                     .path(IntentResource.class, 'read')
-                    .buildFromMap(id: intent.id)
+                    .buildFromMap(intent.properties)
 
             new AbstractMap.SimpleEntry(OzpRelationType.INTENT,
                     new IntentRepresentation(intent, uriBuilderHolder, href))

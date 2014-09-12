@@ -31,7 +31,7 @@ class IntentResource {
 
     @GET
     @Path('/{mainType}')
-    Collection<Intent> read(@PathParam('mainType') String mainType) {
+    Collection<Intent> readByMainType(@PathParam('mainType') String mainType) {
         intentRestService.getByMainType(mainType)
     }
 
