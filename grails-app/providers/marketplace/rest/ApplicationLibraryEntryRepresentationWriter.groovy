@@ -8,9 +8,13 @@ import com.google.common.reflect.TypeToken
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.AbstractRepresentationWriter
+import marketplace.hal.AbstractHalRepresentation
 
 @Provider
-@Produces(['application/vnd.ozp.library.entry+hal', 'application/hal+json'])
+@Produces([
+    ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+    AbstractHalRepresentation.HAL_MEDIA_TYPE
+])
 class ApplicationLibraryEntryRepresentationWriter
         extends AbstractRepresentationWriter<ApplicationLibraryEntry> {
     ApplicationLibraryEntryRepresentationWriter() {

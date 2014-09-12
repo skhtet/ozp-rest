@@ -15,6 +15,11 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.UriBuilder
 import javax.ws.rs.core.Response.Status
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriInfo
 
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -26,10 +31,7 @@ import marketplace.Tag
 import marketplace.ServiceItemActivity
 import marketplace.ApplicationLibraryEntry
 
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.UriInfo
+import marketplace.hal.AbstractHalRepresentation
 
 @Path('/api/profile')
 class ProfileResource extends DomainResource<Profile> {
@@ -145,7 +147,10 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/library')
     @GET
-    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    @Produces([
+        ApplicationLibraryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE
+    ])
     ApplicationLibrary getApplicationLibrary(@PathParam('profileId') long profileId) {
         new ApplicationLibrary(profileId,
             applicationLibraryEntryRestService.getByParentId(profileId))
@@ -157,7 +162,7 @@ class ProfileResource extends DomainResource<Profile> {
      */
     @Path('/{profileId}/library')
     @GET
-    @Produces(['application/json'])
+    @Produces([MediaType.APPLICATION_JSON])
     @Deprecated
     List<ApplicationLibraryEntry> getNonHalApplicationLibrary(
             @PathParam('profileId') long profileId) {
@@ -166,7 +171,10 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @GET
-    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
+    @Produces([
+        ApplicationLibraryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE
+    ])
     ApplicationLibrary getOwnApplicationLibrary() {
         getApplicationLibrary(service.currentUserProfile.id)
     }
@@ -174,7 +182,7 @@ class ProfileResource extends DomainResource<Profile> {
     /** Remove after demo */
     @Path('/self/library')
     @GET
-    @Produces(['application/json'])
+    @Produces([MediaType.APPLICATION_JSON])
     @Deprecated
     List<ApplicationLibraryEntry> getOwnNonHalApplicationLibrary() {
         getNonHalApplicationLibrary(service.currentUserProfile.id)
@@ -183,11 +191,14 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/{profileId}/library')
     @POST
     @Produces([
-        'application/vnd.ozp.library.entry+hal',
-        'application/hal+json',
-        'application/json'
+        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
     ])
-    @Consumes(['application/vnd.ozp.library.entry+json', 'application/json'])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     Response addToApplicationLibrary(@PathParam('profileId') long profileId,
             ApplicationLibraryEntryInputRepresentation representation) {
         created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(profileId,
@@ -197,11 +208,14 @@ class ProfileResource extends DomainResource<Profile> {
     @Path('/self/library')
     @POST
     @Produces([
-        'application/vnd.ozp.library.entry+hal',
-        'application/hal+json',
-        'application/json'
+        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
     ])
-    @Consumes(['application/vnd.ozp.library.entry+json', 'application/json'])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     Response addToOwnApplicationLibrary(
             ApplicationLibraryEntryInputRepresentation representation) {
         addToApplicationLibrary(service.currentUserProfile.id,
@@ -213,8 +227,14 @@ class ProfileResource extends DomainResource<Profile> {
      */
     @Path('/{profileId}/library')
     @PUT
-    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
-    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Produces([
+        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE
+    ])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     ApplicationLibrary replaceApplicationLibrary(
             @PathParam('profileId') long profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
@@ -226,8 +246,11 @@ class ProfileResource extends DomainResource<Profile> {
     /** remove after the demo */
     @Path('/{profileId}/library')
     @PUT
-    @Produces(['application/json'])
-    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @Deprecated
     List<ApplicationLibraryEntry> replaceNonHalApplicationLibrary(
             @PathParam('profileId') long profileId,
@@ -238,8 +261,14 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/library')
     @PUT
-    @Produces(['application/vnd.ozp.library+hal', 'application/hal+json'])
-    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Produces([
+        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE
+    ])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     ApplicationLibrary replaceOwnApplicationLibrary(
             List<ApplicationLibraryEntryInputRepresentation> library) {
         replaceApplicationLibrary(service.currentUserProfile.id, library)
@@ -248,8 +277,11 @@ class ProfileResource extends DomainResource<Profile> {
     /** remove after demo */
     @Path('/self/library')
     @PUT
-    @Produces(['application/json'])
-    @Consumes(['application/vnd.ozp.library+json', 'application/json'])
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([
+        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @Deprecated
     List<ApplicationLibraryEntry> replaceNonHalOwnApplicationLibrary(
             List<ApplicationLibraryEntryInputRepresentation> library) {

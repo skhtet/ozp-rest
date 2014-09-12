@@ -24,6 +24,8 @@ import marketplace.hal.RegisteredRelationType
 class ApplicationLibraryRepresentation
         extends SelfRefRepresentation<ApplicationLibrary> {
 
+    public static final String MEDIA_TYPE = 'application/vnd.ozp.library+hal'
+
     private static class FolderRepresentation
             extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
         final String title

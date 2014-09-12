@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 
 abstract class AbstractHalRepresentation<T> {
+    public static final String HAL_MEDIA_TYPE = 'application/hal+json'
+
     private HalLinks links = new HalLinks()
     private HalEmbedded embedded = new HalEmbedded()
 

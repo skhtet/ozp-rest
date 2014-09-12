@@ -14,6 +14,7 @@ import marketplace.hal.RepresentationFactory
 
 class ApplicationLibraryEntryRepresentation
         extends AbstractHalRepresentation<ApplicationLibraryEntry> {
+    public static final String MEDIA_TYPE = 'application/vnd.ozp.library.entry+hal'
 
     private ApplicationLibraryEntry entry
 

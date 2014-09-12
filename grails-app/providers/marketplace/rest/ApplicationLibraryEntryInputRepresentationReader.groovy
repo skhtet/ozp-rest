@@ -2,8 +2,12 @@ package marketplace.rest
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.ext.Provider
+import javax.ws.rs.core.MediaType
 
-@Consumes(['application/vnd.ozp.library.entry+json', 'application/json'])
+@Consumes([
+    ApplicationLibraryEntryInputRepresentation.MEDIA_TYPE,
+    MediaType.APPLICATION_JSON
+])
 @Provider
 class ApplicationLibraryEntryInputRepresentationReader
         extends AbstractRepresentationReader<ApplicationLibraryEntryInputRepresentation> {}
