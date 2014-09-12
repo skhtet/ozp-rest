@@ -28,14 +28,23 @@ class ApplicationLibraryEntryRepresentation
         this.entry = entry
     }
 
-    private static HalLinks createCollectionLink(ApplicationLibraryEntry entry,
+    private static HalLinks createLinks(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI href = uriBuilderHolder.builder
+        URI collectionHref = uriBuilderHolder.builder
             .path(ProfileResource.class)
             .path(ProfileResource.class, 'getApplicationLibrary')
             .buildFromMap(profileId: entry.owner.id)
 
-        new HalLinks(RegisteredRelationType.COLLECTION, new Link(href))
+        URI entryHref = uriBuilderHolder.builder
+            .path(ProfileResource.class)
+            .path(ProfileResource.class, 'removeFromApplicationLibrary')
+            .buildFromMap(profileId: entry.owner.id, serviceItemId: entry.serviceItem.id)
+
+        new HalLinks([
+            new AbstractMap.SimpleEntry(RegisteredRelationType.COLLECTION,
+                new Link(collectionHref)),
+            new AbstractMap.SimpleEntry(RegisteredRelationType.SELF, new Link(entryHref))
+        ])
     }
 
     private static HalEmbedded createEmbeddedServiceItem(ApplicationLibraryEntry entry,
