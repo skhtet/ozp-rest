@@ -1,5 +1,6 @@
 package marketplace.rest
 
+import javax.ws.rs.Consumes
 import java.net.URL
 
 import javax.ws.rs.Path
@@ -27,6 +28,8 @@ import marketplace.ServiceItemActivity
 
 import marketplace.WebUtil
 
+import static org.grails.jaxrs.response.Responses.created
+
 @Path('/api/serviceItem')
 class ServiceItemResource extends DomainResource<ServiceItem> {
     ServiceItemRestService serviceItemRestService
@@ -41,6 +44,12 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
     }
 
     ServiceItemResource() {}
+
+    @POST
+    @Consumes(['application/vnd.ozp.listing+json'])
+    Response create(ListingInputRepresentation rep) {
+        created service.createFromRepresentation(rep)
+    }
 
     @Path('/activity')
     @GET
