@@ -29,6 +29,8 @@ class IntentResource {
         intentRestService.getByDataType(mainType, subType)
     }
 
+    //This method is the reason for not extending DomainResource, since the path/method matching is the same
+    //as DomainResource.read
     @GET
     @Path('/{mainType}')
     Collection<Intent> readByMainType(@PathParam('mainType') String mainType) {

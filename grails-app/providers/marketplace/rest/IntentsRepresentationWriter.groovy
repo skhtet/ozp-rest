@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
 @Provider
-@Produces(['application/vnd.ozp.intents+json'])
+@Produces(['application/vnd.ozp.intents+hal'])
 class IntentsRepresentationWriter extends AbstractRepresentationWriter<Collection<Intent>> {
 
     IntentsRepresentationWriter() {

@@ -27,7 +27,7 @@ class IwcResource {
     Collection<Intent> readIntentsForApplicationsOfCurrentUser() {
         libraryRestService.getByParentId(profileRestService.currentUserProfile.id).collect {
             it.serviceItem.intents
-        }.flatten()
+        }.flatten().unique()
     }
 
     @GET
