@@ -17,6 +17,7 @@ import com.google.common.reflect.TypeToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,7 +41,12 @@ abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String,String> httpHeaders,
             InputStream entityStream) throws IOException {
-        return objectMapper.readValue(entityStream, jacksonType);
+        try {
+            return objectMapper.readValue(entityStream, jacksonType);
+        }
+        catch (JsonMappingException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
 
