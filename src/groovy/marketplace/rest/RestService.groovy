@@ -239,7 +239,7 @@ abstract class RestService<T> {
 
             if (retval == null) {
                 throw new IllegalArgumentException("Attempted to find non-existant object " +
-                    "of type ${rep.representedClass} with id ${rep.id}")
+                    "of type ${rep.representedClass()} with id ${rep.id}")
             }
 
             return retval

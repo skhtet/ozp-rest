@@ -21,7 +21,7 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
     }
 
     static constraints = {
-        folder(nullable: true, maxLength: 256)
+        folder(nullable: true, blank: false, maxSize: 256)
         serviceItem(nullable: false, unique: ['owner'])
     }
 
