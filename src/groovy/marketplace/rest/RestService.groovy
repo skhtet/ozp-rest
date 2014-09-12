@@ -250,7 +250,9 @@ abstract class RestService<T> {
          * @param repValue The value taken from the InputRepresentation
          * @param existingValue The value on the existing object
          */
-        def getNestedValue = { repValue, existingValue ->
+        def getNestedValue
+
+        getNestedValue = { repValue, existingValue ->
             if (repValue instanceof IdRefRepresentation) {
                 getFromDb(repValue)
             }
@@ -413,9 +415,9 @@ abstract class RestService<T> {
         T object = DomainClass.metaClass.invokeConstructor()
 
         populateDefaults(object)
-        authorizeCreate(dto)
-
         merge(object, rep)
+
+        authorizeCreate(object)
 
         validator?.validateNew(object)
         postprocess(object)
