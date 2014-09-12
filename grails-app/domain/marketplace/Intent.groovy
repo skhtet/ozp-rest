@@ -1,91 +1,76 @@
 package marketplace
 
+import gorm.AuditStamp
+
 import org.codehaus.groovy.grails.web.json.JSONObject
+
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-@gorm.AuditStamp
+@AuditStamp
 class Intent implements Serializable {
     static searchable = {
         root false
-        action component: true
-        dataType component: true
-        send index: 'not_analyzed'
-        receive index: 'not_analyzed'
-        only = ['send', 'receive', 'dataType', 'action']
+        id index: 'not_analyzed'
+        only = ['id']
     }
 
-    static bindableProperties = ['send', 'receive', 'action', 'dataType']
+    static bindableProperties = ['action', 'mainType', 'subType', 'label', 'icon']
     static modifiableReferenceProperties = []
 
-    IntentAction action
-    IntentDataType dataType
-    Boolean send = false
-    Boolean receive = false
+    String action
+    String mainType
+    String subType
+    String label
+    String icon
+    String id
+
+    public String getDataType() { "$mainType/$subType" }
 
     static constraints = {
-        action nullable: false
-        dataType nullable: false
+        action blank: false, maxSize: 75
+        subType blank: false, maxSize: 105
+        mainType blank: false, maxSize: 75
+        icon nullable: true, maxSize: 2083
+        label nullable: true, maxSize: 255
+        id maxSize: 255
     }
 
-    static belongsTo = [serviceItem: ServiceItem]
+    static transients = ['dataType']
 
     static mapping = {
+        id generator: 'assigned'
         cache true
         batchSize 50
     }
 
     String toString() {
-        if (send && receive) {
-            "Sends/Receives: $action -> $dataType"
-        } else if (send) {
-            "Sends: $action -> $dataType"
-        } else {
-            "Receives: $action -> $dataType"
-        }
+        "$dataType/$action"
     }
 
-    String prettyPrint() {
-        toString()
+    def beforeValidate() {
+        id = toString()
     }
 
-    def asJSON() {
+    JSONObject asJSON() {
         return new JSONObject(
-            id: id,
-            action: action.asJSONRef(),
-            dataType: dataType.asJSONRef(),
-            send: send,
-            receive: receive
+            action: action,
+            dataType: dataType,
+            icon: icon,
+            label: label
         )
-    }
-
-    def bindFromJSON(JSONObject json) {
-        [
-            "id",
-            "action",
-            "dataType",
-            "send",
-            "receive"
-        ].each(JS.optStr.curry(json, this))
-
-        [
-            "editedDate"
-        ].each(JS.optDate.curry(json, this))
     }
 
     @Override
     int hashCode() {
-        HashCodeBuilder builder = new HashCodeBuilder()
-        builder.append(action?.title)
-                .append(dataType?.title)
-            .append(send)
-            .append(receive)
-        def code = builder.toHashCode()
-        return code;
+        new HashCodeBuilder()
+            .append(action)
+            .append(dataType)
+            .toHashCode()
     }
 
     @Override
-    boolean equals(Object obj) {
+    boolean equals(obj) {
 
         // Since intents are typically in a lazy loaded collection, the instances could be
         // hibernate proxies, so use the GORM 'instanceOf' method
@@ -97,29 +82,13 @@ class Intent implements Serializable {
         }
 
         if (sameType) {
-            Intent other = (Intent) obj
-            EqualsBuilder builder = new EqualsBuilder()
-
-            builder.append(send, other.send)
-                    .append(receive, other.receive)
-
-            if (this.action.title != null && other.action.title != null) {
-                builder.append(this.action.title, other.action.title)
-            }
-            else {
-                builder.append(this.action.id, other.action.id)
-            }
-
-            if (this.dataType.title != null && other.dataType.title != null) {
-                builder.append(this.dataType.title, other.dataType.title)
-            }
-            else {
-                builder.append(this.dataType.id, other.dataType.id)
-            }
-
-            return builder.isEquals();
+            return new EqualsBuilder()
+                .append(action, obj.action)
+                .append(dataType, obj.dataType)
+                .isEquals()
         }
-        return false;
+
+        false
     }
 
 }

@@ -38,9 +38,7 @@ class ServiceItem implements Serializable {
     ]
 
     final static modifiableReferenceProperties = [
-        'intents', 'docUrls',
-        'screenshots',
-        'relationships', 'contacts'
+        'docUrls', 'screenshots', 'relationships', 'contacts'
     ]
 
     static searchable = {
