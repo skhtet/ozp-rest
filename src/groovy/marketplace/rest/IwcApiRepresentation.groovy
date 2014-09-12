@@ -23,17 +23,11 @@ class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
     }
 
     private static HalEmbedded embedUser(Profile profile, ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI href = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'read')
-                .buildFromMap([id: profile.id])
-
         new HalEmbedded([new AbstractMap.SimpleEntry(OzpRelationType.USER,
-                new UserRepresentation(profile, uriBuilderHolder, href))])
+                new UserRepresentation(profile, uriBuilderHolder))])
     }
 
     private static HalLinks linkResources(ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        Collection<Map> links = new ArrayList<Map>()
         def createLink = { OzpRelationType rel, Class resource, String method ->
             URI href = uriBuilderHolder.builder.path(resource).path(resource, method).build()
 
