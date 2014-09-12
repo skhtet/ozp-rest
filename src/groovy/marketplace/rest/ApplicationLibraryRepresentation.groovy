@@ -42,7 +42,7 @@ class ApplicationLibraryRepresentation
             new HalEmbedded(entries.collect { entry ->
                 assert entry.folder == title
 
-                new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
+                new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
                     factory.toRepresentation(entry.serviceItem, uriBuilderHolder))
             })
         }
