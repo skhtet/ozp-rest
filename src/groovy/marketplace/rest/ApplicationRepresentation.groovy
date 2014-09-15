@@ -12,6 +12,8 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 
 class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
+    public static final String MEDIA_TYPE = 'application/vnd.ozp.application+hal'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp.applications+hal'
 
     final String name
     final String type

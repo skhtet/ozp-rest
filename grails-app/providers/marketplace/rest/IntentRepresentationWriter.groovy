@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
 @Provider
-@Produces(['application/vnd.ozp.intent+hal'])
+@Produces([IntentRepresentation.MEDIA_TYPE])
 class IntentRepresentationWriter extends AbstractRepresentationWriter<Intent> {
     IntentRepresentationWriter() {
         super(new IntentRepresentation.Factory())

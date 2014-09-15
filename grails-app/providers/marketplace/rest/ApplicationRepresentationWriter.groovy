@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
 @Provider
-@Produces(['application/vnd.ozp.application+hal'])
+@Produces([ApplicationRepresentation.MEDIA_TYPE])
 class ApplicationRepresentationWriter extends AbstractRepresentationWriter<ServiceItem> {
     ApplicationRepresentationWriter() {
         super(new ApplicationRepresentation.Factory())

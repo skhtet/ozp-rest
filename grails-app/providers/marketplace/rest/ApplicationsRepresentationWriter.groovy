@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
 @Provider
-@Produces(['application/vnd.ozp.applications+hal'])
+@Produces([ApplicationRepresentation.COLLECTION_MEDIA_TYPE])
 class ApplicationsRepresentationWriter extends AbstractRepresentationWriter<Collection<ServiceItem>> {
     ApplicationsRepresentationWriter() {
         super(EmbeddedCollectionRepresentation.createFactory(ApplicationRepresentation.class, ServiceItemResource.class))

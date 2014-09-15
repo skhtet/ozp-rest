@@ -7,7 +7,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.ext.Provider
 
 @Provider
-@Produces(['application/vnd.ozp.iwc+hal'])
+@Produces([IwcApiRepresentation.MEDIA_TYPE])
 class IwcApiRepresentationWriter extends AbstractRepresentationWriter<Profile> {
     IwcApiRepresentationWriter() {
         super(new IwcApiRepresentation.Factory())
