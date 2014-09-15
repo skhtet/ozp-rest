@@ -18,6 +18,15 @@ grails war
 
 The output (./target/marketplace.war) can generally be dropped in any servlet container and run without additional configuration. However, Marketplace defaults to using an in-memory Elasticsearch index and H2 database and may, in some cases, need additional Java heap allocated to the servlet container to avoid out of memory errors. The recommended minimum heap size is 512 Mb.
 
+
+## Load Sample Data
+
+In order to load sample data, you need NodeJS installed. Head over to [the Node.js website](http://nodejs.org/) if you need to do that. Then, run:
+```
+npm install
+npm run loadSampleData
+```
+
 ## Configure
 
 Note the following information, while generally applicable is geared towards a development environment.
