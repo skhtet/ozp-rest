@@ -4,5 +4,5 @@ import javax.ws.rs.Consumes
 import javax.ws.rs.ext.Provider
 
 @Provider
-@Consumes(['application/vnd.ozp.listing+json'])
+@Consumes([ListingInputRepresentation.MEDIA_TYPE])
 class ListingInputRepresentationReader extends AbstractRepresentationReader<ListingInputRepresentation> {}

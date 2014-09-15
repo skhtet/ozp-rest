@@ -6,6 +6,7 @@ import marketplace.ServiceItem
 import marketplace.ServiceItemDocumentationUrl
 
 class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem> {
+    public static final String MEDIA_TYPE = 'application/vnd.ozp.listing+json'
     ListingInputRepresentation() {
         super(ServiceItem.class)
     }
