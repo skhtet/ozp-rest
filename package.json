@@ -1,0 +1,22 @@
+{
+  "name": "marketplace",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ozone-development/marketplace.git"
+  },
+  "author": "",
+  "license": "Apache License, Version 2.0",
+  "bugs": {
+    "url": "https://github.com/ozone-development/marketplace/issues"
+  },
+  "homepage": "https://github.com/ozone-development/marketplace",
+  "dependencies": {
+    "newman": "^1.1.2"
+  },
+  "scripts": {
+    "loadSampleData": "./node_modules/newman/bin/newman -c MarketplaceDemo.json"
+  }
+}
