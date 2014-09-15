@@ -20,7 +20,7 @@ class Agency implements Serializable {
             def agency = Agency.findByTitleIlike(val)
             return (!agency || obj.id == agency.id) ? true : ['unique']
         })
-        iconUrl(blank: false, nullable:false, maxSize:2000, unique: false)
+        iconUrl(blank: true, nullable:true, maxSize:2000, unique: false)
 		agencyId(nullable: true) //	//For searching
     }
 
