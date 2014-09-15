@@ -1,8 +1,6 @@
 package marketplace.rest
 
 import javax.ws.rs.Consumes
-import java.net.URL
-
 import javax.ws.rs.Path
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
@@ -46,7 +44,7 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
     ServiceItemResource() {}
 
     @POST
-    @Consumes(['application/vnd.ozp.listing+json'])
+    @Consumes([ListingInputRepresentation.MEDIA_TYPE])
     Response create(ListingInputRepresentation rep) {
         created service.createFromRepresentation(rep)
     }

@@ -8,6 +8,9 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import org.springframework.beans.factory.annotation.Autowired
 
+import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
+
 @Path('/api/iwc')
 class IwcResource {
 
@@ -16,6 +19,10 @@ class IwcResource {
 
     @GET
     @Path('/application')
+    @Produces([
+        ApplicationRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     Collection<ServiceItem> readApplicationsForCurrentUser() {
         libraryRestService.getByParentId(profileRestService.currentUserProfile.id).collect {
             it.serviceItem
@@ -24,6 +31,10 @@ class IwcResource {
 
     @GET
     @Path('/intent')
+    @Produces([
+        IntentRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     Collection<Intent> readIntentsForApplicationsOfCurrentUser() {
         libraryRestService.getByParentId(profileRestService.currentUserProfile.id).collect {
             it.serviceItem.intents
