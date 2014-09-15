@@ -9,7 +9,7 @@ import marketplace.hal.SelfRefRepresentation
 class IntentRepresentation extends SelfRefRepresentation<Intent> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp.intent+hal'
 
-    final String dataType
+    final String mediaType
     final String action
     final String label
     final String icon
@@ -25,7 +25,7 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
             null
         )
 
-        this.dataType = intent.dataType
+        this.mediaType = intent.mediaType
         this.action = intent.action
         this.label = intent.label
         this.icon = intent.icon

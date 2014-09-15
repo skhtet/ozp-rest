@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST
-import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
@@ -23,18 +22,20 @@ class IntentResource {
 
     @GET
     @Path('/{mainType}/{subType}')
-    Collection<Intent> readBySubType(@PathParam('mainType') String mainType,
-                                     @PathParam('subType') String subType) {
+    Collection<Intent> readAllBySubType(@PathParam('mainType') String mainType,
+                                     @PathParam('subType') String subType,
+                                     @QueryParam('max') Integer max,
+                                     @QueryParam('offset') Integer offset) {
 
-        intentRestService.getByDataType(mainType, subType)
+        intentRestService.getAllByMediaType(mainType, subType, max, offset)
     }
 
-    //This method is the reason for not extending DomainResource, since the path/method matching is the same
-    //as DomainResource.read
     @GET
     @Path('/{mainType}')
-    Collection<Intent> readByMainType(@PathParam('mainType') String mainType) {
-        intentRestService.getByMainType(mainType)
+    Collection<Intent> readAllByMainType(@PathParam('mainType') String mainType,
+                                      @QueryParam('max') Integer max,
+                                      @QueryParam('offset') Integer offset) {
+        intentRestService.getAllByMainType(mainType, max, offset)
     }
 
     @GET
@@ -44,16 +45,6 @@ class IntentResource {
                 @PathParam('action') String action) {
 
         intentRestService.getById("$mainType/$subType/$action")
-    }
-
-    @PUT
-    @Path('/{mainType}/{subType}/{action}')
-    Intent update(@PathParam('mainType') String mainType,
-                  @PathParam('subType') String subType,
-                  @PathParam('action') String action,
-                  Intent dto) {
-
-        intentRestService.updateById("$mainType/$subType/$action", dto)
     }
 
     @DELETE

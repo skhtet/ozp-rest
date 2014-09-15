@@ -25,37 +25,40 @@ class Intent implements Serializable {
     String icon
     String id
 
-    public String getDataType() { "$mainType/$subType" }
+    public String getMediaType() { "$mainType/$subType" }
+
+    static transients = ['mediaType']
 
     static constraints = {
-        action blank: false, maxSize: 75
-        subType blank: false, maxSize: 105
+        action blank: false, maxSize: 60
+        subType blank: false, maxSize: 120
         mainType blank: false, maxSize: 75
         icon nullable: true, maxSize: 2083
         label nullable: true, maxSize: 255
-        id maxSize: 255
+        id maxSize: 255, validator: { val, obj -> val == obj.toString() }
     }
 
-    static transients = ['dataType']
+    def beforeValidate() {
+        if(!id) {
+            id = toString()
+        }
+    }
+
+    def beforeUpdate() { throw new RuntimeException('Update is not allowed for an existing Intent') }
 
     static mapping = {
         id generator: 'assigned'
         cache true
         batchSize 50
+        version: false
     }
 
-    String toString() {
-        "$dataType/$action"
-    }
-
-    def beforeValidate() {
-        id = toString()
-    }
+    String toString() { "$mediaType/$action" }
 
     JSONObject asJSON() {
         return new JSONObject(
             action: action,
-            dataType: dataType,
+            mediaType: mediaType,
             icon: icon,
             label: label
         )
@@ -65,30 +68,31 @@ class Intent implements Serializable {
     int hashCode() {
         new HashCodeBuilder()
             .append(action)
-            .append(dataType)
+            .append(mainType)
+            .append(subType)
             .toHashCode()
     }
 
     @Override
-    boolean equals(obj) {
+    boolean equals(other) {
 
         // Since intents are typically in a lazy loaded collection, the instances could be
         // hibernate proxies, so use the GORM 'instanceOf' method
         Boolean sameType
         try {
-            sameType = obj.instanceOf(Intent)
+            sameType = other.instanceOf(Intent)
         } catch(MissingMethodException mme) {
             sameType = false
         }
 
         if (sameType) {
             return new EqualsBuilder()
-                .append(action, obj.action)
-                .append(dataType, obj.dataType)
+                .append(action, other.action)
+                .append(mainType, other.mainType)
+                .append(subType, other.subType)
                 .isEquals()
         }
 
         false
     }
-
 }
