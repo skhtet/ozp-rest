@@ -19,7 +19,7 @@ class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     }
 }
 
-class ServiceItemIdRef extends IdRefInputRepresentation<ServiceItem> {
+class ServiceItemIdRef extends IdRefInputRepresentation<ServiceItem, Long> {
     ServiceItemIdRef() { super(ServiceItem.class) }
 }
 
