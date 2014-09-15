@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 import javax.ws.rs.HeaderParam
 import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 import javax.servlet.http.HttpServletRequest
@@ -44,7 +45,10 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
     ServiceItemResource() {}
 
     @POST
-    @Consumes([ListingInputRepresentation.MEDIA_TYPE])
+    @Consumes([
+        ListingInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     Response create(ListingInputRepresentation rep) {
         created service.createFromRepresentation(rep)
     }

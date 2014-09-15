@@ -21,6 +21,9 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     Map launchUrls = new HashMap()
     List screenShots
     Set tags
+
+    //TODO: Not sure yet how we're gathering this information, where it's needed, how it's used etc. So for now, it's hard coded.
+    final String state = 'Active'
     Map uiHints = [
         width: 300,
         height: 300,
