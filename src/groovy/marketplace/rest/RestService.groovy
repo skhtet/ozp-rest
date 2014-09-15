@@ -268,7 +268,6 @@ abstract class RestService<T> {
                         existing = existingIter.next()
                     }
 
-
                     getNestedValue(it, existing)
                 }
             }
@@ -283,7 +282,15 @@ abstract class RestService<T> {
 
         if (object) {
             props.each { propName, propValue ->
-                object[propName] = propValue
+                if(propValue instanceof Collection) {
+                    propValue.each {
+                        object."addTo${propName.capitalize()}"(it)
+                    }
+                }
+                else {
+                    object[propName] = propValue
+                }
+
             }
 
             return object
