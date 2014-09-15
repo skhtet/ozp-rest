@@ -234,7 +234,7 @@ abstract class RestService<T> {
         /**
          * return the object from the database represented by this rep
          */
-        def getFromDb = { IdRefRepresentation rep ->
+        def getFromDb = { IdRefInputRepresentation rep ->
             T retval = rep.representedClass().get(rep.id)
 
             if (retval == null) {
@@ -253,7 +253,7 @@ abstract class RestService<T> {
         def getNestedValue
 
         getNestedValue = { repValue, existingValue ->
-            if (repValue instanceof IdRefRepresentation) {
+            if (repValue instanceof IdRefInputRepresentation) {
                 getFromDb(repValue)
             }
             else if (repValue instanceof InputRepresentation) {

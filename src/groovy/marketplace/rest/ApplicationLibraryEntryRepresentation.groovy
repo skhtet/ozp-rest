@@ -14,7 +14,7 @@ import marketplace.hal.RepresentationFactory
 
 class ApplicationLibraryEntryRepresentation
         extends AbstractHalRepresentation<ApplicationLibraryEntry> {
-    public static final String MEDIA_TYPE = 'application/vnd.ozp.library.entry+hal'
+    public static final String MEDIA_TYPE = 'application/vnd.ozp-library-entry-v1+json'
 
     private ApplicationLibraryEntry entry
 
@@ -58,6 +58,9 @@ class ApplicationLibraryEntryRepresentation
     }
 
     public String getFolder() { entry.folder }
+    public IdRefRepresentation<ServiceItem> getServiceItem() {
+        new IdRefRepresentation<ServiceItem>(entry.serviceItem)
+    }
 
     public static class Factory
             implements RepresentationFactory<ApplicationLibraryEntry> {

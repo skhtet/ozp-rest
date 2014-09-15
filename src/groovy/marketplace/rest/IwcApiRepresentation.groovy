@@ -10,7 +10,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 
 class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
-    public static final String MEDIA_TYPE = 'application/vnd.ozp.iwc+hal'
+    public static final String MEDIA_TYPE = 'application/vnd.ozp-iwc-v1+json'
 
     IwcApiRepresentation(Profile profile,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {

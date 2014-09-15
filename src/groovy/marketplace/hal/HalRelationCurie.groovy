@@ -8,7 +8,7 @@ import com.damnhandy.uri.template.UriTemplate
  */
 enum HalRelationCurie {
     //TODO determine the right URI
-    OZP(UriTemplate.fromTemplate('/docs/relations/ozp/{rel}'), 'ozp')
+    OZP(UriTemplate.fromTemplate('http://ozoneplatform.org/docs/rels/{rel}'), 'ozp')
 
     private UriTemplate href
     private String name

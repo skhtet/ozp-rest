@@ -7,8 +7,8 @@ import marketplace.hal.SelfRefRepresentation
 
 
 class IntentRepresentation extends SelfRefRepresentation<Intent> {
-    public static final String MEDIA_TYPE = 'application/vnd.ozp.intent+hal'
-    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp.intents+hal'
+    public static final String MEDIA_TYPE = 'application/vnd.ozp-intent-v1+json'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-intents-v1+json'
 
     final String mediaType
     final String action
