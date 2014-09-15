@@ -8,6 +8,7 @@ import marketplace.hal.SelfRefRepresentation
 
 class IntentRepresentation extends SelfRefRepresentation<Intent> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp.intent+hal'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp.intents+hal'
 
     final String mediaType
     final String action
@@ -20,7 +21,7 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
             uriBuilderHolder.builder
                 .path(IntentResource.class)
                 .path(IntentResource.class, 'read')
-                .buildFromMap(id: intent.id),
+                .buildFromMap(intent.properties),
             null,
             null
         )
