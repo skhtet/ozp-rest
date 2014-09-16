@@ -192,7 +192,9 @@ class ServiceItem implements Serializable {
         contacts: Contact,
         satisfiedScoreCardItems: ScoreCardItem,
         tags: String,
-        intents: Intent
+        intents: Intent,
+        applicationLibraryEntries: ApplicationLibraryEntry //necessary to get GORM to
+                                                           //cascade the delete
     ]
 
     //so that GORM knows which property of the relationship is the backref

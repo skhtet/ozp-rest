@@ -10,8 +10,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLibraryEntry> {
     String folder
 
-    static belongsTo = [owner: Profile]
-    ServiceItem serviceItem
+    static belongsTo = [owner: Profile, serviceItem: ServiceItem]
 
     static bindableProperties = ['folder', 'owner', 'serviceItem']
     static modifiableReferenceProperties = []
