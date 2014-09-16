@@ -1,5 +1,7 @@
 package marketplace
 
+import marketplace.converter.JsonDateConverter
+
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.text.ParseException
@@ -10,6 +12,7 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import static marketplace.ValidationUtil.validateUrl
 import ozone.utils.Utils
 import gorm.AuditStamp
+
 
 @AuditStamp
 class ServiceItem implements Serializable {
@@ -47,8 +50,6 @@ class ServiceItem implements Serializable {
         categories component: true
         intents component: true
         itemComments component: true
-        lastActivityDate index: 'not_analyzed', excludeFromAll: true
-        approvedDate index: 'not_analyzed', excludeFromAll: true
         // Yes we need this much precision unless you want to see rounding errors between the short and detailed view
         avgRate index: 'not_analyzed', excludeFromAll: true
         totalRate5 index: 'not_analyzed', excludeFromAll: true
@@ -77,9 +78,14 @@ class ServiceItem implements Serializable {
         uuid index: 'not_analyzed', excludeFromAll: false
         screenshots component: true, excludeFromAll: true
         contacts component: true, excludeFromAll: true
-        isHidden index: 'not_analyzed', excludeFromAll: false
-        isOutside index: 'not_analyzed', excludeFromAll: false
-        isFeatured index: 'not_analyzed', excludeFromAll: false
+        isHidden index: 'not_analyzed', excludeFromAll: true
+        isOutside index: 'not_analyzed', excludeFromAll: true
+        isFeatured index: 'not_analyzed', excludeFromAll: true
+        lastActivityDate index: 'not_analyzed', excludeFromAll: true, converter: JsonDateConverter
+        approvedDate index: 'not_analyzed', excludeFromAll: true, converter: JsonDateConverter
+        createdDate index: 'not_analyzed', excludeFromAll: true, converter: JsonDateConverter
+        editedDate index: 'not_analyzed', excludeFromAll: true, converter: JsonDateConverter
+
         only = [
             'categories', 'owners', 'types', 'id', 'intents',
             'screenshots', 'releaseDate', 'approvedDate', 'lastActivityDate',
@@ -88,7 +94,7 @@ class ServiceItem implements Serializable {
             'description', 'requirements', 'dependencies', 'versionName', 'sortTitle',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'installUrl',
             'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew', 'isFeatured'
+            'createdDate', 'editedDate', 'isHidden', 'isOutside', 'tags', 'descriptionShort', 'whatIsNew', 'isFeatured'
         ]
     }
 
