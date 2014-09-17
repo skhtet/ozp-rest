@@ -23,6 +23,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     String versionName
     String whatIsNew
     Boolean isFeatured
+    Boolean isEnabled
     Set<String> tags
 
     TypeIdRef types
