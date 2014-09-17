@@ -36,7 +36,7 @@ class Intent implements Serializable {
     }
 
     static constraints = {
-        action blank: false, maxSize: 127
+        action blank: false, maxSize: 127, matches: ACTION_REGEX
         type blank: false, maxSize: 255, matches: TYPE_REGEX
         icon nullable: true, maxSize: 2083
         label nullable: true, maxSize: 255

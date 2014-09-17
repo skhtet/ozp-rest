@@ -53,6 +53,16 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
         created service.createFromRepresentation(rep)
     }
 
+    @PUT
+    @Path('/{id}')
+    @Consumes([
+        ListingInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    ServiceItem update(@PathParam('id') long id, ListingInputRepresentation rep) {
+        service.updateById(id, rep)
+    }
+
     @Path('/activity')
     @GET
     public Collection<ServiceItemActivity> getActivitiesForServiceItems(
