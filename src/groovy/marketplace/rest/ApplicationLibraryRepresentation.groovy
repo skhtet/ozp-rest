@@ -28,24 +28,21 @@ class ApplicationLibraryRepresentation
 
     private static class FolderRepresentation
             extends AbstractHalRepresentation<Collection<ApplicationLibraryEntry>> {
-        final String title
+        final String folder
 
-        FolderRepresentation(String title, Collection<ApplicationLibraryEntry> entries,
+        FolderRepresentation(String folder, Collection<ApplicationLibraryEntry> entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            super(null, createItems(entries, uriBuilderHolder, title))
-            this.title = title
+            super(null, createItems(entries, uriBuilderHolder, folder))
+            this.folder = folder
         }
 
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder, String title) {
-            RepresentationFactory<ApplicationLibraryEntry> factory =
-                new LibraryApplicationRepresentation.Factory()
-
+                ApplicationRootUriBuilderHolder uriBuilderHolder, String folder) {
             new HalEmbedded(entries.collect { entry ->
-                assert entry.folder == title
+                assert entry.folder == folder
 
                 new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
-                    factory.toRepresentation(entry.serviceItem, uriBuilderHolder))
+                    new LibraryApplicationRepresentation(entry, uriBuilderHolder))
             })
         }
     }

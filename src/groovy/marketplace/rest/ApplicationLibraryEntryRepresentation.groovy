@@ -32,14 +32,13 @@ class ApplicationLibraryEntryRepresentation
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         URI collectionHref = uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'getApplicationLibrary')
-            .buildFromMap(profileId: entry.owner.id)
-
-        URI entryHref = uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'removeFromApplicationLibrary')
-            .buildFromMap(profileId: entry.owner.id, serviceItemId: entry.serviceItem.id)
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'getApplicationLibrary')
+                .buildFromMap(profileId: entry.owner.id),
+            entryHref = uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'removeFromApplicationLibrary')
+                .buildFromMap(profileId: entry.owner.id, serviceItemId: entry.serviceItem.id)
 
         new HalLinks([
             new AbstractMap.SimpleEntry(RegisteredRelationType.COLLECTION,
@@ -50,11 +49,8 @@ class ApplicationLibraryEntryRepresentation
 
     private static HalEmbedded createEmbeddedServiceItem(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        RepresentationFactory<ServiceItem> factory =
-            new LibraryApplicationRepresentation.Factory()
-
-        new HalEmbedded(OzpRelationType.APPLICATION, factory.toRepresentation(entry.serviceItem,
-            uriBuilderHolder))
+        new HalEmbedded(OzpRelationType.APPLICATION,
+            new LibraryApplicationRepresentation(entry, uriBuilderHolder))
     }
 
     public String getFolder() { entry.folder }
