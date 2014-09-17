@@ -4,7 +4,6 @@ package marketplace
 class UserAccount implements Serializable {
 
     String username
-    Date lastLogin
 
     static constraints = {
         username(blank: false, nullable: false, unique: true, maxSize: 250)

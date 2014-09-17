@@ -44,6 +44,7 @@ class Profile implements Serializable {
     String bio = ''
     // not sure why createdDate is listed here since it will get added by the AuditStamp
     Date createdDate
+    Date lastLogin
     Avatar avatar
     String uuid
     Map userDataMap = new HashMap()
