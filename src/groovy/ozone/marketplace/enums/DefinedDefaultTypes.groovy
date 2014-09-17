@@ -4,7 +4,7 @@ package ozone.marketplace.enums
  * Default types information used in test data generation.
  */
 public enum DefinedDefaultTypes {
-	
+
 	SERVICE_REST("Service:REST", "services"),
 	WEB_APP("Web App", "web app"),
 	DESKTOP_APPS("Desktop Apps", "desktop apps"),
@@ -13,10 +13,9 @@ public enum DefinedDefaultTypes {
 	SERVICE_SOAP("Service:SOAP", "services"),
 	PLUGIN("Plugin", "plugins"),
 	MICROFORMATS("Microformats", "microformats"),
-	AVATAR("Avatar", "avatar image"),
 	SERVICEITEM_ICON("ServiceItemIcon", "serviceitem icon"),
 	MARKETPLACE_ICON("MarketplaceIcon", "marketplace icon")
-        
+
 	DefinedDefaultTypes(String title, String description) {
 		this.title = title
 		this.description = description
