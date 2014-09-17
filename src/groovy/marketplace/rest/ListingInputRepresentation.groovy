@@ -22,6 +22,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     String imageXlargeUrl
     String versionName
     String whatIsNew
+    Boolean isFeatured
     Set<String> tags
 
     TypeIdRef types
