@@ -9,9 +9,7 @@ import marketplace.JSONUtil as JS
 @gorm.AuditStamp
 class Profile implements Serializable {
 
-    //nothing is updateable for now.  If the mess with User and UserDomainInstance gets
-    //consolidated that may change
-    static bindableProperties = ['bio']
+    static bindableProperties = ['bio', 'organizations']
     static modifiableReferenceProperties = []
 
     static searchable = {
@@ -23,7 +21,10 @@ class Profile implements Serializable {
         only = ['id', 'sortDisplayName', 'displayName', 'username']
     }
 
-    static hasMany = [applicationLibrary: ApplicationLibraryEntry]
+    static hasMany = [
+        applicationLibrary: ApplicationLibraryEntry,
+        organizations: Agency
+    ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
 
@@ -33,7 +34,8 @@ class Profile implements Serializable {
         createdBy: 'none',
         editedBy: 'none',
 
-        applicationLibrary: 'owner'
+        applicationLibrary: 'owner',
+        organizations: 'none'
     ]
 
     String username
@@ -45,6 +47,7 @@ class Profile implements Serializable {
     Avatar avatar
     String uuid
     Map userDataMap = new HashMap()
+    Set organizations = new HashSet()
 
     //Essentially to track if the current user is a user, admin or external admin
     String userRoles
@@ -75,8 +78,6 @@ class Profile implements Serializable {
         userDataMap type: 'text'
     }
 
-   // static hasMany = [userDataItems: UserDataItem]
-
     static transients = ['sortDisplayName']
 
     static final String SYSTEM_USER_NAME = 'System'
@@ -104,10 +105,7 @@ class Profile implements Serializable {
         }
     }
 
-    def asJSON()
-    {
-        UserDomainInstance userDomainInstance = this.userDomainInstance
-
+    def asJSON() {
         new JSONObject(
             id: id,
             uuid: uuid,
@@ -115,9 +113,7 @@ class Profile implements Serializable {
             displayName: displayName,
             email: email,
             bio: bio,
-            class: getClass(),
-            theme: userDomainInstance?.theme,
-            animationsEnabled: userDomainInstance?.animationsEnabled
+            organizations: organizations.collect { it.asJSON() }
         )
     }
 
