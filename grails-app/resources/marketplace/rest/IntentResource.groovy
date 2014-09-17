@@ -4,9 +4,11 @@ import marketplace.Intent
 
 import org.springframework.beans.factory.annotation.Autowired
 
+import javax.ws.rs.Consumes
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST
+import javax.ws.rs.PUT
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
@@ -23,56 +25,34 @@ class IntentResource {
     IntentResource() {}
 
     @GET
-    @Path('/{mainType}/{subType}')
-    @Produces([
-        IntentRepresentation.COLLECTION_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    Collection<Intent> readAllBySubType(@PathParam('mainType') String mainType,
-                                     @PathParam('subType') String subType,
-                                     @QueryParam('max') Integer max,
-                                     @QueryParam('offset') Integer offset) {
-
-        intentRestService.getAllByMediaType(mainType, subType, max, offset)
-    }
-
-    @GET
-    @Path('/{mainType}')
-    @Produces([
-        IntentRepresentation.COLLECTION_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    Collection<Intent> readAllByMainType(@PathParam('mainType') String mainType,
-                                      @QueryParam('max') Integer max,
-                                      @QueryParam('offset') Integer offset) {
-        intentRestService.getAllByMainType(mainType, max, offset)
-    }
-
-    @GET
-    @Path('/{mainType}/{subType}/{action}')
+    @Path('/{id}')
     @Produces([
         IntentRepresentation.MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    Intent read(@PathParam('mainType') String mainType,
-                @PathParam('subType') String subType,
-                @PathParam('action') String action) {
+    Intent read(@PathParam('id') String id) {
 
-        intentRestService.getById("$mainType/$subType/$action")
+        intentRestService.getById(id)
     }
 
     @DELETE
-    @Path('/{mainType}/{subType}/{action}')
-    void delete(@PathParam('mainType') String mainType,
-                @PathParam('subType') String subType,
-                @PathParam('action') String action) {
+    @Path('/{id}')
+    void delete(@PathParam('id') String id) {
 
-        intentRestService.deleteById("$mainType/$subType/$action")
+        intentRestService.deleteById(id)
     }
 
     @POST
-    Response create(Intent dto) {
-        created intentRestService.createFromDto(dto)
+    @Consumes([
+        IntentInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    @Produces([
+        IntentRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    Response create(IntentInputRepresentation rep) {
+        created intentRestService.createFromRepresentation(rep)
     }
 
     @GET
@@ -84,5 +64,20 @@ class IntentResource {
                                @QueryParam('max') Integer max) {
 
         intentRestService.getAll(offset, max)
+    }
+
+    @PUT
+    @Consumes([
+        IntentInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    @Produces([
+        IntentRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    @Path('/{id}')
+    Intent update(@PathParam('id') String id,
+                  IntentInputRepresentation rep) {
+        intentRestService.updateById(id, rep)
     }
 }

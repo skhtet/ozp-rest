@@ -32,16 +32,29 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
         this.embeddedResourceType = embeddedResourceType
 
         this.addEmbedded(embedEntities(entities, uriBuilderHolder))
+        this.addLinks(linkEntities(entities, uriBuilderHolder))
     }
 
     private HalEmbedded embedEntities(Collection entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(entities.collect { Object entity ->
-            Map props = entity.properties as HashMap
-            props.id = entity.id
 
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                     embeddedRepresentationType.newInstance(entity, uriBuilderHolder))
+        })
+    }
+
+    private HalLinks linkEntities(Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        new HalLinks(entities.collect { entity ->
+            Map props = entity.properties as HashMap
+            props.id = entity.id
+
+            URI href = uriBuilderHolder.builder
+                    .path(embeddedResourceType)
+                    .path(embeddedResourceType, 'read')
+                    .buildFromMap(props)
+
+            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
         })
     }
 

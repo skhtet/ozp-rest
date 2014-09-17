@@ -7,58 +7,73 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
+import java.security.MessageDigest
+
 @AuditStamp
 class Intent implements Serializable {
+
+    //Source: http://tools.ietf.org/html/rfc6838#section-4.2
+    static final TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?$/
+    static final ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?$/
+
     static searchable = {
         root false
-        id index: 'not_analyzed'
-        only = ['id']
+        type index: 'not_analyzed'
+        action index: 'not_analyzed'
+        only = ['type', 'action']
     }
 
-    static bindableProperties = ['action', 'mainType', 'subType', 'label', 'icon']
-    static modifiableReferenceProperties = []
-
     String action
-    String mainType
-    String subType
+    String type
     String label
     String icon
     String id
-
-    public String getMediaType() { "$mainType/$subType" }
-
-    static transients = ['mediaType']
-
-    static constraints = {
-        action blank: false, maxSize: 60
-        subType blank: false, maxSize: 120
-        mainType blank: false, maxSize: 75
-        icon nullable: true, maxSize: 2083
-        label nullable: true, maxSize: 255
-        id maxSize: 255, validator: { val, obj -> val == obj.toString() }
-    }
-
-    def beforeValidate() {
-        if(!id) {
-            id = toString()
-        }
-    }
-
-    def beforeUpdate() { throw new RuntimeException('Update is not allowed for an existing Intent') }
 
     static mapping = {
         id generator: 'assigned'
         cache true
         batchSize 50
-        version: false
     }
 
-    String toString() { "$mediaType/$action" }
+    static constraints = {
+        action blank: false, maxSize: 127
+        type blank: false, maxSize: 255, matches: TYPE_REGEX
+        icon nullable: true, maxSize: 2083
+        label nullable: true, maxSize: 255
+        id maxSize: 40, validator: { val, obj -> val == generateId(obj) }
+    }
+
+    def beforeValidate() {
+        if(!id) {
+            id = generateId(this)
+        }
+    }
+
+    def beforeDelete() {
+        //there is no "GORM Way" to remove a unidirectional one-to-many association from the many side, so
+        //it must be done manually. An alternative is to set the cascade on the foreign key that references intent
+        //in the join table during creation of the db schema.
+        withNewSession {
+            def items = ServiceItem.createCriteria().list {
+                intents {
+                    equals(this)
+                }
+            }
+
+            items.each {
+                it.removeFromIntents(this)
+                //For some reason, the flush is needed to prevent the association from being silently recreated.
+                it.save(flush: true)
+            }
+        }
+    }
+
+    String toString() { "$type/$action" }
 
     JSONObject asJSON() {
         return new JSONObject(
             action: action,
-            mediaType: mediaType,
+            type: type,
             icon: icon,
             label: label
         )
@@ -68,8 +83,7 @@ class Intent implements Serializable {
     int hashCode() {
         new HashCodeBuilder()
             .append(action)
-            .append(mainType)
-            .append(subType)
+            .append(type)
             .toHashCode()
     }
 
@@ -88,11 +102,22 @@ class Intent implements Serializable {
         if (sameType) {
             return new EqualsBuilder()
                 .append(action, other.action)
-                .append(mainType, other.mainType)
-                .append(subType, other.subType)
+                .append(type, other.type)
                 .isEquals()
         }
 
         false
+    }
+
+    /**
+     * Calculates the id using a SHA1 digest of type and action
+     *
+     * @param intent
+     * @return
+     */
+    public static String generateId(intent) {
+        MessageDigest.getInstance('SHA1')
+            .digest("${intent.type}/${intent.action}".bytes)
+            .encodeAsHex()
     }
 }
