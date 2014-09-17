@@ -1,7 +1,6 @@
 package marketplace
 
 import grails.util.GrailsUtil
-import ozone.utils.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
@@ -11,7 +10,8 @@ import org.springframework.security.access.AccessDeniedException
  *  Provides a mock account service for demo purposes.
  *
  */
- @Service
+@Service
+@Transactional(propagation=Propagation.SUPPORTED)
 public class AccountService {
 
     boolean transactional = false
@@ -21,15 +21,6 @@ public class AccountService {
     String loggedInEmail
     List<String> loggedInUserRoles
     String loggedInOrganization
-
-    public User getLoggedInUser() {
-        new User(
-            username: loggedInUsername,
-            name: loggedInDisplayName,
-            email: loggedInEmail,
-            org: loggedInOrganization
-        )
-    }
 
     public boolean isExtAdmin() {
         false
@@ -59,27 +50,5 @@ public class AccountService {
 
     private boolean hasRole(String role) {
         loggedInUserRoles.contains(role)
-    }
-
-    @Transactional
-    public UserAccount createUserAccount(String username, Date creationDate) {
-        log.debug "Adding UserAccount and saving last login for ${username}"
-        def userAccount = new UserAccount()
-        userAccount.username = username
-        userAccount.lastLogin = creationDate
-        userAccount.save()
-        def userDomainInstance = new UserDomainInstance(username: username)
-        userDomainInstance.save()
-        userAccount
-    }
-
-    @Transactional
-    public UserAccount loginAccount(String username) {
-        UserAccount userAccount = UserAccount.findByUsername(username)
-        if (!userAccount) {
-            userAccount = createUserAccount(username, new Date())
-        }
-
-        userAccount
     }
 }

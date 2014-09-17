@@ -64,4 +64,46 @@ class ProfileRestService extends RestService<Profile> {
     public Profile getCurrentUserProfile() {
         Profile.findByUsername(accountService.loggedInUsername)
     }
+
+    /**
+     * Ensure that a Profile object exists for the current user and update it from the security
+     * plugin information
+     */
+    @Transactional
+    public void login() {
+        Profile profile = currentUserProfile ?: new Profile(
+            username: accountService.loggedInUsername,
+            displayName: accountService.loggedInDisplayName,
+            email: accountService.loggedInEmail
+        )
+
+        //TODO This might need to be more robust
+        Agency organization = Agency.findByTitle(accountService.loggedInOrganization)
+        if (organization) {
+            profile.addToOrganizations(organization)
+        }
+
+        profile.lastLogin = new Date()
+
+        profile.save(failOnError:true)
+    }
+
+    @Transactional(readOnly = false)
+    public void createRequired() {
+        def profilesInConfig = config.marketplace.metadata.profiles
+
+        if (profilesInConfig) {
+            profilesInConfig.each { Map profileInfo ->
+                String username = profileInfo.username
+                if (!Profile.findByUsername(username)) {
+                    log.debug("#### Creating profile: $username")
+                    new Profile(username: username, displayName: profileInfo.displayName).save()
+                } else {
+                    log.info("#### Found user: $username")
+                }
+            }
+        } else {
+            log.error "Profiles metadata info was not found in the loaded config files."
+        }
+    }
 }

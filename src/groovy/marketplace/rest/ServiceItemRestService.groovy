@@ -14,7 +14,6 @@ import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ServiceItemSnapshot
 import ozone.marketplace.enums.RelationshipType
-import ozone.utils.User
 import marketplace.AccountService
 import marketplace.validator.ServiceItemValidator
 import org.springframework.security.access.AccessDeniedException
@@ -273,11 +272,9 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Override
     protected void populateDefaults(ServiceItem dto) {
         Profile profile = profileRestService.currentUserProfile
-        User user = accountService.loggedInUser
         dto.with {
             owners = owners ?: [profile]
             techPocs = techPocs ?: [profile.username]
-            organization = organization ?: user.org
         }
     }
 

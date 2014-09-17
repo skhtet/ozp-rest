@@ -70,7 +70,6 @@ class Profile implements Serializable {
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
         userRoles(nullable: true)
-        //uniqueness of folders in application library enforced by the fact that its a Set
     }
 
     static mapping = {
@@ -170,10 +169,6 @@ class Profile implements Serializable {
         }
 
         return false
-    }
-
-    private UserDomainInstance getUserDomainInstance() {
-        UserDomainInstance.findByUsername(this.username)
     }
 
     def beforeValidate() {

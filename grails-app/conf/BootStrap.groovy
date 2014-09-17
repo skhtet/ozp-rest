@@ -20,7 +20,7 @@ class BootStrap {
     def marketplaceConversionService
 	def searchableService
 	def imagesService
-    def profileService
+    def profileRestService
     def grailsApplication
     def messageSource
     def commonImagesLoc = '/themes/common/images'
@@ -76,7 +76,7 @@ class BootStrap {
             }
         }
 
-        profileService.createRequired()
+        profileRestService.createRequired()
 
 		log.info "BootStrap init; GrailsUtil.environment: ${GrailsUtil.environment}"
         if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {
@@ -98,7 +98,6 @@ class BootStrap {
             Agency,
             Types,
             Intent,
-            ExtProfile,
             Profile,
             Images,
             ServiceItem,
