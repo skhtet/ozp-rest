@@ -21,7 +21,7 @@ The output (./target/marketplace.war) can generally be dropped in any servlet co
 
 ## Load Sample Data
 
-In order to load sample data, you need NodeJS installed. Head over to [the Node.js website](http://nodejs.org/) if you need to do that. Then, run:
+In order to load sample data, you need NodeJS installed. Head over to [the Node.js website](http://nodejs.org/) if you need to do that. Once server is up and running, execute:
 ```
 npm install
 npm run loadSampleData
