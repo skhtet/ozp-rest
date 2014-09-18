@@ -19,49 +19,38 @@ import marketplace.rest.RestService
 
 /**
  * Parent class of jaxrs rest controllers for domain
- * objects using the older style of passing
- * domain objects as DTOs
+ * objects, using Representation classes for input
  */
 
-class DomainResource<T> {
-
-    private Class<T> DomainClass
+class RepresentationResource<T> {
 
     protected RestService<T> service
 
     /**
      * Constructor that should be called by subclasses in order
      * to initialize the subclass-specific fields of this class.
-     * @param DomainClass The class of the domain object that this
-     * resource is for
      */
-    protected DomainResource(Class<T> DomainClass,
-            RestService<T> service) {
-        this.DomainClass = DomainClass
+    protected RepresentationResource(RestService<T> service) {
         this.service = service
     }
 
-    protected DomainResource() {}
+    protected RepresentationResource() {}
 
     @POST
-    Response create(T dto) {
-        created service.createFromDto(dto)
-    }
-
-    /**
-     * GET all of the domain objects of type T, optionally
-     * with paging parameters to limit the size of the return
-     */
-    @GET
-    Collection<T> readAll(@QueryParam('offset') Integer offset,
-            @QueryParam('max') Integer max) {
-        service.getAll(offset, max)
+    Response create(InputRepresentation<T> rep) {
+        created service.createFromRepresentation(rep)
     }
 
     @GET
     @Path('/{id}')
     T read(@PathParam('id') long id) {
         service.getById(id)
+    }
+
+    @PUT
+    @Path('/{id}')
+    T update(@PathParam('id') long id, InputRepresentation<T> rep) {
+        service.updateById(id, rep)
     }
 
     @DELETE

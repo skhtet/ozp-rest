@@ -35,6 +35,9 @@ abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
 
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
+System.err.println("isReadable");
+System.err.println("this.type = " + this.type);
+System.err.println("genericType = " + genericType);
         return this.type.isAssignableFrom(genericType);
     }
 

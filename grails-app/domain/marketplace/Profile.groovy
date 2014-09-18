@@ -51,12 +51,8 @@ class Profile implements Serializable {
     //roles a user has
     Role highestRole
 
-
     Map userDataMap = new HashMap()
     Set organizations = new HashSet()
-
-    //Essentially to track if the current user is a user, admin or external admin
-    String userRoles
 
     def beforeInsert() {
         if (!uuid) {
@@ -73,8 +69,8 @@ class Profile implements Serializable {
         bio(nullable: true, maxSize: 1000)
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
-        userRoles(nullable: true)
         lastLogin(nullable: false)
+        highestRole(nullable: false)
     }
 
     static mapping = {
