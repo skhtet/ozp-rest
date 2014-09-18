@@ -45,6 +45,13 @@ class Profile implements Serializable {
     Date createdDate
     Date lastLogin
     String uuid
+
+    //the highest Role currently assigned to the user.  If we ever have Roles that aren't
+    //strictly ordered we will need a more sophisticated mechanism to remember exactly what
+    //roles a user has
+    Role highestRole
+
+
     Map userDataMap = new HashMap()
     Set organizations = new HashSet()
 
@@ -171,5 +178,9 @@ class Profile implements Serializable {
 
     def beforeValidate() {
         applicationLibrary.each { it.beforeValidate() }
+    }
+
+    boolean hasRole(Role role) {
+        this.highestRole >= role
     }
 }

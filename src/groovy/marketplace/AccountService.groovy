@@ -4,6 +4,7 @@ import grails.util.GrailsUtil
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.annotation.Propagation
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -20,7 +21,7 @@ public class AccountService {
     String loggedInUsername
     String loggedInDisplayName
     String loggedInEmail
-    List<String> loggedInUserRoles
+    List<GrantedAuthority> loggedInUserRoles
     String loggedInOrganization
 
     public boolean isExtAdmin() {

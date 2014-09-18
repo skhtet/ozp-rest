@@ -12,6 +12,7 @@ import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.ItemComment
 import marketplace.Agency
+import marketplace.Role
 
 import marketplace.AccountService
 
@@ -74,8 +75,6 @@ class ProfileRestService extends RestService<Profile> {
     public void login() {
         Profile profile = currentUserProfile ?: new Profile(
             username: accountService.loggedInUsername,
-            displayName: accountService.loggedInDisplayName,
-            email: accountService.loggedInEmail
         )
 
         //TODO This might need to be more robust
@@ -84,7 +83,14 @@ class ProfileRestService extends RestService<Profile> {
             profile.addToOrganizations(organization)
         }
 
-        profile.lastLogin = new Date()
+        profile.with {
+            displayName = accountService.loggedInDisplayName
+            email = accountService.loggedInEmail
+            lastLogin = new Date()
+            highestRole = accountService.loggedInUserRoles.collect {
+                Role.fromGrantedAuthority(it)
+            }.max()
+        }
 
         profile.save(failOnError:true)
     }
