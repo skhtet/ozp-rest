@@ -14,7 +14,6 @@ class Profile implements Serializable {
 
     static searchable = {
         root false
-        avatar component: true
         username index: 'not_analyzed', excludeFromAll: false
         displayName index: 'analyzed', excludeFromAll: false
         sortDisplayName index: 'not_analyzed'
@@ -65,10 +64,10 @@ class Profile implements Serializable {
         displayName(nullable: true, maxSize: 256)
         email(nullable: true, maxSize: 256)
         bio(nullable: true, maxSize: 1000)
-        avatar(nullable: true)
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
         userRoles(nullable: true)
+        lastLogin(nullable: false)
     }
 
     static mapping = {

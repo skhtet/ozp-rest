@@ -67,7 +67,7 @@ class MarketplaceAuditingFilters extends AbstractAuditingFilters{
         def map = [:]
         map['USERNAME'] = currentUser.username
         map['NAME']     = currentUser.displayName
-        map['ORG']      = currentUser.organization.title
+        map['ORG']      = currentUser.organizations.size() ? currentUser.organizations.toArray()[0].title : null
         map['EMAIL']    = currentUser.email
         map['ROLES']    = accountService.getLoggedInUserRoles().collect{it instanceof String ? it : it.authority}
         map

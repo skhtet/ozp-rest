@@ -11,6 +11,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.ItemComment
+import marketplace.Agency
 
 import marketplace.AccountService
 
@@ -90,7 +91,7 @@ class ProfileRestService extends RestService<Profile> {
 
     @Transactional(readOnly = false)
     public void createRequired() {
-        def profilesInConfig = config.marketplace.metadata.profiles
+        def profilesInConfig = grailsApplication.config.marketplace.metadata.profiles
 
         if (profilesInConfig) {
             profilesInConfig.each { Map profileInfo ->
