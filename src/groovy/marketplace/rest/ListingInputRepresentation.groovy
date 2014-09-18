@@ -26,7 +26,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     Boolean isEnabled
     Set<String> tags
 
-    TypeIdRef types
+    TypeIdRef type
     Set<IntentIdRef> intents
     Set<ContactInputRepresentation> contacts
     Set<OwnerIdRef> owners

@@ -133,7 +133,7 @@ public class ItemCommentService {
 
         if (comment) {
             isUser = (sessionParams?.username == comment?.author?.username)
-            isAvailable = !comment?.serviceItem?.isHidden
+            isAvailable = comment?.serviceItem?.isEnabled
             isApproved = comment?.serviceItem.statApproved()
 
             if (rules?.allNoRestrictions && isAvailable) {

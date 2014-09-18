@@ -283,6 +283,7 @@ abstract class RestService<T> {
         if (object) {
             props.each { propName, propValue ->
                 if(propValue instanceof Collection) {
+                    object[propName]?.clear()
                     propValue.each {
                         object."addTo${propName.capitalize()}"(it)
                     }
@@ -421,8 +422,8 @@ abstract class RestService<T> {
     public T createFromRepresentation(InputRepresentation<T> rep) {
         T object = DomainClass.metaClass.invokeConstructor()
 
-        populateDefaults(object)
         merge(object, rep)
+        populateDefaults(object)
 
         authorizeCreate(object)
 

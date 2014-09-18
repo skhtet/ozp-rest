@@ -28,10 +28,7 @@ class IntentIdRef extends IdRefInputRepresentation<Intent, String> {
     IntentIdRef(String id) {
         this()
         def props = id.split('/')
-        this.id = Intent.generateId([
-            type: props[0] + '/' + props[1],
-            action: props[2]
-        ])
+        this.id = Intent.findByTypeAndAction("${props[0]}/${props[1]}", props[2])?.id
     }
 }
 
