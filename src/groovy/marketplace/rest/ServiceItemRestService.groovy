@@ -108,7 +108,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         Profile profile = profileRestService.currentUserProfile
 
         //owners and admins can always view.  For others, there are more rules
-        if (!accountService.isAdmin() && !si.isAuthor(profile)) {
+        if (!accountService.isAdmin() && !si.isOwner(profile)) {
 
             //if it is enabled and approved it is visible to everyone
             if (!(si.isEnabled && si.approvalStatus == Constants.APPROVAL_STATUSES['APPROVED'])) {
@@ -139,7 +139,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         //admins can always edit
         if (!(accountService.isAdmin())) {
             //non-admin, non-owners can never edit
-            if (!existing.isAuthor(profile)) {
+            if (!existing.isOwner(profile)) {
                 unauthorized()
             }
         }

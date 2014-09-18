@@ -7,14 +7,12 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import java.security.MessageDigest
-
 @AuditStamp
 class Intent implements Serializable {
 
     //Source: http://tools.ietf.org/html/rfc6838#section-4.2
-    static final TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?$/
-    static final ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,126})?$/
+    static final TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+    static final ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
 
     static searchable = {
         root false
@@ -27,12 +25,15 @@ class Intent implements Serializable {
     String type
     String label
     String icon
-    String id
+
+    static hasMany = [serviceItems: ServiceItem]
+    static belongsTo = ServiceItem
 
     static mapping = {
-        id generator: 'assigned'
+        id natural: [properties: ['type', 'action']]
         cache true
         batchSize 50
+
     }
 
     static constraints = {
@@ -40,13 +41,6 @@ class Intent implements Serializable {
         type blank: false, maxSize: 255, matches: TYPE_REGEX
         icon nullable: true, maxSize: 2083
         label nullable: true, maxSize: 255
-        id maxSize: 40, validator: { val, obj -> val == generateId(obj) }
-    }
-
-    def beforeValidate() {
-        if(!id) {
-            id = generateId(this)
-        }
     }
 
     def beforeDelete() {
@@ -107,17 +101,5 @@ class Intent implements Serializable {
         }
 
         false
-    }
-
-    /**
-     * Calculates the id using a SHA1 digest of type and action
-     *
-     * @param intent
-     * @return
-     */
-    public static String generateId(intent) {
-        MessageDigest.getInstance('SHA1')
-            .digest("${intent.type}/${intent.action}".bytes)
-            .encodeAsHex()
     }
 }

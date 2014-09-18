@@ -388,12 +388,8 @@ class ServiceItem implements Serializable {
         lastActivity?.activityDate
     }
 
-    boolean isAuthor(Profile user) {
-        isAuthor(user.username)
-    }
-
-    boolean isAuthor(String username) {
-        this.owners?.find { it.username == username }
+    boolean isOwner(Profile user) {
+        owners?.find { it.username == user.username }
     }
 
     static List<ServiceItem> findAllByAuthor(Profile user) {
