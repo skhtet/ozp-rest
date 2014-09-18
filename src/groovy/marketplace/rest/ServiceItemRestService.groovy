@@ -4,7 +4,6 @@ import grails.plugin.executor.PersistenceContextExecutorWrapper
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.ServiceItem
 import marketplace.Profile
@@ -14,7 +13,6 @@ import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ServiceItemSnapshot
 import ozone.marketplace.enums.RelationshipType
-import ozone.utils.User
 import marketplace.AccountService
 import marketplace.validator.ServiceItemValidator
 import org.springframework.security.access.AccessDeniedException
@@ -138,28 +136,11 @@ class ServiceItemRestService extends RestService<ServiceItem> {
                 "id ${existing.id} by user ${profile.username}")
         }
 
-        boolean ownerCanAlwaysEdit = true
-
         //admins can always edit
         if (!(accountService.isAdmin())) {
-            if (accountService.isExternAdmin()) {
-                //external admins can edit if they are the original creator or a current owner.
-                //This logic was pulled from the old ServiceItemService
-                if (!(existing.createdBy == profile || existing.isAuthor(profile))) {
-                    unauthorized()
-                }
-            }
-            else {
-                //non-admin, non-owners can never edit
-                if (!existing.isAuthor(profile)) {
-                    unauthorized()
-                }
-                //owners can edit if the listing is in progress or rejected, or if the
-                //ALLOW_OWNER_TO_EDIT_APPROVED_LISTING flag is true
-                if (!ownerCanAlwaysEdit &&
-                        !(existing.statInProgress() || existing.statRejected())) {
-                    unauthorized()
-                }
+            //non-admin, non-owners can never edit
+            if (!existing.isAuthor(profile)) {
+                unauthorized()
             }
         }
     }
@@ -173,8 +154,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     protected void postprocess(ServiceItem updated, Map original = null) {
 
         if (original) {
-            updateInsideOutsideServiceItemActivity(updated, original)
-            updateHiddenServiceItemActivity(updated, original)
+            updateEnabledServiceItemActivity(updated, original)
             updateApprovalStatus(updated, original)
             serviceItemActivityInternalService.createChangeLog(updated, original)
         }
@@ -228,29 +208,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     /**
-     * Find child app components to this stack and approve them
-     */
-    private void approveStackRequirements(ServiceItem si) {
-        Set<ServiceItem> toApprove = si.relationships?.relatedItems?.flatten()?.grep { !it.statApproved() }
-
-        toApprove?.each { requiredItem ->
-            boolean isOutside
-
-            if (requiredItem.isOutside == null) {
-                isOutside = false
-            }
-            else {
-                isOutside = requiredItem.isOutside
-            }
-
-            update(requiredItem, [
-                isOutside: isOutside,
-                approvalStatus: Constants.APPROVAL_STATUSES['APPROVED']
-            ], true)
-        }
-    }
-
-    /**
      * Update the listing to be rejected.  This includes setting the approvalStatus, adding the
      * RejectionListing to the ServiceItem, and creating the RejectionActivity
      */
@@ -273,28 +230,8 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     @Override
     protected void populateDefaults(ServiceItem dto) {
         Profile profile = profileRestService.currentUserProfile
-        User user = accountService.loggedInUser
-        dto.with {
-            owners = owners ?: [profile]
-            techPocs = techPocs ?: [profile.username]
-            organization = organization ?: user.org
-        }
-    }
-
-    /**
-     * If necessary, add a service item activity stating that the inside/outside state
-     * of the listing was changed.
-     *
-     * @param oldIsOutside The previous isOutside value for this listing
-     * @param curentItem The listing that was updated.  If isOutside on this listing
-     * does not match oldIsOutside, a proper ServiceItemActivity will be generated and added
-     */
-    private void updateInsideOutsideServiceItemActivity(ServiceItem updated, Map old) {
-        boolean oldIsOutside = old.isOutside, currentIsOutside = updated.isOutside
-
-        if (oldIsOutside != currentIsOutside) {
-            serviceItemActivityInternalService.addServiceItemActivity(updated,
-                Constants.Action[currentIsOutside ? 'OUTSIDE' : 'INSIDE'])
+        if(!dto.owners) {
+            dto.addToOwners(profile)
         }
     }
 
@@ -302,12 +239,12 @@ class ServiceItemRestService extends RestService<ServiceItem> {
      * Add a ServiceItemActivity for the changing of the hidden flag (known externally as
      * enabled
      */
-    private void updateHiddenServiceItemActivity(ServiceItem updated, Map old) {
-        boolean oldIsHidden = old.isHidden, updatedIsHidden = updated.isHidden
+    private void updateEnabledServiceItemActivity(ServiceItem updated, Map old) {
+        boolean oldIsEnabled = old.isEnabled, updatedIsEnabled = updated.isEnabled
 
-        if (oldIsHidden != updatedIsHidden) {
+        if (oldIsEnabled != updatedIsEnabled) {
             serviceItemActivityInternalService.addServiceItemActivity(updated,
-                Constants.Action[updatedIsHidden ? 'DISABLED' : 'ENABLED'])
+                Constants.Action[updatedIsEnabled ? 'DISABLED' : 'ENABLED'])
         }
     }
 

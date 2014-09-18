@@ -30,7 +30,7 @@ class ServiceItemService extends OzoneService {
 
         if (item) {
             isUser = item?.isAuthor((String) sessionParams?.username)
-            isAvailable = !item.isHidden
+            isAvailable = item.isEnabled
             isApproved = item.statApproved()
 
             if (rules?.allNoRestrictions && isAvailable) {
