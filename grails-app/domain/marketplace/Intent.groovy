@@ -44,9 +44,6 @@ class Intent implements Serializable {
     }
 
     def beforeDelete() {
-        //there is no "GORM Way" to remove a unidirectional one-to-many association from the many side, so
-        //it must be done manually. An alternative is to set the cascade on the foreign key that references intent
-        //in the join table during creation of the db schema.
         withNewSession {
             def items = ServiceItem.createCriteria().list {
                 intents {

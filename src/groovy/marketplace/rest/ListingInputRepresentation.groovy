@@ -6,7 +6,7 @@ import marketplace.ServiceItem
 import marketplace.ServiceItemDocumentationUrl
 
 class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem> {
-    public static final String MEDIA_TYPE = 'application/vnd.ozp.listing+json'
+    public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
     ListingInputRepresentation() {
         super(ServiceItem.class)
     }
@@ -22,8 +22,8 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     String imageXlargeUrl
     String versionName
     String whatIsNew
-    Boolean isFeatured
-    Boolean isEnabled
+    Boolean isFeatured = false
+    Boolean isEnabled = true
     Set<String> tags
 
     TypeIdRef type

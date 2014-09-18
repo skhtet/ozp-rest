@@ -282,7 +282,7 @@ abstract class RestService<T> {
 
         if (object) {
             props.each { propName, propValue ->
-                if(propValue instanceof Collection) {
+                if(object[propName] instanceof Collection || propValue instanceof Collection) {
                     object[propName]?.clear()
                     propValue.each {
                         object."addTo${propName.capitalize()}"(it)

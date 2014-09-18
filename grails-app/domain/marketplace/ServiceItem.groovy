@@ -146,9 +146,8 @@ class ServiceItem implements Serializable {
     Integer totalComments = 0
 
     SortedSet rejectionListings
-
-    List screenshots = []
-    List serviceItemActivities = []
+    List screenshots
+    List serviceItemActivities
 
     ServiceItemActivity lastActivity
     Agency agency
