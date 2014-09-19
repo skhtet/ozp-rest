@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response
 
 import marketplace.rest.RestService
 
+import marketplace.hal.PagedCollection
+
 /**
  * Parent class of jaxrs rest controllers for domain
  * objects, using Representation classes for input
@@ -45,6 +47,19 @@ class RepresentationResource<T> {
     @Path('/{id}')
     T read(@PathParam('id') long id) {
         service.getById(id)
+    }
+
+    /**
+     * GET all of the domain objects of type T, optionally
+     * with paging parameters to limit the size of the return
+     */
+    //TODO if we move to Jersey 2 or a different JAX-RS framework, this can be separated
+    //into a separate resource class to prevent subclasses from having to override it
+    //just to specify a different @Produces
+    @GET
+    PagedCollection<T> readAll(@QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max) {
+        new PagedCollection(offset, max, service.getAll(offset, max))
     }
 
     @PUT

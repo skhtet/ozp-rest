@@ -32,6 +32,7 @@ import marketplace.ServiceItemActivity
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.AbstractHalRepresentation
+import marketplace.hal.PagedCollection
 
 @Path('/api/profile')
 @Produces([ProfileRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
@@ -50,6 +51,14 @@ class ProfileResource extends RepresentationResource<Profile> {
     }
 
     ProfileResource() {}
+
+    @Override
+    @GET
+    @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    PagedCollection<Profile> readAll(@QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max) {
+        super.readAll(offset, max)
+    }
 
     @Path('/self')
     @GET

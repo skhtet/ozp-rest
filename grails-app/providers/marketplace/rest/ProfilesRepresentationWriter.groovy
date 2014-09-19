@@ -8,7 +8,6 @@ import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
 import marketplace.hal.EmbeddedCollectionRepresentation
-import marketplace.hal.PagedCollection
 
 @Provider
 @Produces([
@@ -16,10 +15,10 @@ import marketplace.hal.PagedCollection
     MediaType.APPLICATION_JSON
 ])
 class ProfilesRepresentationWriter extends
-        AbstractRepresentationWriter<PagedCollection<Profile>> {
+        AbstractRepresentationWriter<Collection<Profile>> {
 
     ProfilesRepresentationWriter() {
         super(EmbeddedCollectionRepresentation.createFactory(ProfileRepresentation.class,
-            ProfileCollectionResource.class))
+            ProfileResource.class))
     }
 }

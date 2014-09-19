@@ -3,39 +3,35 @@ package marketplace.hal
 import javax.ws.rs.core.UriBuilder
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import marketplace.rest.DomainResource
-import marketplace.rest.RepresentationResource
-import marketplace.rest.RepresentationCollectionResource
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 
 /**
  * Representation of a collection where all of the elements are embedded representations
  *
  * TODO: This representation could probably support optional paging (next/prev links) as well
  */
-class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCollection<T>> {
+class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collection<T>> {
     @JsonIgnore
     final Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType
     @JsonIgnore
     final Class<?> domainResourceType
-    @JsonIgnore
-    final Class<?> collectionResourceType
 
     /**
      * The total unpaged number of items
      */
-    final int total
+    @JsonInclude(Include.NON_NULL)
+    final Integer total
 
     EmbeddedCollectionRepresentation(
             Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType,
-            Class<? extends RepresentationResource<T>> domainResourceType,
-            Class<? extends RepresentationCollectionResource<T>> collectionResourceType,
-            PagedCollection<T> entities,
+            Class<?> domainResourceType,
+            Collection<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
         super(
             uriBuilderHolder.builder
-                .path(collectionResourceType)
-                .path(collectionResourceType, 'readAll') //sanity check that resource has readAll
+                .path(domainResourceType)
                 .build(),
             null,
             null
@@ -43,21 +39,14 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCol
 
         this.embeddedRepresentationType = embeddedRepresentationType
         this.domainResourceType = domainResourceType
-        this.collectionResourceType = collectionResourceType
+        this.domainResourceType = domainResourceType
 
         this.addEmbedded(embedEntities(entities, uriBuilderHolder))
         this.addLinks(linkEntities(entities, uriBuilderHolder))
 
-        this.total = total
-    }
-
-    EmbeddedCollectionRepresentation(
-            Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType,
-            Class<? extends DomainResource<T>> domainResourceType,
-            PagedCollection<T> entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-
-        this(embeddedRepresentationType, domainResourceType, entities, uriBuilderHolder)
+        if (entities instanceof PagedCollection) {
+            this.total = entities.total
+        }
     }
 
     private HalEmbedded embedEntities(Collection entities,
@@ -69,38 +58,41 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCol
         })
     }
 
-    private HalLinks linkEntities(PagedCollection entities,
+    private HalLinks linkEntities(Collection entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         Collection<Map.Entry> navLinks = []
-        Map prevPageParams = getNextPageParams(entities)
-        Map nextPageParams = getNextPageParams(entities)
-        UriBuilder pagingUriBuilder = uriBuilderHolder.builder
-            .path(collectionResourceType)
-            .path(collectionResourceType, 'readAll')
+
+        //set up next and prev links if we have paging info
+        if (entities instanceof PagedCollection) {
+            Map prevPageParams = getPrevPageParams(entities)
+            Map nextPageParams = getNextPageParams(entities)
+            UriBuilder pagingUriBuilder = uriBuilderHolder.builder
+                .path(domainResourceType)
 
 
-        //add link to previous page in collection
-        if (prevPageParams) {
-            UriBuilder prevPageUriBuilder = pagingUriBuilder.clone()
+            //add link to previous page in collection
+            if (prevPageParams) {
+                UriBuilder prevPageUriBuilder = pagingUriBuilder.clone()
 
-            prevPageParams.each { k, v ->
-                prevPageUriBuilder = prevPageUriBuilder.replaceQueryParam(k, v)
+                prevPageParams.each { k, v ->
+                    prevPageUriBuilder = prevPageUriBuilder.replaceQueryParam(k, v)
+                }
+
+                navLinks << new AbstractMap.SimpleEntry(RegisteredRelationType.PREV,
+                    new Link(prevPageUriBuilder.build()))
             }
 
-            navLinks << new AbstractMap.SimpleEntry(RegisteredRelationType.PREV,
-                new Link(prevPageUriBuilder.build()))
-        }
+            //add link to next page in collection
+            if (nextPageParams) {
+                UriBuilder nextPageUriBuilder = pagingUriBuilder.clone()
 
-        //add link to next page in collection
-        if (nextPageParams) {
-            UriBuilder nextPageUriBuilder = pagingUriBuilder.clone()
+                nextPageParams.each { k, v ->
+                    nextPageUriBuilder = nextPageUriBuilder.replaceQueryParam(k, v)
+                }
 
-            nextPageParams.each { k, v ->
-                nextPageUriBuilder = nextPageUriBuilder.replaceQueryParam(k, v)
+                navLinks << new AbstractMap.SimpleEntry(RegisteredRelationType.NEXT,
+                    new Link(nextPageUriBuilder.build()))
             }
-
-            navLinks << new AbstractMap.SimpleEntry(RegisteredRelationType.NEXT,
-                new Link(nextPageUriBuilder.build()))
         }
 
 
@@ -121,8 +113,8 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCol
     }
 
     private Map getPrevPageParams(PagedCollection entities) {
-        int offset = entities.offset,
-            max = entities.max == null ? entities.total : entities.max
+        Integer offset = entities.offset,
+            max = entities.max == null ? entities.total : entities.max,
             prevOffset
 
         if (offset == null || offset == 0) {
@@ -139,15 +131,16 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCol
     }
 
     private Map getNextPageParams(PagedCollection entities) {
-        int offset = entities.offset == null ? 0 : entities.offset
-            max = entities.max == null ? entities.total : entities.max
-            nextOffset = offset + max
+        Integer offset = entities.offset == null ? 0 : entities.offset,
+            max = entities.max,
+            nextOffset
 
-        if (entities.items.size() < max) {
+        if (entities.max == null || entities.items.size() < max) {
             //assume this is the last page
             return null
         }
         else {
+            nextOffset = offset + max
             return [offset: nextOffset, max: max]
         }
     }
@@ -160,7 +153,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<PagedCol
      */
     public static RepresentationFactory<Collection<?>> createFactory(
             Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
-            Class<? extends DomainResource> domainResourceType) {
+            Class<?> domainResourceType) {
 
         { Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder ->
             new EmbeddedCollectionRepresentation(embeddedRepresentationType,
