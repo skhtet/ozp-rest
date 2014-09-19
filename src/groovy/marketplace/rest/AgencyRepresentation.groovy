@@ -8,6 +8,7 @@ import marketplace.hal.RepresentationFactory
 
 class AgencyRepresentation extends SelfRefRepresentation<Agency> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-organization-v1+json'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-organizations-v1+json'
 
     private Agency agency
 

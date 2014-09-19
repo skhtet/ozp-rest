@@ -333,6 +333,64 @@ class ProfileResource extends RepresentationResource<Profile> {
             applicationLibraryEntryId)
     }
 
+    @Path('/{profileId}/stewardedOrganizations')
+    @GET
+    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    Collection<Agency> getStewardedOrganizations(@PathParam('profileId') long profileId) {
+        service.getById(profileId).stewardedOrganizations
+    }
+
+    @Path('/self/stewardedOrganizations')
+    @GET
+    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    Collection<Agency> getOwnStewardedOrganizations() {
+        getStewardedOrganizations(service.currentUserProfile.id)
+    }
+
+    @Path('/{profileId}/stewardedOrganizations')
+    @PUT
+    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    @Consumes(AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    Collection<Agency> setStewardedOrganizations(@PathParam('profileId') long profileId,
+            Collection<InputRepresentation<Agency>> organizations) {
+        service.setStewardedOrganizations(profileId, organizations)
+    }
+
+    @Path('/self/stewardedOrganizations')
+    @PUT
+    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    @Consumes(AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
+    Collection<Agency> setOwnStewardedOrganizations(
+            Collection<InputRepresentation<Agency>> organizations) {
+        setStewardedOrganizations(service.currentUserProfile.id, organizations)
+    }
+
+    @Path('/{profileId}/stewardedOrganizations/{organizationId}')
+    @POST
+    void addSteward(@PathParam('profileId') long profileId,
+            @PathParam('organizationId') long organizationId) {
+        service.addProfileAsSteward(profileId, organizationId)
+    }
+
+    @Path('/self/stewardedOrganizations/{organizationId}')
+    @POST
+    void addSelfAsSteward(@PathParam('organizationId') long organizationId) {
+        service.addProfileAsSteward(service.currentUserProfile.id, organizationId)
+    }
+
+    @Path('/{profileId}/stewardedOrganizations/{organizationId}')
+    @DELETE
+    void removeSteward(@PathParam('profileId') long profileId,
+            @PathParam('organizationId') long organizationId) {
+        service.addProfileAsSteward(profileId, organizationId)
+    }
+
+    @Path('/self/stewardedOrganizations/{organizationId}')
+    @DELETE
+    void removeSelfAsSteward(@PathParam('organizationId') long organizationId) {
+        service.addProfileAsSteward(service.currentUserProfile.id, organizationId)
+    }
+
     /**
      *  The following helper methods exist because at the moment we don't have
      *  generic handling for text/plain
