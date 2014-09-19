@@ -3,7 +3,6 @@ package marketplace
 import org.codehaus.groovy.grails.web.json.JSONArray
 import ozone.marketplace.enums.OzoneSize
 import grails.orm.PagedResultList
-import ozone.utils.User
 
 import java.text.SimpleDateFormat
 

@@ -7,6 +7,7 @@ import marketplace.rest.ProfileServiceItemTagDto
 import marketplace.rest.ApplicationDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as confHolder
 import org.codehaus.groovy.grails.web.json.*
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
@@ -20,11 +21,12 @@ class BootStrap {
     def marketplaceConversionService
 	def searchableService
 	def imagesService
-    def profileService
+    def profileRestService
     def grailsApplication
     def messageSource
     def commonImagesLoc = '/themes/common/images'
     def sessionFactory
+    def objectMapper
 
     def init = { servletContext ->
 
@@ -76,7 +78,7 @@ class BootStrap {
             }
         }
 
-        profileService.createRequired()
+        profileRestService.createRequired()
 
 		log.info "BootStrap init; GrailsUtil.environment: ${GrailsUtil.environment}"
         if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {
@@ -98,7 +100,6 @@ class BootStrap {
             Agency,
             Types,
             Intent,
-            ExtProfile,
             Profile,
             Images,
             ServiceItem,
@@ -110,6 +111,13 @@ class BootStrap {
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
+
+        configureJackson()
+    }
+
+    private void configureJackson() {
+        //use ISO-8601 date format
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     def destroy = { servletContext ->

@@ -6,6 +6,8 @@ import marketplace.*
 import marketplace.search.MarketplaceElasticSearchService
 import ozone.utils.ApplicationContextHolder
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+
 // Place your Spring DSL code here
 beans = {
 
@@ -37,7 +39,10 @@ beans = {
         loggedInDisplayName = "Slackbot"
         loggedInEmail = "slackbot@nowhere.com"
         loggedInOrganization = DEFAULT_AGENCY
-        loggedInUserRoles = [Constants.USER, Constants.ADMIN]
+        loggedInUserRoles = [
+            new SimpleGrantedAuthority(Constants.USER),
+            new SimpleGrantedAuthority(Constants.ADMIN)
+        ]
     }
 
     customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)

@@ -32,9 +32,12 @@ import marketplace.ServiceItemActivity
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.AbstractHalRepresentation
+import marketplace.hal.PagedCollection
 
 @Path('/api/profile')
-class ProfileResource extends DomainResource<Profile> {
+@Produces([ProfileRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+@Consumes([ProfileInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+class ProfileResource extends RepresentationResource<Profile> {
 
     @Autowired ServiceItemRestService serviceItemRestService
     @Autowired ItemCommentRestService ItemCommentRestService
@@ -44,10 +47,18 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Autowired
     ProfileResource(ProfileRestService profileRestService) {
-        super(Profile.class, profileRestService)
+        super(profileRestService)
     }
 
     ProfileResource() {}
+
+    @Override
+    @GET
+    @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    PagedCollection<Profile> readAll(@QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max) {
+        super.readAll(offset, max)
+    }
 
     @Path('/self')
     @GET
@@ -57,18 +68,24 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/serviceItem')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     Set<ServiceItem> getServiceItemsByAuthorId(@PathParam('profileId') long profileId) {
         serviceItemRestService.getAllByAuthorId(profileId)
     }
 
     @Path('/self/serviceItem')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     Set<ServiceItem> getOwnServiceItems() {
         getServiceItemsByAuthorId(service.currentUserProfile.id)
     }
 
     @Path('/{profileId}/itemComment')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ItemCommentServiceItemDto> getItemCommentsByAuthorId(
             @PathParam('profileId') long profileId) {
         itemCommentRestService.getAllByAuthorId(profileId).collect {
@@ -78,12 +95,16 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/itemComment')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ItemCommentServiceItemDto> getOwnItemComments() {
         getItemCommentsByAuthorId(service.currentUserProfile.id)
     }
 
     @Path('/self/tag')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     Collection<ProfileServiceItemTagDto> getOwnTags() {
         getTagsByProfileId(service.currentUserProfile.id)
     }
@@ -117,6 +138,8 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/activity')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getServiceItemActivitiesByProfileId(
             @PathParam('profileId') long profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
@@ -125,6 +148,8 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/activity')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getOwnServiceItemActivities(@QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
         getServiceItemActivitiesByProfileId(service.currentUserProfile.id, offset, max)
@@ -132,6 +157,8 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/{profileId}/serviceItem/activity')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getServiceItemActivitiesByServiceItemOwnerId(
             @PathParam('profileId') long profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
@@ -140,6 +167,8 @@ class ProfileResource extends DomainResource<Profile> {
 
     @Path('/self/serviceItem/activity')
     @GET
+    @Produces([MediaType.APPLICATION_JSON])
+    @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getServiceItemActivitiesOnOwnServiceItems(
             @QueryParam('offset') Integer offset, @QueryParam('max') Integer max) {
          getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)

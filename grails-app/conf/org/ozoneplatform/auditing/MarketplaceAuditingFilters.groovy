@@ -3,17 +3,19 @@ package org.ozoneplatform.auditing
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest
 import marketplace.AccountService
+import marketplace.rest.ProfileRestService
+import marketplace.Profile
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.ozoneplatform.auditing.filter.AbstractAuditingFilters
 import org.ozoneplatform.auditing.format.cef.Extension
 import org.springframework.beans.BeansException
 import org.springframework.web.context.request.RequestContextHolder as RCH
-import ozone.utils.User
 
 class MarketplaceAuditingFilters extends AbstractAuditingFilters{
 
     GrailsApplication grailsApplication
     AccountService accountService
+    ProfileRestService profileRestService
 
     public String getApplicationVersion(){
         return grailsApplication.metadata['app.version']
@@ -61,11 +63,11 @@ class MarketplaceAuditingFilters extends AbstractAuditingFilters{
 
     @Override
     public Map<String, String> getUserInfo(){
-        User currentUser = accountService.getLoggedInUser()
+        Profile currentUser = profileRestService.currentUserProfile
         def map = [:]
         map['USERNAME'] = currentUser.username
-        map['NAME']     = currentUser.name
-        map['ORG']      = currentUser.org
+        map['NAME']     = currentUser.displayName
+        map['ORG']      = currentUser.organizations.size() ? currentUser.organizations.toArray()[0].title : null
         map['EMAIL']    = currentUser.email
         map['ROLES']    = accountService.getLoggedInUserRoles().collect{it instanceof String ? it : it.authority}
         map

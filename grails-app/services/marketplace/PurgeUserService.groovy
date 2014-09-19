@@ -12,7 +12,7 @@ class PurgeUserService {
     void purgeInactiveAccounts() {
         def thresholdInDays = 90
 
-        List<UserAccount> inactiveAccounts = getInactiveAccounts(thresholdInDays)
+        List<Profile> inactiveAccounts = getInactiveAccounts(thresholdInDays)
         inactiveAccounts.each { account ->
             Profile profile = Profile.findByUsername(account.username)
             if (profile) {
@@ -21,9 +21,9 @@ class PurgeUserService {
         }
     }
 
-    List<UserAccount> getInactiveAccounts(def thresholdInDays) {
+    List<Profile> getInactiveAccounts(def thresholdInDays) {
         Date cutOffDate = new Date().minus(thresholdInDays.toInteger())
-        List<UserAccount> inactiveAccounts = UserAccount.findAllByLastLoginLessThan(cutOffDate)
+        List<Profile> inactiveAccounts = Profile.findAllByLastLoginLessThan(cutOffDate)
         return inactiveAccounts
     }
 
@@ -86,15 +86,6 @@ class PurgeUserService {
             }
         }
 
-        def account = UserAccount.findAllByUsername(user.username)
-        account.each {
-            it.delete()
-        }
-
-        def domainInstances = UserDomainInstance.findAllByUsername(user.username)
-        domainInstances.each {
-            it.delete()
-        }
         // Delete the profile last, after all references to it have been changed/removed.
         user.delete()
     }
