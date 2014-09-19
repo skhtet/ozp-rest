@@ -62,7 +62,9 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "icon_url", type: "varchar(2000)")
+			column(name: "icon_url", type: "varchar(2083)") {
+				constraints(nullable: "true")
+			}
 
 			column(name: "title", type: "varchar(255)") {
 				constraints(nullable: "false")
