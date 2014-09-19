@@ -60,8 +60,8 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     String getDisplayName() { profile.displayName }
     String getEmail() { profile.email }
     String getBio() { profile.bio }
-    String getCreatedDate() { profile.createdDate }
-    String getLastLogin() { profile.lastLogin }
+    Date getCreatedDate() { profile.createdDate }
+    Date getLastLogin() { profile.lastLogin }
     Collection<IdRefRepresentation<Agency>> getOrganizations() {
         profile.organizations.collect { new IdRefRepresentation(it) }
     }

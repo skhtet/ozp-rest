@@ -7,6 +7,7 @@ import marketplace.rest.ProfileServiceItemTagDto
 import marketplace.rest.ApplicationDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
+import com.fasterxml.jackson.databind.SerializationFeature
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as confHolder
 import org.codehaus.groovy.grails.web.json.*
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
@@ -25,6 +26,7 @@ class BootStrap {
     def messageSource
     def commonImagesLoc = '/themes/common/images'
     def sessionFactory
+    def objectMapper
 
     def init = { servletContext ->
 
@@ -109,6 +111,13 @@ class BootStrap {
         ].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
+
+        configureJackson()
+    }
+
+    private void configureJackson() {
+        //use ISO-8601 date format
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     def destroy = { servletContext ->
