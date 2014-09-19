@@ -18,6 +18,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     final String name
     final String type
     final String description
+    final String uuid
+
     Map launchUrls = new HashMap()
     List screenShots
     Set tags
@@ -45,6 +47,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
         this.launchUrls.put('default', serviceItem.launchUrl)
         this.tags = serviceItem.tags
         this.type = serviceItem.type.title
+        this.uuid = serviceItem.uuid
         this.description = serviceItem.descriptionShort
         this.screenShots = serviceItem.screenshots.collect { Screenshot screenShot ->
             [href: screenShot.smallImageUrl]
