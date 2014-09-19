@@ -9,21 +9,21 @@ import marketplace.JSONUtil as JS
 @gorm.AuditStamp
 class Profile implements Serializable {
 
-    //nothing is updateable for now.  If the mess with User and UserDomainInstance gets
-    //consolidated that may change
-    static bindableProperties = ['bio']
+    static bindableProperties = ['bio', 'organizations']
     static modifiableReferenceProperties = []
 
     static searchable = {
         root false
-        avatar component: true
         username index: 'not_analyzed', excludeFromAll: false
         displayName index: 'analyzed', excludeFromAll: false
         sortDisplayName index: 'not_analyzed'
         only = ['id', 'sortDisplayName', 'displayName', 'username']
     }
 
-    static hasMany = [applicationLibrary: ApplicationLibraryEntry]
+    static hasMany = [
+        applicationLibrary: ApplicationLibraryEntry,
+        organizations: Agency
+    ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
 
@@ -33,7 +33,8 @@ class Profile implements Serializable {
         createdBy: 'none',
         editedBy: 'none',
 
-        applicationLibrary: 'owner'
+        applicationLibrary: 'owner',
+        organizations: 'none'
     ]
 
     String username
@@ -42,12 +43,16 @@ class Profile implements Serializable {
     String bio = ''
     // not sure why createdDate is listed here since it will get added by the AuditStamp
     Date createdDate
-    Avatar avatar
+    Date lastLogin
     String uuid
-    Map userDataMap = new HashMap()
 
-    //Essentially to track if the current user is a user, admin or external admin
-    String userRoles
+    //the highest Role currently assigned to the user.  If we ever have Roles that aren't
+    //strictly ordered we will need a more sophisticated mechanism to remember exactly what
+    //roles a user has
+    Role highestRole
+
+    Map userDataMap = new HashMap()
+    Set organizations = new HashSet()
 
     def beforeInsert() {
         if (!uuid) {
@@ -62,11 +67,10 @@ class Profile implements Serializable {
         displayName(nullable: true, maxSize: 256)
         email(nullable: true, maxSize: 256)
         bio(nullable: true, maxSize: 1000)
-        avatar(nullable: true)
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)
-        userRoles(nullable: true)
-        //uniqueness of folders in application library enforced by the fact that its a Set
+        lastLogin(nullable: false)
+        highestRole(nullable: false)
     }
 
     static mapping = {
@@ -74,8 +78,6 @@ class Profile implements Serializable {
         tablePerHierarchy false
         userDataMap type: 'text'
     }
-
-   // static hasMany = [userDataItems: UserDataItem]
 
     static transients = ['sortDisplayName']
 
@@ -104,10 +106,7 @@ class Profile implements Serializable {
         }
     }
 
-    def asJSON()
-    {
-        UserDomainInstance userDomainInstance = this.userDomainInstance
-
+    def asJSON() {
         new JSONObject(
             id: id,
             uuid: uuid,
@@ -115,9 +114,7 @@ class Profile implements Serializable {
             displayName: displayName,
             email: email,
             bio: bio,
-            class: getClass(),
-            theme: userDomainInstance?.theme,
-            animationsEnabled: userDomainInstance?.animationsEnabled
+            organizations: organizations.collect { it.asJSON() }
         )
     }
 
@@ -175,11 +172,11 @@ class Profile implements Serializable {
         return false
     }
 
-    private UserDomainInstance getUserDomainInstance() {
-        UserDomainInstance.findByUsername(this.username)
-    }
-
     def beforeValidate() {
         applicationLibrary.each { it.beforeValidate() }
+    }
+
+    boolean hasRole(Role role) {
+        this.highestRole >= role
     }
 }

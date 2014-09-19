@@ -13,7 +13,6 @@ class ItemCommentController extends BaseMarketplaceRestController {
     def config = ConfigurationHolder.config
     def itemCommentService
     def searchableService
-    def profileService
     def sessionFactory
 
     static allowedMethods = [

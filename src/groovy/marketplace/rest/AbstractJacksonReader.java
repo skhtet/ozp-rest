@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 import java.lang.annotation.Annotation;
 
 import javax.ws.rs.core.MediaType;
@@ -35,7 +36,7 @@ abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
 
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        return this.type.isAssignableFrom(genericType);
+        return TypeToken.of(genericType).isAssignableFrom(this.type);
     }
 
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations,

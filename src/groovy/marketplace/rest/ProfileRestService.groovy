@@ -11,6 +11,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.Profile
 import marketplace.ServiceItem
 import marketplace.ItemComment
+import marketplace.Agency
+import marketplace.Role
 
 import marketplace.AccountService
 
@@ -63,5 +65,61 @@ class ProfileRestService extends RestService<Profile> {
     @Transactional(readOnly=true)
     public Profile getCurrentUserProfile() {
         Profile.findByUsername(accountService.loggedInUsername)
+    }
+
+    /**
+     * Ensure that a Profile object exists for the current user and update it from the security
+     * plugin information
+     */
+    @Transactional
+    public void login() {
+        Profile profile = currentUserProfile ?: new Profile(
+            username: accountService.loggedInUsername,
+        )
+
+        //TODO This might need to be more robust
+        Agency organization = Agency.findByTitle(accountService.loggedInOrganization)
+        if (organization) {
+            profile.addToOrganizations(organization)
+        }
+
+        profile.with {
+            displayName = accountService.loggedInDisplayName
+            email = accountService.loggedInEmail
+            lastLogin = new Date()
+            highestRole = accountService.loggedInUserRoles.collect {
+                Role.fromGrantedAuthority(it)
+            }.max()
+        }
+
+        profile.save(failOnError:true)
+    }
+
+    @Transactional(readOnly = false)
+    public void createRequired() {
+        def profilesInConfig = grailsApplication.config.marketplace.metadata.profiles
+
+        if (profilesInConfig) {
+            profilesInConfig.each { Map profileInfo ->
+                String username = profileInfo.username
+                if (!Profile.findByUsername(username)) {
+                    log.debug("#### Creating profile: $username")
+                    new Profile(username: username, displayName: profileInfo.displayName).save()
+                } else {
+                    log.info("#### Found user: $username")
+                }
+            }
+        } else {
+            log.error "Profiles metadata info was not found in the loaded config files."
+        }
+    }
+
+    @Override
+    protected void postprocess(Profile updated, Map original = null) {
+        super.postprocess(updated, original)
+
+        if (updated.organizations != original.organizations) {
+            accountService.checkAdmin("Organization affiliation can only be updated by admins")
+        }
     }
 }

@@ -27,14 +27,6 @@
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </defaultCache>
 
-    <cache name="marketplace.UserAccount"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="1200"
-           eternal="false"
-           memoryStoreEvictionPolicy="LRU">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
     <cache name="marketplace.ServiceItem"
            maxElementsInMemory="100000"
            timeToLiveSeconds="3600"

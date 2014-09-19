@@ -7,10 +7,9 @@ package ozone.marketplace.enums
 public enum ImageType {
 
     SERVICEITEM("ServiceItem"),
-	AVATAR("Avatar"),
 	MARKETPLACE_APP("MarketplaceApp"),
 	TYPES("Types")
-        
+
 	ImageType(String description) {
 		this.description = description;
 	}

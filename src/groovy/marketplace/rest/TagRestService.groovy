@@ -11,7 +11,6 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import java.nio.file.AccessDeniedException
 import marketplace.AccountService
 import marketplace.Profile
-import marketplace.ProfileService
 import marketplace.Tag
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
@@ -21,9 +20,6 @@ class TagRestService extends RestService<Tag> {
 
     @Autowired
     ServiceItemTagRestService serviceItemTagRestService
-
-    @Autowired
-    ProfileService profileService
 
     @Autowired
     GrailsApplication grailsApplication
@@ -43,9 +39,7 @@ class TagRestService extends RestService<Tag> {
         if(this.accountService.isAdmin())
             return
 
-        Profile currentUser = profileService.findByUsername(accountService.loggedInUsername)
-
-        throw new AccessDeniedException("Unauthorized attempt to delete tag " +  " ${tag.title} by user ${currentUser.username}")
+        throw new AccessDeniedException("Unauthorized attempt to delete tag " +  " ${tag.title} by user ${accountService.loggedInUsername}")
     }
 
 

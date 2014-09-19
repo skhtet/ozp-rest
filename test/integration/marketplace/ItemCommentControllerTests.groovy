@@ -116,10 +116,8 @@ class ItemCommentControllerTests extends MarketplaceIntegrationTestCase {
     //if (!type){
     //types1 = new Types(title: "Widget").save(failOnError:true)
     //}
-    def avatar = Avatar.findByIsDefault(true)
     def profile = new Profile(username: "john", displayName: "john test")
 	profile.createdDate = new Date()
-    profile.avatar = avatar
     profile.save(flush: true)
 
     ItemComment itemComment1 = new ItemComment(createdDate: new Date(), author: profile, text: "This is an example text string")
