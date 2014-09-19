@@ -113,4 +113,13 @@ class ProfileRestService extends RestService<Profile> {
             log.error "Profiles metadata info was not found in the loaded config files."
         }
     }
+
+    @Override
+    protected void postprocess(Profile updated, Map original = null) {
+        super.postprocess(updated, original)
+
+        if (updated.organizations != original.organizations) {
+            accountService.checkAdmin("Organization affiliation can only be updated by admins")
+        }
+    }
 }

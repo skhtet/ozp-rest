@@ -51,6 +51,6 @@ public class AccountService {
     }
 
     private boolean hasRole(String role) {
-        loggedInUserRoles.contains(role)
+        loggedInUserRoles*.authority.contains(role)
     }
 }
