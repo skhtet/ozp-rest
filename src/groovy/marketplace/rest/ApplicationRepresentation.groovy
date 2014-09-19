@@ -44,7 +44,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
         this.name = serviceItem.title
         this.launchUrls.put('default', serviceItem.launchUrl)
         this.tags = serviceItem.tags
-        this.type = serviceItem.types.title
+        this.type = serviceItem.type.title
         this.description = serviceItem.descriptionShort
         this.screenShots = serviceItem.screenshots.collect { Screenshot screenShot ->
             [href: screenShot.smallImageUrl]
