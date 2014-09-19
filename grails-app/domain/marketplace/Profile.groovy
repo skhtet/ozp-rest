@@ -9,9 +9,6 @@ import marketplace.JSONUtil as JS
 @gorm.AuditStamp
 class Profile implements Serializable {
 
-    static bindableProperties = ['bio', 'organizations']
-    static modifiableReferenceProperties = []
-
     static searchable = {
         root false
         username index: 'not_analyzed', excludeFromAll: false
@@ -22,7 +19,8 @@ class Profile implements Serializable {
 
     static hasMany = [
         applicationLibrary: ApplicationLibraryEntry,
-        organizations: Agency
+        organizations: Agency,
+        stewardedOrganizations: Agency
     ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
@@ -34,7 +32,8 @@ class Profile implements Serializable {
         editedBy: 'none',
 
         applicationLibrary: 'owner',
-        organizations: 'none'
+        organizations: 'none',
+        stewardedOrganizations: 'none'
     ]
 
     String username
@@ -52,7 +51,9 @@ class Profile implements Serializable {
     Role highestRole
 
     Map userDataMap = new HashMap()
+
     Set organizations = new HashSet()
+    Set stewardedOrganizations = new HashSet()
 
     def beforeInsert() {
         if (!uuid) {
