@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import static org.grails.jaxrs.response.Responses.*
 
 import marketplace.Profile
+import marketplace.Agency
 import marketplace.ServiceItem
 import marketplace.Tag
 import marketplace.ServiceItemActivity
@@ -52,6 +53,10 @@ class ProfileResource extends RepresentationResource<Profile> {
 
     ProfileResource() {}
 
+    private long getProfileId(String uriId) {
+        uriId == 'self' ? service.currentUserProfile.id : uriId as long
+    }
+
     @Override
     @GET
     @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
@@ -70,16 +75,8 @@ class ProfileResource extends RepresentationResource<Profile> {
     @GET
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
-    Set<ServiceItem> getServiceItemsByAuthorId(@PathParam('profileId') long profileId) {
-        serviceItemRestService.getAllByAuthorId(profileId)
-    }
-
-    @Path('/self/serviceItem')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    Set<ServiceItem> getOwnServiceItems() {
-        getServiceItemsByAuthorId(service.currentUserProfile.id)
+    Set<ServiceItem> getServiceItemsByAuthorId(@PathParam('profileId') String profileId) {
+        serviceItemRestService.getAllByAuthorId(getProfileId(profileId))
     }
 
     @Path('/{profileId}/itemComment')
@@ -87,18 +84,10 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
     List<ItemCommentServiceItemDto> getItemCommentsByAuthorId(
-            @PathParam('profileId') long profileId) {
-        itemCommentRestService.getAllByAuthorId(profileId).collect {
+            @PathParam('profileId') String profileId) {
+        itemCommentRestService.getAllByAuthorId(getProfileId(profileId)).collect {
             new ItemCommentServiceItemDto(it)
         }
-    }
-
-    @Path('/self/itemComment')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    List<ItemCommentServiceItemDto> getOwnItemComments() {
-        getItemCommentsByAuthorId(service.currentUserProfile.id)
     }
 
     @Path('/self/tag')
@@ -141,18 +130,9 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getServiceItemActivitiesByProfileId(
-            @PathParam('profileId') long profileId, @QueryParam('offset') Integer offset,
+            @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getAllByProfileId(profileId, offset, max)
-    }
-
-    @Path('/self/activity')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    List<ServiceItemActivity> getOwnServiceItemActivities(@QueryParam('offset') Integer offset,
-            @QueryParam('max') Integer max) {
-        getServiceItemActivitiesByProfileId(service.currentUserProfile.id, offset, max)
+        serviceItemActivityRestService.getAllByProfileId(getProfileId(profileId), offset, max)
     }
 
     @Path('/{profileId}/serviceItem/activity')
@@ -160,18 +140,9 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
     List<ServiceItemActivity> getServiceItemActivitiesByServiceItemOwnerId(
-            @PathParam('profileId') long profileId, @QueryParam('offset') Integer offset,
+            @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getAllByServiceItemOwnerId(profileId, offset, max)
-    }
-
-    @Path('/self/serviceItem/activity')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    List<ServiceItemActivity> getServiceItemActivitiesOnOwnServiceItems(
-            @QueryParam('offset') Integer offset, @QueryParam('max') Integer max) {
-         getServiceItemActivitiesByServiceItemOwnerId(service.currentUserProfile.id, offset, max)
+        serviceItemActivityRestService.getAllByServiceItemOwnerId(getProfileId(profileId), offset, max)
     }
 
     @Path('/{profileId}/library')
@@ -180,8 +151,8 @@ class ProfileResource extends RepresentationResource<Profile> {
         ApplicationLibraryRepresentation.MEDIA_TYPE,
         AbstractHalRepresentation.HAL_MEDIA_TYPE
     ])
-    ApplicationLibrary getApplicationLibrary(@PathParam('profileId') long profileId) {
-        new ApplicationLibrary(profileId,
+    ApplicationLibrary getApplicationLibrary(@PathParam('profileId') String profileId) {
+        new ApplicationLibrary(getProfileId(profileId),
             applicationLibraryEntryRestService.getByParentId(profileId))
     }
 
@@ -194,27 +165,8 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Produces([MediaType.APPLICATION_JSON])
     @Deprecated
     List<ApplicationLibraryEntry> getNonHalApplicationLibrary(
-            @PathParam('profileId') long profileId) {
-        applicationLibraryEntryRestService.getByParentId(profileId)
-    }
-
-    @Path('/self/library')
-    @GET
-    @Produces([
-        ApplicationLibraryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
-    ])
-    ApplicationLibrary getOwnApplicationLibrary() {
-        getApplicationLibrary(service.currentUserProfile.id)
-    }
-
-    /** Remove after demo */
-    @Path('/self/library')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Deprecated
-    List<ApplicationLibraryEntry> getOwnNonHalApplicationLibrary() {
-        getNonHalApplicationLibrary(service.currentUserProfile.id)
+            @PathParam('profileId') String profileId) {
+        applicationLibraryEntryRestService.getByParentId(getProfileId(profileId))
     }
 
     @Path('/{profileId}/library')
@@ -228,26 +180,9 @@ class ProfileResource extends RepresentationResource<Profile> {
         ApplicationLibraryEntryInputRepresentation.MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    Response addToApplicationLibrary(@PathParam('profileId') long profileId,
+    Response addToApplicationLibrary(@PathParam('profileId') String profileId,
             ApplicationLibraryEntryInputRepresentation representation) {
-        created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(profileId,
-            representation)
-    }
-
-    @Path('/self/library')
-    @POST
-    @Produces([
-        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    @Consumes([
-        ApplicationLibraryEntryInputRepresentation.MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    Response addToOwnApplicationLibrary(
-            ApplicationLibraryEntryInputRepresentation representation) {
-        addToApplicationLibrary(service.currentUserProfile.id,
+        created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(getProfileId(profileId),
             representation)
     }
 
@@ -265,9 +200,9 @@ class ProfileResource extends RepresentationResource<Profile> {
         MediaType.APPLICATION_JSON
     ])
     ApplicationLibrary replaceApplicationLibrary(
-            @PathParam('profileId') long profileId,
+            @PathParam('profileId') String profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
-        new ApplicationLibrary(profileId,
+        new ApplicationLibrary(getProfileId(profileId),
             applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
                 library))
     }
@@ -282,113 +217,48 @@ class ProfileResource extends RepresentationResource<Profile> {
     ])
     @Deprecated
     List<ApplicationLibraryEntry> replaceNonHalApplicationLibrary(
-            @PathParam('profileId') long profileId,
+            @PathParam('profileId') String profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
-        applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
+        applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(getProfileId(profileId),
             library)
-    }
-
-    @Path('/self/library')
-    @PUT
-    @Produces([
-        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
-    ])
-    @Consumes([
-        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    ApplicationLibrary replaceOwnApplicationLibrary(
-            List<ApplicationLibraryEntryInputRepresentation> library) {
-        replaceApplicationLibrary(service.currentUserProfile.id, library)
-    }
-
-    /** remove after demo */
-    @Path('/self/library')
-    @PUT
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([
-        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    @Deprecated
-    List<ApplicationLibraryEntry> replaceNonHalOwnApplicationLibrary(
-            List<ApplicationLibraryEntryInputRepresentation> library) {
-        replaceNonHalApplicationLibrary(service.currentUserProfile.id, library)
     }
 
     @Path('/{profileId}/library/{serviceItemId}')
     @DELETE
-    void removeFromApplicationLibrary(@PathParam('profileId') long profileId,
+    void removeFromApplicationLibrary(@PathParam('profileId') String profileId,
             @PathParam('serviceItemId') long applicationLibraryEntryId) {
-        applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(profileId,
-            applicationLibraryEntryId)
-    }
-
-    @Path('/self/library/{serviceItemId}')
-    @DELETE
-    void removeFromOwnApplicationLibrary(
-            @PathParam('serviceItemId') long applicationLibraryEntryId) {
-        removeFromApplicationLibrary(service.currentUserProfile.id,
+        applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(getProfileId(profileId),
             applicationLibraryEntryId)
     }
 
     @Path('/{profileId}/stewardedOrganizations')
     @GET
-    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    Collection<Agency> getStewardedOrganizations(@PathParam('profileId') long profileId) {
-        service.getById(profileId).stewardedOrganizations
-    }
-
-    @Path('/self/stewardedOrganizations')
-    @GET
-    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    Collection<Agency> getOwnStewardedOrganizations() {
-        getStewardedOrganizations(service.currentUserProfile.id)
+    @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    Collection<Agency> getStewardedOrganizations(@PathParam('profileId') String profileId) {
+        service.getById(getProfileId(profileId)).stewardedOrganizations
     }
 
     @Path('/{profileId}/stewardedOrganizations')
     @PUT
-    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    @Consumes(AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    Collection<Agency> setStewardedOrganizations(@PathParam('profileId') long profileId,
+    @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Consumes([AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    Collection<Agency> setStewardedOrganizations(@PathParam('profileId') String profileId,
             Collection<InputRepresentation<Agency>> organizations) {
-        service.setStewardedOrganizations(profileId, organizations)
-    }
-
-    @Path('/self/stewardedOrganizations')
-    @PUT
-    @Produces(AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    @Consumes(AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON)
-    Collection<Agency> setOwnStewardedOrganizations(
-            Collection<InputRepresentation<Agency>> organizations) {
-        setStewardedOrganizations(service.currentUserProfile.id, organizations)
+        service.setStewardedOrganizations(getProfileId(profileId), organizations)
     }
 
     @Path('/{profileId}/stewardedOrganizations/{organizationId}')
     @POST
-    void addSteward(@PathParam('profileId') long profileId,
+    void addSteward(@PathParam('profileId') String profileId,
             @PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(profileId, organizationId)
-    }
-
-    @Path('/self/stewardedOrganizations/{organizationId}')
-    @POST
-    void addSelfAsSteward(@PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(service.currentUserProfile.id, organizationId)
+        service.addProfileAsSteward(getProfileId(profileId), organizationId)
     }
 
     @Path('/{profileId}/stewardedOrganizations/{organizationId}')
     @DELETE
-    void removeSteward(@PathParam('profileId') long profileId,
+    void removeSteward(@PathParam('profileId') String profileId,
             @PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(profileId, organizationId)
-    }
-
-    @Path('/self/stewardedOrganizations/{organizationId}')
-    @DELETE
-    void removeSelfAsSteward(@PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(service.currentUserProfile.id, organizationId)
+        service.addProfileAsSteward(getProfileId(profileId), organizationId)
     }
 
     /**
