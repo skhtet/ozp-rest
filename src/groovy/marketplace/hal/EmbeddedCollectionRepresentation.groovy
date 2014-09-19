@@ -121,11 +121,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             return null
         }
         else {
-            prevOffset = offset - max
-            if (prevOffset < 0) {
-                prevOffset = 0
-            }
-
+            prevOffset = Math.max(offset - max, 0)
             return [offset: prevOffset, max: max]
         }
     }
@@ -135,7 +131,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             max = entities.max,
             nextOffset
 
-        if (entities.max == null || entities.items.size() < max) {
+        if (entities.max == null || offset + max >= entities.total) {
             //assume this is the last page
             return null
         }
