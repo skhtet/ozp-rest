@@ -19,7 +19,7 @@ import javax.ws.rs.core.HttpHeaders
 import marketplace.rest.service.ProfileRestService
 import marketplace.rest.representation.out.IwcDataObjectRepresentation
 
-@Path('api/profile/self/userData')
+@Path('api/data')
 class IwcDataObjectResource {
     @Autowired ProfileRestService profileRestService
 

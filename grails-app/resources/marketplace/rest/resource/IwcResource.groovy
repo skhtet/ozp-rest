@@ -3,6 +3,7 @@ package marketplace.rest.resource
 import marketplace.Intent
 import marketplace.Profile
 import marketplace.ServiceItem
+import marketplace.rest.representation.out.IwcApiRepresentation
 
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -16,7 +17,7 @@ import marketplace.rest.service.ProfileRestService
 import marketplace.rest.representation.out.IntentRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
 
-@Path('/api/iwc')
+@Path('api')
 class IwcResource {
 
     @Autowired ApplicationLibraryEntryRestService libraryRestService
@@ -35,7 +36,7 @@ class IwcResource {
     }
 
     @GET
-    @Path('/intent')
+    @Path('/intents')
     @Produces([
         IntentRepresentation.MEDIA_TYPE,
         MediaType.APPLICATION_JSON
@@ -47,8 +48,11 @@ class IwcResource {
     }
 
     @GET
+    @Produces([
+            IwcApiRepresentation.MEDIA_TYPE,
+            MediaType.APPLICATION_JSON
+    ])
     Profile readIwcApi() {
         profileRestService.currentUserProfile
     }
-
 }
