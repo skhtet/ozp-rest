@@ -47,13 +47,13 @@ class Profile implements Serializable {
     String bio = ''
     // not sure why createdDate is listed here since it will get added by the AuditStamp
     Date createdDate
-    Date lastLogin
+    Date lastLogin = new Date()
     String uuid
 
     //the highest Role currently assigned to the user.  If we ever have Roles that aren't
     //strictly ordered we will need a more sophisticated mechanism to remember exactly what
     //roles a user has
-    Role highestRole
+    Role highestRole = Role.USER
 
     Set organizations = new HashSet()
 

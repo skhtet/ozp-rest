@@ -130,7 +130,9 @@ class ProfileRestService extends RestService<Profile> {
                 String username = profileInfo.username
                 if (!Profile.findByUsername(username)) {
                     log.debug("#### Creating profile: $username")
-                    new Profile(username: username, displayName: profileInfo.displayName).save()
+                    Profile profile =
+                        new Profile(username: username, displayName: profileInfo.displayName)
+                    profile.save(failOnError:true)
                 } else {
                     log.info("#### Found user: $username")
                 }
