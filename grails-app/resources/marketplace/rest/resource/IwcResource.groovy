@@ -26,7 +26,7 @@ class IwcResource {
     @GET
     @Path('/application')
     @Produces([
-        ApplicationRepresentation.MEDIA_TYPE,
+        ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
     Collection<ServiceItem> readApplicationsForCurrentUser() {
@@ -38,7 +38,7 @@ class IwcResource {
     @GET
     @Path('/intents')
     @Produces([
-        IntentRepresentation.MEDIA_TYPE,
+        IntentRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
     Collection<Intent> readIntentsForApplicationsOfCurrentUser() {
