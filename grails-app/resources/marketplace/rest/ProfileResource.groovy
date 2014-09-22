@@ -98,33 +98,6 @@ class ProfileResource extends RepresentationResource<Profile> {
         getTagsByProfileId(service.currentUserProfile.id)
     }
 
-    @Path('/self/userData/{key:.+}')
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    Response getCurrentUserDataItem(@PathParam('key') String key) {
-        String value = service.getCurrentUserDataItem(key)
-
-        value != null ? userDataFound(value) : userDataNotFound()
-    }
-
-    @Path('/self/userData/{key:.+}')
-    @PUT
-    @Consumes(MediaType.WILDCARD)
-    Response putCurrentUserDataItem(@PathParam('key') String  key, String value) {
-        String putValue = service.updateCurrentUserDataByKey(key, value)
-
-        putValue != null ? userDataFound() : userDataCreated(key)
-    }
-
-    @Path('/self/userData/{key:.+}')
-    @DELETE
-    @Consumes(MediaType.WILDCARD)
-    Response deleteCurrentUserDataItem(@PathParam('key') String key) {
-        String value = service.deleteCurrentUserDataByKey(key)
-
-        value != null ? userDataFound() : userDataNotFound()
-    }
-
     @Path('/{profileId}/activity')
     @GET
     @Produces([MediaType.APPLICATION_JSON])
@@ -259,25 +232,5 @@ class ProfileResource extends RepresentationResource<Profile> {
     void removeSteward(@PathParam('profileId') String profileId,
             @PathParam('organizationId') long organizationId) {
         service.addProfileAsSteward(getProfileId(profileId), organizationId)
-    }
-
-    /**
-     *  The following helper methods exist because at the moment we don't have
-     *  generic handling for text/plain
-     */
-
-    //By default returns 204, indicating success without an entity. If value is
-    //provided, returns 200 with the value as the entity
-    private Response userDataFound(String value = null) {
-        value ? Response.ok().entity(value).build() : Response.noContent().build()
-    }
-
-    private Response userDataNotFound() {
-        Response.status(Status.NOT_FOUND).entity('Resource Does Not Exist').build()
-    }
-
-    private Response userDataCreated(String key) {
-        URI uri = UriBuilder.fromPath(key).build()
-        Response.created(uri).build()
     }
 }

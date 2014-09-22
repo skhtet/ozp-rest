@@ -20,7 +20,11 @@ class Profile implements Serializable {
     static hasMany = [
         applicationLibrary: ApplicationLibraryEntry,
         organizations: Agency,
-        stewardedOrganizations: Agency
+        stewardedOrganizations: Agency,
+
+        //TODO: The IWC Data API should be subjected to performance testing and this association
+        //possibly done a different way (i.e. not a lazy loaded collection of associations).
+        iwcData: IwcDataObject
     ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
@@ -42,15 +46,14 @@ class Profile implements Serializable {
     String bio = ''
     // not sure why createdDate is listed here since it will get added by the AuditStamp
     Date createdDate
-    Date lastLogin
+    Date lastLogin = new Date()
     String uuid
 
     //the highest Role currently assigned to the user.  If we ever have Roles that aren't
     //strictly ordered we will need a more sophisticated mechanism to remember exactly what
     //roles a user has
-    Role highestRole
+    Role highestRole = Role.USER
 
-    Map userDataMap = new HashMap()
 
     Set organizations = new HashSet()
     Set stewardedOrganizations = new HashSet()
@@ -77,7 +80,7 @@ class Profile implements Serializable {
     static mapping = {
         cache true
         tablePerHierarchy false
-        userDataMap type: 'text'
+        iwcData cascade: 'all-delete-orphan', batchSize: 25
     }
 
     static transients = ['sortDisplayName']
