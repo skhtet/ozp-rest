@@ -39,7 +39,6 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
         this.embeddedRepresentationType = embeddedRepresentationType
         this.domainResourceType = domainResourceType
-        this.domainResourceType = domainResourceType
 
         this.addEmbedded(embedEntities(entities, uriBuilderHolder))
         this.addLinks(linkEntities(entities, uriBuilderHolder))
@@ -96,7 +95,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
         }
 
 
-        Collection<Map.Entry> itemLinks = entities.items.collect { entity ->
+        Collection<Map.Entry> itemLinks = entities.collect { entity ->
             Map props = entity.properties as HashMap
             props.id = entity.id
 

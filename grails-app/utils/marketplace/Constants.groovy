@@ -9,6 +9,10 @@ import org.apache.commons.lang.StringUtils
 
 class Constants {
 
+    //Source: http://tools.ietf.org/html/rfc6838#section-4.2
+    static final String MEDIA_TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+    static final String INTENT_ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+
     // TODO: See ticket MARKETPLACE-268: May want to use these constants from UserViews, instead
     public static final String VIEW_ADMIN = "Administrator"
     public static final String VIEW_USER = "User"

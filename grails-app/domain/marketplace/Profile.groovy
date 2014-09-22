@@ -22,7 +22,11 @@ class Profile implements Serializable {
 
     static hasMany = [
         applicationLibrary: ApplicationLibraryEntry,
-        organizations: Agency
+        organizations: Agency,
+
+        //TODO: The IWC Data API should be subjected to performance testing and this association
+        //possibly done a different way (i.e. not a lazy loaded collection of associations).
+        iwcData: IwcDataObject
     ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
@@ -51,7 +55,6 @@ class Profile implements Serializable {
     //roles a user has
     Role highestRole
 
-    Map userDataMap = new HashMap()
     Set organizations = new HashSet()
 
     def beforeInsert() {
@@ -76,7 +79,7 @@ class Profile implements Serializable {
     static mapping = {
         cache true
         tablePerHierarchy false
-        userDataMap type: 'text'
+        iwcData cascade: 'all-delete-orphan', batchSize: 25
     }
 
     static transients = ['sortDisplayName']

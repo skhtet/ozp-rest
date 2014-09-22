@@ -1,20 +1,20 @@
 package marketplace.rest
 
+import marketplace.IwcDataObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
-import marketplace.rest.DomainObjectNotFoundException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import marketplace.Profile
-import marketplace.ServiceItem
-import marketplace.ItemComment
 import marketplace.Agency
 import marketplace.Role
 
 import marketplace.AccountService
+
+import javax.ws.rs.core.MediaType
 
 @Service
 class ProfileRestService extends RestService<Profile> {
@@ -39,27 +39,53 @@ class ProfileRestService extends RestService<Profile> {
         throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
-    @Transactional(readOnly=true)
-    public String getCurrentUserDataItem(String key) {
-        Profile currentUser = getCurrentUserProfile()
+    @Transactional
+    public Collection<IwcDataObject> getCurrentUserData() {
+        Profile profile = currentUserProfile
+        authorizeView(profile)
 
-        currentUser.userDataMap.get(key)
+        IwcDataObject.findAllByProfile(profile)
+    }
+
+    @Transactional(readOnly=true)
+    public IwcDataObject getCurrentUserDataItem(String key) {
+        Profile profile = currentUserProfile
+        authorizeView(profile)
+
+        def object = IwcDataObject.findByProfileAndKey(profile, key)
+
+        if(!object) {
+            throw new DomainObjectNotFoundException(IwcDataObject.class, key)
+        }
+
+        object
     }
 
     @Transactional
-    public String updateCurrentUserDataByKey(String key, String value) {
-        Profile currentUser = getCurrentUserProfile()
-        String putValue = currentUser.userDataMap.put(key, value)
+    public IwcDataObject updateCurrentUserDataByKey(String key, String entity, String contentType) {
+        Profile profile = currentUserProfile
+        authorizeUpdate(profile)
+
+        IwcDataObject putValue = IwcDataObject.findByProfileAndKey(profile, key)
+
+        if(!putValue) {
+            profile.addToIwcData(key: key, entity: entity, contentType: contentType)
+            profile.save(failOnError: true)
+        } else {
+            putValue.entity = entity
+            putValue.contentType = contentType
+            putValue.save(failOnError: true)
+        }
 
         putValue
     }
 
     @Transactional
-    public String deleteCurrentUserDataByKey(String key) {
-        Profile currentUser = getCurrentUserProfile()
-        String value = currentUser.userDataMap.remove(key)
+    public void deleteCurrentUserDataByKey(String key) {
+        Profile profile = currentUserProfile
+        authorizeUpdate(profile)
 
-        value
+        getCurrentUserDataItem(key).delete()
     }
 
     @Transactional(readOnly=true)

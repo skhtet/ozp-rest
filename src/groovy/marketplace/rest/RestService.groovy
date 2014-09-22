@@ -1,10 +1,8 @@
 package marketplace.rest
 
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.stereotype.Service
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.rest.DomainObjectNotFoundException
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 

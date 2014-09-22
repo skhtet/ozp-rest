@@ -10,10 +10,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 @AuditStamp
 class Intent implements Serializable {
 
-    //Source: http://tools.ietf.org/html/rfc6838#section-4.2
-    static final TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
-    static final ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
-
     static searchable = {
         root false
         type index: 'not_analyzed'
@@ -37,8 +33,8 @@ class Intent implements Serializable {
     }
 
     static constraints = {
-        action blank: false, maxSize: 127, matches: ACTION_REGEX
-        type blank: false, maxSize: 255, matches: TYPE_REGEX
+        action blank: false, maxSize: 64, matches: Constants.INTENT_ACTION_REGEX
+        type blank: false, maxSize: 129, matches: Constants.MEDIA_TYPE_REGEX
         icon nullable: true, maxSize: 2083
         label nullable: true, maxSize: 255
     }
