@@ -204,7 +204,7 @@ class ProfileResource extends RepresentationResource<Profile> {
             applicationLibraryEntryId)
     }
 
-    @Path('/{profileId}/stewardedOrganizations')
+    @Path('/{profileId}/stewarded-organizations')
     @GET
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
     StewardedOrganizations getStewardedOrganizations(@PathParam('profileId') String profileId) {
@@ -212,7 +212,7 @@ class ProfileResource extends RepresentationResource<Profile> {
         new StewardedOrganizations(profile)
     }
 
-    @Path('/{profileId}/stewardedOrganizations')
+    @Path('/{profileId}/stewarded-organizations')
     @PUT
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
     @Consumes([AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
@@ -224,7 +224,7 @@ class ProfileResource extends RepresentationResource<Profile> {
         new StewardedOrganizations(service.getById(id))
     }
 
-    @Path('/{profileId}/stewardedOrganizations/{organizationId}')
+    @Path('/{profileId}/stewarded-organizations/{organizationId}')
     @POST
     @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     Agency addSteward(@PathParam('profileId') String profileId,
@@ -232,7 +232,7 @@ class ProfileResource extends RepresentationResource<Profile> {
         service.addProfileAsSteward(getProfileId(profileId), organizationId)
     }
 
-    @Path('/{profileId}/stewardedOrganizations/{organizationId}')
+    @Path('/{profileId}/stewarded-organizations/{organizationId}')
     @DELETE
     @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     void removeSteward(@PathParam('profileId') String profileId,
