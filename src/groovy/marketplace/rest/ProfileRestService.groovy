@@ -4,6 +4,7 @@ import marketplace.IwcDataObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.annotation.Isolation
 import org.springframework.security.access.AccessDeniedException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -88,19 +89,23 @@ class ProfileRestService extends RestService<Profile> {
         getCurrentUserDataItem(key).delete()
     }
 
+    /**
+     * get the current user profile with an optional pessimistic lock
+     * @param lock If true, the profile is locked for update at the database level
+     */
     @Transactional(readOnly=true)
-    public Profile getCurrentUserProfile() {
-        Profile.findByUsername(accountService.loggedInUsername)
+    public Profile getCurrentUserProfile(boolean lock=false) {
+        Profile.findByUsername(accountService.loggedInUsername, [lock: lock])
     }
 
     /**
      * Ensure that a Profile object exists for the current user and update it from the security
      * plugin information
      */
-    @Transactional
+    @Transactional(isolation=Isolation.READ_COMMITTED)
     public void login() {
-        Profile profile = currentUserProfile ?: new Profile(
-            username: accountService.loggedInUsername,
+        Profile profile = getCurrentUserProfile(true) ?: new Profile(
+            username: accountService.loggedInUsername
         )
 
         //TODO This might need to be more robust
@@ -121,7 +126,7 @@ class ProfileRestService extends RestService<Profile> {
         profile.save(failOnError:true)
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void createRequired() {
         def profilesInConfig = grailsApplication.config.marketplace.metadata.profiles
 
