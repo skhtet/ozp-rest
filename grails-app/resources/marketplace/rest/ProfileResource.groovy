@@ -207,30 +207,36 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Path('/{profileId}/stewardedOrganizations')
     @GET
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    Collection<Agency> getStewardedOrganizations(@PathParam('profileId') String profileId) {
-        service.getById(getProfileId(profileId)).stewardedOrganizations
+    StewardedOrganizations getStewardedOrganizations(@PathParam('profileId') String profileId) {
+        Profile profile = service.getById(getProfileId(profileId))
+        new StewardedOrganizations(profile)
     }
 
     @Path('/{profileId}/stewardedOrganizations')
     @PUT
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
     @Consumes([AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    Collection<Agency> setStewardedOrganizations(@PathParam('profileId') String profileId,
-            Collection<InputRepresentation<Agency>> organizations) {
-        service.setStewardedOrganizations(getProfileId(profileId), organizations)
+    StewardedOrganizations setStewardedOrganizations(@PathParam('profileId') String profileId,
+            Collection<AgencyIdRef> organizations) {
+        long id = getProfileId(profileId)
+
+        service.setStewardedOrganizations(id, organizations)
+        new StewardedOrganizations(service.getById(id))
     }
 
     @Path('/{profileId}/stewardedOrganizations/{organizationId}')
     @POST
-    void addSteward(@PathParam('profileId') String profileId,
+    @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    Agency addSteward(@PathParam('profileId') String profileId,
             @PathParam('organizationId') long organizationId) {
         service.addProfileAsSteward(getProfileId(profileId), organizationId)
     }
 
     @Path('/{profileId}/stewardedOrganizations/{organizationId}')
     @DELETE
+    @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     void removeSteward(@PathParam('profileId') String profileId,
             @PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(getProfileId(profileId), organizationId)
+        service.removeProfileAsSteward(getProfileId(profileId), organizationId)
     }
 }

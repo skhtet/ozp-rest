@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType
 @Service
 class ProfileRestService extends RestService<Profile> {
     @Autowired AccountService accountService
+    @Autowired AgencyRestService agencyRestService
 
     @Autowired
     public ProfileRestService(GrailsApplication grailsApplication) {
@@ -96,6 +97,58 @@ class ProfileRestService extends RestService<Profile> {
     @Transactional(readOnly=true)
     public Profile getCurrentUserProfile(boolean lock=false) {
         Profile.findByUsername(accountService.loggedInUsername, [lock: lock])
+    }
+
+    private void authorizeStewardshipUpdate() {
+        accountService.checkAdmin("Only admins can alter stewardship assignments")
+    }
+
+    @Transactional
+    public Agency addProfileAsSteward(Long profileId, Long organizationId) {
+        authorizeStewardshipUpdate()
+
+        Profile profile = getById(profileId)
+        Agency organization = agencyRestService.getById(organizationId)
+
+        if (profile.stewardedOrganizations.contains(organization)) {
+            throw new IllegalArgumentException(
+                "This profile is already a steward for this organization")
+        }
+        else {
+            profile.addToStewardedOrganizations(organization)
+            return organization
+        }
+    }
+
+    @Transactional
+    public void removeProfileAsSteward(Long profileId, Long organizationId) {
+        authorizeStewardshipUpdate()
+
+        Profile profile = getById(profileId)
+        Agency organization = agencyRestService.getById(organizationId)
+
+        if (!profile.stewardedOrganizations.contains(organization)) {
+            throw new IllegalArgumentException(
+                "This profile is not a steward for this organization")
+        }
+        else {
+            profile.removeFromStewardedOrganizations(organization)
+        }
+    }
+
+    @Transactional
+    public Collection<Agency> setStewardedOrganizations(Long profileId,
+            Collection<AgencyIdRef> organizations) {
+        authorizeStewardshipUpdate()
+
+        Profile profile = getById(profile)
+        profile.stewardedOrganizations = organizations.collect {
+            agencyRestService.getById(it.id)
+        }
+
+        save(profile)
+
+        return profile.stewardedOrganizations
     }
 
     /**
