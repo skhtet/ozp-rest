@@ -24,6 +24,7 @@ class AgencyRepresentation extends SelfRefRepresentation<Agency> {
         this.agency = agency
     }
 
+    long getId() { agency.id }
     String getTitle() { agency.title }
     URI getIcon() { agency.iconUrl ? new URI(agency.iconUrl) : null }
 
