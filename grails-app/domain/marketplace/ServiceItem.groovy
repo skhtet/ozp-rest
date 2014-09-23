@@ -31,7 +31,7 @@ class ServiceItem implements Serializable {
         'imageSmallUrl', 'imageMediumUrl',
         'launchUrl', 'docUrls', 'descriptionShort',
         'screenshots', 'imageXlargeUrl',
-        'isEnabled', 'tags', 'satisfiedScoreCardItems',
+        'isEnabled', 'tags', 'satisfiedScorecards',
         'relationships', 'isFeatured'
     ]
 
@@ -165,7 +165,7 @@ class ServiceItem implements Serializable {
         screenshots: Screenshot,
         relationships: Relationship,
         contacts: Contact,
-        satisfiedScoreCardItems: ScoreCardItem,
+        satisfiedScorecards: Scorecard,
         tags: String,
         intents: Intent,
         applicationLibraryEntries: ApplicationLibraryEntry //necessary to get GORM to
@@ -186,7 +186,7 @@ class ServiceItem implements Serializable {
         contacts cascade: 'all-delete-orphan'
         relationships cascade: 'all-delete-orphan'
         docUrls cascade: 'all-delete-orphan'
-        satisfiedScoreCardItems joinTable: [name: 'service_item_score_card_item',
+        satisfiedScorecards joinTable: [name: 'service_item_score_card_item',
                                             column: 'score_card_item_id',
                                             key: 'service_item_id']
     }
@@ -302,7 +302,7 @@ class ServiceItem implements Serializable {
             isPublished: true,
             launchUrl: launchUrl,
             validLaunchUrl: validateUrl(launchUrl),
-            satisfiedScoreCardItems: satisfiedScoreCardItems?.collect { it.asJSON() } as JSONArray,
+            satisfiedScorecards: satisfiedScorecards?.collect { it.asJSON() } as JSONArray,
             requirements: requirements,
             screenshots: (this.screenshots.collect { it?.asJSON() }.findAll { it != null }) as JSONArray,
             type: type?.asJSON(),

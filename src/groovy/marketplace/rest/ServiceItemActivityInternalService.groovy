@@ -145,7 +145,7 @@ class ServiceItemActivityInternalService {
             old, String propertyName, String displayName=null) {
 
 //        // Score card change details will be handled by separate activity
-//        if(propertyName == "satisfiedScoreCardItems")
+//        if(propertyName == "satisfiedScorecards")
 //            return
 
 
