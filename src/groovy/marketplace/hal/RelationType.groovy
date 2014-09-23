@@ -156,7 +156,8 @@ enum OzpRelationType implements HalCuriedRelationType {
     USER('user'),
     APPLICATION_LIBRARY('application-library'),
     USER_DATA('user-data'),
-    ORGANIZATION('organization')
+    ORGANIZATION('organization'),
+    STEWARDSHIP('stewardship')
 
     private String name
 

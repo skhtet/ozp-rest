@@ -37,9 +37,17 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
                 .path(ProfileResource.class)
                 .path(ProfileResource.class, 'getApplicationLibrary')
                 .buildFromMap(profileId: profile.id)
+        URI stewardshipUri = uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'getStewardedOrganizations')
+                .buildFromMap(profileId: profile.id)
         //TODO add link to userdata once a resource for it exists
 
-        new HalLinks(OzpRelationType.APPLICATION_LIBRARY, new Link(applicationLibraryUri))
+        new HalLinks([
+            new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION_LIBRARY,
+                    new Link(applicationLibraryUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.STEWARDSHIP, new Link(stewardshipUri))
+        ])
     }
 
     private static HalEmbedded createEmbedded(Profile profile,
