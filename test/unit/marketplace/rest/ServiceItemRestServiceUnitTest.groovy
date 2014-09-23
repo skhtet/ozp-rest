@@ -14,11 +14,9 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.ServiceItem
-import marketplace.State
 import marketplace.Types
 import marketplace.ServiceItemDocumentationUrl
 import marketplace.Screenshot
-import marketplace.OwfProperties
 import marketplace.Profile
 import marketplace.ServiceItemActivity
 import marketplace.RejectionActivity
@@ -26,10 +24,6 @@ import marketplace.RejectionJustification
 import marketplace.RejectionListing
 import marketplace.Intent
 import marketplace.Relationship
-import marketplace.IntentDataType
-import marketplace.IntentAction
-import marketplace.CustomField
-import marketplace.CustomFieldDefinition
 import marketplace.Constants
 import marketplace.ServiceItemTag
 import marketplace.Tag
@@ -37,9 +31,7 @@ import marketplace.ChangeDetail
 import marketplace.validator.ServiceItemValidator
 import marketplace.AccountService
 import marketplace.ScoreCardService
-import marketplace.configuration.MarketplaceApplicationConfigurationService
 
-import ozone.utils.User
 import ozone.marketplace.enums.RelationshipType
 
 import marketplace.testutil.FakeAuditTrailHelper
@@ -51,14 +43,13 @@ class ServiceItemRestServiceUnitTest {
 
     ServiceItemRestService service
 
-    Profile currentUser, owner, nonOwner, externalAdmin, admin
+    Profile currentUser, owner, nonOwner, admin
     Types type1
-    State state1
 
     private static final exampleServiceItemProps = [
         id: 1,
         title: "test service item",
-        types: [ id: 1 ],
+        type: [ id: 1 ],
         state: [ id: 1 ],
         description: "a test service item",
         launchUrl: "https://localhost/asf",
@@ -66,11 +57,7 @@ class ServiceItemRestServiceUnitTest {
         versionName: '1',
         isEnabled: true,
         isOutside: true,
-        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
-        owfProperties: [
-            height: 200,
-            width: 300
-        ]
+        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS']
     ]
 
     private createGrailsApplication() {
@@ -78,10 +65,8 @@ class ServiceItemRestServiceUnitTest {
         grailsApplication.refresh()
 
         //necessary to get reflection-based marshalling to work
-        grailsApplication.addArtefact(CustomField.class)
         grailsApplication.addArtefact(ServiceItemDocumentationUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
-        grailsApplication.addArtefact(OwfProperties.class)
         grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(ServiceItem.class)
@@ -94,16 +79,11 @@ class ServiceItemRestServiceUnitTest {
     }
 
     private makeServiceItem() {
-        OwfProperties owfProps = new OwfProperties(exampleServiceItemProps.owfProperties)
-
         def exampleServiceItem = new ServiceItem(exampleServiceItemProps + [
             owners: [owner],
-            types: type1,
-            state: state1,
-            owfProperties: owfProps
+            type: type1
         ])
         exampleServiceItem.id = exampleServiceItemProps.id
-        owfProps.serviceItem = exampleServiceItem
 
         return exampleServiceItem
     }
@@ -115,57 +95,33 @@ class ServiceItemRestServiceUnitTest {
         nonOwner.id = 2
         def admin = new Profile(username: 'admin')
         admin.id = 3
-        def externalAdmin = new Profile(username: 'external')
-        externalAdmin.id = 4
 
         def type = new Types(title: 'Test Type', ozoneAware: true)
         type.id = 1
 
         type1 = type
 
-        def state1 = new State(title: 'Active')
-        def state2 = new State(title: 'Inactive')
-        this.state1 = state1
-
         def intent = new Intent(
-            action: new IntentAction(
-                title: 'run',
-                description: 'run'
-            ),
-            dataType: new IntentDataType(
-                title: 'text/plain',
-                description: 'plain text'
-            )
+            action: 'run',
+            dataType: 'text/plain'
         )
         intent.id = 1
 
-        def customFieldDefinition = new CustomFieldDefinition(
-            name: "test custom field definition",
-            label: 'Custom Field Def Label',
-            types: [type]
-        )
-        customFieldDefinition.id = 1
-
         createGrailsApplication()
 
-        mockDomain(OwfProperties.class)
-        mockDomain(CustomField.class)
         mockDomain(ChangeDetail.class)
         mockDomain(ServiceItemActivity.class)
         mockDomain(Relationship.class)
         mockDomain(RejectionListing.class)
 
         mockDomain(Types.class, [type])
-        mockDomain(State.class, [state1, state2])
         mockDomain(Intent.class, [intent])
-        mockDomain(CustomFieldDefinition.class, [customFieldDefinition])
-        mockDomain(Profile.class, [owner, nonOwner, admin, externalAdmin])
+        mockDomain(Profile.class, [owner, nonOwner, admin])
 
         currentUser = admin
         this.admin = admin
         this.owner = owner
         this.nonOwner = nonOwner
-        this.externalAdmin = externalAdmin
 
         mockDomain(ServiceItem.class)
         makeServiceItem().save(failOnError: true)
@@ -190,14 +146,8 @@ class ServiceItemRestServiceUnitTest {
                 }
             },
             isExternAdmin: { currentUser.username.toLowerCase().contains('external') },
-            getLoggedInUser: { new User(username: currentUser.username) },
             getLoggedInUsername: { currentUser.username }
         ] as AccountService
-
-        service.marketplaceApplicationConfigurationService = [
-            is: { true },
-            valueOf: {  _ -> null }
-        ] as MarketplaceApplicationConfigurationService
 
         service.serviceItemActivityInternalService = [
             addServiceItemActivity: {si, action -> }
@@ -209,31 +159,19 @@ class ServiceItemRestServiceUnitTest {
     }
 
     void testAuthorizeUpdate() {
-        def ownerCanAlwaysEdit
         ServiceItem si
-
-        service.marketplaceApplicationConfigurationService = [
-            is: { ownerCanAlwaysEdit },
-            valueOf: {  _ -> null }
-        ] as MarketplaceApplicationConfigurationService
 
         //this should work because the listing is in progress
         currentUser = Profile.findByUsername('owner')
-        ownerCanAlwaysEdit = false
         service.updateById(exampleServiceItemProps.id, makeServiceItem())
 
-        //this should fail because the owner is not an admin and the listing is already
-        //approved
-        shouldFail/*(AccessDeniedException)*/ {
-            si = ServiceItem.get(1)
-            si.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
-            si.save(failOnError: true)
-            service.updateById(exampleServiceItemProps.id, makeServiceItem())
-        }
+        //populate initial ServiceItem
+        ServiceItem original = makeServiceItem()
+        service.populateDefaults(original)
+        original.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+        original.save(failOnError: true)
 
-        //this should succeed because the configuration to allow the owner to edit after approval
-        //is set to true
-        ownerCanAlwaysEdit = true
+        //this should succeed because owners can always edit their listings
         ServiceItem updates = makeServiceItem()
         service.populateDefaults(updates)
         updates.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
@@ -250,18 +188,6 @@ class ServiceItemRestServiceUnitTest {
 
         //this should succeed because admins can always edit
         currentUser = admin
-        service.updateById(exampleServiceItemProps.id, makeServiceItem())
-
-        //this should fail because external admins can only edit listings that they own or created
-        shouldFail(AccessDeniedException) {
-            currentUser = externalAdmin
-            service.updateById(exampleServiceItemProps.id, makeServiceItem())
-        }
-
-        //this should succeed because the external admin is now the creator of the listing
-        si = ServiceItem.get(1)
-        si.createdBy = currentUser
-        si.save(failOnError: true)
         service.updateById(exampleServiceItemProps.id, makeServiceItem())
     }
 
@@ -282,38 +208,6 @@ class ServiceItemRestServiceUnitTest {
         assertNotNull dto
     }
 
-    void testPreprocess() {
-        String insideOutsideConfig = Constants.INSIDE_OUTSIDE_ALL_OUTSIDE
-        def expectedInsideOutsideUpdate
-
-        def serviceItemMock = mockFor(ServiceItem)
-
-        //demand that thes two methods get called for each ServiceItem that we create
-        serviceItemMock.demand.processCustomFields(3..3) {}
-        serviceItemMock.demand.checkOwfProperties(3..3) {}
-
-        service.marketplaceApplicationConfigurationService = [
-            valueOf: { _ -> insideOutsideConfig }
-        ] as MarketplaceApplicationConfigurationService
-
-        ServiceItem.metaClass.updateInsideOutsideFlag = { String flag ->
-            expectedInsideOutsideUpdate = flag
-        }
-
-        service.createFromDto(makeServiceItem())
-        assert expectedInsideOutsideUpdate == insideOutsideConfig
-
-        insideOutsideConfig = Constants.INSIDE_OUTSIDE_ALL_INSIDE
-        service.createFromDto(makeServiceItem())
-        assert expectedInsideOutsideUpdate == insideOutsideConfig
-
-        insideOutsideConfig = null
-        service.createFromDto(makeServiceItem())
-        assert expectedInsideOutsideUpdate == insideOutsideConfig
-
-
-    }
-
     void testApprove() {
         ServiceItemActivity activity
         ServiceItem dto
@@ -331,18 +225,15 @@ class ServiceItemRestServiceUnitTest {
         def approve = {
             dto = makeServiceItem()
             dto.id = id
-            dto.owfProperties.stackDescriptor = '{}'
             dto.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
             dto = service.updateById(dto.id, dto)
         }
 
         dto = makeServiceItem()
-        dto.owfProperties.stackDescriptor = '{}'
 
         id = service.createFromDto(dto).id
         dto = makeServiceItem()
         dto.id = id
-        dto.owfProperties.stackDescriptor = '{}'
         dto.approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
         dto = service.updateById(dto.id, dto)
 
@@ -359,7 +250,6 @@ class ServiceItemRestServiceUnitTest {
         ServiceItem.get(dto.id).approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
         approve()
 
-        assert JSON.parse(dto.owfProperties.stackDescriptor).approved
         assert activity.action == Constants.Action.APPROVED
         assert activity.serviceItem == dto
 
@@ -417,9 +307,6 @@ class ServiceItemRestServiceUnitTest {
     }
 
     void testPopulateDefaults() {
-        def org = 'My Organization'
-        def poc = 'The POC'
-
         service.accountService = [
             isAdmin: { currentUser.username.toLowerCase().contains('admin') },
             checkAdmin: {
@@ -427,84 +314,25 @@ class ServiceItemRestServiceUnitTest {
                     throw new AccessDeniedException('access denied')
                 }
             },
-            isExternAdmin: { currentUser.username.toLowerCase().contains('external') },
-            getLoggedInUser: {
-                new User(username: currentUser.username, org: org)
-            }
+            isExternAdmin: { currentUser.username.toLowerCase().contains('external') }
         ] as AccountService
 
         //create a dto with no defaults filled in
         ServiceItem dto = makeServiceItem()
-        dto.with {
-            owners = null
-            techPocs = null
-            organization = null
-            state = null
-        }
+        dto.owners = null
+
 
         ServiceItem created = service.createFromDto(dto)
 
-        assert created.owners == [currentUser]
-        assert created.techPocs == [currentUser.username] as Set
-        assert created.organization == org
-        assert created.state == State.findByTitle('Active')
+        assert created.owners == [currentUser] as Set
 
         //create a dto with defaults filled in and ensure that ey are preserved
         dto = makeServiceItem()
-        dto.with {
-            owners = [Profile.findByUsername('nonOwner')]
-            techPocs = [poc]
-            organization = org + '1'
-            state = State.findByTitle('Inactive')
-        }
+        dto.owners = [Profile.findByUsername('nonOwner')]
 
         created = service.createFromDto(dto)
 
-        assert created.owners == [Profile.findByUsername('nonOwner')]
-        assert created.techPocs == [poc] as Set
-        assert created.organization == org + '1'
-        assert created.state == State.findByTitle('Inactive')
-    }
-
-    void testUpdateInsideOutsideServiceItemActivity() {
-        def initialListing = makeServiceItem()
-        initialListing.isOutside = null
-        initialListing.id = 2
-        service.createFromDto(initialListing) //this gets around some goofiness with ids on the
-                                              //mocked domain
-        def id = service.createFromDto(initialListing).id
-        def activity
-
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action ->
-                activity = new ServiceItemActivity(action: action, serviceItem: si)
-            }
-        ] as ServiceItemActivityInternalService
-
-        ServiceItem dto = makeServiceItem()
-        dto.id = id
-        dto.isOutside = true
-
-        dto = service.updateById(id, dto)
-        assertNotNull activity //isOutside should create an activity when changing from null to true/false
-
-        dto = makeServiceItem()
-        dto.id = id
-        dto.isOutside = false
-
-        dto = service.updateById(id, dto)
-        assertNotNull activity
-        assert activity.action == Constants.Action.INSIDE
-        assert activity.serviceItem == dto
-
-        dto = makeServiceItem()
-        dto.id = id
-        dto.isOutside = true
-
-        dto = service.updateById(id, dto)
-        assertNotNull activity
-        assert activity.action == Constants.Action.OUTSIDE
-        assert activity.serviceItem == dto
+        assert created.owners == [Profile.findByUsername('nonOwner')] as Set
     }
 
     void testUpdateHiddenServiceItemActivity() {
@@ -603,15 +431,14 @@ class ServiceItemRestServiceUnitTest {
 
         def id = service.createFromDto(makeServiceItem()).id
 
-        def getRequired = { blockInsideListings=false ->
-            service.getAllRequiredServiceItemsByParentId(id, blockInsideListings)
+        def getRequired = {
+            service.getAllRequiredServiceItemsByParentId(id)
                 .collect {it.id} as Set
         }
 
         def relationship = makeRelationship()
         def relatedItem1 = service.createFromDto(makeServiceItem())
         def relatedItem2 = makeServiceItem()
-        relatedItem2.isOutside = false
         relatedItem2 = service.createFromDto(relatedItem2)
 
         service.serviceItemActivityInternalService = [
@@ -625,25 +452,21 @@ class ServiceItemRestServiceUnitTest {
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem1.id, relatedItem2.id] as Set
-        assert getRequired(true) == [relatedItem1.id] as Set
 
         dto.relationships = [makeRelationship([relatedItem1])]
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem1.id] as Set
-        assert getRequired(true) == [relatedItem1.id] as Set
 
         dto.relationships = [makeRelationship([relatedItem2])]
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem2.id] as Set
-        assert getRequired(true) == [] as Set
 
         dto.relationships = [makeRelationship()]
         service.updateById(id, dto)
 
         assert getRequired() == [] as Set
-        assert getRequired(true) == [] as Set
     }
 
     void testGetAllRequiredServiceItemsByParentIdCyclicDependency() {
@@ -660,8 +483,8 @@ class ServiceItemRestServiceUnitTest {
 
         def id
 
-        def getRequired = { blockInsideListings ->
-            service.getAllRequiredServiceItemsByParentId(id, blockInsideListings)
+        def getRequired = {
+            service.getAllRequiredServiceItemsByParentId(id)
                 .collect {it.id} as Set
         }
 

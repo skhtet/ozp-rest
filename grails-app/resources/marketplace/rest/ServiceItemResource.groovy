@@ -100,26 +100,18 @@ class ServiceItemResource extends DomainResource<ServiceItem> {
     @Produces(['application/javascript', 'text/javascript', 'application/json'])
     @GET
     public Collection<ServiceItem> getRequiredServiceItems(
-            @Context HttpServletRequest request,
-            @HeaderParam('referer') String referrer,
             @PathParam('serviceItemId') long serviceItemId) {
 
-        boolean isSameDomain = referrer && WebUtil.isSameDomain(new URL(referrer),
-                new URL(request.requestURL as String))
-        serviceItemRestService.getAllRequiredServiceItemsByParentId(serviceItemId, !isSameDomain)
+        serviceItemRestService.getAllRequiredServiceItemsByParentId(serviceItemId)
     }
 
     @Path('/{serviceItemId}/requiringServiceItems')
     @Produces(['application/javascript', 'text/javascript', 'application/json'])
     @GET
     public Collection<ServiceItem> getRequiringServiceItems(
-            @Context HttpServletRequest request,
-            @HeaderParam('referer') String referrer,
             @PathParam('serviceItemId') long serviceItemId) {
 
-        boolean isSameDomain = referrer && WebUtil.isSameDomain(new URL(referrer),
-                new URL(request.requestURL as String))
-        serviceItemRestService.getRequiringServiceItemsByChildId(serviceItemId, !isSameDomain)
+        serviceItemRestService.getRequiringServiceItemsByChildId(serviceItemId)
     }
 
     @Path('/{serviceItemId}/itemComment')

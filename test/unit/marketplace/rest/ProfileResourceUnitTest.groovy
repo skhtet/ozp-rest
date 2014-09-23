@@ -46,93 +46,6 @@ class ProfileResourceUnitTest {
         assert resource.getOwnProfile() == currentUser
     }
 
-    void testPostCurrentUserDataItem() {
-        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
-        KeyValue outKeyValue = new KeyValue()
-        String keyValueString = "{'key': ${inKeyValue.key}, 'value' : ${inKeyValue.value}}"
-
-        currentUser = Profile.get(1)
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-
-        serviceItemTagRestServiceMock.demand.updateCurrentUserDataByKey(1..1)  { key, value ->
-            outKeyValue.key = key
-            outKeyValue.value = value
-        }
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-        resource.postCurrentUserDataItem(keyValueString)
-
-        serviceItemTagRestServiceMock.verify()
-
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ post in ${inKeyValue}")
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ post out ${outKeyValue}")
-
-        assert outKeyValue.value == inKeyValue.value
-    }
-
-    void testPutCurrentUserDataItem() {
-        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
-        KeyValue outKeyValue = new KeyValue()
-        String keyValueString = "{'key': ${inKeyValue.key}, 'value' : ${inKeyValue.value}}"
-
-        currentUser = Profile.get(1)
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-
-        serviceItemTagRestServiceMock.demand.updateCurrentUserDataByKey(1..1)  { key, value ->
-            outKeyValue.key = key
-            outKeyValue.value = value
-        }
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-        resource.putCurrentUserDataItem(keyValueString)
-
-        serviceItemTagRestServiceMock.verify()
-
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ put in ${inKeyValue}")
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ put out ${outKeyValue}")
-
-        assert outKeyValue.value == inKeyValue.value
-    }
-
-    void testGetCurrentUserDataItem() {
-        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
-
-        currentUser = Profile.get(1)
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-
-        serviceItemTagRestServiceMock.demand.getCurrentUserDataItem(1..1)  { key ->
-            inKeyValue.key = key
-
-            return inKeyValue.value
-        }
-
-        Response response = resource.getCurrentUserDataItem(inKeyValue.key)
-        String outValue = response.entity
-
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ got ${outValue}")
-
-        assert outValue == inKeyValue.value
-    }
-
-    void testDeleteCurrentUserDataItem() {
-        KeyValue inKeyValue = new KeyValue(key : 'key0', value : 'value0')
-        KeyValue outKeyValue = new KeyValue()
-
-        currentUser = Profile.get(1)
-        def serviceItemTagRestServiceMock = mockFor(ServiceItemTagRestService)
-
-        resource.serviceItemTagRestService = serviceItemTagRestServiceMock.createMock()
-
-        serviceItemTagRestServiceMock.demand.deleteCurrentUserDataByKey(1..1)  { key ->
-            outKeyValue=null;
-        }
-        resource.deleteCurrentUserDataItem(inKeyValue.key)
-
-        println("@@@@@@@@@@@@@@@@@@@@@@@@ delete ${outKeyValue}")
-
-        assert outKeyValue == null
-    }
-
     void testGetServiceItemsByAuthorId() {
         def idPassedIn
 
@@ -144,11 +57,11 @@ class ProfileResourceUnitTest {
 
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        def idToPass = 1
+        def idToPass = 1 as String
 
         resource.getServiceItemsByAuthorId(idToPass)
 
-        assert idPassedIn == idToPass
+        assert idPassedIn == idToPass as Integer
     }
 
     void testGetOwnServiceItems() {
@@ -164,7 +77,7 @@ class ProfileResourceUnitTest {
 
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        resource.getOwnServiceItems()
+        resource.getServiceItemsByAuthorId('self')
 
         assert idPassedIn == currentUser.id
     }
@@ -186,12 +99,12 @@ class ProfileResourceUnitTest {
 
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
-        def idToPass = 1
+        def idToPass = 1 as String
 
         def dtos = resource.getItemCommentsByAuthorId(idToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
-        assert idPassedIn == idToPass
+        assert idPassedIn == idToPass as Integer
 
         assert json.size() == 1
         assert json[0].text == 'blah blah'
@@ -217,7 +130,7 @@ class ProfileResourceUnitTest {
 
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
-        def dtos = resource.getOwnItemComments()
+        def dtos = resource.getItemCommentsByAuthorId('self')
         def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id
@@ -326,14 +239,14 @@ class ProfileResourceUnitTest {
 
         resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        def idToPass = 1
+        def idToPass = 1 as String
         def offsetToPass = 10
         def maxToPass = 5
 
         def dtos = resource.getServiceItemActivitiesByProfileId(idToPass, offsetToPass, maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
-        assert idPassedIn == idToPass
+        assert idPassedIn == idToPass as Integer
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
@@ -370,7 +283,7 @@ class ProfileResourceUnitTest {
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getOwnServiceItemActivities(offsetToPass, maxToPass)
+        def dtos = resource.getServiceItemActivitiesByProfileId('self', offsetToPass, maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id
@@ -407,7 +320,7 @@ class ProfileResourceUnitTest {
 
         resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        def idToPass = 1
+        def idToPass = 1 as String
         def offsetToPass = 10
         def maxToPass = 5
 
@@ -415,7 +328,7 @@ class ProfileResourceUnitTest {
                 maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
-        assert idPassedIn == idToPass
+        assert idPassedIn == idToPass as Integer
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
@@ -454,7 +367,8 @@ class ProfileResourceUnitTest {
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getServiceItemActivitiesOnOwnServiceItems(offsetToPass, maxToPass)
+        def dtos = resource.getServiceItemActivitiesByServiceItemOwnerId('self', offsetToPass,
+                maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id

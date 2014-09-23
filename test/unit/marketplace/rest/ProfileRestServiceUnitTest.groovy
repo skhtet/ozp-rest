@@ -11,7 +11,6 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.Profile
-import marketplace.UserDomainInstance
 
 import marketplace.AccountService
 
@@ -42,6 +41,16 @@ class ProfileRestServiceUnitTest {
         return profile
     }
 
+    private InputRepresentation<Profile> makeInputRepresentation(username, id) {
+        [
+            getInputProperties: { [
+                username: username,
+                id: id
+            ] },
+            representedClass: { Profile.class }
+        ] as InputRepresentation<Profile>
+    }
+
     void setUp() {
         admin1 = makeProfile('testAdmin1', 1)
         admin2 = makeProfile('testAdmin2', 2)
@@ -50,7 +59,6 @@ class ProfileRestServiceUnitTest {
 
         FakeAuditTrailHelper.install()
 
-        mockDomain(UserDomainInstance.class)
         mockDomain(Profile.class, [admin1, admin2, user1, user2])
 
         createGrailsApplication()
@@ -68,19 +76,19 @@ class ProfileRestServiceUnitTest {
 
 
         //edit self as admin - should succeed
-        service.updateById(admin1.id, makeProfile('testAdmin11', admin1.id))
+        service.updateById(admin1.id, makeInputRepresentation('testAdmin11', admin1.id))
 
         //edit other as admin - should succeed
-        service.updateById(admin2.id, makeProfile('testAdmin22', admin2.id))
+        service.updateById(admin2.id, makeInputRepresentation('testAdmin22', admin2.id))
 
         currentUser = user1
 
         //edit self as user, should succeed
-        service.updateById(user1.id, makeProfile('testUser11', user1.id))
+        service.updateById(user1.id, makeInputRepresentation('testUser11', user1.id))
 
         //edit other as user, should fail
         shouldFail(AccessDeniedException) {
-            service.updateById(user2.id, makeProfile('testUser22', user2.id))
+            service.updateById(user2.id, makeInputRepresentation('testUser22', user2.id))
         }
     }
 
@@ -89,7 +97,7 @@ class ProfileRestServiceUnitTest {
 
         //create not allowed at all
         shouldFail(AccessDeniedException) {
-            service.createFromDto(makeProfile('willFail', 10))
+            service.createFromRepresentation(makeInputRepresentation('willFail', 10))
         }
     }
 

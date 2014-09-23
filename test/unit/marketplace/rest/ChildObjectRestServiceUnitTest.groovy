@@ -60,7 +60,7 @@ class ChildObjectRestServiceUnitTest {
         ServiceItem si1 = new ServiceItem(
             title: 'Service Item 1',
             owners: [adminUser],
-            types: type,
+            type: type,
             launchUrl: 'https:///'
         )
         si1.id = 1
@@ -69,7 +69,7 @@ class ChildObjectRestServiceUnitTest {
             title: 'Service Item 2',
             owners: [nonAdminUser],
             launchUrl: 'https:///',
-            types: type
+            type: type
         )
         si2.id = 2
 
