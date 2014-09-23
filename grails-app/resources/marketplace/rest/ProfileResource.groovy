@@ -125,8 +125,9 @@ class ProfileResource extends RepresentationResource<Profile> {
         AbstractHalRepresentation.HAL_MEDIA_TYPE
     ])
     ApplicationLibrary getApplicationLibrary(@PathParam('profileId') String profileId) {
-        new ApplicationLibrary(getProfileId(profileId),
-            applicationLibraryEntryRestService.getByParentId(profileId))
+        long id = getProfileId(profileId)
+
+        new ApplicationLibrary(id, applicationLibraryEntryRestService.getByParentId(id))
     }
 
     /**
@@ -155,8 +156,8 @@ class ProfileResource extends RepresentationResource<Profile> {
     ])
     Response addToApplicationLibrary(@PathParam('profileId') String profileId,
             ApplicationLibraryEntryInputRepresentation representation) {
-        created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(getProfileId(profileId),
-            representation)
+        created applicationLibraryEntryRestService.createFromParentIdAndRepresentation(
+            getProfileId(profileId), representation)
     }
 
     /**
@@ -175,9 +176,10 @@ class ProfileResource extends RepresentationResource<Profile> {
     ApplicationLibrary replaceApplicationLibrary(
             @PathParam('profileId') String profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
-        new ApplicationLibrary(getProfileId(profileId),
-            applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(profileId,
-                library))
+        long id = getProfileId(profileId)
+
+        new ApplicationLibrary(id,
+            applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(id, library))
     }
 
     /** remove after the demo */
