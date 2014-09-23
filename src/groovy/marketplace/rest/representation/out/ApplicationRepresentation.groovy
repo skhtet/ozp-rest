@@ -61,14 +61,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
 
     private static HalEmbedded embedIntents(Collection intents, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(intents.collect {Intent intent ->
-
-            URI href = uriBuilderHolder.builder
-                    .path(IntentResource.class)
-                    .path(IntentResource.class, 'read')
-                    .buildFromMap(intent.properties)
-
             new AbstractMap.SimpleEntry(OzpRelationType.INTENT,
-                    new IntentRepresentation(intent, uriBuilderHolder, href))
+                    new IntentRepresentation(intent, uriBuilderHolder))
         })
     }
 
