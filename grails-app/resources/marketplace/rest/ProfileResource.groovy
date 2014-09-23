@@ -224,19 +224,21 @@ class ProfileResource extends RepresentationResource<Profile> {
         new StewardedOrganizations(service.getById(id))
     }
 
-    @Path('/{profileId}/stewarded-organizations/{organizationId}')
+    @Path('/{profileId}/stewarded-organizations')
     @POST
     @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Consumes([IdRefInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     Agency addSteward(@PathParam('profileId') String profileId,
-            @PathParam('organizationId') long organizationId) {
-        service.addProfileAsSteward(getProfileId(profileId), organizationId)
+            IdRefInputRepresentation<Agency, Long> organization) {
+        service.addProfileAsSteward(getProfileId(profileId), organization.id)
     }
 
-    @Path('/{profileId}/stewarded-organizations/{organizationId}')
+    @Path('/{profileId}/stewarded-organizations/')
     @DELETE
     @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Consumes([IdRefInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     void removeSteward(@PathParam('profileId') String profileId,
-            @PathParam('organizationId') long organizationId) {
-        service.removeProfileAsSteward(getProfileId(profileId), organizationId)
+            IdRefInputRepresentation<Agency, Long> organization) {
+        service.removeProfileAsSteward(getProfileId(profileId), organization.id)
     }
 }
