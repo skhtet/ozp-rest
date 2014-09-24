@@ -3,7 +3,7 @@ package org.ozoneplatform.auditing
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest
 import marketplace.AccountService
-import marketplace.rest.ProfileRestService
+import marketplace.rest.service.ProfileRestService
 import marketplace.Profile
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.ozoneplatform.auditing.filter.AbstractAuditingFilters

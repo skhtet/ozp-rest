@@ -2,6 +2,8 @@ package marketplace.rest
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import marketplace.rest.service.ProfileRestService
+
 /**
  * Filter that creates/updates Profile object on login
  */

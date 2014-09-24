@@ -1,6 +1,6 @@
 package marketplace
 
-import marketplace.rest.ServiceItemActivityInternalService
+import marketplace.rest.service.ServiceItemActivityInternalService
 import org.springframework.beans.factory.annotation.Autowired
 import ozone.marketplace.domain.ValidationException
 import org.apache.commons.lang.exception.ExceptionUtils
