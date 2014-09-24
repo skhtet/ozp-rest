@@ -62,8 +62,18 @@
 			"collection_id": "e8cce755-7b1d-f17d-4db0-83051d8eb956"
 		},
 		{
+			"id": "afa718b2-ea6c-cdce-5e6a-658c685f014f",
+			"name": "5. Create Contact Types",
+			"description": "",
+			"order": [
+				"16395b9c-004e-d919-318e-65564d670148"
+			],
+			"collection_name": "Marketplace Demo",
+			"collection_id": "e8cce755-7b1d-f17d-4db0-83051d8eb956"
+		},
+		{
 			"id": "c03b6619-d412-7549-eaca-1d3d40948c3b",
-			"name": "5. Create Listings",
+			"name": "6. Create Listings",
 			"description": "",
 			"order": [
 				"abc481f1-4335-4e50-ef0d-44c21e29dfb5",
@@ -133,6 +143,25 @@
 			"responses": [],
 			"synced": false,
 			"rawModeData": "{\n    \"descriptionShort\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus faucibus ante dapibus commodo.\",\n    \"requirements\": \"https://www\",\n    \"description\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus faucibus ante dapibus commodo. Quisque egestas, eros sit amet dignissim sagittis, justo enim facilisis ante, et elementum ligula elit id nunc. Ut mollis enim nec arcu porta pulvinar. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In vitae nisl turpis. Sed congue at arcu eget feugiat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis est sapien, posuere et lobortis ac, sodales et sapien.Sed auctor molestie velit, nec sollicitudin ipsum bibendum ut. Quisque ut congue lectus. Nunc commodo non arcu sit amet vestibulum. Sed et ligula vitae justo hendrerit cursus et eget augue. Sed ullamcorper magna at euismod cursus. Vivamus id ligula purus. Nulla dapibus rhoncus tristique. Duis efficitur eleifend justo at ullamcorper. Ut condimentum velit sit amet posuere facilisis. Vestibulum at nisi elit. Aliquam eget enim accumsan, dapibus magna quis, ultricies nunc. Donec imperdiet est lacus, nec blandit felis venenatis id.\",\n    \"docUrls\": [\n        {\n            \"name\": \"User Manual\",\n            \"url\": \"https://www\"\n        },\n        {\n            \"name\": \"API Documentation\",\n            \"url\": \"https://www\"\n        }\n    ],\n    \"isFeatured\": true,\n    \"imageLargeUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/Clipboard.png\",\n    \"imageMediumUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/Clipboard64.png\",\n    \"imageSmallUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/Clipboard16.png\",\n    \"imageXlargeUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/ClipboardFeatured.png\",\n    \"launchUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/Clipboard.png\",\n    \"owners\": [\n        {\n            \"id\": 1\n        }\n    ],\n    \"screenshots\": [\n        {\n            \"smallImageUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/ClipboardFeatured.png\",\n            \"largeImageUrl\": \"https://raw.githubusercontent.com/ozone-development/center-ui/master/app/images/sample-listings/ClipboardFeatured.png\"\n        }\n    ],\n    \"tags\": [\n        \"blue\"\n    ],\n    \"categories\": [\n        {\n            \"id\": 2\n        }\n    ],\n    \"title\": \"Clipboard\",\n    \"type\": {\n        \"id\": 1\n    },\n    \"agency\": {\n        \"id\": 1\n    },\n    \"versionName\": \"1\",\n    \"whatIsNew\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum lectus faucibus ante dapibus commodo.\"\n}"
+		},
+		{
+			"id": "16395b9c-004e-d919-318e-65564d670148",
+			"headers": "Content-Type: application/json\nAccept: application/json\n",
+			"url": "http://localhost:8080/marketplace/api/contactType/",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;",
+			"time": 1411589235589,
+			"name": "Create Technical Support",
+			"description": "",
+			"collectionId": "e8cce755-7b1d-f17d-4db0-83051d8eb956",
+			"responses": [],
+			"synced": false,
+			"rawModeData": "{\r\n    \"title\": \"Technical Support 2\"\r\n}"
 		},
 		{
 			"id": "18ea7a53-6565-9060-70a5-99c64d6e038e",
