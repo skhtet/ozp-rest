@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.resource
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
@@ -10,6 +10,8 @@ import marketplace.Agency
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
+
+import marketplace.rest.service.RestService
 
 @TestMixin(DomainClassUnitTestMixin)
 class DomainResourceUnitTest {

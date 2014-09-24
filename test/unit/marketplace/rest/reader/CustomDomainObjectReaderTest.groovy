@@ -1,5 +1,5 @@
 
-package marketplace.rest;
+package marketplace.rest.reader;
 
 import org.junit.Before
 import org.junit.Test

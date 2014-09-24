@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.service
 
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin

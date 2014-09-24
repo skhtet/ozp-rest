@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.resource
 
 import java.net.URL
 
@@ -13,6 +13,11 @@ import marketplace.WebUtil
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
+
+import marketplace.rest.service.ItemCommentRestService
+import marketplace.rest.service.RejectionListingRestService
+import marketplace.rest.service.ServiceItemRestService
+import marketplace.rest.service.ServiceItemActivityRestService
 
 @TestMixin(DomainClassUnitTestMixin)
 class ServiceItemResourceUnitTest {

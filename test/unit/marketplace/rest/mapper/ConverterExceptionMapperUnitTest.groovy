@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.mapper
 
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 

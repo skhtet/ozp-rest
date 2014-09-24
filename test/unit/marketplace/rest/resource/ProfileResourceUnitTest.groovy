@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.resource
 
 import javax.ws.rs.core.Response
 
@@ -14,6 +14,11 @@ import marketplace.testutil.FakeAuditTrailHelper
 
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.mixin.TestMixin
+
+import marketplace.rest.service.ProfileRestService
+import marketplace.rest.service.ServiceItemActivityRestService
+import marketplace.rest.service.ItemCommentRestService
+import marketplace.rest.service.ServiceItemRestService
 
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileResourceUnitTest {

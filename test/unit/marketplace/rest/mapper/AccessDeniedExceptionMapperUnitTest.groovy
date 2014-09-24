@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.mapper
 
 import org.springframework.security.access.AccessDeniedException
 

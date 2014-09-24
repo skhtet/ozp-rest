@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.service
 
 import org.springframework.context.support.StaticApplicationContext
 

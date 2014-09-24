@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.writer
 
 import grails.test.mixin.web.ControllerUnitTestMixin
 import grails.test.mixin.TestMixin

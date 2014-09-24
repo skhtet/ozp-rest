@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.service
 
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
@@ -15,6 +15,8 @@ import marketplace.Profile
 import marketplace.AccountService
 
 import marketplace.testutil.FakeAuditTrailHelper
+
+import marketplace.rest.representation.in.InputRepresentation
 
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileRestServiceUnitTest {

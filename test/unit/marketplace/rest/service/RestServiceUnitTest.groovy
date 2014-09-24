@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.service
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
