@@ -82,7 +82,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
 
         Collection<Map.Entry> itemLinks = entities.collect { entity ->
-            Map props = entity.properties as HashMap
+            Map props = entity.properties as HashMap ?: [:]
             props.id = entity.id
 
             URI href = uriBuilderHolder.builder
