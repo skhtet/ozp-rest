@@ -36,8 +36,8 @@ class Profile implements Serializable {
         editedBy: 'none',
 
         applicationLibrary: 'owner',
-        organizations: null,
-        stewardedOrganizations: null
+        organizations: 'none',
+        stewardedOrganizations: 'none'
     ]
 
     String username

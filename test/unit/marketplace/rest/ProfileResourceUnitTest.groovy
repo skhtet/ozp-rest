@@ -11,6 +11,7 @@ import marketplace.ServiceItemActivity
 import marketplace.Constants
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.mixin.TestMixin
@@ -27,6 +28,7 @@ class ProfileResourceUnitTest {
         testUser.id = 1
 
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
 
         mockDomain(Profile.class, [testUser])
 

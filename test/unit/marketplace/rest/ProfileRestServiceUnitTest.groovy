@@ -15,6 +15,7 @@ import marketplace.Profile
 import marketplace.AccountService
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileRestServiceUnitTest {
@@ -58,6 +59,7 @@ class ProfileRestServiceUnitTest {
         user2 = makeProfile('testUser2', 4)
 
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
 
         mockDomain(Profile.class, [admin1, admin2, user1, user2])
 
