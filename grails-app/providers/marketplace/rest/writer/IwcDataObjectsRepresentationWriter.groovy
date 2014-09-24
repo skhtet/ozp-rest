@@ -18,7 +18,7 @@ import marketplace.rest.resource.IwcDataObjectResource
 ])
 class IwcDataObjectsRepresentationWriter extends AbstractRepresentationWriter<Collection<IwcDataObject>> {
     IwcDataObjectsRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(IwcDataObjectRepresentation.class,
-                IwcDataObjectResource.class))
+        super(EmbeddedCollectionRepresentation.createFactory(
+            new IwcDataObjectRepresentation.Factory(), IwcDataObjectResource.class))
     }
 }

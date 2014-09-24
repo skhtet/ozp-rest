@@ -19,6 +19,7 @@ import marketplace.rest.resource.IntentResource
 class IntentsRepresentationWriter extends AbstractRepresentationWriter<Collection<Intent>> {
 
     IntentsRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(IntentRepresentation.class, IntentResource.class))
+        super(EmbeddedCollectionRepresentation.createFactory(
+            new IntentRepresentation.Factory(), IntentResource.class))
     }
 }

@@ -8,15 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 
 /**
  * Representation of a collection where all of the elements are embedded representations
- *
- * TODO: This representation could probably support optional paging (next/prev links) as well
  */
 class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collection<T>> {
-    @JsonIgnore
-    final Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType
-    @JsonIgnore
-    final Class<?> domainResourceType
-
     /**
      * The total unpaged number of items
      */
@@ -24,7 +17,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
     final Integer total
 
     EmbeddedCollectionRepresentation(
-            Class<? extends AbstractHalRepresentation<T>> embeddedRepresentationType,
+            RepresentationFactory<T> embeddedRepFactory,
             Class<?> domainResourceType,
             Collection<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
@@ -33,31 +26,24 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             uriBuilderHolder.builder
                 .path(domainResourceType)
                 .build(),
-            null,
-            null
+            createLinks(domainResourceType, entities, uriBuilderHolder),
+            createEmbedded(embeddedRepFactory, entities, uriBuilderHolder)
         )
-
-        this.embeddedRepresentationType = embeddedRepresentationType
-        this.domainResourceType = domainResourceType
-
-        this.addEmbedded(embedEntities(entities, uriBuilderHolder))
-        this.addLinks(linkEntities(entities, uriBuilderHolder))
 
         if (entities instanceof PagedCollection) {
             this.total = entities.total
         }
     }
 
-    private HalEmbedded embedEntities(Collection entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private static HalEmbedded createEmbedded(RepresentationFactory<T> embeddedRepFactory,
+            Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(entities.collect { Object entity ->
-
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
-                    embeddedRepresentationType.newInstance(entity, uriBuilderHolder))
+                    embeddedRepFactory.toRepresentation(entity, uriBuilderHolder))
         })
     }
 
-    private HalLinks linkEntities(Collection entities,
+    private static HalLinks createLinks(Class<?> domainResourceType, Collection entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         Collection<Map.Entry> navLinks = []
 
@@ -111,7 +97,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
         new HalLinks(itemLinks + navLinks)
     }
 
-    private Map getPrevPageParams(PagedCollection entities) {
+    private static Map getPrevPageParams(PagedCollection entities) {
         Integer offset = entities.offset,
             max = entities.max == null ? entities.total : entities.max,
             prevOffset
@@ -125,7 +111,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
         }
     }
 
-    private Map getNextPageParams(PagedCollection entities) {
+    private static Map getNextPageParams(PagedCollection entities) {
         Integer offset = entities.offset == null ? 0 : entities.offset,
             max = entities.max,
             nextOffset
@@ -146,12 +132,12 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
      * @param the Class of the Resource for the items in the collection
      * @return
      */
-    public static RepresentationFactory<Collection<?>> createFactory(
-            Class<? extends AbstractHalRepresentation> embeddedRepresentationType,
+    public static <T> RepresentationFactory<Collection<T>> createFactory(
+            RepresentationFactory<T> embeddedRepFactory,
             Class<?> domainResourceType) {
 
-        { Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder ->
-            new EmbeddedCollectionRepresentation(embeddedRepresentationType,
+        { Collection<T> entities, ApplicationRootUriBuilderHolder uriBuilderHolder ->
+            new EmbeddedCollectionRepresentation(embeddedRepFactory,
                     domainResourceType, entities, uriBuilderHolder)
         } as RepresentationFactory
     }

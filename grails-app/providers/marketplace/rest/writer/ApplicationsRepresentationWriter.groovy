@@ -12,8 +12,10 @@ import marketplace.rest.resource.ServiceItemResource
 
 @Provider
 @Produces([ApplicationRepresentation.COLLECTION_MEDIA_TYPE])
-class ApplicationsRepresentationWriter extends AbstractRepresentationWriter<Collection<ServiceItem>> {
+class ApplicationsRepresentationWriter extends
+        AbstractRepresentationWriter<Collection<ServiceItem>> {
     ApplicationsRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(ApplicationRepresentation.class, ServiceItemResource.class))
+        super(EmbeddedCollectionRepresentation.createFactory(
+            new ApplicationRepresentation.Factory(), ServiceItemResource.class))
     }
 }

@@ -21,7 +21,7 @@ class AgenciesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<Agency>> {
 
     AgenciesRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(AgencyRepresentation.class,
+        super(EmbeddedCollectionRepresentation.createFactory(new AgencyRepresentation.Factory(),
             AgencyResource.class))
     }
 }

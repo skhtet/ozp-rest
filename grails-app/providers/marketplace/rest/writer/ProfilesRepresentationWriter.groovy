@@ -21,7 +21,7 @@ class ProfilesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<Profile>> {
 
     ProfilesRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(ProfileRepresentation.class,
+        super(EmbeddedCollectionRepresentation.createFactory(new ProfileRepresentation.Factory(),
             ProfileResource.class))
     }
 }
