@@ -136,9 +136,12 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             RepresentationFactory<T> embeddedRepFactory,
             Class<?> domainResourceType) {
 
-        { Collection<T> entities, ApplicationRootUriBuilderHolder uriBuilderHolder ->
-            new EmbeddedCollectionRepresentation(embeddedRepFactory,
-                    domainResourceType, entities, uriBuilderHolder)
-        } as RepresentationFactory
+        new RepresentationFactory() {
+            EmbeddedCollectionRepresentation toRepresentation(entities,
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new EmbeddedCollectionRepresentation<T>(embeddedRepFactory,
+                        domainResourceType, entities, uriBuilderHolder)
+            }
+        }
     }
 }
