@@ -8,6 +8,7 @@ import marketplace.hal.Link
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
+import marketplace.rest.IwcSystemRepresentation
 import marketplace.rest.resource.IwcDataObjectResource
 import marketplace.rest.resource.IwcResource
 import marketplace.rest.resource.ProfileResource
@@ -29,7 +30,8 @@ class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
 
     private static HalEmbedded embedUser(Profile profile, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded([
-                new AbstractMap.SimpleEntry(OzpRelationType.USER, new UserRepresentation(profile, uriBuilderHolder))
+                new AbstractMap.SimpleEntry(OzpRelationType.USER, new UserRepresentation(profile, uriBuilderHolder)),
+                new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM, new IwcSystemRepresentation(uriBuilderHolder))
         ])
     }
 
