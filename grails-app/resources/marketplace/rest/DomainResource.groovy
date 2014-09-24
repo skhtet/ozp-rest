@@ -48,6 +48,12 @@ class DomainResource<T> {
         created service.createFromDto(dto)
     }
 
+    @PUT
+    @Path('/{id}')
+    T update(@PathParam('id') long id, T dto) {
+        service.updateById(id, dto)
+    }
+
     /**
      * GET all of the domain objects of type T, optionally
      * with paging parameters to limit the size of the return

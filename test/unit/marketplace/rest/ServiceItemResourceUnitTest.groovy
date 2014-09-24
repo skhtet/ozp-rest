@@ -93,86 +93,40 @@ class ServiceItemResourceUnitTest {
 
     void testGetRequiredServiceItems() {
         ServiceItem serviceItem = new ServiceItem()
-        def passedParentId, passedBlockInside, urlA, urlB
-        boolean isSameDomainResult = true
+        def passedParentId
 
         def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
         serviceItemRestServiceMock.demand.getAllRequiredServiceItemsByParentId(1..2) {
-                parentId, blockInside ->
+                parentId ->
             passedParentId = parentId
-            passedBlockInside = blockInside
             [serviceItem]
         }
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        WebUtil.metaClass.static.isSameDomain = { URL a, URL b ->
-            urlA = a
-            urlB = b
-
-            return isSameDomainResult
-        }
-
-        assert resource.getRequiredServiceItems(
-            new GrailsMockHttpServletRequest(serverName: 'localhost', scheme: 'https'),
-            'https://localhost/', 1
-        ) == [serviceItem]
+        assert resource.getRequiredServiceItems(1) == [serviceItem]
         assert passedParentId == 1
-        assert passedBlockInside == !isSameDomainResult
-        assert 'https' == urlA.protocol
-        assert 'https' == urlB.protocol
-        assert 'localhost' == urlA.host
-        assert 'localhost' == urlB.host
 
-        isSameDomainResult = false
-        resource.getRequiredServiceItems(
-            new GrailsMockHttpServletRequest(serverName: 'www.example.com', scheme: 'http',
-                serverPort: 443),
-            'https://localhost/', 25
-        )
+        resource.getRequiredServiceItems(25)
         assert passedParentId == 25
-        assert passedBlockInside == !isSameDomainResult
     }
 
     void testGetRequiringServiceItems() {
         ServiceItem serviceItem = new ServiceItem()
-        def passedParentId, passedBlockInside, urlA, urlB
-        boolean isSameDomainResult = true
+        def passedParentId
 
         def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
         serviceItemRestServiceMock.demand.getRequiringServiceItemsByChildId(1..2) {
-                parentId, blockInside ->
+                parentId ->
             passedParentId = parentId
-            passedBlockInside = blockInside
             [serviceItem]
         }
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        WebUtil.metaClass.static.isSameDomain = { URL a, URL b ->
-            urlA = a
-            urlB = b
-
-            return isSameDomainResult
-        }
-
-        assert resource.getRequiringServiceItems(
-            new GrailsMockHttpServletRequest(serverName: 'localhost', scheme: 'https'),
-            'https://localhost/', 1
-        ) == [serviceItem]
+        assert resource.getRequiringServiceItems(1) == [serviceItem]
         assert passedParentId == 1
-        assert passedBlockInside == !isSameDomainResult
-        assert 'https' == urlA.protocol
-        assert 'https' == urlB.protocol
-        assert 'localhost' == urlA.host
-        assert 'localhost' == urlB.host
 
-        isSameDomainResult = false
-        resource.getRequiringServiceItems(
-            new GrailsMockHttpServletRequest(serverName: 'www.example.com', scheme: 'http',
-                serverPort: 443),
-            'https://localhost/', 25
-        )
+        resource.getRequiringServiceItems(25)
         assert passedParentId == 25
-        assert passedBlockInside == !isSameDomainResult
     }
 
     void testGetItemCommentsByServiceItem() {

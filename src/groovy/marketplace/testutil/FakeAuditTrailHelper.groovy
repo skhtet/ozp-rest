@@ -12,12 +12,6 @@ class FakeAuditTrailHelper {
     void initializeFields(obj) {
         obj.createdDate = new Date()
         obj.editedDate = new Date()
-
-        //hack to work around unit tests not calling
-        //beforeValidate on nested objects
-        if (obj instanceof ServiceItem && obj.owfProperties) {
-            initializeFields(obj.owfProperties)
-        }
     }
 
     static void install() {

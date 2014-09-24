@@ -15,8 +15,6 @@ import marketplace.Types
 import marketplace.ServiceItemDocumentationUrl
 import marketplace.Contact
 import marketplace.Screenshot
-import marketplace.CustomField
-import marketplace.OwfProperties
 import marketplace.Category
 import marketplace.Relationship
 import marketplace.ServiceItemTag
@@ -41,7 +39,7 @@ class RestServiceUnitTest {
     private static final exampleServiceItemProps = [
         id: 1,
         title: "test service item",
-        types: [ id: 1 ],
+        type: [ id: 1 ],
         relationships: [[
            relationshipType: RelationshipType.REQUIRE,
             relatedItems: []
@@ -50,12 +48,7 @@ class RestServiceUnitTest {
         launchUrl: "https://localhost/asf",
         owners: [ id: 1 ],
         versionName: '1',
-        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
-        owfProperties: [
-            height: 100,
-            width: 100,
-            universalName: 'test.service.item'
-        ]
+        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS']
     ]
 
     //a simple sublass of RestService that specializes in ServiceItems
@@ -85,7 +78,7 @@ class RestServiceUnitTest {
 
         def exampleServiceItem = new ServiceItem(exampleServiceItemProps + [
             owners: [owner],
-            types: type
+            type: type
         ])
 
         exampleServiceItem.id = 1
@@ -106,10 +99,8 @@ class RestServiceUnitTest {
         grailsApplication.refresh()
 
         //necessary to get reflection-based marshalling to work
-        grailsApplication.addArtefact(CustomField.class)
         grailsApplication.addArtefact(ServiceItemDocumentationUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
-        grailsApplication.addArtefact(OwfProperties.class)
         grailsApplication.addArtefact(Category.class)
         grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
@@ -168,33 +159,27 @@ class RestServiceUnitTest {
         ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
-            types: typeDto,
+            type: typeDto,
             //use Relationship test updating a modifiableReferenceProperty collection
-            relationships: [relationship],
-            owfProperties: new OwfProperties(exampleServiceItemProps.owfProperties + [
-                universalName: newUniversalName
-            ])
+            relationships: [relationship]
         ])
         updates.id = id
 
         ServiceItem retval = restService.updateById(id, updates)
         assert retval instanceof ServiceItem
         assert retval.title == newTitle
-        assert retval.owfProperties.universalName == newUniversalName
 
         //ensure that properties we didn't change do not change
         assert retval.description == exampleServiceItemProps.description
-        assert retval.owners == [Profile.get(2)]
-        assert retval.owfProperties.height == exampleServiceItemProps.owfProperties.height
-        assert retval.types == Types.get(1)
+        assert retval.owners == [Profile.get(2)] as Set
+        assert retval.type == Types.get(1)
 
         assert retval.id == id
 
         //ensure that the changes were actually saved
         ServiceItem fromGet = restService.getById(id)
         assert fromGet.title == newTitle
-        assert fromGet.owfProperties.universalName == newUniversalName
-        assert fromGet.owners == [Profile.get(2)]
+        assert fromGet.owners == [Profile.get(2)] as Set
     }
 
 
@@ -212,10 +197,7 @@ class RestServiceUnitTest {
         ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
-            types: typeDto,
-            owfProperties: new OwfProperties(exampleServiceItemProps.owfProperties + [
-                universalName: newUniversalName
-            ])
+            type: typeDto
         ])
         updates.id = badId
 
@@ -252,10 +234,7 @@ class RestServiceUnitTest {
             id: badId,
             title: newTitle,
             owners: [ownerDto],
-            types: typeDto,
-            owfProperties: new OwfProperties(exampleServiceItemProps.owfProperties + [
-                universalName: newUniversalName
-            ])
+            type: typeDto
         ])
 
         shouldFail(IllegalArgumentException) {
@@ -284,7 +263,6 @@ class RestServiceUnitTest {
     }
 
     void testCreateFromDto() {
-        OwfProperties newOwfProperties = new OwfProperties(exampleServiceItemProps.owfProperties)
         Relationship newRelationship = new Relationship(exampleServiceItemProps.relationships[0])
 
         //the  serviceitem dto will have an owner object that only specifies the id of the actual
@@ -298,21 +276,16 @@ class RestServiceUnitTest {
         typeDto.id = typeId
 
         ServiceItem newServiceItem = new ServiceItem(exampleServiceItemProps + [
-            owfProperties: newOwfProperties,
             owners: [ownerDto],
-            types: typeDto,
+            type: typeDto,
             relationships: [newRelationship]
         ] - [id: 1])
 
         ServiceItem retval = restService.createFromDto(newServiceItem)
         assert retval instanceof ServiceItem
         assert retval.title == exampleServiceItemProps.title
-        assert retval.owners == [Profile.get(ownerId)]
-        assert retval.types == Types.get(typeId)
-        assert retval.owfProperties.height == exampleServiceItemProps.owfProperties.height
-        assert retval.owfProperties.width == exampleServiceItemProps.owfProperties.width
-        assert retval.owfProperties.universalName ==
-                exampleServiceItemProps.owfProperties.universalName
+        assert retval.owners == [Profile.get(ownerId)] as Set
+        assert retval.type == Types.get(typeId)
 
         assertNotNull retval.id
     }
@@ -342,12 +315,9 @@ class RestServiceUnitTest {
         ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
-            types: typeDto,
+            type: typeDto,
             relationships: [new Relationship(exampleServiceItemProps.relationships[0])],
-            createdDate: newCreatedDate,    //trying to change createdDate to the far future
-            owfProperties: new OwfProperties(exampleServiceItemProps.owfProperties + [
-                universalName: newUniversalName
-            ])
+            createdDate: newCreatedDate    //trying to change createdDate to the far future
         ])
         updates.id = id
 

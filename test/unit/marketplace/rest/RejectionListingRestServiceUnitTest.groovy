@@ -33,7 +33,7 @@ class RejectionListingRestServiceUnitTest {
             launchUrl: "https://localhost/asf",
             versionName: '1',
             owners: [currentUser],
-            types: new Types(title: 'test type'),
+            type: new Types(title: 'test type'),
             approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
             version: 1
         )

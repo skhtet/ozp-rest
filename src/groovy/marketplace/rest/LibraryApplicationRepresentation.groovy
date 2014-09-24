@@ -50,6 +50,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
     }
 
     public String getTitle() { serviceItem.title }
+    public String getUuid() { serviceItem.uuid }
     public Map<String, URI> getLaunchUrls() { [default: new URI(serviceItem.launchUrl)] }
     public Map<String, URI> getIcons() {
         [

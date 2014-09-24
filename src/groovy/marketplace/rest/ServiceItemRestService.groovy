@@ -45,25 +45,21 @@ class ServiceItemRestService extends RestService<ServiceItem> {
      * Recursively find all ServiceItems that are required by this one
      */
     @Transactional(readOnly=true)
-    public Set<ServiceItem> getAllRequiredServiceItemsByParentId(Long id,
-            Boolean blockInsideListings) {
+    public Set<ServiceItem> getAllRequiredServiceItemsByParentId(Long id) {
         ServiceItem parent = getById(id)
-        Set<ServiceItem> items = getAllRequiredServiceItems(parent, [parent] as Set)
-            .grep { canView(it) }
 
-        return blockInsideListings ? items.grep { it.isOutside } : items
+        getAllRequiredServiceItems(parent, [parent] as Set).grep { canView(it) }
     }
 
     /**
      * Find all ServiceItems that require this one. This is not recursive
      */
     @Transactional(readOnly=true)
-    public Set<ServiceItem> getRequiringServiceItemsByChildId(Long id,
-            Boolean blockInsideListings) {
+    public Set<ServiceItem> getRequiringServiceItemsByChildId(Long id) {
         //ensure that they are allowed to view the child
         ServiceItem child = getById(id)
 
-        Set<ServiceItem> items = ServiceItem.createCriteria().list() {
+        ServiceItem.createCriteria().list() {
             relationships {
                 eq('relationshipType', RelationshipType.REQUIRE)
 
@@ -72,8 +68,6 @@ class ServiceItemRestService extends RestService<ServiceItem> {
                 }
             }
         }.grep{ canView(it) }
-
-        return blockInsideListings ? items.grep { it.isOutside } : items
     }
 
     /**
@@ -244,7 +238,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
 
         if (oldIsEnabled != updatedIsEnabled) {
             serviceItemActivityInternalService.addServiceItemActivity(updated,
-                Constants.Action[updatedIsEnabled ? 'DISABLED' : 'ENABLED'])
+                Constants.Action[updatedIsEnabled ? 'ENABLED' : 'DISABLED'])
         }
     }
 

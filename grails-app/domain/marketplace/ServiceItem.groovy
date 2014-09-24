@@ -113,7 +113,6 @@ class ServiceItem implements Serializable {
         'relationships',
         'isEnabled',
         'approvalStatus',
-        'isOutside',
         'isFeatured'
     ]]
 

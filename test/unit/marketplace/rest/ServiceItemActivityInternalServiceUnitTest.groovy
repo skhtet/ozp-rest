@@ -12,7 +12,6 @@ import marketplace.Contact
 import marketplace.ServiceItemDocumentationUrl
 import marketplace.Screenshot
 import marketplace.ItemComment
-import marketplace.OwfProperties
 import marketplace.ServiceItem
 import marketplace.ServiceItemDocumentationUrl
 import marketplace.ServiceItemSnapshot
@@ -24,7 +23,6 @@ import marketplace.ModifyRelationshipActivity
 import marketplace.RejectionListing
 import marketplace.Constants
 import marketplace.Types
-import marketplace.MarketplaceMessagingService
 
 import marketplace.testutil.FakeAuditTrailHelper
 
@@ -45,8 +43,7 @@ class ServiceItemActivityInternalServiceUnitTest {
             launchUrl: "https://localhost/asf",
             versionName: '1',
             approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
-            version: 1,
-            owfProperties: new OwfProperties(height: 200, width: 300)
+            version: 1
         )
 
         return serviceItem
@@ -112,10 +109,6 @@ class ServiceItemActivityInternalServiceUnitTest {
         service.profileRestService = [
             getCurrentUserProfile: { currentUser }
         ] as ProfileRestService
-
-        def marketplaceMessagingServiceMock = mockFor(MarketplaceMessagingService)
-        service.marketplaceMessagingService = marketplaceMessagingServiceMock.createMock()
-        marketplaceMessagingServiceMock.demand.sendNotificationOfChange(999) { serviecItem, activity -> [] }
     }
 
     public void testAddServiceItemActivityByAction() {
@@ -134,7 +127,7 @@ class ServiceItemActivityInternalServiceUnitTest {
         ServiceItem si = makeServiceItem()
         ServiceItemActivity activity = new ServiceItemActivity(
             description: 'desc',
-            action: Constants.Action.OUTSIDE
+            action: Constants.Action.APPROVED
         )
 
         service.addServiceItemActivity(si, activity)
@@ -262,14 +255,13 @@ class ServiceItemActivityInternalServiceUnitTest {
 
     public void testChangelogNotCreatedIfChangesAreNotAuditable() {
         // This test assumes these are some of the properties in the auditable.ignore list.
-        assert ServiceItem.auditable.ignore.containsAll(['avgRate', 'itemComments', 'totalVotes', 'approvalStatus', 'isOutside'])
+        assert ServiceItem.auditable.ignore.containsAll(['avgRate', 'itemComments', 'totalVotes', 'approvalStatus'])
 
         def (updated, old) = [makeServiceItem(), makeServiceItem()]
 
         updated.with {
             avgRate = old.avgRate + 1.0
             totalVotes = old.totalVotes + 1
-            isOutside = !old.isOutside
             approvalStatus = old.approvalStatus == 'In Progress' ? 'Approved' : 'In Progress'
             addToItemComments(new ItemComment(rate: 1.0, text: 'review'))
         }
@@ -280,7 +272,7 @@ class ServiceItemActivityInternalServiceUnitTest {
 
     public void testChangelogIsCreatedWhenAuditableFieldsAreModified() {
         // This test assumes these are some of some of the auditable properties of a ServiceItem.
-        Set fieldsToTest = ['description', 'types', 'title']
+        Set fieldsToTest = ['description', 'type', 'title']
         assert ServiceItem.auditable.ignore.disjoint(fieldsToTest)
 
         def (updated, old) = [makeServiceItem(), makeServiceItem()]
@@ -288,7 +280,7 @@ class ServiceItemActivityInternalServiceUnitTest {
         updated.with {
             title = old.title + ' new!'
             description = old.description + 'new!'
-            types = new Types(title: 'new type!!')
+            type = new Types(title: 'new type!!')
         }
 
         def (activityCountBefore, activityCountAfter, activity) = doChangeLog(updated, old.properties)
@@ -321,31 +313,6 @@ class ServiceItemActivityInternalServiceUnitTest {
         def (activityCountBefore, activityCountAfter, activity) = doChangeLog(updated, old.properties)
         assert activityCountBefore + 1 == activityCountAfter
         assert activity.changeDetails.size() == 3
-        assert activity.changeDetails*.fieldName as Set == fieldsToTest
-    }
-
-    public testChangelogIsCreateWhenOwfPropertiesAreModified() {
-        //this test assumes the following are auditable properties of OwfProperties
-        Set fieldsToTest = ['stackDescriptor', 'singleton']
-        assert OwfProperties.changeLogProperties.containsAll(fieldsToTest)
-
-        def (updated, old) = [makeServiceItem(), makeServiceItem()]
-
-        old.with {
-            owfProperties ?: new OwfProperties()
-            owfProperties.singleton = false
-            owfProperties.stackDescriptor = "stack1"
-        }
-
-        updated.with {
-            owfProperties ?: new OwfProperties()
-            owfProperties.singleton = true
-            owfProperties.stackDescriptor = "stack2"
-        }
-
-        def (activityCountBefore, activityCountAfter, activity) = doChangeLog(updated, old.properties)
-        assert activityCountBefore + 1 == activityCountAfter
-        assert activity.changeDetails.size() == 2
         assert activity.changeDetails*.fieldName as Set == fieldsToTest
     }
 
