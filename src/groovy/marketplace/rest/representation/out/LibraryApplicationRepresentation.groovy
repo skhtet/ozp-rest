@@ -23,7 +23,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
 
     private ServiceItem serviceItem
 
-    private LibraryApplicationRepresentation(ApplicationLibraryEntry entry,
+    public LibraryApplicationRepresentation(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(
             uriBuilderHolder.builder
@@ -40,7 +40,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         ServiceItem serviceItem = entry.serviceItem
-        URI launchUri = serviceItem.launchUrl ? new URI(serviceItem.launchUrl) : null,
+        URI launchUri = new URI(serviceItem.launchUrl),
             libraryEntryUri = uriBuilderHolder.builder
                 .path(ProfileResource.class)
                 .path(ProfileResource.class, 'removeFromApplicationLibrary')
@@ -57,10 +57,10 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<ServiceItem
     public Map<String, URI> getLaunchUrls() { [default: new URI(serviceItem.launchUrl)] }
     public Map<String, URI> getIcons() {
         [
-            small: serviceItem.imageSmallUrl,
-            large: serviceItem.imageMediumUrl,
-            banner: serviceItem.imageLargeUrl,
-            featuredBanner: serviceItem.imageXlargeUrl
+            small: new URI(serviceItem.imageSmallUrl),
+            large: new URI(serviceItem.imageMediumUrl),
+            banner: new URI(serviceItem.imageLargeUrl),
+            featuredBanner: new URI(serviceItem.imageXlargeUrl)
         ]
     }
     public long getId() { serviceItem.id }
