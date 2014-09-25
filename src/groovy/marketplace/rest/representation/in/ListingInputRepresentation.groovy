@@ -27,7 +27,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     Set<String> tags
 
     TypeIdRef type
-    Set<IntentIdRef> intents
+    Set<IntentPropertyRefInputRepresentation> intents
     Set<ContactInputRepresentation> contacts
     Set<OwnerIdRef> owners
     Set<CategoryIdRef> categories
@@ -36,7 +36,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     List<ScreenshotInputRepresentation> screenshots
 
     public void setIntents(Collection<String> intents) {
-        this.intents = intents.collect { new IntentIdRef(it) }
+        this.intents = intents.collect { new IntentPropertyRefInputRepresentation(it) }
     }
 }
 
