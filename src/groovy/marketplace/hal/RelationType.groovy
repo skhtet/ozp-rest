@@ -129,7 +129,15 @@ class ExtensionRelationType implements RelationType {
     public String toString() { relationName }
 
     int compareTo(RelationType other) {
-        this.relationName <=> other.relationName
+        this.getRelationName() <=> other.getRelationName()
+    }
+
+    boolean equals(Object other) {
+        other instanceof RelationType && !(this <=> other)
+    }
+
+    int hashCode() {
+        getRelationName().hashCode()
     }
 }
 

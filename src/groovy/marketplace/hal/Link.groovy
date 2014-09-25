@@ -75,7 +75,7 @@ class Link {
         }
 
         if (templated) {
-            hrefTemplate = new UriTemplate(href)
+            hrefTemplate = UriTemplate.buildFromTemplate(href).build()
         }
         else {
             this.href = new URI(href)
@@ -103,6 +103,6 @@ class Link {
     }
 
     int hashCode() {
-        hrefTemplate?.hashCode() ?: href.hashCode()
+        templated ? ~getHref().hashCode() : getHref().hashCode()
     }
 }

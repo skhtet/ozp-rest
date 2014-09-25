@@ -16,6 +16,10 @@ abstract class SelfRefRepresentation<T> extends AbstractHalRepresentation<T> {
             HalLinks links, HalEmbedded embedded) {
         super(links, embedded)
 
+        if (selfRefUri == null) {
+            throw new NullPointerException('SelfRefRepresentation must have self URI')
+        }
+
         this.addLink(RegisteredRelationType.SELF, new Link(selfRefUri))
     }
 }

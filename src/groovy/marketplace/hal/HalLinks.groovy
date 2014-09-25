@@ -40,10 +40,12 @@ class HalLinks {
         }
     }
 
+    /*
     HalLinks(Map<RelationType, List<Link>> linkMap) {
         this.linkMap.putAll(linkMap)
         linkMap.keySet().each { addCurieForRelation(it) }
     }
+    */
 
     /**
      * A potentially more convenient constructor allowing individual RelationType -> Link
@@ -71,7 +73,7 @@ class HalLinks {
     /**
      * Add the specified link to the specified relation
      */
-    Link put(RelationType relationType, Link link) {
+    void put(RelationType relationType, Link link) {
         List<Link> links = linkMap.get(relationType)
         if (links) {
             links << link

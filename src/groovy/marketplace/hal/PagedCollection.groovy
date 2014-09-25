@@ -42,8 +42,6 @@ class PagedCollection<E> implements Collection<E> {
     void clear() { this.items.clear() }
     boolean contains(Object o) { this.items.contains(o) }
     boolean containsAll(Collection<?> c) { this.items.containsAll(c) }
-    boolean equals(Object o) { this.items.equals(o) }
-    int hashCode() { this.items.hashCode() }
     boolean isEmpty() { this.items.isEmpty() }
     Iterator<E> iterator() { this.items.iterator() }
     boolean remove(Object o) { this.items.remove(o) }
@@ -52,4 +50,19 @@ class PagedCollection<E> implements Collection<E> {
     int size() { this.items.size() }
     Object[] toArray() { this.items.toArray() }
     public <T> T[] toArray(T[] a) { this.items.toArray(a) }
+
+    boolean equals(Object other) {
+        other instanceof PagedCollection &&
+            this.offset == other.offset &&
+            this.max == other.max &&
+            this.total == other.total &&
+            this.items == other.items
+    }
+
+    int hashCode() {
+        //handle null
+        int max = this.max ?: -1, offset = this.offset ?: -1
+
+        offset ^ (max << 1) ^ (this.total << 2) ^ this.items.hashCode()
+    }
 }
