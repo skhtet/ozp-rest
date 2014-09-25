@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.representation.in
 
 import marketplace.Scorecard
 

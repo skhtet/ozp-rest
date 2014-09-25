@@ -1,10 +1,11 @@
-package marketplace.rest
+package marketplace.rest.representation.out
 
 import marketplace.Scorecard
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 
+import marketplace.rest.resource.ScorecardResource
 
 class ScorecardRepresentation extends SelfRefRepresentation<Scorecard> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-scorecard-v1+json'

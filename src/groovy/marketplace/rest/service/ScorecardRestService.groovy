@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.service
 
 import marketplace.Scorecard
 
@@ -7,6 +7,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
+import marketplace.rest.representation.in.InputRepresentation
 
 @Service
 class ScorecardRestService extends RestService<Scorecard> {

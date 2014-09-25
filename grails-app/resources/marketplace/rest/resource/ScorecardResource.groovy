@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.resource
 
 import marketplace.Scorecard
 
@@ -17,6 +17,10 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 import static org.grails.jaxrs.response.Responses.created
+
+import marketplace.rest.service.ScorecardRestService
+import marketplace.rest.representation.in.ScorecardInputRepresentation
+import marketplace.rest.representation.out.ScorecardRepresentation
 
 @Path('api/scorecard')
 class ScorecardResource {
