@@ -15,6 +15,7 @@ import marketplace.ItemComment
 import marketplace.Types
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
 class ChildObjectRestServiceUnitTest {
@@ -74,6 +75,7 @@ class ChildObjectRestServiceUnitTest {
         si2.id = 2
 
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
 
         mockDomain(ItemComment.class)
         mockDomain(Profile.class, [adminUser, nonAdminUser])

@@ -35,6 +35,7 @@ import marketplace.ScoreCardService
 import ozone.marketplace.enums.RelationshipType
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
 class ServiceItemRestServiceUnitTest {
@@ -76,6 +77,7 @@ class ServiceItemRestServiceUnitTest {
         grailsApplication.addArtefact(ServiceItemTag.class)
 
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
     }
 
     private makeServiceItem() {

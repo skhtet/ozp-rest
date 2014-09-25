@@ -12,12 +12,12 @@ class ScoreCardService {
     // Score Card Question Section
 
     @Transactional(readOnly=true)
-    def getScoreCardItem(id){
-        return ScoreCardItem.get(id)
+    def getScorecard(id){
+        return Scorecard.get(id)
     }
 
     @Transactional(readOnly=false)
-    def saveScoreCardQuestion(ScoreCardItem scoreCardQuestion){
+    def saveScoreCardQuestion(Scorecard scoreCardQuestion){
         try {
             log.info "${scoreCardQuestion.createdDate}"
             scoreCardQuestion.save(failOnError: true)
@@ -29,7 +29,7 @@ class ScoreCardService {
 
     // Delete an existing ScoreCardQuestion
     @Transactional(readOnly=false)
-    def deleteScoreCardQuestion(ScoreCardItem scoreCardQuestion){
+    def deleteScoreCardQuestion(Scorecard scoreCardQuestion){
         try {
             scoreCardQuestion.delete(failOnError: true)
         } catch (Exception e){

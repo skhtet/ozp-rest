@@ -25,6 +25,7 @@ import marketplace.Constants
 import marketplace.validator.DomainValidator
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 import ozone.marketplace.enums.RelationshipType
 
@@ -86,6 +87,7 @@ class RestServiceUnitTest {
         assertNotNull exampleServiceItem
 
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
 
         mockDomain(Screenshot.class)
         mockDomain(Category.class)

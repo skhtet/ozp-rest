@@ -94,7 +94,7 @@ class BootStrap {
             ServiceItemTag,
             ItemCommentServiceItemDto,
             ProfileServiceItemTagDto,
-            ScoreCardItem,
+            Scorecard,
             ContactType,
             ItemComment,
             Agency,

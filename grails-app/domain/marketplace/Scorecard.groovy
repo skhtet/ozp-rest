@@ -5,15 +5,13 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 @gorm.AuditStamp
-class ScoreCardItem implements Serializable {
-
+class Scorecard implements Serializable {
+    final static bindableProperties = ['question', 'description']
+    final static modifiableReferenceProperties = []
 
     String question
-
     String description
-
     String image
-
     Boolean showOnListing = false
 
     private static final int SMALL_FIELD_SIZE = 250
@@ -49,7 +47,7 @@ class ScoreCardItem implements Serializable {
 
     @Override
     boolean equals(other) {
-        if (other instanceof ScoreCardItem) {
+        if (other instanceof Scorecard) {
             return new EqualsBuilder()
                 .append(question, other.question)
                 .append(description, other.description)
