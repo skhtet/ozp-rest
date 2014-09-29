@@ -4,8 +4,7 @@ import marketplace.IwcDataObject
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
-
-import marketplace.rest.resource.IwcDataObjectResource
+import marketplace.rest.resource.ProfileResource
 
 class IwcDataObjectRepresentation extends SelfRefRepresentation<IwcDataObject> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-iwc-data-object-v1+json'
@@ -13,15 +12,17 @@ class IwcDataObjectRepresentation extends SelfRefRepresentation<IwcDataObject> {
 
     final String entity
     final String contentType
+    final String key
 
     IwcDataObjectRepresentation(IwcDataObject object, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(uriBuilderHolder.builder
-                .path(IwcDataObjectResource.class)
-                .path(IwcDataObjectResource.class, 'read')
-                .buildFromMap(key: object.key), null, null)
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'readDataItem')
+                .buildFromMap(key: object.key, profileId: object.profile.id), null, null)
 
         this.entity = object.entity
         this.contentType = object.contentType
+        this.key = object.key
     }
 
     public static class Factory implements RepresentationFactory<IwcDataObject> {

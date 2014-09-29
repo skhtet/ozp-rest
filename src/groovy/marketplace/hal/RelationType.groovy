@@ -161,9 +161,9 @@ enum OzpRelationType implements HalCuriedRelationType {
     //defined relations for OZP should be enumerated here
     APPLICATION('application'),
     INTENT('intent'),
+    USER_DATA('user-data'),
     USER('user'),
     APPLICATION_LIBRARY('application-library'),
-    USER_DATA('data'),
     ORGANIZATION('organization'),
     STEWARDSHIP('stewardship'),
     SYSTEM('system')

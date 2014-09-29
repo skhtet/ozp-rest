@@ -44,17 +44,17 @@ class ProfileRestService extends RestService<Profile> {
         throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
-    @Transactional
-    public Collection<IwcDataObject> getCurrentUserData() {
-        Profile profile = currentUserProfile
+    @Transactional(readOnly = true)
+    public Collection<IwcDataObject> getUserData(Long userId) {
+        Profile profile = getById(userId)
         authorizeView(profile)
 
         IwcDataObject.findAllByProfile(profile)
     }
 
     @Transactional(readOnly=true)
-    public IwcDataObject getCurrentUserDataItem(String key) {
-        Profile profile = currentUserProfile
+    public IwcDataObject getDataItem(Long userId, String key) {
+        Profile profile = getById(userId)
         authorizeView(profile)
 
         def object = IwcDataObject.findByProfileAndKey(profile, key)
@@ -67,8 +67,8 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     @Transactional
-    public IwcDataObject updateCurrentUserDataByKey(String key, String entity, String contentType) {
-        Profile profile = currentUserProfile
+    public IwcDataObject updateDataItem(Long userId, String key, String entity, String contentType) {
+        Profile profile = getById(userId)
         authorizeUpdate(profile)
 
         IwcDataObject putValue = IwcDataObject.findByProfileAndKey(profile, key)
@@ -86,11 +86,11 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     @Transactional
-    public void deleteCurrentUserDataByKey(String key) {
-        Profile profile = currentUserProfile
+    public void deleteDataItem(Long userId, String key) {
+        Profile profile = getById(userId)
         authorizeUpdate(profile)
 
-        getCurrentUserDataItem(key).delete()
+        getDataItem(profile.id, key).delete()
     }
 
     /**

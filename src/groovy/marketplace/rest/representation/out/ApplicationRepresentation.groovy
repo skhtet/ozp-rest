@@ -12,7 +12,6 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 
 import marketplace.rest.resource.ServiceItemResource
-import marketplace.rest.resource.IntentResource
 
 class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-application-v1+json'
@@ -23,9 +22,10 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
     final String description
     final String uuid
 
-    Map launchUrls = new HashMap()
-    List screenShots
-    Set tags
+    Map<String, String> launchUrls = new HashMap()
+    List<Map<String, String>> screenShots
+    Set<String> tags
+    Set<Map<String, String>> intents
 
     //TODO: Not sure yet how we're gathering this information, where it's needed, how it's used etc. So for now, it's hard coded.
     final String state = 'Active'
@@ -43,7 +43,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
                 .path(ServiceItemResource.class, 'read')
                 .buildFromMap(id: serviceItem.id),
             null,
-            embedIntents(serviceItem.intents, uriBuilderHolder)
+            null
         )
 
         this.name = serviceItem.title
@@ -55,15 +55,11 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
         this.screenShots = serviceItem.screenshots.collect { Screenshot screenShot ->
             [href: screenShot.smallImageUrl]
         }
+        this.intents = serviceItem.intents.collect { Intent intent ->
+            [type: intent.type, action: intent.action, icon: intent.icon, label: intent.label]
+        }
 
         this.addLink(RegisteredRelationType.DESCRIBES, new Link(new URI(serviceItem.launchUrl)))
-    }
-
-    private static HalEmbedded embedIntents(Collection intents, ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        new HalEmbedded(intents.collect {Intent intent ->
-            new AbstractMap.SimpleEntry(OzpRelationType.INTENT,
-                    new IntentRepresentation(intent, uriBuilderHolder))
-        })
     }
 
     public static class Factory implements RepresentationFactory<ServiceItem> {

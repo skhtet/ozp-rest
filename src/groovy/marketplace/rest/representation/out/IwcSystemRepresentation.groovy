@@ -1,4 +1,4 @@
-package marketplace.rest
+package marketplace.rest.representation.out
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.SelfRefRepresentation

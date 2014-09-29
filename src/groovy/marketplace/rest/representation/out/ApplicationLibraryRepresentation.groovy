@@ -1,14 +1,5 @@
 package marketplace.rest.representation.out
 
-import java.lang.reflect.Type
-
-import javax.ws.rs.core.MediaType
-
-import org.springframework.stereotype.Component
-
-import org.codehaus.groovy.grails.web.json.JSONObject
-
-import marketplace.ServiceItem
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.ApplicationRootUriBuilderHolder

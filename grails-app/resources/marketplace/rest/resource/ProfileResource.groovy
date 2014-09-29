@@ -1,10 +1,15 @@
 package marketplace.rest.resource
 
-import grails.converters.JSON
-import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
+import marketplace.IwcDataObject
+import marketplace.rest.IwcUserApplications
+import marketplace.rest.IwcUserData
+import marketplace.rest.IwcUserIntents
+import marketplace.rest.representation.out.ApplicationRepresentation
+import marketplace.rest.representation.out.IntentRepresentation
+import marketplace.rest.representation.out.IwcDataObjectRepresentation
 
 import javax.ws.rs.Consumes
+import javax.ws.rs.HeaderParam
 import javax.ws.rs.Produces
 import javax.ws.rs.Path
 import javax.ws.rs.POST
@@ -13,22 +18,19 @@ import javax.ws.rs.GET
 import javax.ws.rs.DELETE
 import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
-import javax.ws.rs.core.UriBuilder
-import javax.ws.rs.core.Response.Status
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Context
+import javax.ws.rs.core.HttpHeaders
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.UriInfo
 
 import org.springframework.beans.factory.annotation.Autowired
+
+import javax.ws.rs.core.UriBuilder
 
 import static org.grails.jaxrs.response.Responses.*
 
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.ServiceItem
-import marketplace.Tag
 import marketplace.ServiceItemActivity
 import marketplace.ApplicationLibraryEntry
 
@@ -137,6 +139,93 @@ class ProfileResource extends RepresentationResource<Profile> {
             @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
         serviceItemActivityRestService.getAllByServiceItemOwnerId(getProfileId(profileId), offset, max)
+    }
+
+    @GET
+    @Path('/{profileId}/application')
+    @Produces([
+            ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
+            MediaType.APPLICATION_JSON
+    ])
+    IwcUserApplications readApplicationsForCurrentUser(@PathParam('profileId') String profileId) {
+        long id = getProfileId(profileId)
+
+        new IwcUserApplications(applicationLibraryEntryRestService.getByParentId(id).collect {
+            it.serviceItem
+        }, service.getById(id))
+    }
+
+    @GET
+    @Path('/{profileId}/intent')
+    @Produces([
+        IntentRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    IwcUserIntents readIntentsForApplicationsOfCurrentUser(@PathParam('profileId') String profileId) {
+        long id = getProfileId(profileId)
+
+        new IwcUserIntents(applicationLibraryEntryRestService.getByParentId(id).collect {
+            it.serviceItem.intents
+        }.flatten().unique(), service.getById(id))
+    }
+
+    @GET
+    @Path('/{profileId}/data')
+    @Produces([
+        IwcDataObjectRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    IwcUserData readAllData(@PathParam('profileId') String profileId) {
+        long id = getProfileId(profileId)
+
+        new IwcUserData(service.getUserData(id), service.getById(id))
+    }
+
+    @Path('/{profileId}/data/{key:.+}')
+    @GET
+    @Produces([
+        IwcDataObjectRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    IwcDataObject readDataItem(@PathParam('profileId') String profileId,
+                               @PathParam('key') String key) {
+        long id = getProfileId(profileId)
+
+        service.getDataItem(id, keyFromPath(key))
+    }
+
+    @Path('/{profileId}/data/{key:.+}')
+    @PUT
+    @Consumes(MediaType.WILDCARD)
+    @Produces([])
+    Response updateDataItem(@PathParam('profileId') String profileId,
+                            @PathParam('key') String  key, String value,
+                            @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType) {
+        long id = getProfileId(profileId)
+
+        IwcDataObject putValue = service.updateDataItem(id,
+                keyFromPath(key), value, typeFromHeader(contentType))
+
+        putValue ? Response.noContent().build() : Response.created(UriBuilder.fromPath(key).build()).build()
+    }
+
+    @Path('/{profileId}/data/{key:.+}')
+    @DELETE
+    @Produces([])
+    Response deleteDataItem(@PathParam('profileId') String profileId,
+                            @PathParam('key') String key) {
+        long id = getProfileId(profileId)
+        service.deleteDataItem(id, keyFromPath(key))
+        Response.noContent().build()
+    }
+
+    private static String keyFromPath(String key) {
+        key.endsWith('/') ? key[0..-2] : key
+    }
+
+    private static String typeFromHeader(String contentType) {
+        MediaType mt = MediaType.valueOf(contentType)
+        mt.type + '/' + mt.subtype
     }
 
     @Path('/{profileId}/library')
