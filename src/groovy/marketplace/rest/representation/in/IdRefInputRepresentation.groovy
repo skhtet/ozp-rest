@@ -9,14 +9,15 @@ import marketplace.Category
 
 class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-id-ref-v1+json'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-id-refs-v1+json'
 
     S id
 
     IdRefInputRepresentation(Class<T> cls) { super(cls) }
 
     T createNewObject() {
-        throw new
-            UnsupportedOperationException("Objects cannot be created from IdRefInputRepresentations")
+        throw new UnsupportedOperationException(
+            "Objects cannot be created from IdRefInputRepresentations")
     }
 }
 

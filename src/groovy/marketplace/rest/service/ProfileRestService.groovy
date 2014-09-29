@@ -144,7 +144,7 @@ class ProfileRestService extends RestService<Profile> {
             Collection<AgencyIdRef> organizations) {
         authorizeStewardshipUpdate()
 
-        Profile profile = getById(profile)
+        Profile profile = getById(profileId)
         profile.stewardedOrganizations = organizations.collect {
             agencyRestService.getById(it.id)
         }
