@@ -11,11 +11,14 @@ import marketplace.Agency
 import marketplace.rest.StewardedOrganizations
 import marketplace.rest.resource.ProfileResource
 
+import marketplace.hal.HalLinks
+import marketplace.hal.Link
+
 class StewardedOrganizationsRepresentation extends
         SelfRefRepresentation<StewardedOrganizations> {
     StewardedOrganizationsRepresentation(StewardedOrganizations orgs,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(createSelfLink(orgs, uriBuilderHolder), null,
+        super(createSelfLink(orgs, uriBuilderHolder), createLinks(orgs, uriBuilderHolder),
             createEmbedded(orgs, uriBuilderHolder))
     }
 
@@ -25,6 +28,16 @@ class StewardedOrganizationsRepresentation extends
             .path(ProfileResource.class)
             .path(ProfileResource.class, 'getStewardedOrganizations')
             .buildFromMap(profileId: orgs.profile.id)
+    }
+
+    private static HalLinks createLinks(StewardedOrganizations orgs,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        URI profileUri = uriBuilderHolder.builder
+                .path(ProfileResource.class)
+                .path(ProfileResource.class, 'read')
+                .buildFromMap(id: orgs.profile.id)
+
+        new HalLinks(RegisteredRelationType.VIA, new Link(profileUri))
     }
 
     private static HalEmbedded createEmbedded(StewardedOrganizations orgs,
