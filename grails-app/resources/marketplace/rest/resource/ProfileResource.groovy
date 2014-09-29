@@ -251,9 +251,9 @@ class ProfileResource extends RepresentationResource<Profile> {
     @POST
     @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     @Consumes([IdRefInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    Agency addSteward(@PathParam('profileId') String profileId,
+    Response addSteward(@PathParam('profileId') String profileId,
             IdRefInputRepresentation<Agency, Long> organization) {
-        service.addProfileAsSteward(getProfileId(profileId), organization.id)
+        created service.addProfileAsSteward(getProfileId(profileId), organization.id)
     }
 
     @Path('/{profileId}/stewarded-organizations/{organizationId}')
