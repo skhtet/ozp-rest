@@ -1,7 +1,8 @@
-package marketplace.rest
+package marketplace.rest.representation.out
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.SelfRefRepresentation
+
 import marketplace.rest.resource.IwcSystemResource
 
 class IwcSystemRepresentation extends SelfRefRepresentation {
