@@ -67,9 +67,9 @@ class Profile implements Serializable {
     transient String sortDisplayName
 
     static constraints = {
-        username(blank: false, nullable: false, unique: true, maxSize: 256)
-        displayName(nullable: true, maxSize: 256)
-        email(nullable: true, maxSize: 256)
+        username(blank: false, nullable: false, unique: true, maxSize: 255)
+        displayName(nullable: true, maxSize: 255)
+        email(nullable: true, maxSize: 255)
         bio(nullable: true, maxSize: 1000)
         createdDate(nullable:false)
         uuid(nullable:true, unique: true)

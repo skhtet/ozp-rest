@@ -1,5 +1,6 @@
 package marketplace.rest.service
 
+import marketplace.rest.representation.in.AbstractInputRepresentation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
 
@@ -13,6 +14,7 @@ import marketplace.validator.DomainValidator
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.IdRefInputRepresentation
 import marketplace.rest.DomainObjectNotFoundException
+import marketplace.rest.representation.in.PropertyRefInputRepresentation
 
 import marketplace.Sorter
 
@@ -236,8 +238,13 @@ abstract class RestService<T> {
         /**
          * return the object from the database represented by this rep
          */
-        def getFromDb = { IdRefInputRepresentation rep ->
-            T retval = rep.representedClass().get(rep.id)
+        def getFromDb = { AbstractInputRepresentation rep ->
+            T retval
+            if(rep instanceof IdRefInputRepresentation) {
+                retval = rep.representedClass().get(rep.id)
+            } else if (rep instanceof PropertyRefInputRepresentation) {
+                retval = rep.representedClass().findWhere(rep.identifyingProperties)
+            }
 
             if (retval == null) {
                 throw new IllegalArgumentException("Attempted to find non-existant object " +
@@ -255,7 +262,8 @@ abstract class RestService<T> {
         def getNestedValue
 
         getNestedValue = { repValue, existingValue ->
-            if (repValue instanceof IdRefInputRepresentation) {
+            if (repValue instanceof IdRefInputRepresentation ||
+                    repValue instanceof PropertyRefInputRepresentation) {
                 getFromDb(repValue)
             }
             else if (repValue instanceof InputRepresentation) {
