@@ -234,7 +234,7 @@ abstract class RestService<T> {
         }
     }
 
-    private T merge(T object, InputRepresentation<T> representation) {
+    private static <S> S merge(S object, InputRepresentation<S> representation) {
         /**
          * return the object from the database represented by this rep
          */

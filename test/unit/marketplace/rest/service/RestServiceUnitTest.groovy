@@ -24,6 +24,12 @@ import marketplace.Intent
 import marketplace.Constants
 import marketplace.validator.DomainValidator
 
+import marketplace.rest.representation.in.InputRepresentation
+import marketplace.rest.representation.in.AbstractInputRepresentation
+import marketplace.rest.representation.in.ServiceItemIdRef
+import marketplace.rest.representation.in.TypeIdRef
+import marketplace.rest.representation.in.ProfileIdRef
+
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
@@ -36,6 +42,33 @@ class RestServiceUnitTest {
     RestService<ServiceItem> restService
     DomainValidator<ServiceItem> validator
 
+
+    private static class ServiceItemInputRepresentation
+            extends AbstractInputRepresentation {
+        ServiceItemInputRepresentation() {
+            super(ServiceItem.class)
+        }
+
+        String title
+        Long id
+        TypeIdRef type
+        Set<InputRepresentation<Relationship>> relationships
+        Set<ProfileIdRef> owners
+        String description
+        String launchUrl
+        String versionName
+        String approvalStatus
+    }
+
+    private static class RelationshipInputRepresentation
+            extends AbstractInputRepresentation {
+        RelationshipInputRepresentation() {
+            super(Relationship.class)
+        }
+
+        Set<ServiceItemIdRef> relatedItems
+        RelationshipType relationshipType = RelationshipType.REQUIRE
+    }
 
     private static final exampleServiceItemProps = [
         id: 1,
@@ -476,5 +509,64 @@ class RestServiceUnitTest {
         successfulUpdate.title = failureUpdate.title
         successfulUpdate.id = categoryId
         assert restService.updateById(categoryId, successfulUpdate).id == categoryId
+    }
+
+    void testUpdateByIdAndRepresentation() {
+        final newTitle = 'Updated Name', newUniversalName = 'test.service.item.2'
+
+        def ownerRep = new ProfileIdRef(id: 2)
+        def typeRep = new TypeIdRef(id: 1)
+        def relationships = new RelationshipInputRepresentation(
+            relatedItems: [new ServiceItemIdRef(id: 1)]
+        )
+
+        def id = restService.getAll(0, 1).iterator().next().id
+        InputRepresentation<ServiceItem> updates = new ServiceItemInputRepresentation(exampleServiceItemProps + [
+            title: newTitle,
+            owners: [ownerRep],
+            type: typeRep,
+            relationships: [relationships],
+            id: id
+        ])
+
+        ServiceItem retval = restService.updateById(id, updates)
+        assert retval instanceof ServiceItem
+        assert retval.title == newTitle
+
+        //ensure that properties we didn't change do not change
+        assert retval.description == exampleServiceItemProps.description
+        assert retval.owners == [Profile.get(2)] as Set
+        assert retval.type == Types.get(1)
+
+        assert retval.id == id
+
+        //ensure that the changes were actually saved
+        ServiceItem fromGet = restService.getById(id)
+        assert fromGet.title == newTitle
+        assert fromGet.owners == [Profile.get(2)] as Set
+    }
+
+    void testCreateFromRepresentation() {
+        InputRepresentation<Relationship> newRelationship = new RelationshipInputRepresentation(exampleServiceItemProps.relationships[0])
+
+        def ownerId = 1
+        ProfileIdRef ownerRep = new ProfileIdRef(id: ownerId)
+
+        def typeId = 1
+        TypeIdRef typeRep = new TypeIdRef(id: typeId)
+
+        ServiceItemInputRepresentation newServiceItem = new ServiceItemInputRepresentation(exampleServiceItemProps + [
+            owners: [ownerRep],
+            type: typeRep,
+            relationships: [newRelationship]
+        ] - [id: 1])
+
+        ServiceItem retval = restService.createFromRepresentation(newServiceItem)
+        assert retval instanceof ServiceItem
+        assert retval.title == exampleServiceItemProps.title
+        assert retval.owners == [Profile.get(ownerId)] as Set
+        assert retval.type == Types.get(typeId)
+
+        assertNotNull retval.id
     }
 }

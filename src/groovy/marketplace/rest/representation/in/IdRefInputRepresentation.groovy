@@ -14,15 +14,14 @@ class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     S id
 
     IdRefInputRepresentation(Class<T> cls) { super(cls) }
-
-    T createNewObject() {
-        throw new UnsupportedOperationException(
-            "Objects cannot be created from IdRefInputRepresentations")
-    }
 }
 
 class ServiceItemIdRef extends IdRefInputRepresentation<ServiceItem, Long> {
     ServiceItemIdRef() { super(ServiceItem.class) }
+}
+
+class ProfileIdRef extends IdRefInputRepresentation<Profile, Long> {
+    ProfileIdRef() { super(Profile.class) }
 }
 
 class TypeIdRef extends IdRefInputRepresentation<Types, Long> {
