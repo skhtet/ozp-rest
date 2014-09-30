@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractRepresentationWriter<T> implements MessageBodyWriter<T> {
-    @Context UriInfo uriInfo;
-    @Autowired ObjectMapper objectMapper;
+    private UriInfo uriInfo;
+    private ObjectMapper objectMapper;
 
     private TypeToken<T> type;
     private RepresentationFactory<T> factory;
@@ -31,6 +31,16 @@ public abstract class AbstractRepresentationWriter<T> implements MessageBodyWrit
 
         this.type = new TypeToken<T>(getClass()) {};
         this.factory = factory;
+    }
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Context
+    public void setUriInfo(UriInfo uriInfo) {
+        this.uriInfo = uriInfo;
     }
 
     @Override

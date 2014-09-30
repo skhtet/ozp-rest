@@ -26,7 +26,7 @@ import marketplace.rest.representation.in.InputRepresentation;
 
 abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
 
-    @Autowired ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     private TypeToken<T> type;
     private JavaType jacksonType;
@@ -34,6 +34,11 @@ abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
     public AbstractJacksonReader() {
         this.type = new TypeToken<T>(getClass()) {};
         this.jacksonType = TypeFactory.defaultInstance().constructType(this.type.getType());
+    }
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations,
