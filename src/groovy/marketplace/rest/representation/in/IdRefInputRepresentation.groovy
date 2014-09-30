@@ -20,6 +20,10 @@ class ServiceItemIdRef extends IdRefInputRepresentation<ServiceItem, Long> {
     ServiceItemIdRef() { super(ServiceItem.class) }
 }
 
+class ProfileIdRef extends IdRefInputRepresentation<Profile, Long> {
+    ProfileIdRef() { super(Profile.class) }
+}
+
 class TypeIdRef extends IdRefInputRepresentation<Types, Long> {
     TypeIdRef() { super(Types.class) }
 }
