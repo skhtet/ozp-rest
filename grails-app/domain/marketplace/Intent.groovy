@@ -22,14 +22,10 @@ class Intent implements Serializable {
     String label
     String icon
 
-    static hasMany = [serviceItems: ServiceItem]
-    static belongsTo = ServiceItem
-
     static mapping = {
         id natural: [properties: ['type', 'action']]
         cache true
         batchSize 50
-
     }
 
     static constraints = {
@@ -62,7 +58,8 @@ class Intent implements Serializable {
             action: action,
             type: type,
             icon: icon,
-            label: label
+            label: label,
+            id: id
         )
     }
 
