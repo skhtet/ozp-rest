@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
 import javax.servlet.http.HttpSessionEvent
 
-import marketplace.AccountService;
+import marketplace.authentication.AccountService;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.ozoneplatform.auditing.format.cef.Extension
@@ -17,11 +17,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils
 class MarketplaceSessionEventListener extends AbstractSessionEventListener{
 
 	AccountService accountService
-	
+
 	GrailsApplication grailsApplication
-	
+
 	def jbFilter
-	
+
 	@Override
 	public String getHostClassification() {
 		if(jbFilter)
@@ -49,10 +49,10 @@ class MarketplaceSessionEventListener extends AbstractSessionEventListener{
 	public void setBeans(HttpSessionEvent event){
 		if(!accountService)
 			this.accountService = getBean(event.getSession(), 'accountService')
-		
+
 		if(!grailsApplication)
-			this.grailsApplication = getBean(event.getSession(), 'grailsApplication')	
-		
+			this.grailsApplication = getBean(event.getSession(), 'grailsApplication')
+
 		try{
 			if(!jbFilter)
 				this.jbFilter = getBean(event.getSession(), 'mp_RESTInterceptorService')
@@ -61,8 +61,8 @@ class MarketplaceSessionEventListener extends AbstractSessionEventListener{
 		}
 
 	}
-	
-	
+
+
 	private def getBean(HttpSession session, def bean){
 		WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext())
 		return ctx.getBean(bean)

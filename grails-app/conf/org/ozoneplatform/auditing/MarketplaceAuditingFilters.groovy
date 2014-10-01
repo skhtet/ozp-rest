@@ -2,8 +2,8 @@ package org.ozoneplatform.auditing
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest
-import marketplace.AccountService
 import marketplace.rest.service.ProfileRestService
+import marketplace.authentication.AccountService
 import marketplace.Profile
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.ozoneplatform.auditing.filter.AbstractAuditingFilters
@@ -28,7 +28,7 @@ class MarketplaceAuditingFilters extends AbstractAuditingFilters{
 
     @Override
     public String getUserName() {
-        return accountService.getLoggedInUsername()
+        return accountService.loggedInUsername
     }
 
     @Override
@@ -69,7 +69,7 @@ class MarketplaceAuditingFilters extends AbstractAuditingFilters{
         map['NAME']     = currentUser.displayName
         map['ORG']      = currentUser.organizations.size() ? currentUser.organizations.toArray()[0].title : null
         map['EMAIL']    = currentUser.email
-        map['ROLES']    = accountService.getLoggedInUserRoles().collect{it instanceof String ? it : it.authority}
+        map['ROLES']    = accountService.loggedInUserRoles.collect{it instanceof String ? it : it.authority}
         map
     }
 

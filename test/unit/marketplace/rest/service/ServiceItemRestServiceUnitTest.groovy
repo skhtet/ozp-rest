@@ -29,7 +29,6 @@ import marketplace.ServiceItemTag
 import marketplace.Tag
 import marketplace.ChangeDetail
 import marketplace.validator.ServiceItemValidator
-import marketplace.AccountService
 import marketplace.ScoreCardService
 
 import ozone.marketplace.enums.RelationshipType
@@ -137,19 +136,14 @@ class ServiceItemRestServiceUnitTest {
 
         service.profileRestService = [
             getCurrentUserProfile: { currentUser },
-            getById: { id -> Profile.get(id) }
-        ] as ProfileRestService
-
-        service.accountService = [
+            getById: { id -> Profile.get(id) },
             isAdmin: { currentUser.username.toLowerCase().contains('admin') },
             checkAdmin: {
                 if (!currentUser.username.toLowerCase().contains('admin')) {
                     throw new AccessDeniedException('access denied')
                 }
-            },
-            isExternAdmin: { currentUser.username.toLowerCase().contains('external') },
-            getLoggedInUsername: { currentUser.username }
-        ] as AccountService
+            }
+        ] as ProfileRestService
 
         service.serviceItemActivityInternalService = [
             addServiceItemActivity: {si, action -> }
@@ -309,15 +303,17 @@ class ServiceItemRestServiceUnitTest {
     }
 
     void testPopulateDefaults() {
-        service.accountService = [
+        service.profileRestService = [
             isAdmin: { currentUser.username.toLowerCase().contains('admin') },
             checkAdmin: {
                 if (!currentUser.username.toLowerCase().contains('admin')) {
                     throw new AccessDeniedException('access denied')
                 }
             },
-            isExternAdmin: { currentUser.username.toLowerCase().contains('external') }
-        ] as AccountService
+            getCurrentUserProfile: {
+                currentUser
+            }
+        ] as ProfileRestService
 
         //create a dto with no defaults filled in
         ServiceItem dto = makeServiceItem()

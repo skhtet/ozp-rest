@@ -9,7 +9,6 @@ import org.hibernate.Criteria
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import java.nio.file.AccessDeniedException
-import marketplace.AccountService
 import marketplace.Profile
 import marketplace.Tag
 import org.springframework.transaction.annotation.Transactional
@@ -25,9 +24,6 @@ class TagRestService extends RestService<Tag> {
     GrailsApplication grailsApplication
 
     @Autowired
-    AccountService accountService
-
-    @Autowired
     public TagRestService(GrailsApplication grailsApplication) {
         super(grailsApplication, Tag.class, null, null)
     }
@@ -36,10 +32,11 @@ class TagRestService extends RestService<Tag> {
 
     @Override
     protected void authorizeUpdate(Tag tag) {
-        if(this.accountService.isAdmin())
+        if(this.profileRestService.isAdmin())
             return
 
-        throw new AccessDeniedException("Unauthorized attempt to delete tag " +  " ${tag.title} by user ${accountService.loggedInUsername}")
+        throw new AccessDeniedException("Unauthorized attempt to delete tag " +
+            " ${tag.title} by user ${profileRestService.currentUserProfile.username}")
     }
 
 

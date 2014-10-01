@@ -7,7 +7,7 @@ import org.apache.log4j.Logger
 
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.AccountService
+import marketplace.authentication.AccountService
 
 @Provider
 class AccessDeniedExceptionMapper extends RestExceptionMapper<AccessDeniedException> {

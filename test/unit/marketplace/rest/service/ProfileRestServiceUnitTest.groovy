@@ -11,8 +11,9 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.Profile
+import marketplace.Role
 
-import marketplace.AccountService
+import marketplace.authentication.AccountService
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
@@ -37,8 +38,12 @@ class ProfileRestServiceUnitTest {
         grailsApplication.addArtefact(Profile.class)
     }
 
-    private Profile makeProfile(username, id) {
-        def profile = new Profile(username: username)
+    private Profile makeProfile(username, id, Role role) {
+        def profile = new Profile(
+            username: username,
+            highestRole: role
+        )
+
         profile.id = id
 
         return profile
@@ -55,10 +60,10 @@ class ProfileRestServiceUnitTest {
     }
 
     void setUp() {
-        admin1 = makeProfile('testAdmin1', 1)
-        admin2 = makeProfile('testAdmin2', 2)
-        user1 = makeProfile('testUser1', 3)
-        user2 = makeProfile('testUser2', 4)
+        admin1 = makeProfile('testAdmin1', 1, Role.ADMIN)
+        admin2 = makeProfile('testAdmin2', 2, Role.ADMIN)
+        user1 = makeProfile('testUser1', 3, Role.USER)
+        user2 = makeProfile('testUser2', 4, Role.USER)
 
         FakeAuditTrailHelper.install()
         ProfileMappedByFix.fixProfileMappedBy()
@@ -70,7 +75,6 @@ class ProfileRestServiceUnitTest {
         service = new ProfileRestService(grailsApplication)
 
         service.accountService = [
-            isAdmin: { currentUser.username.toLowerCase().contains('admin') },
             getLoggedInUsername: { currentUser.username }
         ] as AccountService
     }

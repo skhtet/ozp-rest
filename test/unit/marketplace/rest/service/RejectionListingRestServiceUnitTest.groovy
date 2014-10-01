@@ -15,8 +15,6 @@ import marketplace.Types
 import marketplace.Profile
 import marketplace.Constants
 
-import marketplace.AccountService
-
 import marketplace.testutil.FakeAuditTrailHelper
 
 @TestMixin(DomainClassUnitTestMixin)
@@ -61,12 +59,9 @@ class RejectionListingRestServiceUnitTest {
         def service = new RejectionListingRestService(grailsApplication, serviceItemRestService)
 
         service.profileRestService = [
-            getCurrentUserProfile: { currentUser }
-        ] as ProfileRestService
-
-        service.accountService = [
+            getCurrentUserProfile: { currentUser },
             checkAdmin: { if (!isAdmin) throw new AccessDeniedException() }
-        ] as AccountService
+        ] as ProfileRestService
 
         return service
     }

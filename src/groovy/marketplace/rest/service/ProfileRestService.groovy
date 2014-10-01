@@ -13,7 +13,7 @@ import marketplace.Profile
 import marketplace.Agency
 import marketplace.Role
 
-import marketplace.AccountService
+import marketplace.authentication.AccountService
 
 import javax.ws.rs.core.MediaType
 
@@ -34,7 +34,8 @@ class ProfileRestService extends RestService<Profile> {
     ProfileRestService() {}
 
     protected void authorizeUpdate(Profile existing) {
-        if (!(accountService.isAdmin() || accountService.loggedInUsername == existing.username)) {
+        Profile currentUserProfile = this.currentUserProfile
+        if (!(isAdmin() || accountService.loggedInUsername == existing.username)) {
             throw new AccessDeniedException("Unauthorized attempt to modify profile " +
                 "${existing.username} by user ${accountService.loggedInUsername}")
         }
@@ -208,7 +209,28 @@ class ProfileRestService extends RestService<Profile> {
         super.postprocess(updated, original)
 
         if (updated.organizations != original.organizations) {
-            accountService.checkAdmin("Organization affiliation can only be updated by admins")
+            checkAdmin("Organization affiliation can only be updated by admins")
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public boolean isAdmin() {
+        currentUserProfile.hasRole(Role.ADMIN)
+    }
+
+    @Transactional(readOnly=true)
+    public boolean isUser() {
+        currentUserProfile.hasRole(Role.USER)
+    }
+
+    /**
+     * @throws AccessDeniedException if the current user in not an Admin
+     * @param msg the Message for the exception
+     */
+    @Transactional(readOnly=true)
+    public void checkAdmin(String msg = "Attempt to access Admin-only functionality") {
+        if (!isAdmin()) {
+            throw new AccessDeniedException(msg)
         }
     }
 }

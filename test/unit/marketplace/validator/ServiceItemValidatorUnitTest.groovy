@@ -4,7 +4,7 @@ import grails.test.mixin.TestFor
 import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.ServiceItem
-import marketplace.AccountService
+import marketplace.rest.service.ProfileRestService
 
 @TestMixin(GrailsUnitTestMixin)
 class ServiceItemValidatorUnitTest {
@@ -18,12 +18,12 @@ class ServiceItemValidatorUnitTest {
     void testValidateApprovalStatus() {
         boolean isAdmin = true
 
-        def accountServiceMock = mockFor(AccountService)
-        accountServiceMock.demand.checkAdmin(1..1000) {
+        def profileServiceMock = mockFor(ProfileRestService)
+        profileServiceMock.demand.checkAdmin(1..1000) {
             if (!isAdmin) throw new IllegalArgumentException("checkAdmin test")
         }
 
-        validator.accountService = accountServiceMock.createMock()
+        validator.profileRestService = profileServiceMock.createMock()
 
         Map existing = [:]
         ServiceItem dto = new ServiceItem()

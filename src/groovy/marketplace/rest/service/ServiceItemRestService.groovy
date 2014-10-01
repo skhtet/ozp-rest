@@ -13,14 +13,12 @@ import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ServiceItemSnapshot
 import ozone.marketplace.enums.RelationshipType
-import marketplace.AccountService
 import marketplace.validator.ServiceItemValidator
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ServiceItemRestService extends RestService<ServiceItem> {
-    @Autowired AccountService accountService
     @Autowired ProfileRestService profileRestService
     @Autowired ServiceItemActivityInternalService serviceItemActivityInternalService
     @Autowired PersistenceContextExecutorWrapper executorService
@@ -110,16 +108,11 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         Profile profile = profileRestService.currentUserProfile
 
         //owners and admins can always view.  For others, there are more rules
-        if (!accountService.isAdmin() && !si.isOwner(profile)) {
+        if (!profileRestService.isAdmin() && !si.isOwner(profile)) {
 
             //if it is enabled and approved it is visible to everyone
             if (!(si.isEnabled && si.approvalStatus == Constants.APPROVAL_STATUSES['APPROVED'])) {
-
-                //if the user is an extern admin and the original creator it is visible
-                //to them, even if they aren't the original owner
-                if (!(accountService.isExternAdmin() && profile == si.createdBy)) {
-                    return false
-                }
+                return false
             }
         }
 
@@ -139,7 +132,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         }
 
         //admins can always edit
-        if (!(accountService.isAdmin())) {
+        if (!(profileRestService.isAdmin())) {
             //non-admin, non-owners can never edit
             if (!existing.isOwner(profile)) {
                 unauthorized()
@@ -204,7 +197,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
             serviceItemActivityInternalService.addServiceItemActivity(si,
                 Constants.Action.APPROVED)
 
-        accountService.checkAdmin()
+        profileRestService.checkAdmin()
 
         si.approvedDate = activity.activityDate
     }
@@ -219,7 +212,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
                 "approval status of ${si.approvalStatus}")
         }
 
-        accountService.checkAdmin()
+        profileRestService.checkAdmin()
 
         si.approvalStatus = Constants.APPROVAL_STATUSES["REJECTED"]
         serviceItemActivityInternalService.addRejectionActivity(si, rejectionListing)
