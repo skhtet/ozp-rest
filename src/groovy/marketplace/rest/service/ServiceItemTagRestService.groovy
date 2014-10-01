@@ -12,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 class ServiceItemTagRestService extends RestService<ServiceItemTag> {
 
     @Autowired
-    AccountService accountService
-
-    @Autowired
     ProfileRestService profileRestService
 
     @Autowired
@@ -66,7 +63,7 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
     //Users can only modify tags they created
     @Override
     protected void authorizeUpdate(ServiceItemTag serviceItemTag) {
-        if(this.accountService.isAdmin())
+        if(this.profileRestService.isAdmin())
             return
 
         Profile currentUser = profileRestService.currentUserProfile

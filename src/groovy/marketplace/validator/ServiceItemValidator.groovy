@@ -2,18 +2,16 @@ package marketplace.validator
 
 import javax.annotation.PostConstruct
 
-import marketplace.AccountService
 import marketplace.Constants
 import marketplace.ServiceItem
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import marketplace.rest.service.ProfileRestService
+
 @Component
 class ServiceItemValidator implements DomainValidator<ServiceItem> {
-
-    @Autowired
-    AccountService accountService
-
+    ProfileRestService profileRestService
 
     /**
      * Ensures that any change in approval status is valid and allowed for this user.
@@ -41,7 +39,7 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
         if (newApprovalStatus != oldApprovalStatus) {
             if (!validUserTransitions.contains(transition)) {
                 if (validAdminTransitions.contains(transition)) {
-                    accountService.checkAdmin("Illegal attempt to change approvalStatus of " +
+                    profileRestService.checkAdmin("Illegal attempt to change approvalStatus of " +
                         "ServiceItem with id ${existing.id}")
                 }
                 else {

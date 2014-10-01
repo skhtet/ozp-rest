@@ -1,9 +1,12 @@
+import grails.util.GrailsUtil
+
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import marketplace.*
 import marketplace.search.MarketplaceElasticSearchService
+import marketplace.authentication.MockAccountService
 import ozone.utils.ApplicationContextHolder
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -34,15 +37,20 @@ beans = {
         bean.factoryMethod = 'getInstance'
     }
 
-    accountService(AccountService) {
-        loggedInUsername = "slackbot"
-        loggedInDisplayName = "Slackbot"
-        loggedInEmail = "slackbot@nowhere.com"
-        loggedInOrganization = DEFAULT_AGENCY
-        loggedInUserRoles = [
-            new SimpleGrantedAuthority(Constants.USER),
-            new SimpleGrantedAuthority(Constants.ADMIN)
-        ]
+    if (GrailsUtil.environment == "production") {
+        accountService(SpringSecurityAccountService)
+    }
+    else {
+        accountService(MockAccountService) {
+            loggedInUsername = "slackbot"
+            loggedInDisplayName = "Slackbot"
+            loggedInEmail = "slackbot@nowhere.com"
+            loggedInOrganization = DEFAULT_AGENCY
+            loggedInUserRoles = [
+                new SimpleGrantedAuthority(Constants.USER),
+                new SimpleGrantedAuthority(Constants.ADMIN)
+            ]
+        }
     }
 
     customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)
@@ -55,5 +63,4 @@ beans = {
     openSessionInViewInterceptor(OpenSessionInViewInterceptor) {
         sessionFactory = ref('sessionFactory')
     }
-
 }

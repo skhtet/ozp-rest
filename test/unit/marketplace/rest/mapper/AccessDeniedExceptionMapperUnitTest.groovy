@@ -2,7 +2,7 @@ package marketplace.rest.mapper
 
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.AccountService
+import marketplace.authentication.AccountService
 
 import grails.test.mixin.support.GrailsUnitTestMixin
 import grails.test.mixin.TestMixin
@@ -14,7 +14,7 @@ class AccessDeniedExceptionMapperUnitTest {
     void setUp() {
         mapper = new AccessDeniedExceptionMapper()
         mapper.accountService = [
-            loggedInUsername: { 'testAdmin1' }
+            getLoggedInUsername: { 'testAdmin1' }
         ] as AccountService
 
     }

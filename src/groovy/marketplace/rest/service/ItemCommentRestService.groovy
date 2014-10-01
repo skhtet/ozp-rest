@@ -6,7 +6,6 @@ import org.springframework.security.access.AccessDeniedException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import marketplace.AccountService
 import marketplace.Sorter
 
 import marketplace.ServiceItem
@@ -18,7 +17,6 @@ import marketplace.Constants
 @Service
 class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemComment> {
     @Autowired ProfileRestService profileRestService
-    @Autowired AccountService accountService
 
     @Autowired
     ItemCommentRestService(GrailsApplication grailsApplication,
@@ -65,7 +63,7 @@ class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemCom
 
         //comment authors and admins are allowed
         if (profileRestService.currentUserProfile != existing.author) {
-            accountService.checkAdmin("Attempt by non-admin to update another user's comment")
+            profileRestService.checkAdmin("Attempt by non-admin to update another user's comment")
         }
     }
 

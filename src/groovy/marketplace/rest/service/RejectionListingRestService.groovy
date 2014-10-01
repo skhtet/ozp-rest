@@ -7,15 +7,12 @@ import org.springframework.stereotype.Service
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.AccountService
-
 import marketplace.RejectionListing
 import marketplace.ServiceItem
 
 @Service
 class RejectionListingRestService extends ChildObjectRestService<ServiceItem, RejectionListing> {
     @Autowired ProfileRestService profileRestService
-    @Autowired AccountService accountService
 
     @Autowired
     RejectionListingRestService(GrailsApplication grailsApplication,
@@ -36,7 +33,7 @@ class RejectionListingRestService extends ChildObjectRestService<ServiceItem, Re
     @Override
     protected void authorizeCreate(RejectionListing dto) {
         super.authorizeView(dto)
-        accountService.checkAdmin()
+        profileRestService.checkAdmin()
     }
 
     @Override

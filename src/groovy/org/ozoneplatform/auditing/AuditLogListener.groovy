@@ -1,7 +1,7 @@
 package org.ozoneplatform.auditing
 
 import javax.servlet.http.HttpServletRequest
-import marketplace.AccountService
+import marketplace.authentication.AccountService
 import marketplace.AdminObjectFormatter
 import marketplace.ChangeDetail
 import org.codehaus.groovy.grails.commons.GrailsApplication
