@@ -11,7 +11,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.AbstractHalRepresentation
 
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.CategoryResource
 
 class CategoryRepresentation extends SelfRefRepresentation<Category> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-category-v1+json'

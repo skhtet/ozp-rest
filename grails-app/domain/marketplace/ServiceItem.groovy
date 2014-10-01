@@ -188,6 +188,7 @@ class ServiceItem implements Serializable {
         satisfiedScorecards joinTable: [name: 'service_item_score_card_item',
                                             column: 'score_card_item_id',
                                             key: 'service_item_id']
+        applicationLibraryEntries cascade: 'all-delete-orphan'
     }
 
     static constraints = {

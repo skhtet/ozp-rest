@@ -94,6 +94,14 @@ class ServiceItemRestService extends RestService<ServiceItem> {
 
         updateRelationshipsForDelete(item)
 
+        //this is necessary because ApplicationLibraryEntry
+        //belongsTo both ServiceItem and Profile.  At least
+        //one side of the belongsTo must be explicitly broken
+        item.applicationLibraryEntries.each {
+            it.owner.removeFromApplicationLibrary(it)
+        }
+        item.applicationLibraryEntries.clear()
+
         super.deleteById(id)
     }
 
