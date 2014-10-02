@@ -21,7 +21,7 @@
     </appender>
 
     <appender name="ozone-rolling-log" class="org.apache.log4j.rolling.RollingFileAppender">
-        <param name="File" value="logs/marketplace.log"/>
+        <param name="File" value="${catalina.home}/logs/marketplace.log"/>
         <param name="Encoding" value="UTF-8"/>
 
         <!--
@@ -40,7 +40,7 @@
         <rollingPolicy class="org.apache.log4j.rolling.FixedWindowRollingPolicy">
             <param name="MaxIndex" value="3"/>
             <!-- Maximum number of backups to keep -->
-            <param name="FileNamePattern" value="logs/marketplace.log.%i"/>
+            <param name="FileNamePattern" value="${catalina.home}/logs/marketplace.log.%i"/>
         </rollingPolicy>
         <triggeringPolicy class="org.apache.log4j.rolling.SizeBasedTriggeringPolicy">
             <param name="MaxFileSize" value="100000000"/>
@@ -72,14 +72,14 @@
 
 
     <appender name="ozone-cef-log" class="org.apache.log4j.rolling.RollingFileAppender">
-        <param name="File" value="logs/marketplace-cef-audit.log"/>
+        <param name="File" value="${catalina.home}/logs/marketplace-cef-audit.log"/>
         <param name="Encoding" value="UTF-8"/>
 
         <!-- CEF logs should never be automatically deleted, so using a rolling policy
              that doesn't automatically delete backups
         -->
         <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-            <param name="FileNamePattern" value="logs/marketplace-cef-audit.log.%d"/>
+            <param name="FileNamePattern" value="${catalina.home}/logs/marketplace-cef-audit.log.%d"/>
         </rollingPolicy>
 
         <layout class="org.apache.log4j.PatternLayout">

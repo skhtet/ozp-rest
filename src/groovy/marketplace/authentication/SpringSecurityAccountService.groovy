@@ -8,7 +8,7 @@ import ozone.security.authentication.OWFUserDetails
 
 class SpringSecurityAccountService implements AccountService {
     private UserDetails getUserDetails() {
-        SecurityContextHolder.context.authentication.principal
+        SecurityContextHolder.context?.authentication?.principal
     }
 
     private OWFUserDetails getOwfUserDetailsOrNull() {
@@ -18,7 +18,7 @@ class SpringSecurityAccountService implements AccountService {
     }
 
     String getLoggedInUsername() {
-        userDetails.username
+        userDetails?.username
     }
 
     String getLoggedInDisplayName() {
@@ -34,6 +34,6 @@ class SpringSecurityAccountService implements AccountService {
     }
 
     Collection<? extends GrantedAuthority> getLoggedInUserRoles() {
-        userDetails.authorities
+        userDetails?.authorities
     }
 }

@@ -9,6 +9,7 @@ def userConfig = System.properties.userConfig ?: "${userHome}/.ozone/Marketplace
 grails.config.locations = [
         MetadataConfig,
         'classpath:MarketplaceConfig.groovy',
+        "classpath:OzoneConfig.properties",
         "file:${userConfig}"
 ]
 
@@ -19,7 +20,7 @@ environments {
                 rollingFile name: 'stacktrace',
                     maxFileSize: "10000KB",
                     maxBackupIndex: 10,
-                    file: "logs/stacktrace.log"
+                    file: "${System.properties['catalina.home']}/logs/stacktrace.log"
                 layout: pattern(conversionPattern: '%d{dd MMM yyyy HH:mm:ss,SSS z} %m%n')
             }
             error stacktrace: "StackTrace"
@@ -94,11 +95,12 @@ grails {
 /**
  * ElasticSearch Defaults - override these in an external config as needed
  */
- elasticSearch {
-     datastoreImpl = 'hibernateDatastore'
-     client.mode = 'local'
-     index.store.type = 'memory'
- }
+elasticSearch {
+    datastoreImpl = 'hibernateDatastore'
+    client.mode = 'local'
+    index.store.type = 'memory'
+    path.data = "${System.properties['catalina.home']}/temp/data"
+}
 
 environments {
     test {

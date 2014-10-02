@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import marketplace.*
 import marketplace.search.MarketplaceElasticSearchService
 import marketplace.authentication.MockAccountService
+import marketplace.authentication.SpringSecurityAccountService
 import ozone.utils.ApplicationContextHolder
+
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
