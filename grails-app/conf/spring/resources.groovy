@@ -1,5 +1,6 @@
 import grails.util.GrailsUtil
 
+import org.springframework.security.web.FilterChainProxy
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,9 @@ beans = {
         accountService(SpringSecurityAccountService)
     }
     else {
+        //empty sprint security bean
+        springSecurityFilterChain(FilterChainProxy, [])
+
         accountService(MockAccountService) {
             loggedInUsername = "slackbot"
             loggedInDisplayName = "Slackbot"
