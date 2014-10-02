@@ -8,17 +8,17 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.RejectionListing
-import marketplace.ServiceItem
+import marketplace.Listing
 
 @Service
-class RejectionListingRestService extends ChildObjectRestService<ServiceItem, RejectionListing> {
+class RejectionListingRestService extends ChildObjectRestService<Listing, RejectionListing> {
     @Autowired ProfileRestService profileRestService
 
     @Autowired
     RejectionListingRestService(GrailsApplication grailsApplication,
-            ServiceItemRestService serviceItemRestService) {
+            ListingRestService serviceItemRestService) {
 
-        super(ServiceItem.class, 'serviceItem', 'rejectionListings', grailsApplication,
+        super(Listing.class, 'serviceItem', 'rejectionListings', grailsApplication,
             RejectionListing.class, serviceItemRestService, null, null)
     }
 

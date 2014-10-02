@@ -29,7 +29,7 @@ class Contact {
     String organization
     ContactType type
 
-    static belongsTo = [serviceItem: ServiceItem]
+    static belongsTo = [listing: Listing]
 
     static bindableProperties = ['type', 'securePhone', 'unsecurePhone', 'email', 'name', 'organization']
     static modifiableReferenceProperties = []

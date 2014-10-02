@@ -19,7 +19,7 @@ class ItemCommentServiceItemDto {
         this.comment == null ?
             JSONObject.NULL :
             new JSONObject(this.comment.asJSON() + [
-                serviceItem: this.comment.serviceItem.asJSONMinimum()
+                serviceItem: this.comment.listing.asJSONMinimum()
             ])
     }
 

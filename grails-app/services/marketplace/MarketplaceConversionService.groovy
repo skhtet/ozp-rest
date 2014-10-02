@@ -1,7 +1,5 @@
 package marketplace
 
-import ozone.utils.Utils
-
 class MarketplaceConversionService {
 
     boolean transactional = true
@@ -12,7 +10,7 @@ class MarketplaceConversionService {
     def updateIsOutsideFlag() {
         log.info 'updateIsOutsideFlag:'
 
-        def serviceItemsWithNullInsideFlag = ServiceItem.findAllByIsOutsideAndApprovalStatus(null, Constants.APPROVAL_STATUSES["APPROVED"])
+        def serviceItemsWithNullInsideFlag = Listing.findAllByIsOutsideAndApprovalStatus(null, Constants.APPROVAL_STATUSES["APPROVED"])
 
         serviceItemsWithNullInsideFlag*.isOutside = false
         serviceItemsWithNullInsideFlag*.save()

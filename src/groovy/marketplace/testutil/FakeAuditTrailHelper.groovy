@@ -2,8 +2,6 @@ package marketplace.testutil
 
 import grails.util.Holders
 
-import marketplace.ServiceItem
-
 /**
  * This class is used in the unit tests as a mocked version
  * of the AuditTrailHelper from the audit-trail plugin

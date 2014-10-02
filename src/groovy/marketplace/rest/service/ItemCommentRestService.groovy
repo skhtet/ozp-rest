@@ -8,22 +8,22 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import marketplace.Sorter
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.ItemComment
 import marketplace.Profile
 
 import marketplace.Constants
 
 @Service
-class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemComment> {
+class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment> {
     @Autowired ProfileRestService profileRestService
 
     @Autowired
     ItemCommentRestService(GrailsApplication grailsApplication,
-            ServiceItemRestService serviceItemRestService) {
-        super(ServiceItem.class, 'serviceItem', 'itemComments',
+            ListingRestService listingRestService) {
+        super(Listing.class, 'listing', 'itemComments',
             grailsApplication, ItemComment.class,
-            serviceItemRestService, null,
+            listingRestService, null,
             new Sorter<ItemComment>(Constants.SortDirection.DESC, 'editedDate'))
     }
 
@@ -32,28 +32,28 @@ class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemCom
     @Override
     public void deleteById(Long id) {
         ItemComment obj = getById(id)
-        ServiceItem si = parentClassRestService.getById(parentId)
+        Listing listing = parentClassRestService.getById(parentId)
 
-        //ensure that the ServiceItem's statistics are updated
-        si.removeFromItemComments(obj)
-        si.updateRatingStats()
+        //ensure that the Listings's statistics are updated
+        listing.removeFromItemComments(obj)
+        listing.updateRatingStats()
 
         super.deleteById(id)
     }
 
     /**
      * Get all ItemComments by the given author, ordered most-recent first.
-     * Secondarily sorted by ServiceItem title
+     * Secondarily sorted by Listing title
      */
     public List<ItemComment> getAllByAuthorId(Long profileId) {
         Profile author = profileRestService.getById(profileId)
 
         //sort in the application because the primary sort will be all thats necessary almost
         //100% of the time.  If we sort in the database, it'll sort everything by the
-        //serviceItem title first and then sort it all by the editedDate
+        //listing title first and then sort it all by the editedDate
         ItemComment.findAllByAuthor(author).grep { canView(it) }.sort { a, b ->
             //negative for desc
-            -(a.editedDate <=> b.editedDate) ?: a.serviceItem.title <=> b.serviceItem.title
+            -(a.editedDate <=> b.editedDate) ?: a.listing.title <=> b.listing.title
         }
     }
 
@@ -75,7 +75,7 @@ class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemCom
         authorizeView(dto)
     }
 
-    protected void postprocess(ItemComment updated, ItemComment original = null) {
+    protected void postprocess(ItemComment updated, Map original = null) {
         super.postprocess(updated, original)
 
         setAuthor(updated)
@@ -84,21 +84,21 @@ class ItemCommentRestService extends ChildObjectRestService<ServiceItem, ItemCom
             preventNonOwnerRatingChange(updated, original)
         }
 
-        syncServiceItemStats(updated)
-        updated.serviceItem.updateRatingStats()
+        syncListingStats(updated)
+        updated.listing.updateRatingStats()
     }
 
     private void setAuthor(ItemComment comment) {
         if (!comment.author) comment.author = profileRestService.currentUserProfile
     }
 
-    private void syncServiceItemStats(ItemComment updated) {
-        ServiceItem si = updated.serviceItem
-        si.addToItemComments(updated)   //ensure that the collection is up to date
-        si.updateRatingStats()
+    private static void syncListingStats(ItemComment updated) {
+        Listing listing = updated.listing
+        listing.addToItemComments(updated)   //ensure that the collection is up to date
+        listing.updateRatingStats()
     }
 
-    private void preventNonOwnerRatingChange(ItemComment updated, ItemComment original) {
+    private void preventNonOwnerRatingChange(ItemComment updated, Map original) {
         if (updated.rate != original.rate &&
                 profileRestService.currentUserProfile != original.author) {
             throw new AccessDeniedException("Attempt by non-owner to change comment rating")

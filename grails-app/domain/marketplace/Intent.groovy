@@ -37,7 +37,7 @@ class Intent implements Serializable {
 
     def beforeDelete() {
         withNewSession {
-            def items = ServiceItem.createCriteria().list {
+            def items = Listing.createCriteria().list {
                 intents {
                     equals(this)
                 }

@@ -16,7 +16,7 @@ class ServiceItemActivityService extends OzoneService {
     def getLatestActivity(def params, def username, def accessType) {
         log.debug 'getLatestActivity:'
         try {
-            def activities = ServiceItemActivity.createCriteria().list(max: params.limit, offset: params.start) {
+            def activities = ListingActivity.createCriteria().list(max: params.limit, offset: params.start) {
                 serviceItem {
                     if (accessType.equals(Constants.VIEW_USER)) {
                         owners {

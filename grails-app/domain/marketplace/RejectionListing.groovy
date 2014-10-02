@@ -22,7 +22,7 @@ public class RejectionListing implements Comparable, Serializable {
     String description
 
     static belongsTo = [
-            serviceItem: ServiceItem,
+            serviceItem: Listing,
             author: Profile,
             justification: RejectionJustification
     ]

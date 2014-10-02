@@ -11,11 +11,11 @@ class Relationship implements Serializable {
     static modifiableReferenceProperties = []
 
 
-    List<ServiceItem> relatedItems
+    List<Listing> relatedItems
     RelationshipType relationshipType
 
-    static hasMany = [relatedItems: ServiceItem]
-    static belongsTo = [owningEntity: ServiceItem]
+    static hasMany = [relatedItems: Listing]
+    static belongsTo = [owningEntity: Listing]
 
     static constraints = {
         owningEntity(nullable: false)
@@ -31,7 +31,7 @@ class Relationship implements Serializable {
     /**
      * Find all Relationships whose relatedItems include the specificed ServiceItem
      */
-    static Collection<Relationship> findRelationshipsByRelatedItem(ServiceItem related) {
+    static Collection<Relationship> findRelationshipsByRelatedItem(Listing related) {
         Relationship.createCriteria().list {
             relatedItems {
                 eq('id', related.id)

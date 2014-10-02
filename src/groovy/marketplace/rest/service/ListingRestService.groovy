@@ -5,59 +5,59 @@ import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.Profile
-import marketplace.ServiceItemActivity
+import marketplace.ListingActivity
 import marketplace.Constants
 import marketplace.RejectionListing
 import marketplace.Relationship
-import marketplace.ServiceItemSnapshot
+import marketplace.ListingSnapshot
 import ozone.marketplace.enums.RelationshipType
-import marketplace.validator.ServiceItemValidator
+import marketplace.validator.ListingValidator
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class ServiceItemRestService extends RestService<ServiceItem> {
+class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
-    @Autowired ServiceItemActivityInternalService serviceItemActivityInternalService
+    @Autowired ListingActivityInternalService listingActivityInternalService
     @Autowired PersistenceContextExecutorWrapper executorService
     @Autowired SessionFactory sessionFactory
 
     @Autowired
-    public ServiceItemRestService(GrailsApplication grailsApplication,
-            ServiceItemValidator serviceItemValidator) {
-        super(grailsApplication, ServiceItem.class, null, null)
+    public ListingRestService(GrailsApplication grailsApplication,
+            ListingValidator listingValidator) {
+        super(grailsApplication, Listing.class, null, null)
     }
 
     //needed for CGLIB
-    ServiceItemRestService() {}
+    ListingRestService() {}
 
     @Transactional(readOnly=true)
-    public Set<ServiceItem> getAllByAuthorId(Long profileId) {
+    public Set<Listing> getAllByAuthorId(Long profileId) {
         Profile profile = profileRestService.getById(profileId)
-        ServiceItem.findAllByAuthor(profile).grep { canView(it) } as Set
+        Listing.findAllByAuthor(profile).grep { canView(it) } as Set
     }
 
     /**
-     * Recursively find all ServiceItems that are required by this one
+     * Recursively find all Listings that are required by this one
      */
     @Transactional(readOnly=true)
-    public Set<ServiceItem> getAllRequiredServiceItemsByParentId(Long id) {
-        ServiceItem parent = getById(id)
+    public Set<Listing> getAllRequiredListingsByParentId(Long id) {
+        Listing parent = getById(id)
 
-        getAllRequiredServiceItems(parent, [parent] as Set).grep { canView(it) }
+        getAllRequiredListings(parent, [parent] as Set).grep { canView(it) }
     }
 
     /**
-     * Find all ServiceItems that require this one. This is not recursive
+     * Find all Listings that require this one. This is not recursive
      */
     @Transactional(readOnly=true)
-    public Set<ServiceItem> getRequiringServiceItemsByChildId(Long id) {
+    public Set<Listing> getRequiringListingsByChildId(Long id) {
         //ensure that they are allowed to view the child
-        ServiceItem child = getById(id)
+        Listing child = getById(id)
 
-        ServiceItem.createCriteria().list() {
+        Listing.createCriteria().list() {
             relationships {
                 eq('relationshipType', RelationshipType.REQUIRE)
 
@@ -69,16 +69,16 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     /**
-     * @param ignore ServiceItems not to recurse into. Necessary to prevent infinite recursion
+     * @param ignore Listings not to recurse into. Necessary to prevent infinite recursion
      */
-    private Set<ServiceItem> getAllRequiredServiceItems(ServiceItem parent,
-            Set<ServiceItem> ignore) {
+    private Set<Listing> getAllRequiredListings(Listing parent,
+            Set<Listing> ignore) {
 
-        Set<ServiceItem> immediateRequired =
+        Set<Listing> immediateRequired =
             parent.relationships.collect { it.relatedItems }.flatten() - ignore
 
-        Set<ServiceItem> recursiveRequired = immediateRequired.collect {
-            getAllRequiredServiceItems(it, (immediateRequired + ignore + parent))
+        Set<Listing> recursiveRequired = immediateRequired.collect {
+            getAllRequiredListings(it, (immediateRequired + ignore + parent))
         }.flatten()
 
         //get all immediate required items, items that those items require, and ignore the
@@ -88,7 +88,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
 
     @Override
     public void deleteById(Long id) {
-        ServiceItem item = getById(id)
+        Listing item = getById(id)
 
         updateRelationshipsForDelete(item)
 
@@ -104,7 +104,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     @Override
-    protected boolean canView(ServiceItem si) {
+    protected boolean canView(Listing si) {
         Profile profile = profileRestService.currentUserProfile
 
         //owners and admins can always view.  For others, there are more rules
@@ -120,7 +120,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     @Override
-    protected void authorizeUpdate(ServiceItem existing) {
+    protected void authorizeUpdate(Listing existing) {
         Profile profile = profileRestService.currentUserProfile
 
         //check enabled, approvalStatus, etc
@@ -141,40 +141,40 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     @Override
-    protected void authorizeCreate(ServiceItem newItem) {
+    protected void authorizeCreate(Listing newItem) {
         //anyone can create service items
     }
 
     @Override
-    protected void postprocess(ServiceItem updated, Map original = null) {
+    protected void postprocess(Listing updated, Map original = null) {
 
         if (original) {
-            updateEnabledServiceItemActivity(updated, original)
+            updateEnabledListingActivity(updated, original)
             updateApprovalStatus(updated, original)
-            serviceItemActivityInternalService.createChangeLog(updated, original)
+            listingActivityInternalService.createChangeLog(updated, original)
         }
         else {
             //create
-            serviceItemActivityInternalService.addServiceItemActivity(updated,
+            listingActivityInternalService.addListingActivity(updated,
                 Constants.Action.CREATED)
         }
 
-        updateRelationshipsServiceItemActivity(updated, original)
+        updateRelationshipsListingActivity(updated, original)
 
     }
 
     /**
      * Checks for changes to the approvalStatus flag and reacts accordingly.  This method
-     * assumes that the ServiceItemValidator has already bee run against this ServiceItem
+     * assumes that the ListingValidator has already bee run against this Listing
      */
-    private void updateApprovalStatus(ServiceItem updated, Map original) {
+    private void updateApprovalStatus(Listing updated, Map original) {
         def newApprovalStatus = updated.approvalStatus
         def oldApprovalStatus = original.approvalStatus
 
         if (newApprovalStatus != oldApprovalStatus) {
             switch (newApprovalStatus) {
                 case Constants.APPROVAL_STATUSES['PENDING']:
-                    serviceItemActivityInternalService.addServiceItemActivity(updated,
+                    listingActivityInternalService.addListingActivity(updated,
                         Constants.Action.SUBMITTED)
                     break
                 case Constants.APPROVAL_STATUSES['APPROVED']:
@@ -192,9 +192,9 @@ class ServiceItemRestService extends RestService<ServiceItem> {
      * Business Logic that must happen when a listing is approved.  This method does not actually
      * do the approval, since that occurs during the update
      */
-    private void doApprove(ServiceItem si) {
-        ServiceItemActivity activity =
-            serviceItemActivityInternalService.addServiceItemActivity(si,
+    private void doApprove(Listing si) {
+        ListingActivity activity =
+            listingActivityInternalService.addListingActivity(si,
                 Constants.Action.APPROVED)
 
         profileRestService.checkAdmin()
@@ -206,7 +206,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
      * Update the listing to be rejected.  This includes setting the approvalStatus, adding the
      * RejectionListing to the ServiceItem, and creating the RejectionActivity
      */
-    public void reject(ServiceItem si, RejectionListing rejectionListing) {
+    public void reject(Listing si, RejectionListing rejectionListing) {
         if (si.approvalStatus != Constants.APPROVAL_STATUSES['PENDING']) {
             throw new IllegalArgumentException("Cannot reject ServiceItem ${si.id} that has " +
                 "approval status of ${si.approvalStatus}")
@@ -215,7 +215,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
         profileRestService.checkAdmin()
 
         si.approvalStatus = Constants.APPROVAL_STATUSES["REJECTED"]
-        serviceItemActivityInternalService.addRejectionActivity(si, rejectionListing)
+        listingActivityInternalService.addRejectionActivity(si, rejectionListing)
 
         if (!si.rejectionListings?.contains(rejectionListing)) {
             si.addToRejectionListings(rejectionListing)
@@ -223,7 +223,7 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     @Override
-    protected void populateDefaults(ServiceItem dto) {
+    protected void populateDefaults(Listing dto) {
         Profile profile = profileRestService.currentUserProfile
         if(!dto.owners) {
             dto.addToOwners(profile)
@@ -231,60 +231,60 @@ class ServiceItemRestService extends RestService<ServiceItem> {
     }
 
     /**
-     * Add a ServiceItemActivity for the changing of the hidden flag (known externally as
+     * Add a ListingActivity for the changing of the hidden flag (known externally as
      * enabled
      */
-    private void updateEnabledServiceItemActivity(ServiceItem updated, Map old) {
+    private void updateEnabledListingActivity(Listing updated, Map old) {
         boolean oldIsEnabled = old.isEnabled, updatedIsEnabled = updated.isEnabled
 
         if (oldIsEnabled != updatedIsEnabled) {
-            serviceItemActivityInternalService.addServiceItemActivity(updated,
+            listingActivityInternalService.addListingActivity(updated,
                 Constants.Action[updatedIsEnabled ? 'ENABLED' : 'DISABLED'])
         }
     }
 
     /**
-     * Create the appropriate ServiceItemActivities for any relationship changes
+     * Create the appropriate ListingActivities for any relationship changes
      */
-    private void updateRelationshipsServiceItemActivity(ServiceItem updated, Map old) {
-        Set<ServiceItem> oldRelated =
+    private void updateRelationshipsListingActivity(Listing updated, Map old) {
+        Set<Listing> oldRelated =
             old?.relationships?.collect { it.relatedItems }?.flatten() ?: new HashSet()
-        Set<ServiceItem> newRelated = updated.relationships.collect { it.relatedItems }.flatten()
+        Set<Listing> newRelated = updated.relationships.collect { it.relatedItems }.flatten()
 
-        Set<ServiceItem> added = newRelated - oldRelated
-        Set<ServiceItem> removed = oldRelated - newRelated
+        Set<Listing> added = newRelated - oldRelated
+        Set<Listing> removed = oldRelated - newRelated
 
-        serviceItemActivityInternalService.addRelationshipActivities(updated, added, removed)
+        listingActivityInternalService.addRelationshipActivities(updated, added, removed)
     }
 
     /**
      * Create the necessary changelog entries, and unhook the necessary objects, to allow
      * this service item to be deleted
      */
-    private void updateRelationshipsForDelete(ServiceItem item) {
+    private void updateRelationshipsForDelete(Listing item) {
         Set<Relationship> relatedBy = Relationship.findRelationshipsByRelatedItem(item) as Set
         Set<Relationship> relatedTo = item.relationships as Set
 
         //use a set to ensure no duplicates
-        Set<ServiceItem> relatedByServiceItems = relatedBy.collect { it.owningEntity }
-        Set<ServiceItem> relatedToServiceItems = relatedTo.collect {
+        Set<Listing> relatedByListings = relatedBy.collect { it.owningEntity }
+        Set<Listing> relatedToListings = relatedTo.collect {
             it.relatedItems
         }.flatten()
 
         relatedBy.each { it.removeFromRelatedItems(item) }
         relatedTo.each { item.removeFromRelationships(it) }
 
-        //update ServiceItemActivities
-        relatedByServiceItems.each {
-            serviceItemActivityInternalService.addRelationshipActivities(it, [], [item])
+        //update ListingActivities
+        relatedByListings.each {
+            listingActivityInternalService.addRelationshipActivities(it, [], [item])
         }
-        serviceItemActivityInternalService.addRelationshipActivities(item, [],
-            relatedToServiceItems)
+        listingActivityInternalService.addRelationshipActivities(item, [],
+            relatedToListings)
 
         //OP-5334: this save prevents the "collection not processed by flush" exception with Oracle and Postgresql
         item.save(flush: true)
 
         //unhook all ServiceItemSnapshots
-        (ServiceItemSnapshot.findAllByServiceItem(item) as Set).each { it.serviceItem = null }
+        (ListingSnapshot.findAllByServiceItem(item) as Set).each { it.serviceItem = null }
     }
 }

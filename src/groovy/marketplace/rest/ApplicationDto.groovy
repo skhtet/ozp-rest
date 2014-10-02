@@ -1,13 +1,13 @@
 package marketplace.rest
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.codehaus.groovy.grails.web.json.JSONArray
 
 class ApplicationDto {
-    private ServiceItem listing
+    private Listing listing
 
-    public ApplicationDto(ServiceItem listing) {
+    public ApplicationDto(Listing listing) {
         this.listing = listing
     }
 

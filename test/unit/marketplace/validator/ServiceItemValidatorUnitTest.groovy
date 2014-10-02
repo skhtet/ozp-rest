@@ -1,18 +1,16 @@
 package marketplace.validator
 
-import grails.test.mixin.TestFor
 import grails.test.mixin.support.GrailsUnitTestMixin
-
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.rest.service.ProfileRestService
 
 @TestMixin(GrailsUnitTestMixin)
 class ServiceItemValidatorUnitTest {
 
-    ServiceItemValidator validator
+    ListingValidator validator
 
     void setUp() {
-        validator = new ServiceItemValidator()
+        validator = new ListingValidator()
     }
 
     void testValidateApprovalStatus() {
@@ -26,7 +24,7 @@ class ServiceItemValidatorUnitTest {
         validator.profileRestService = profileServiceMock.createMock()
 
         Map existing = [:]
-        ServiceItem dto = new ServiceItem()
+        Listing dto = new Listing()
 
         /**
          * Test different transitions
@@ -124,7 +122,7 @@ class ServiceItemValidatorUnitTest {
     }
 
     void testValidateNewApprovalStatus() {
-        ServiceItem dto = new ServiceItem()
+        Listing dto = new Listing()
 
         dto.approvalStatus = 'In Progress'
         validator.validateNew(dto)

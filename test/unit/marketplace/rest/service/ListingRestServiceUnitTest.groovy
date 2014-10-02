@@ -1,24 +1,19 @@
 package marketplace.rest.service
 
-import org.springframework.context.support.StaticApplicationContext
-
-import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
-
-import grails.converters.JSON
 import marketplace.Contact
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.Types
-import marketplace.ServiceItemDocumentationUrl
+import marketplace.DocUrl
 import marketplace.Screenshot
 import marketplace.Profile
-import marketplace.ServiceItemActivity
+import marketplace.ListingActivity
 import marketplace.RejectionActivity
 import marketplace.RejectionJustification
 import marketplace.RejectionListing
@@ -28,20 +23,18 @@ import marketplace.Constants
 import marketplace.ServiceItemTag
 import marketplace.Tag
 import marketplace.ChangeDetail
-import marketplace.validator.ServiceItemValidator
-import marketplace.ScoreCardService
-
+import marketplace.validator.ListingValidator
 import ozone.marketplace.enums.RelationshipType
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
-class ServiceItemRestServiceUnitTest {
+class ListingRestServiceUnitTest {
 
     GrailsApplication grailsApplication
 
-    ServiceItemRestService service
+    ListingRestService service
 
     Profile currentUser, owner, nonOwner, admin
     Types type1
@@ -65,11 +58,11 @@ class ServiceItemRestServiceUnitTest {
         grailsApplication.refresh()
 
         //necessary to get reflection-based marshalling to work
-        grailsApplication.addArtefact(ServiceItemDocumentationUrl.class)
+        grailsApplication.addArtefact(DocUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
         grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
-        grailsApplication.addArtefact(ServiceItem.class)
+        grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
         grailsApplication.addArtefact(Profile.class)
         grailsApplication.addArtefact(Tag.class)
@@ -80,7 +73,7 @@ class ServiceItemRestServiceUnitTest {
     }
 
     private makeServiceItem() {
-        def exampleServiceItem = new ServiceItem(exampleServiceItemProps + [
+        def exampleServiceItem = new Listing(exampleServiceItemProps + [
             owners: [owner],
             type: type1
         ])
@@ -111,7 +104,7 @@ class ServiceItemRestServiceUnitTest {
         createGrailsApplication()
 
         mockDomain(ChangeDetail.class)
-        mockDomain(ServiceItemActivity.class)
+        mockDomain(ListingActivity.class)
         mockDomain(Relationship.class)
         mockDomain(RejectionListing.class)
 
@@ -124,15 +117,15 @@ class ServiceItemRestServiceUnitTest {
         this.owner = owner
         this.nonOwner = nonOwner
 
-        mockDomain(ServiceItem.class)
+        mockDomain(Listing.class)
         makeServiceItem().save(failOnError: true)
 
         def serviceItemValidator = [
             validateNew: {},
             validateChanges: { a, b -> }
-        ] as ServiceItemValidator
+        ] as ListingValidator
 
-        service = new ServiceItemRestService(grailsApplication, serviceItemValidator)
+        service = new ListingRestService(grailsApplication, serviceItemValidator)
 
         service.profileRestService = [
             getCurrentUserProfile: { currentUser },
@@ -145,37 +138,37 @@ class ServiceItemRestServiceUnitTest {
             }
         ] as ProfileRestService
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: {si, action -> }
-        ] as ServiceItemActivityInternalService
+        service.listingActivityInternalService = [
+            addListingActivity: {si, action -> }
+        ] as ListingActivityInternalService
 
         //dirty checking isn't mocked in unit tests, so we need to mock
         //the method that relies on it
-        ServiceItem.metaClass.modifiedForChangeLog = { false }
+        Listing.metaClass.modifiedForChangeLog = { false }
     }
 
     void testAuthorizeUpdate() {
-        ServiceItem si
+        Listing si
 
         //this should work because the listing is in progress
         currentUser = Profile.findByUsername('owner')
         service.updateById(exampleServiceItemProps.id, makeServiceItem())
 
         //populate initial ServiceItem
-        ServiceItem original = makeServiceItem()
+        Listing original = makeServiceItem()
         service.populateDefaults(original)
         original.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
         original.save(failOnError: true)
 
         //this should succeed because owners can always edit their listings
-        ServiceItem updates = makeServiceItem()
+        Listing updates = makeServiceItem()
         service.populateDefaults(updates)
         updates.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
         service.updateById(exampleServiceItemProps.id, updates)
 
         //this should fail because an non-admin, non-owner user is trying to update
         shouldFail(AccessDeniedException) {
-            si = ServiceItem.get(1)
+            si = Listing.get(1)
             si.approvalStatus = Constants.APPROVAL_STATUSES['IN_PROGRESS']
             si.save(failOnError: true)
             currentUser = nonOwner
@@ -191,7 +184,7 @@ class ServiceItemRestServiceUnitTest {
 
         //dirty checking isn't mocked in unit tests, so we need to mock
         //the method that relies on it
-        ServiceItem.metaClass.modifiedForChangeLog = { false }
+        Listing.metaClass.modifiedForChangeLog = { false }
 
         //ensure that normal users can create
         currentUser = Profile.findByUsername('nonOwner')
@@ -199,24 +192,24 @@ class ServiceItemRestServiceUnitTest {
 
         //ensure that admins can create
         currentUser = Profile.findByUsername('admin')
-        ServiceItem dto = service.createFromDto(makeServiceItem())
+        Listing dto = service.createFromDto(makeServiceItem())
 
         assertNotNull dto
     }
 
     void testApprove() {
-        ServiceItemActivity activity
-        ServiceItem dto
+        ListingActivity activity
+        Listing dto
         def id
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action ->
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action ->
                 //creation of the changelog uses the other signature
-                if(action instanceof ServiceItemActivity)
+                if(action instanceof ListingActivity)
                     return
-                activity = new ServiceItemActivity(action: action, serviceItem: si)
+                activity = new ListingActivity(action: action, listing: si)
             }
-        ] as ServiceItemActivityInternalService
+        ] as ListingActivityInternalService
 
         def approve = {
             dto = makeServiceItem()
@@ -243,29 +236,29 @@ class ServiceItemRestServiceUnitTest {
 
         //need to reset the approval status because the unit tests aren't transactional and
         //the preceding failed change did not get rolled back
-        ServiceItem.get(dto.id).approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
+        Listing.get(dto.id).approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
         approve()
 
         assert activity.action == Constants.Action.APPROVED
-        assert activity.serviceItem == dto
+        assert activity.listing == dto
 
         //make sure it was approved within the last second
         assert dto.approvedDate.time > (new Date()).time - 1000
     }
 
     void testReject() {
-        ServiceItem created
-        ServiceItemActivity activity
+        Listing created
+        ListingActivity activity
 
-        service.serviceItemActivityInternalService = [
+        service.listingActivityInternalService = [
             addRejectionActivity: { si, rejectionListing ->
                 activity = new RejectionActivity(
                     serviceItem: si,
                     rejectionListing: rejectionListing
                 )
             },
-            addServiceItemActivity: { si, action -> }
-        ] as ServiceItemActivityInternalService
+            addListingActivity: { si, action -> }
+        ] as ListingActivityInternalService
 
         def reject = {
             service.reject(created, new RejectionListing(
@@ -316,11 +309,11 @@ class ServiceItemRestServiceUnitTest {
         ] as ProfileRestService
 
         //create a dto with no defaults filled in
-        ServiceItem dto = makeServiceItem()
+        Listing dto = makeServiceItem()
         dto.owners = null
 
 
-        ServiceItem created = service.createFromDto(dto)
+        Listing created = service.createFromDto(dto)
 
         assert created.owners == [currentUser] as Set
 
@@ -338,13 +331,13 @@ class ServiceItemRestServiceUnitTest {
         def id = service.createFromDto(makeServiceItem()).id
         def activity
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action ->
-                activity = new ServiceItemActivity(action: action, serviceItem: si)
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action ->
+                activity = new ListingActivity(action: action, listing: si)
             }
-        ] as ServiceItemActivityInternalService
+        ] as ListingActivityInternalService
 
-        ServiceItem dto = makeServiceItem()
+        Listing dto = makeServiceItem()
         service.populateDefaults(dto)
         dto.id = id
         dto.isEnabled = false
@@ -352,7 +345,7 @@ class ServiceItemRestServiceUnitTest {
         dto = service.updateById(id, dto)
         assertNotNull activity
         assert activity.action == Constants.Action.DISABLED
-        assert activity.serviceItem == dto
+        assert activity.listing == dto
 
 
         dto = makeServiceItem()
@@ -363,7 +356,7 @@ class ServiceItemRestServiceUnitTest {
         dto = service.updateById(id, dto)
         assertNotNull activity
         assert activity.action == Constants.Action.ENABLED
-        assert activity.serviceItem == dto
+        assert activity.listing == dto
     }
 
     void testUpdateRelationshipServiceItemActivity() {
@@ -382,16 +375,16 @@ class ServiceItemRestServiceUnitTest {
         def relatedItem1 = service.createFromDto(makeServiceItem())
         def relatedItem2 = service.createFromDto(makeServiceItem())
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action -> },
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action -> },
             addRelationshipActivities: { p, a, r ->
                 parent = p
                 added = a
                 removed = r
             }
-        ] as ServiceItemActivityInternalService
+        ] as ListingActivityInternalService
 
-        ServiceItem dto = makeServiceItem()
+        Listing dto = makeServiceItem()
         dto.id = id
         dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
         service.updateById(id, dto)
@@ -430,7 +423,7 @@ class ServiceItemRestServiceUnitTest {
         def id = service.createFromDto(makeServiceItem()).id
 
         def getRequired = {
-            service.getAllRequiredServiceItemsByParentId(id)
+            service.getAllRequiredListingsByParentId(id)
                 .collect {it.id} as Set
         }
 
@@ -439,12 +432,12 @@ class ServiceItemRestServiceUnitTest {
         def relatedItem2 = makeServiceItem()
         relatedItem2 = service.createFromDto(relatedItem2)
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action -> },
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action -> },
             addRelationshipActivities: { p, a, r -> }
-        ] as ServiceItemActivityInternalService
+        ] as ListingActivityInternalService
 
-        ServiceItem dto = makeServiceItem()
+        Listing dto = makeServiceItem()
         dto.id = id
         dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
         service.updateById(id, dto)
@@ -472,7 +465,7 @@ class ServiceItemRestServiceUnitTest {
             new Relationship(
                 relationshipType: RelationshipType.REQUIRE,
                 relatedItems: ids.collect {
-                    def si = new ServiceItem()
+                    def si = new Listing()
                     si.id = it
                     si
                 } ?: []
@@ -482,14 +475,14 @@ class ServiceItemRestServiceUnitTest {
         def id
 
         def getRequired = {
-            service.getAllRequiredServiceItemsByParentId(id)
+            service.getAllRequiredListingsByParentId(id)
                 .collect {it.id} as Set
         }
 
-        service.serviceItemActivityInternalService = [
-            addServiceItemActivity: { si, action -> },
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action -> },
             addRelationshipActivities: { p, a, r -> }
-        ] as ServiceItemActivityInternalService
+        ] as ListingActivityInternalService
 
         def relatedItem1Id = service.createFromDto(makeServiceItem()).id
         def relatedItem2Id = service.createFromDto(makeServiceItem()).id
@@ -513,13 +506,13 @@ class ServiceItemRestServiceUnitTest {
     }
 
     void testGetAllByAuthorId() {
-        ServiceItem.metaClass.static.findAllByAuthor = { Profile a ->
-            ServiceItem.list().grep { it.owners.contains(a) }
+        Listing.metaClass.static.findAllByAuthor = { Profile a ->
+            Listing.list().grep { it.owners.contains(a) }
         }
 
-        ServiceItem existing = ServiceItem.get(1)
+        Listing existing = Listing.get(1)
         //create a serviceitem that is approved. The default one is not
-        ServiceItem approved = makeServiceItem()
+        Listing approved = makeServiceItem()
         approved.approvalStatus = 'Approved'
         approved.id = 2
         approved.save(failOnError: true)

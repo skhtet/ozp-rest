@@ -30,17 +30,17 @@ import static org.grails.jaxrs.response.Responses.*
 
 import marketplace.Profile
 import marketplace.Agency
-import marketplace.ServiceItem
-import marketplace.ServiceItemActivity
+import marketplace.Listing
+import marketplace.ListingActivity
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.PagedCollection
 
-import marketplace.rest.service.ServiceItemRestService
+import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.ServiceItemTagRestService
-import marketplace.rest.service.ServiceItemActivityRestService
+import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.service.ApplicationLibraryEntryRestService
 import marketplace.rest.service.ProfileRestService
 
@@ -55,7 +55,6 @@ import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.representation.out.ProfileRepresentation
 import marketplace.rest.StewardedOrganizations
 import marketplace.rest.ApplicationLibrary
-import marketplace.rest.ProfileServiceItemTagDto
 import marketplace.rest.ItemCommentServiceItemDto
 
 @Path('/api/profile')
@@ -63,10 +62,10 @@ import marketplace.rest.ItemCommentServiceItemDto
 @Consumes([ProfileInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
 class ProfileResource extends RepresentationResource<Profile> {
 
-    @Autowired ServiceItemRestService serviceItemRestService
+    @Autowired ListingRestService listingRestService
     @Autowired ItemCommentRestService ItemCommentRestService
     @Autowired ServiceItemTagRestService serviceItemTagRestService
-    @Autowired ServiceItemActivityRestService serviceItemActivityRestService
+    @Autowired ListingActivityRestService listingActivityRestService
     @Autowired ApplicationLibraryEntryRestService applicationLibraryEntryRestService
 
     @Autowired
@@ -94,12 +93,12 @@ class ProfileResource extends RepresentationResource<Profile> {
         read(service.currentUserProfile.id)
     }
 
-    @Path('/{profileId}/serviceItem')
+    @Path('/{profileId}/listing')
     @GET
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
-    Set<ServiceItem> getServiceItemsByAuthorId(@PathParam('profileId') String profileId) {
-        serviceItemRestService.getAllByAuthorId(getProfileId(profileId))
+    Set<Listing> getListingsByAuthorId(@PathParam('profileId') String profileId) {
+        listingRestService.getAllByAuthorId(getProfileId(profileId))
     }
 
     @Path('/{profileId}/itemComment')
@@ -113,32 +112,24 @@ class ProfileResource extends RepresentationResource<Profile> {
         }
     }
 
-    @Path('/self/tag')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    Collection<ProfileServiceItemTagDto> getOwnTags() {
-        getTagsByProfileId(service.currentUserProfile.id)
-    }
-
     @Path('/{profileId}/activity')
     @GET
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
-    List<ServiceItemActivity> getServiceItemActivitiesByProfileId(
+    List<ListingActivity> getListingActivitiesByProfileId(
             @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getAllByProfileId(getProfileId(profileId), offset, max)
+        listingActivityRestService.getAllByProfileId(getProfileId(profileId), offset, max)
     }
 
-    @Path('/{profileId}/serviceItem/activity')
+    @Path('/{profileId}/listing/activity')
     @GET
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
-    List<ServiceItemActivity> getServiceItemActivitiesByServiceItemOwnerId(
+    List<ListingActivity> getListingActivitiesByListingOwnerId(
             @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getAllByServiceItemOwnerId(getProfileId(profileId), offset, max)
+        listingActivityRestService.getAllByListingOwnerId(getProfileId(profileId), offset, max)
     }
 
     @GET
@@ -151,7 +142,7 @@ class ProfileResource extends RepresentationResource<Profile> {
         long id = getProfileId(profileId)
 
         new IwcUserApplications(applicationLibraryEntryRestService.getByParentId(id).collect {
-            it.serviceItem
+            it.listing
         }, service.getById(id))
     }
 
@@ -165,7 +156,7 @@ class ProfileResource extends RepresentationResource<Profile> {
         long id = getProfileId(profileId)
 
         new IwcUserIntents(applicationLibraryEntryRestService.getByParentId(id).collect {
-            it.serviceItem.intents
+            it.listing.intents
         }.flatten().unique(), service.getById(id))
     }
 
@@ -308,10 +299,10 @@ class ProfileResource extends RepresentationResource<Profile> {
             library)
     }
 
-    @Path('/{profileId}/library/{serviceItemId}')
+    @Path('/{profileId}/library/{listingId}')
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') String profileId,
-            @PathParam('serviceItemId') long applicationLibraryEntryId) {
+            @PathParam('listingId') long applicationLibraryEntryId) {
         applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(getProfileId(profileId),
             applicationLibraryEntryId)
     }

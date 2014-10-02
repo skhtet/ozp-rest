@@ -2,7 +2,7 @@ package marketplace
 
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-class RejectionActivity extends ServiceItemActivity {
+class RejectionActivity extends ListingActivity {
 
     public RejectionActivity(){
         action = Constants.Action.REJECTED

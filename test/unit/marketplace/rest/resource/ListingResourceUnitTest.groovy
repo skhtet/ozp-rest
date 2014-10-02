@@ -1,37 +1,30 @@
 package marketplace.rest.resource
 
-import java.net.URL
-
-import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletRequest
-
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.ItemComment
-import marketplace.ServiceItemActivity
-
-import marketplace.WebUtil
-
+import marketplace.ListingActivity
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
-import marketplace.rest.service.ServiceItemRestService
-import marketplace.rest.service.ServiceItemActivityRestService
+import marketplace.rest.service.ListingRestService
+import marketplace.rest.service.ListingActivityRestService
 
 @TestMixin(DomainClassUnitTestMixin)
-class ServiceItemResourceUnitTest {
-    ServiceItemResource resource
+class ListingResourceUnitTest {
+    ListingResource resource
 
     void setUp() {
-        resource = new ServiceItemResource()
+        resource = new ListingResource()
     }
 
     void testGetActivitiesForServiceItems() {
-        ServiceItemActivity activity = new ServiceItemActivity()
+        ListingActivity activity = new ListingActivity()
         def passedOffset, passedMax
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
+        def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getAll(1..1) { offset, max ->
             passedOffset = offset
             passedMax = max
@@ -45,10 +38,10 @@ class ServiceItemResourceUnitTest {
     }
 
     void testGetServiceItemActivitiesForServiceItem() {
-        ServiceItemActivity activity = new ServiceItemActivity()
+        ListingActivity activity = new ListingActivity()
         def passedParentId, passedOffset, passedMax
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
+        def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getByParentId(1..1) { parentId, offset, max ->
             passedParentId = parentId
             passedOffset = offset
@@ -97,40 +90,40 @@ class ServiceItemResourceUnitTest {
     }
 
     void testGetRequiredServiceItems() {
-        ServiceItem serviceItem = new ServiceItem()
+        Listing serviceItem = new Listing()
         def passedParentId
 
-        def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
-        serviceItemRestServiceMock.demand.getAllRequiredServiceItemsByParentId(1..2) {
+        def serviceItemRestServiceMock = mockFor(ListingRestService)
+        serviceItemRestServiceMock.demand.getAllRequiredListingsByParentId(1..2) {
                 parentId ->
             passedParentId = parentId
             [serviceItem]
         }
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        assert resource.getRequiredServiceItems(1) == [serviceItem]
+        assert resource.getRequiredListings(1) == [serviceItem]
         assert passedParentId == 1
 
-        resource.getRequiredServiceItems(25)
+        resource.getRequiredListings(25)
         assert passedParentId == 25
     }
 
     void testGetRequiringServiceItems() {
-        ServiceItem serviceItem = new ServiceItem()
+        Listing serviceItem = new Listing()
         def passedParentId
 
-        def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
-        serviceItemRestServiceMock.demand.getRequiringServiceItemsByChildId(1..2) {
+        def serviceItemRestServiceMock = mockFor(ListingRestService)
+        serviceItemRestServiceMock.demand.getRequiringListingsByChildId(1..2) {
                 parentId ->
             passedParentId = parentId
             [serviceItem]
         }
         resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
 
-        assert resource.getRequiringServiceItems(1) == [serviceItem]
+        assert resource.getRequiringListings(1) == [serviceItem]
         assert passedParentId == 1
 
-        resource.getRequiringServiceItems(25)
+        resource.getRequiringListings(25)
         assert passedParentId == 25
     }
 
@@ -145,7 +138,7 @@ class ServiceItemResourceUnitTest {
         }
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
-        assert resource.getItemCommentsByServiceItemId(20) == [comment]
+        assert resource.getItemCommentsByListingId(20) == [comment]
         assert passedParentId == 20
     }
 

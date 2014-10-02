@@ -10,7 +10,7 @@ class ChangeDetail implements Serializable {
     String oldValue
     String newValue
 
-    static belongsTo = [serviceItemActivity: ServiceItemActivity]
+    static belongsTo = [serviceItemActivity: ListingActivity]
 
     static constraints = {
         fieldName(blank: false, nullable: false, maxSize:255)

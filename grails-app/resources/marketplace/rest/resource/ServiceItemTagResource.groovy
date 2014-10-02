@@ -1,6 +1,6 @@
 package marketplace.rest.resource
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.ServiceItemTag
 import marketplace.Tag
 import org.grails.jaxrs.response.Responses
@@ -22,7 +22,7 @@ class ServiceItemTagResource {
     Response createTags(@PathParam('serviceItemId') long serviceItemId, List<Tag> tags){
         Collection<ServiceItemTag> serviceItemTags = tags.collect { Tag tag ->
             ServiceItemTag serviceItemTag = new ServiceItemTag(tag: tag)
-            serviceItemTag.serviceItem = new ServiceItem()
+            serviceItemTag.serviceItem = new Listing()
             serviceItemTag.serviceItem.id = serviceItemId
             serviceItemTag
         }

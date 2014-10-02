@@ -3,7 +3,7 @@ package marketplace.rest
 import marketplace.Intent
 import marketplace.IwcDataObject
 import marketplace.Profile
-import marketplace.ServiceItem
+import marketplace.Listing
 
 class IwcApi {
     Profile user
@@ -14,10 +14,10 @@ class IwcApi {
 }
 
 class IwcUserApplications {
-    Collection<ServiceItem> listings
+    Collection<Listing> listings
     Profile user
 
-    IwcUserApplications(Collection<ServiceItem> listings, Profile user) {
+    IwcUserApplications(Collection<Listing> listings, Profile user) {
         this.listings = listings
         this.user = user
     }

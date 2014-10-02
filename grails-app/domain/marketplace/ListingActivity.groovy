@@ -6,7 +6,7 @@ import marketplace.Constants.Action
 
 //Domain object that holds an audit trail of a listing.
 @AuditStamp
-class ServiceItemActivity implements Serializable {
+class ListingActivity implements Serializable {
 
     static constraints = {
         action maxSize: 128
@@ -15,7 +15,7 @@ class ServiceItemActivity implements Serializable {
     Action action
     Date activityDate = new Date()
 
-    static belongsTo = [serviceItem: ServiceItem, author: Profile]
+    static belongsTo = [listing: Listing, author: Profile]
 
     static hasMany = [changeDetails: ChangeDetail]
 
@@ -23,7 +23,6 @@ class ServiceItemActivity implements Serializable {
         author fetch: 'join'
         cache true
         tablePerHierarchy false
-        serviceItem index: 'svc_item_act_svc_item_id_idx'
         changeDetails batchSize: 25
     }
 
@@ -40,7 +39,7 @@ class ServiceItemActivity implements Serializable {
             author: author.asJSONRef(),
             action: action.asJSON(),
             activityDate: activityDate,
-            serviceItem: serviceItem.asJSONMinimum(),
+            listing: listing.asJSONMinimum(),
             changeDetails: changeDetails.collect { it.asJSON() }
         )
     }

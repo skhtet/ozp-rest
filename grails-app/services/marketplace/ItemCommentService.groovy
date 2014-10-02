@@ -1,6 +1,6 @@
 package marketplace
 
-import marketplace.rest.service.ServiceItemActivityInternalService
+import marketplace.rest.service.ListingActivityInternalService
 import org.springframework.beans.factory.annotation.Autowired
 import ozone.marketplace.domain.ValidationException
 import org.apache.commons.lang.exception.ExceptionUtils
@@ -20,7 +20,7 @@ public class ItemCommentService {
     def serviceItemService
 
     @Autowired
-    ServiceItemActivityInternalService serviceItemActivityInternalService
+    ListingActivityInternalService serviceItemActivityInternalService
 
     def static final serviceItemRules = ['allNoRestrictions':false,
         'allIfApproved':true,
@@ -133,8 +133,8 @@ public class ItemCommentService {
 
         if (comment) {
             isUser = (sessionParams?.username == comment?.author?.username)
-            isAvailable = comment?.serviceItem?.isEnabled
-            isApproved = comment?.serviceItem.statApproved()
+            isAvailable = comment?.listing?.isEnabled
+            isApproved = comment?.listing.statApproved()
 
             if (rules?.allNoRestrictions && isAvailable) {
                 matchesRule = true
@@ -198,7 +198,7 @@ public class ItemCommentService {
                 changeDetail = new ChangeDetail(fieldName: "$reviewOwner's Review", oldValue: itemCommentToSave.text, newValue: params.text)
             }
 
-            si_id = itemCommentToSave.serviceItem.id
+            si_id = itemCommentToSave.listing.id
         }
 
         def si = serviceItemService.getAllowableItem(si_id,
@@ -215,7 +215,7 @@ public class ItemCommentService {
             itemCommentToSave.text = params.commentTextInput
 
             if (!itemCommentToSave.id) {
-                itemCommentToSave.serviceItem = si
+                itemCommentToSave.listing = si
             }
 
             if (rateVal) {
@@ -245,9 +245,9 @@ public class ItemCommentService {
 
             if(changeDetail) {
                 Profile activityAuthor = profileService.findByUsername(sessionParams.username)
-                ServiceItemActivity activity = new ServiceItemActivity(action: Action.REVIEW_EDITED, author: activityAuthor)
+                ListingActivity activity = new ListingActivity(action: Action.REVIEW_EDITED, author: activityAuthor)
                 activity.addToChangeDetails(changeDetail)
-                serviceItemActivityInternalService.addServiceItemActivity(si, activity)
+                serviceItemActivityInternalService.addListingActivity(si, activity)
             }
 
             return itemCommentToSave
@@ -257,7 +257,7 @@ public class ItemCommentService {
     }
 
     @Transactional
-    ServiceItem findAndDeleteItemComment(def params) {
+    Listing findAndDeleteItemComment(def params) {
 
         def session = retrieveHttpSession()
 
@@ -271,7 +271,7 @@ public class ItemCommentService {
             throw new ObjectNotFoundException("Cannot locate Allowable itemComment with id: ${params.itemCommentId}")
         }
 
-        def si_id = itemCommentToDelete.serviceItem.id
+        def si_id = itemCommentToDelete.listing.id
         def si = serviceItemService.getAllowableItem(si_id,
                                                 sessionParams,
                                                 serviceItemRules)
@@ -285,9 +285,9 @@ public class ItemCommentService {
         String reviewOwner = itemCommentToDelete.author.displayName
         ChangeDetail changeDetail = new ChangeDetail(fieldName: "reviewOwner", newValue: reviewOwner)
         Profile activityAuthor = profileService.findByUsername(sessionParams.username)
-        ServiceItemActivity activity = new ServiceItemActivity(action: Action.REVIEW_DELETED, author: activityAuthor)
+        ListingActivity activity = new ListingActivity(action: Action.REVIEW_DELETED, author: activityAuthor)
         activity.addToChangeDetails(changeDetail)
-        serviceItemActivityInternalService.addServiceItemActivity(si, activity)
+        serviceItemActivityInternalService.addListingActivity(si, activity)
 
         //return the serviceitem because the new rating stats will be useful in the response
         return si;
@@ -295,7 +295,7 @@ public class ItemCommentService {
 
     @Transactional
     def deleteItemComment(itemCommentToDelete, si) {
-        def si_id = itemCommentToDelete.serviceItem.id
+        def si_id = itemCommentToDelete.listing.id
 
         Lock lock = new ReentrantLock();
         lock.lock();
@@ -421,9 +421,9 @@ public class ItemCommentService {
 
     @Transactional
     def rate(def itemComment, def newRate) {
-        if (!itemComment?.serviceItem || !itemComment?.author) return 0
+        if (!itemComment?.listing || !itemComment?.author) return 0
 
-        def si = ServiceItem.get(itemComment.serviceItem.id)
+        def si = Listing.get(itemComment.listing.id)
         Lock lock = new ReentrantLock();
         lock.lock();
         try {

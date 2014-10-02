@@ -1,6 +1,6 @@
 package marketplace.rest.writer
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.hal.AbstractRepresentationWriter
 
 import javax.ws.rs.core.MediaType
@@ -14,7 +14,7 @@ import marketplace.rest.representation.out.ApplicationRepresentation
     ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
     MediaType.APPLICATION_JSON
 ])
-class ApplicationRepresentationWriter extends AbstractRepresentationWriter<ServiceItem> {
+class ApplicationRepresentationWriter extends AbstractRepresentationWriter<Listing> {
     ApplicationRepresentationWriter() {
         super(new ApplicationRepresentation.Factory())
     }

@@ -1,6 +1,6 @@
 package marketplace.rest.representation.out
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -9,7 +9,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.IwcUserApplications
 import marketplace.rest.resource.ProfileResource
-import marketplace.rest.resource.ServiceItemResource
+import marketplace.rest.resource.ListingResource
 
 class IwcUserApplicationsRepresentation extends SelfRefRepresentation<IwcUserApplications> {
     IwcUserApplicationsRepresentation(IwcUserApplications userApplications, ApplicationRootUriBuilderHolder uriBuilderHolder) {
@@ -20,11 +20,11 @@ class IwcUserApplicationsRepresentation extends SelfRefRepresentation<IwcUserApp
             linkApplications(userApplications.listings, uriBuilderHolder), null)
     }
 
-    private static HalLinks linkApplications(Collection<ServiceItem> items, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private static HalLinks linkApplications(Collection<Listing> items, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalLinks(items.collect { item ->
             URI href = uriBuilderHolder.builder
-                    .path(ServiceItemResource)
-                    .path(ServiceItemResource, 'read')
+                    .path(ListingResource)
+                    .path(ListingResource, 'read')
                     .buildFromMap([id: item.id])
 
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))

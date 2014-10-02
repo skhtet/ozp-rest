@@ -2,7 +2,7 @@ package marketplace
 
 import org.elasticsearch.action.search.SearchPhaseExecutionException
 import org.elasticsearch.index.query.QueryParsingException
-import org.elasticsearch.search.SearchHits
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock
 
@@ -61,7 +61,7 @@ class SearchableService {
     }
 
     void reindexServiceItems(def closure) {
-        def criteria = ServiceItem.createCriteria()
+        def criteria = Listing.createCriteria()
         def serviceItems = criteria.list(closure)
         def total = serviceItems.size()
         log.info "Re-indexing ${total} listings!!!"

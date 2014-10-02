@@ -18,10 +18,10 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
     GrailsApplication grailsApplication
 
     @Autowired
-    ServiceItemActivityInternalService serviceItemActivityInternalService
+    ListingActivityInternalService serviceItemActivityInternalService
 
     @Autowired
-    ServiceItemRestService serviceItemRestService
+    ListingRestService serviceItemRestService
 
     @Autowired
     TagRestService tagRestService
@@ -39,7 +39,7 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
     @Transactional
     public void deleteById(Long id) {
         ServiceItemTag serviceItemTag = ServiceItemTag.read(id)
-        ServiceItem serviceItem = serviceItemTag.serviceItem
+        Listing serviceItem = serviceItemTag.serviceItem
         Tag t = serviceItemTag.tag
 
         serviceItemActivityInternalService.addServiceItemTagActivity(
@@ -109,14 +109,14 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
 
     @Transactional(readOnly=true)
     public ServiceItemTag getByServiceItemIdAndTagId(long serviceItemId, long tagId){
-        ServiceItem serviceItem = serviceItemRestService.getById(serviceItemId)
+        Listing serviceItem = serviceItemRestService.getById(serviceItemId)
         Tag tag = Tag.read(tagId)
         ServiceItemTag.findByServiceItemAndTag(serviceItem, tag)
     }
 
     @Transactional(readOnly=true)
     public Collection<ServiceItemTag> getAllByServiceItemId(long serviceItemId){
-        ServiceItem serviceItem = serviceItemRestService.getById(serviceItemId)
+        Listing serviceItem = serviceItemRestService.getById(serviceItemId)
         ServiceItemTag.findAllByServiceItem(serviceItem).sort { it.tag }
     }
 
@@ -128,6 +128,6 @@ class ServiceItemTagRestService extends RestService<ServiceItemTag> {
         Profile profile = profileRestService.getById(profileId)
 
         ServiceItemTag.findAllByCreatedBy(profile)
-            .grep { serviceItemRestService.canView(it.serviceItem) }.sort { it.tag }
+            .grep { serviceItemRestService.canView(it.listing) }.sort { it.tag }
     }
 }

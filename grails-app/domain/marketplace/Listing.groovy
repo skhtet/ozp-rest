@@ -16,7 +16,7 @@ import gorm.AuditStamp
 
 
 @AuditStamp
-class ServiceItem implements Serializable {
+class Listing implements Serializable {
 
     //these two fields are used by the RestService to determine
     //how to handle marshalling of this domain
@@ -89,7 +89,7 @@ class ServiceItem implements Serializable {
         ]
     }
 
-    // Specifies that changes to serviceItems will be written to the database as ChangeDetail
+    // Specifies that changes to listings will be written to the database as ChangeDetail
     // records and which fields to ignore.
     static auditable = [ignore:[
         'version',
@@ -107,7 +107,7 @@ class ServiceItem implements Serializable {
         'totalComments',
         'lastActivity',
         'rejectionListings',
-        'serviceItemActivities',
+        'listingActivities',
 
         //these fields are technically auditable, but are associated with a separate activity
         'relationships',
@@ -146,9 +146,9 @@ class ServiceItem implements Serializable {
 
     SortedSet rejectionListings
     List screenshots
-    List serviceItemActivities
+    List listingActivities
 
-    ServiceItemActivity lastActivity
+    ListingActivity lastActivity
     Agency agency
     Types type
 
@@ -159,8 +159,8 @@ class ServiceItem implements Serializable {
         owners: Profile,
         itemComments: ItemComment,
         rejectionListings: RejectionListing,
-        serviceItemActivities: ServiceItemActivity,
-        docUrls: ServiceItemDocumentationUrl,
+        listingActivities: ListingActivity,
+        docUrls: DocUrl,
         screenshots: Screenshot,
         relationships: Relationship,
         contacts: Contact,
@@ -178,7 +178,7 @@ class ServiceItem implements Serializable {
         cache true
         tablePerHierarchy false
         categories batchSize: 50
-        serviceItemActivities batchSize: 50
+        listingActivities batchSize: 50
         itemComments cascade: 'all-delete-orphan', batchSize: 50
         rejectionListings batchSize: 50
         screenshots indexColumn: [name: "ordinal", type: Integer], cascade: 'all-delete-orphan'
@@ -368,7 +368,7 @@ class ServiceItem implements Serializable {
 
     @Override
     boolean equals(other) {
-        if (other instanceof ServiceItem) {
+        if (other instanceof Listing) {
             return new EqualsBuilder()
                 .append(id, other.id)
                 .append(version, other.version)
@@ -391,13 +391,13 @@ class ServiceItem implements Serializable {
         owners?.find { it.username == user.username }
     }
 
-    static List<ServiceItem> findAllByAuthor(Profile user) {
-        ServiceItem.findAll("from ServiceItem as serviceItem where :user member of serviceItem.owners", [user: user])
+    static List<Listing> findAllByAuthor(Profile user) {
+        Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
     }
 
     def beforeValidate() {
         //make audit trail plugin work on child items
-        (modifiableReferenceProperties + ['serviceItemActivities', 'lastActivity']).each { prop ->
+        (modifiableReferenceProperties + ['listingActivities', 'lastActivity']).each { prop ->
             Utils.singleOrCollectionDo(this[prop]) {
                 //call beforeValidate if it exists
                 if (it?.metaClass?.respondsTo(it, 'beforeValidate')) {

@@ -1,7 +1,6 @@
 package marketplace.rest.representation.in
 
 import marketplace.ApplicationLibraryEntry
-import marketplace.ServiceItem
 
 class ApplicationLibraryEntryInputRepresentation
         extends AbstractInputRepresentation<ApplicationLibraryEntry> {

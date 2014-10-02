@@ -36,14 +36,14 @@ class PurgeUserService {
             throw new AuthorizationException(message: "Only the System user can purge users.")
         }
 
-        def serviceItems = ServiceItem.findAllByAuthor(user)
+        def serviceItems = Listing.findAllByAuthor(user)
         serviceItems.each {
             it.removeFromOwners(user)
             it.addToOwners(systemProfile)
             it.save(flush: true)
         }
 
-        def serviceItemActivities = ServiceItemActivity.findAllByAuthor(user)
+        def serviceItemActivities = ListingActivity.findAllByAuthor(user)
         serviceItemActivities.each {
             it.author = systemProfile
             it.save(flush: true)
@@ -51,7 +51,7 @@ class PurgeUserService {
 
         def itemComments = ItemComment.findAllByAuthor(user)
         itemComments.each {
-            def si = it.serviceItem
+            def si = it.listing
             si.refresh()
             itemCommentService.deleteItemComment(it, si)
             si.save(flush: true)

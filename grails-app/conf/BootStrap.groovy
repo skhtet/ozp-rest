@@ -88,7 +88,7 @@ class BootStrap {
 		}
 
         [
-            ServiceItemActivity,
+            ListingActivity,
             ModifyRelationshipActivity,
             RejectionActivity,
             ServiceItemTag,
@@ -102,7 +102,7 @@ class BootStrap {
             Intent,
             Profile,
             Images,
-            ServiceItem,
+            Listing,
             Category,
             RejectionJustification,
             RejectionListing,

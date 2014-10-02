@@ -11,19 +11,17 @@ class ItemComment implements Comparable, Serializable {
         text excludeFromAll: true
     }
 
-    static bindableProperties = ['text', 'rate', 'serviceItem']
+    static bindableProperties = ['text', 'rate', 'listing']
     static modifiableReferenceProperties = []
 
     String text
     Float rate
 
-    static belongsTo = [serviceItem: ServiceItem, author: Profile]
+    static belongsTo = [listing: Listing, author: Profile]
 
     static mapping = {
         author fetch: 'join'
         cache true
-        serviceItem index: 'itm_cmnt_svc_item_id_idx'
-        author index: 'itm_cmnt_author_id_idx'
     }
 
     static constraints = {

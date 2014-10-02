@@ -9,17 +9,17 @@ class ContactTests {
 
     Contact contact
     ContactType contactType
-    ServiceItem serviceItem
+    Listing serviceItem
 
     void setUp() {
         FakeAuditTrailHelper.install()
 
         mockForConstraintsTests(ContactType)
         mockForConstraintsTests(Contact)
-        mockDomain(ServiceItem)
+        mockDomain(Listing)
 
         contactType = new ContactType(title: "a type", required: false)
-        serviceItem = new ServiceItem()
+        serviceItem = new Listing()
         contact = new Contact(name: "Bob", email: "abc@owfgoss.org", type: contactType, securePhone: '555-5555')
 
         serviceItem.addToContacts(contact)

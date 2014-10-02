@@ -2,17 +2,15 @@ package marketplace.rest.service
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-
-import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
 import grails.validation.ValidationException
 import org.springframework.security.access.AccessDeniedException
 import marketplace.rest.DomainObjectNotFoundException
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.Types
-import marketplace.ServiceItemDocumentationUrl
+import marketplace.DocUrl
 import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Category
@@ -39,14 +37,14 @@ import ozone.marketplace.enums.RelationshipType
 class RestServiceUnitTest {
     GrailsApplication grailsApplication
 
-    RestService<ServiceItem> restService
-    DomainValidator<ServiceItem> validator
+    RestService<Listing> restService
+    DomainValidator<Listing> validator
 
 
     private static class ServiceItemInputRepresentation
             extends AbstractInputRepresentation {
         ServiceItemInputRepresentation() {
-            super(ServiceItem.class)
+            super(Listing.class)
         }
 
         String title
@@ -86,19 +84,19 @@ class RestServiceUnitTest {
     ]
 
     //a simple sublass of RestService that specializes in ServiceItems
-    private static class TestService extends RestService<ServiceItem> {
+    private static class TestService extends RestService<Listing> {
         TestService(GrailsApplication grailsApplication) {
-            super(grailsApplication, ServiceItem.class, null, null)
+            super(grailsApplication, Listing.class, null, null)
         }
 
         @Override
-        void authorizeUpdate(ServiceItem si) {}
+        void authorizeUpdate(Listing si) {}
     }
 
     void setUp() {
         //mock createCriteria.  It needs to return an object with a functioning list() method
-        ServiceItem.metaClass.static.createCriteria = {
-            [ list: { params, closure -> ServiceItem.list(params) } ]
+        Listing.metaClass.static.createCriteria = {
+            [ list: { params, closure -> Listing.list(params) } ]
         }
 
         def owner = new Profile(username: 'testUser')
@@ -110,7 +108,7 @@ class RestServiceUnitTest {
         def type = new Types(title: 'Test Type')
         type.id = 1
 
-        def exampleServiceItem = new ServiceItem(exampleServiceItemProps + [
+        def exampleServiceItem = new Listing(exampleServiceItemProps + [
             owners: [owner],
             type: type
         ])
@@ -125,7 +123,7 @@ class RestServiceUnitTest {
         mockDomain(Screenshot.class)
         mockDomain(Category.class)
         mockDomain(Relationship.class)
-        mockDomain(ServiceItem.class, [exampleServiceItem])
+        mockDomain(Listing.class, [exampleServiceItem])
         mockDomain(Profile.class, [owner, newOwner])
         mockDomain(Types.class, [type])
 
@@ -134,12 +132,12 @@ class RestServiceUnitTest {
         grailsApplication.refresh()
 
         //necessary to get reflection-based marshalling to work
-        grailsApplication.addArtefact(ServiceItemDocumentationUrl.class)
+        grailsApplication.addArtefact(DocUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
         grailsApplication.addArtefact(Category.class)
         grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
-        grailsApplication.addArtefact(ServiceItem.class)
+        grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
         grailsApplication.addArtefact(ServiceItemTag.class)
         grailsApplication.addArtefact(Tag.class)
@@ -147,13 +145,13 @@ class RestServiceUnitTest {
     }
 
     void testGetAll() {
-        Collection<ServiceItem> retval = restService.getAll(null, null)
+        Collection<Listing> retval = restService.getAll(null, null)
 
         assert retval instanceof Collection
         assert retval.size() == 1
 
-        ServiceItem si = retval.iterator().next()
-        assert si instanceof ServiceItem
+        Listing si = retval.iterator().next()
+        assert si instanceof Listing
         assert si.title == exampleServiceItemProps.title
         assert si.id == exampleServiceItemProps.id
     }
@@ -161,8 +159,8 @@ class RestServiceUnitTest {
     void testGetById() {
         def id = restService.getAll(0, 1).iterator().next().id
 
-        ServiceItem retval = restService.getById(id)
-        assert retval instanceof ServiceItem
+        Listing retval = restService.getById(id)
+        assert retval instanceof Listing
         assert retval.title == exampleServiceItemProps.title
         assert retval.id == id
     }
@@ -191,7 +189,7 @@ class RestServiceUnitTest {
         )
 
         def id = restService.getAll(0, 1).iterator().next().id
-        ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
+        Listing updates = new Listing(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
             type: typeDto,
@@ -200,8 +198,8 @@ class RestServiceUnitTest {
         ])
         updates.id = id
 
-        ServiceItem retval = restService.updateById(id, updates)
-        assert retval instanceof ServiceItem
+        Listing retval = restService.updateById(id, updates)
+        assert retval instanceof Listing
         assert retval.title == newTitle
 
         //ensure that properties we didn't change do not change
@@ -212,7 +210,7 @@ class RestServiceUnitTest {
         assert retval.id == id
 
         //ensure that the changes were actually saved
-        ServiceItem fromGet = restService.getById(id)
+        Listing fromGet = restService.getById(id)
         assert fromGet.title == newTitle
         assert fromGet.owners == [Profile.get(2)] as Set
     }
@@ -229,7 +227,7 @@ class RestServiceUnitTest {
 
         def goodId = restService.getAll(0, 1).iterator().next().id
         def badId = ~goodId //bitwise NOT
-        ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
+        Listing updates = new Listing(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
             type: typeDto
@@ -243,7 +241,7 @@ class RestServiceUnitTest {
 
     void testUpdateByIdInvalidDto() {
         def id = restService.getAll(0, 1).iterator().next().id
-        ServiceItem updates = new ServiceItem()
+        Listing updates = new Listing()
         updates.id = id
 
         shouldFail(ValidationException) {
@@ -265,7 +263,7 @@ class RestServiceUnitTest {
 
         def goodId = restService.getAll(0, 1).iterator().next().id
         def badId = ~goodId //bitwise NOT
-        ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
+        Listing updates = new Listing(exampleServiceItemProps + [
             id: badId,
             title: newTitle,
             owners: [ownerDto],
@@ -310,14 +308,14 @@ class RestServiceUnitTest {
         Types typeDto = new Types()
         typeDto.id = typeId
 
-        ServiceItem newServiceItem = new ServiceItem(exampleServiceItemProps + [
+        Listing newServiceItem = new Listing(exampleServiceItemProps + [
             owners: [ownerDto],
             type: typeDto,
             relationships: [newRelationship]
         ] - [id: 1])
 
-        ServiceItem retval = restService.createFromDto(newServiceItem)
-        assert retval instanceof ServiceItem
+        Listing retval = restService.createFromDto(newServiceItem)
+        assert retval instanceof Listing
         assert retval.title == exampleServiceItemProps.title
         assert retval.owners == [Profile.get(ownerId)] as Set
         assert retval.type == Types.get(typeId)
@@ -326,7 +324,7 @@ class RestServiceUnitTest {
     }
 
     void testCreateFromDtoInvalidDto() {
-        ServiceItem invalidDto = new ServiceItem()
+        Listing invalidDto = new Listing()
 
         shouldFail(ValidationException) {
             restService.createFromDto(invalidDto)
@@ -347,7 +345,7 @@ class RestServiceUnitTest {
         typeDto.id = 1
 
         def id = restService.getAll(0, 1).iterator().next().id
-        ServiceItem updates = new ServiceItem(exampleServiceItemProps + [
+        Listing updates = new Listing(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerDto],
             type: typeDto,
@@ -356,7 +354,7 @@ class RestServiceUnitTest {
         ])
         updates.id = id
 
-        ServiceItem retval = restService.updateById(id, updates)
+        Listing retval = restService.updateById(id, updates)
 
         assert retval.createdDate != newCreatedDate
     }
@@ -377,7 +375,7 @@ class RestServiceUnitTest {
         }
 
         def makeScreenshot = {
-            def serviceItem = new ServiceItem()
+            def serviceItem = new Listing()
             serviceItem.id = 1
 
             new Screenshot(
@@ -435,7 +433,7 @@ class RestServiceUnitTest {
         }
 
         def makeScreenshot = {
-            def serviceItem = new ServiceItem()
+            def serviceItem = new Listing()
             serviceItem.id = 1
 
             new Screenshot(
@@ -521,7 +519,7 @@ class RestServiceUnitTest {
         )
 
         def id = restService.getAll(0, 1).iterator().next().id
-        InputRepresentation<ServiceItem> updates = new ServiceItemInputRepresentation(exampleServiceItemProps + [
+        InputRepresentation<Listing> updates = new ServiceItemInputRepresentation(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerRep],
             type: typeRep,
@@ -529,8 +527,8 @@ class RestServiceUnitTest {
             id: id
         ])
 
-        ServiceItem retval = restService.updateById(id, updates)
-        assert retval instanceof ServiceItem
+        Listing retval = restService.updateById(id, updates)
+        assert retval instanceof Listing
         assert retval.title == newTitle
 
         //ensure that properties we didn't change do not change
@@ -541,7 +539,7 @@ class RestServiceUnitTest {
         assert retval.id == id
 
         //ensure that the changes were actually saved
-        ServiceItem fromGet = restService.getById(id)
+        Listing fromGet = restService.getById(id)
         assert fromGet.title == newTitle
         assert fromGet.owners == [Profile.get(2)] as Set
     }
@@ -561,8 +559,8 @@ class RestServiceUnitTest {
             relationships: [newRelationship]
         ] - [id: 1])
 
-        ServiceItem retval = restService.createFromRepresentation(newServiceItem)
-        assert retval instanceof ServiceItem
+        Listing retval = restService.createFromRepresentation(newServiceItem)
+        assert retval instanceof Listing
         assert retval.title == exampleServiceItemProps.title
         assert retval.owners == [Profile.get(ownerId)] as Set
         assert retval.type == Types.get(typeId)

@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import marketplace.ServiceItem
-import marketplace.ServiceItemActivity
+import marketplace.Listing
+import marketplace.ListingActivity
 import marketplace.ServiceItemTag
 import marketplace.RejectionActivity
 import marketplace.RejectionListing
-import marketplace.ServiceItemSnapshot
+import marketplace.ListingSnapshot
 import marketplace.ModifyRelationshipActivity
 import marketplace.ChangeDetail
 
@@ -24,7 +24,7 @@ import marketplace.Constants
  */
 @Service
 @Transactional
-class ServiceItemActivityInternalService {
+class ListingActivityInternalService {
     @Autowired ProfileRestService profileRestService
 
     /**
@@ -38,39 +38,39 @@ class ServiceItemActivityInternalService {
      * @return The activity that is created, regardless of whether or not it is added to the
      * ServiceItem.
      */
-    public ServiceItemActivity createChangeLog(ServiceItem updated, Map original) {
-        def activity = new ServiceItemActivity(action: Constants.Action.MODIFIED)
-        def propsChangeLogger = (ServiceItemActivityInternalService.&logIfDifferent).curry(
+    public ListingActivity createChangeLog(Listing updated, Map original) {
+        def activity = new ListingActivity(action: Constants.Action.MODIFIED)
+        def propsChangeLogger = (ListingActivityInternalService.&logIfDifferent).curry(
                 activity, updated, original)
 
-        (ServiceItem.bindableProperties - ServiceItem.auditable.ignore).each(propsChangeLogger)
+        (Listing.bindableProperties - Listing.auditable.ignore).each(propsChangeLogger)
 
-        activity.changeDetails ? addServiceItemActivity(updated, activity) : activity
+        activity.changeDetails ? addListingActivity(updated, activity) : activity
     }
 
     /**
      * Add a new ServiceItemActivity to the service item with the specified action
      */
-    public ServiceItemActivity addServiceItemActivity(ServiceItem si,
+    public ListingActivity addListingActivity(Listing listing,
             Constants.Action action) {
-        addServiceItemActivity(si, new ServiceItemActivity(action: action))
+        addListingActivity(listing, new ListingActivity(action: action))
     }
 
     @Transactional
-    public ServiceItemActivity addServiceItemActivity(ServiceItem si,
-            ServiceItemActivity activity) {
+    public ListingActivity addListingActivity(Listing listing,
+            ListingActivity activity) {
         activity.author = profileRestService.currentUserProfile
 
-        si.save()
+        listing.save()
 
-        si.addToServiceItemActivities(activity)
-        si.lastActivity = activity
+        listing.addToListingActivities(activity)
+        listing.lastActivity = activity
 
         return activity
     }
 
     @Transactional
-    public RejectionActivity addRejectionActivity(ServiceItem si,
+    public RejectionActivity addRejectionActivity(Listing listing,
             RejectionListing rejectionListing) {
 
         rejectionListing.save()
@@ -79,7 +79,7 @@ class ServiceItemActivityInternalService {
             rejectionListing: rejectionListing
         )
 
-        addServiceItemActivity(si, activity)
+        addListingActivity(listing, activity)
         return activity
     }
 
@@ -91,16 +91,16 @@ class ServiceItemActivityInternalService {
      * @param removed ServiceItems that were removed from the parent
      */
     @Transactional
-    public void addRelationshipActivities(ServiceItem parent, Collection<ServiceItem> added,
-            Collection<ServiceItem> removed) {
+    public void addRelationshipActivities(Listing parent, Collection<Listing> added,
+            Collection<Listing> removed) {
 
-        def addActivity = { root, items, action ->
+        def addActivity = { Listing root, Collection<Listing> items, action ->
             def activity = new ModifyRelationshipActivity(
                 action: action,
                 author: profileRestService.currentUserProfile,
-                items: items.collect { new ServiceItemSnapshot(serviceItem: it, title: it.title)}
+                items: items.collect { new ListingSnapshot(serviceItem: it, title: it.title)}
             )
-            root.addToServiceItemActivities(activity)
+            root.addToListingActivities(activity)
 
             root.lastActivity = activity
         }
@@ -123,10 +123,10 @@ class ServiceItemActivityInternalService {
     }
 
     @Transactional
-    public ServiceItemActivity addServiceItemTagActivity(Constants.Action action,
+    public ListingActivity addServiceItemTagActivity(Constants.Action action,
             ServiceItemTag serviceItemTag) {
         String tagTitle = serviceItemTag.tag.title
-        ServiceItemActivity activity = new ServiceItemActivity(action: action)
+        ListingActivity activity = new ListingActivity(action: action)
         ChangeDetail changeDetail = new ChangeDetail(
             fieldName: "Tag",
             oldValue: null,
@@ -134,14 +134,14 @@ class ServiceItemActivityInternalService {
         )
 
         activity.addToChangeDetails(changeDetail)
-        return addServiceItemActivity(serviceItemTag.serviceItem, activity)
+        return addListingActivity(serviceItemTag.serviceItem, activity)
     }
 
     /**
      * Compares the property with name as provided by propertyName for the updated and the old
      * object and if different, adds a changeDetail to the passed in activity.
      */
-    private static void logIfDifferent(ServiceItemActivity activity, updated,
+    private static void logIfDifferent(ListingActivity activity, updated,
             old, String propertyName, String displayName=null) {
 
 //        // Score card change details will be handled by separate activity

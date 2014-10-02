@@ -3,7 +3,7 @@ package marketplace.rest.representation.in
 import marketplace.Agency
 import marketplace.ContactType
 import marketplace.Profile
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.Types
 import marketplace.Category
 
@@ -16,8 +16,8 @@ class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     IdRefInputRepresentation(Class<T> cls) { super(cls) }
 }
 
-class ServiceItemIdRef extends IdRefInputRepresentation<ServiceItem, Long> {
-    ServiceItemIdRef() { super(ServiceItem.class) }
+class ServiceItemIdRef extends IdRefInputRepresentation<Listing, Long> {
+    ServiceItemIdRef() { super(Listing.class) }
 }
 
 class ProfileIdRef extends IdRefInputRepresentation<Profile, Long> {

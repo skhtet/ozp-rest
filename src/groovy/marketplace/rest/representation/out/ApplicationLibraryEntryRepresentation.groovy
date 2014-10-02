@@ -1,7 +1,7 @@
 package marketplace.rest.representation.out
 
 import marketplace.ApplicationLibraryEntry
-import marketplace.ServiceItem
+import marketplace.Listing
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RegisteredRelationType
@@ -23,10 +23,10 @@ class ApplicationLibraryEntryRepresentation
     private ApplicationLibraryEntryRepresentation(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(createLinks(entry, uriBuilderHolder),
-            createEmbeddedServiceItem(entry, uriBuilderHolder))
+            createEmbeddedListing(entry, uriBuilderHolder))
 
         assert entry != null
-        assert entry.serviceItem != null
+        assert entry.listing != null
 
         this.entry = entry
     }
@@ -40,7 +40,7 @@ class ApplicationLibraryEntryRepresentation
             entryHref = uriBuilderHolder.builder
                 .path(ProfileResource.class)
                 .path(ProfileResource.class, 'removeFromApplicationLibrary')
-                .buildFromMap(profileId: entry.owner.id, serviceItemId: entry.serviceItem.id)
+                .buildFromMap(profileId: entry.owner.id, listingId: entry.listing.id)
 
         new HalLinks([
             new AbstractMap.SimpleEntry(RegisteredRelationType.COLLECTION,
@@ -49,15 +49,15 @@ class ApplicationLibraryEntryRepresentation
         ])
     }
 
-    private static HalEmbedded createEmbeddedServiceItem(ApplicationLibraryEntry entry,
+    private static HalEmbedded createEmbeddedListing(ApplicationLibraryEntry entry,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(OzpRelationType.APPLICATION,
             new LibraryApplicationRepresentation(entry, uriBuilderHolder))
     }
 
     public String getFolder() { entry.folder }
-    public IdRefRepresentation<ServiceItem> getServiceItem() {
-        new IdRefRepresentation<ServiceItem>(entry.serviceItem)
+    public IdRefRepresentation<Listing> getListing() {
+        new IdRefRepresentation<Listing>(entry.listing)
     }
 
     public static class Factory

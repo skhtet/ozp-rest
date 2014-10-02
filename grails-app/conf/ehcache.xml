@@ -27,7 +27,7 @@
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </defaultCache>
 
-    <cache name="marketplace.ServiceItem"
+    <cache name="marketplace.Listing"
            maxElementsInMemory="100000"
            timeToLiveSeconds="3600"
            eternal="false"

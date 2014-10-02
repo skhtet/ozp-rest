@@ -2,25 +2,20 @@ package marketplace
 
 import grails.test.mixin.TestFor
 import ozone.utils.TestUtil
-import org.codehaus.groovy.grails.web.json.JSONObject
-import org.junit.Before
-import org.junit.Test
 
-import static org.hamcrest.CoreMatchers.equalTo
-import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 
 import marketplace.testutil.FakeAuditTrailHelper
 
-@TestFor(ServiceItem)
-class ServiceItemTests {
+@TestFor(Listing)
+class ListingTests {
     def serviceItem
 
     void setUp() {
         FakeAuditTrailHelper.install()
 
-        mockForConstraintsTests(ServiceItem)
-        serviceItem = new ServiceItem()
+        mockForConstraintsTests(Listing)
+        serviceItem = new Listing()
     }
 
     @Ignore //disabled until approval workflow is re-enabled
@@ -47,7 +42,7 @@ class ServiceItemTests {
      * }
      */
     void testTitleNotBlank(){
-        serviceItem = new ServiceItem()
+        serviceItem = new Listing()
         serviceItem.title = ''
         assertFalse serviceItem.validate()
         assertEquals 'title is blank.', 'blank', serviceItem.errors['title']
@@ -94,11 +89,11 @@ class ServiceItemTests {
      * }
      */
     void testDescriptionCustomValidator(){
-        serviceItem = new ServiceItem(description: TestUtil.getStringOfLength(4001))
+        serviceItem = new Listing(description: TestUtil.getStringOfLength(4001))
         assertFalse serviceItem.validate()
         assertEquals 'description fails validation of size 4001.', 'maxSize', serviceItem.errors['description']
 
-        serviceItem = new ServiceItem(description: TestUtil.getStringOfLength(4000))
+        serviceItem = new Listing(description: TestUtil.getStringOfLength(4000))
         assertFalse serviceItem.validate() //Other items haven't been set yet
         assertNotSame "description should pass validation of size 4000", 'maxSize', serviceItem.errors['description']
     }
@@ -120,7 +115,7 @@ class ServiceItemTests {
      * }
      */
     void testNullable(){
-        serviceItem = new ServiceItem(launchUrl: null,
+        serviceItem = new Listing(launchUrl: null,
             installUrl: null,
             requirements: null,
             dependencies: null,
@@ -136,41 +131,41 @@ class ServiceItemTests {
     }
 
     void testLaunchURLValid() {
-        serviceItem = new ServiceItem(launchUrl: "https://www.foo.com")
+        serviceItem = new Listing(launchUrl: "https://www.foo.com")
         serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "https://192.168.20.28:8443")
+        serviceItem = new Listing(launchUrl: "https://192.168.20.28:8443")
         assertFalse serviceItem.validate()
         serviceItem.errors.allErrors.each {
                 println it
         }
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://localhost/widgetA")
+        serviceItem = new Listing(launchUrl: "http://localhost/widgetA")
         assertFalse serviceItem.validate()
         serviceItem.errors.allErrors.each {
             println it
         }
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://localhost:8080/widgetA")
+        serviceItem = new Listing(launchUrl: "http://localhost:8080/widgetA")
         assertFalse serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://my-machine/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
+        serviceItem = new Listing(launchUrl: "http://my-machine/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
         assertFalse serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://pctina/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
+        serviceItem = new Listing(launchUrl: "http://pctina/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
         assertFalse serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://pctina:8080/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
+        serviceItem = new Listing(launchUrl: "http://pctina:8080/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
         assertFalse serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 
-        serviceItem = new ServiceItem(launchUrl: "http://pctina:80805/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
+        serviceItem = new Listing(launchUrl: "http://pctina:80805/owf/examples/fake-widgets/img/fakeWidgets/fakeWidget8.png")
         assertFalse serviceItem.validate()
         assertNull serviceItem.errors['launchUrl']
 

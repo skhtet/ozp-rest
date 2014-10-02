@@ -128,7 +128,7 @@
 		{
 			"id": "15107b91-0ed0-6f44-08e5-00cb9c668cde",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -166,7 +166,7 @@
 		{
 			"id": "18ea7a53-6565-9060-70a5-99c64d6e038e",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -223,7 +223,7 @@
 		{
 			"id": "1db9b960-e5a9-17b8-44c1-9abe6729a0ae",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -262,7 +262,7 @@
 		{
 			"id": "2d612f9c-5ac3-8629-4dd7-44df0733f287",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -281,7 +281,7 @@
 		{
 			"id": "38087a15-2494-0a1e-3191-01c3cdb52512",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -319,7 +319,7 @@
 		{
 			"id": "40b1c6de-fe27-5539-6076-5e7975be6955",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -414,7 +414,7 @@
 		{
 			"id": "5828c2c7-16fb-886a-1c92-775b7e72a879",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -433,7 +433,7 @@
 		{
 			"id": "5b56a50a-6841-b5a5-b396-d87b55adade9",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -567,7 +567,7 @@
 		{
 			"id": "71dadf1a-de98-bdcc-bc5c-17c767ecdb0d",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -586,7 +586,7 @@
 		{
 			"id": "7e20dd85-f58f-f1f2-0f29-60ff7dd9f944",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -605,7 +605,7 @@
 		{
 			"id": "881af6d3-30e5-4e97-b5d9-2c2259969824",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -624,7 +624,7 @@
 		{
 			"id": "982d2578-a4e6-4f98-7e92-898392ed8d24",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -643,7 +643,7 @@
 		{
 			"id": "9c2c9129-8b14-670d-cdb4-f9ef35e951f9",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -662,7 +662,7 @@
 		{
 			"id": "9d091cc7-4430-2e36-8f79-f8bb43dbb855",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -681,7 +681,7 @@
 		{
 			"id": "9f9b9e15-e575-9068-cf62-ea650d179812",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -700,7 +700,7 @@
 		{
 			"id": "a0783fde-f1dc-ba2a-7359-97a13b2a3b31",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -795,7 +795,7 @@
 		{
 			"id": "b7e6b539-acdf-8c06-e879-cbe376d40b2d",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -814,7 +814,7 @@
 		{
 			"id": "ba9eb249-00b1-8bc7-2798-4f9167fb194a",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -852,7 +852,7 @@
 		{
 			"id": "c687d2ea-0804-6053-86af-ac2a07770518",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -871,7 +871,7 @@
 		{
 			"id": "d065fa42-5b1c-8f63-e2ea-08a40169aa32",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",
@@ -909,7 +909,7 @@
 		{
 			"id": "d82ff5ec-deb2-0403-983b-0c79734b7fe5",
 			"headers": "Content-Type: application/json\nAccept: application/json\n",
-			"url": "http://localhost:8080/marketplace/api/serviceItem/",
+			"url": "http://localhost:8080/marketplace/api/listing/",
 			"preRequestScript": "",
 			"pathVariables": {},
 			"method": "POST",

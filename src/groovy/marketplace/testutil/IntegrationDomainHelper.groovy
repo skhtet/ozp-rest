@@ -2,14 +2,14 @@ package marketplace.testutil
 
 import marketplace.Profile
 import marketplace.Relationship
-import marketplace.ServiceItem
+import marketplace.Listing
 import ozone.utils.ApplicationContextHolder
 
 class IntegrationDomainHelper {
     public static void deleteGrailsDomainClasses() {
 
         Relationship.getAll()*.delete(flush: true)
-        ServiceItem.getAll()*.delete(flush: true)
+        Listing.getAll()*.delete(flush: true)
 
         def domainClasses = ApplicationContextHolder.grailsApplication.domainClasses*.clazz
 

@@ -3,7 +3,7 @@ import ozone.utils.Utils
 
 testDataConfig {
     sampleData {
-        'marketplace.ServiceItem' {
+        Listing {
             uuid = { Utils.generateUUID() }
             isHidden = 0
             launchUrl = "http://launch.url.gov"

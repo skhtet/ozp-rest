@@ -34,7 +34,7 @@ class PredicateFactory implements Serializable {
                 accessType: new AccessTypePredicate(predicateName: "accessType", paramName: "accessType"),
                 enabled_only: new IsEnabledPredicate(predicateName: "enabled", paramName: "enabled_only"),
                 outside_only: new SingleValuePredicate(predicateName: "isOutside", indexFieldName: "isOutside", paramName: "outside_only"),
-                serviceItemUuid: new SingleValuePredicate(predicateName: "serviceItemUuid", indexFieldName: "uuid", paramName: "serviceItemUuid") ,
+                listingUuid: new SingleValuePredicate(predicateName: "listingUuid", indexFieldName: "uuid", paramName: "listingUuid") ,
                 owfWidgetType: new SingleValuePredicate(predicateName: "owfWidgetType", indexFieldName: "owfProperties.owfWidgetType", paramName: "owfWidgetType"),
                 type: new ExactValuePredicate(predicateName: "type", indexFieldName: "type.title", paramName: "type"),
                 category: new MultiExactValuePredicate(predicateName: "type", indexFieldName: "categories.title", paramName: "category"),

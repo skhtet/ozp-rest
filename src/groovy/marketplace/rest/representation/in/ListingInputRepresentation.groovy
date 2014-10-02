@@ -2,13 +2,13 @@ package marketplace.rest.representation.in
 
 import marketplace.Contact
 import marketplace.Screenshot
-import marketplace.ServiceItem
-import marketplace.ServiceItemDocumentationUrl
+import marketplace.Listing
+import marketplace.DocUrl
 
-class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem> {
+class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
     ListingInputRepresentation() {
-        super(ServiceItem.class)
+        super(Listing.class)
     }
 
     String title
@@ -40,9 +40,9 @@ class ListingInputRepresentation extends AbstractInputRepresentation<ServiceItem
     }
 }
 
-class ResourceInputRepresentation extends AbstractInputRepresentation<ServiceItemDocumentationUrl> {
+class ResourceInputRepresentation extends AbstractInputRepresentation<DocUrl> {
     ResourceInputRepresentation() {
-        super(ServiceItemDocumentationUrl.class)
+        super(DocUrl.class)
     }
 
     String name

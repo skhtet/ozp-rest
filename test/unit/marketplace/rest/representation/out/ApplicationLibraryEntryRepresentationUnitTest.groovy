@@ -8,13 +8,12 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
-import marketplace.ServiceItem
+import marketplace.Listing
 
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
-import marketplace.hal.OzpRelationType
 
 @TestMixin(GrailsUnitTestMixin)
 class ApplicationLibraryEntryRepresentationUnitTest {
@@ -30,13 +29,13 @@ class ApplicationLibraryEntryRepresentationUnitTest {
     void testLinks() {
         Profile owner = new Profile()
         owner.id = 16
-        ServiceItem serviceItem = new ServiceItem(
+        Listing serviceItem = new Listing(
             launchUrl: 'https://localhost/'
         )
         serviceItem.id = 13
         ApplicationLibraryEntry entry = new ApplicationLibraryEntry(
             owner: owner,
-            serviceItem: serviceItem
+            listing: serviceItem
         )
 
         ApplicationLibraryEntryRepresentation rep =
@@ -51,7 +50,7 @@ class ApplicationLibraryEntryRepresentationUnitTest {
     void testEmbedded() {
         Profile owner = new Profile()
         owner.id = 16
-        ServiceItem serviceItem = new ServiceItem(
+        Listing serviceItem = new Listing(
             title: 'test app',
             launchUrl: 'https://localhost/'
         )
@@ -59,7 +58,7 @@ class ApplicationLibraryEntryRepresentationUnitTest {
         serviceItem.id = 13
         ApplicationLibraryEntry entry = new ApplicationLibraryEntry(
             owner: owner,
-            serviceItem: serviceItem
+            listing: serviceItem
         )
 
         ApplicationLibraryEntry libraryApplicationEntry
@@ -82,7 +81,7 @@ class ApplicationLibraryEntryRepresentationUnitTest {
     void testGetServiceItem() {
         Profile owner = new Profile()
         owner.id = 16
-        ServiceItem serviceItem = new ServiceItem(
+        Listing serviceItem = new Listing(
             title: 'test app',
             launchUrl: 'https://localhost/'
         )
@@ -90,12 +89,12 @@ class ApplicationLibraryEntryRepresentationUnitTest {
         serviceItem.id = 13
         ApplicationLibraryEntry entry = new ApplicationLibraryEntry(
             owner: owner,
-            serviceItem: serviceItem
+            listing: serviceItem
         )
 
         ApplicationLibraryEntryRepresentation rep =
             factory.toRepresentation(entry, uriBuilderHolder)
 
-        assert rep.serviceItem.id == serviceItem.id
+        assert rep.listing.id == serviceItem.id
     }
 }

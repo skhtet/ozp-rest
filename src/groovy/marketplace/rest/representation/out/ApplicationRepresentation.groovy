@@ -2,18 +2,16 @@ package marketplace.rest.representation.out
 
 import marketplace.Intent
 import marketplace.Screenshot
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.hal.ApplicationRootUriBuilderHolder
-import marketplace.hal.HalEmbedded
 import marketplace.hal.Link
-import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 
-import marketplace.rest.resource.ServiceItemResource
+import marketplace.rest.resource.ListingResource
 
-class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
+class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-application-v1+json'
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-applications-v1+json'
 
@@ -35,38 +33,38 @@ class ApplicationRepresentation extends SelfRefRepresentation<ServiceItem> {
         singleton: true
     ]
 
-    ApplicationRepresentation(ServiceItem serviceItem,
+    ApplicationRepresentation(Listing listing,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(
             uriBuilderHolder.builder
-                .path(ServiceItemResource.class)
-                .path(ServiceItemResource.class, 'read')
-                .buildFromMap(id: serviceItem.id),
+                .path(ListingResource.class)
+                .path(ListingResource.class, 'read')
+                .buildFromMap(id: listing.id),
             null,
             null
         )
 
-        this.name = serviceItem.title
-        this.launchUrls.put('default', serviceItem.launchUrl)
-        this.tags = serviceItem.tags
-        this.type = serviceItem.type.title
-        this.uuid = serviceItem.uuid
-        this.description = serviceItem.descriptionShort
-        this.screenShots = serviceItem.screenshots.collect { Screenshot screenShot ->
+        this.name = listing.title
+        this.launchUrls.put('default', listing.launchUrl)
+        this.tags = listing.tags
+        this.type = listing.type.title
+        this.uuid = listing.uuid
+        this.description = listing.descriptionShort
+        this.screenShots = listing.screenshots.collect { Screenshot screenShot ->
             [href: screenShot.smallImageUrl]
         }
-        this.intents = serviceItem.intents.collect { Intent intent ->
+        this.intents = listing.intents.collect { Intent intent ->
             [type: intent.type, action: intent.action, icon: intent.icon, label: intent.label]
         }
 
-        this.addLink(RegisteredRelationType.DESCRIBES, new Link(new URI(serviceItem.launchUrl)))
+        this.addLink(RegisteredRelationType.DESCRIBES, new Link(new URI(listing.launchUrl)))
     }
 
-    public static class Factory implements RepresentationFactory<ServiceItem> {
+    public static class Factory implements RepresentationFactory<Listing> {
         public ApplicationRepresentation toRepresentation(
-                    ServiceItem serviceItem,
+                    Listing listing,
                     ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationRepresentation(serviceItem, uriBuilderHolder)
+            new ApplicationRepresentation(listing, uriBuilderHolder)
         }
     }
 }

@@ -8,7 +8,7 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
-import marketplace.ServiceItem
+import marketplace.Listing
 
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.ApplicationRootUriBuilderHolder
@@ -43,8 +43,8 @@ class ApplicationLibraryRepresentationUnitTest {
     //test the links on embedded objects
     void testEmbedded() {
         long profileId = 132
-        Collection<ServiceItem> serviceItems = [1,2,3].collect {
-            ServiceItem si = new ServiceItem(
+        Collection<Listing> serviceItems = [1,2,3].collect {
+            Listing si = new Listing(
                 title: "Listing $it",
                 launchUrl: "https://localhost/$it"
             )
@@ -61,17 +61,17 @@ class ApplicationLibraryRepresentationUnitTest {
         Collection<ApplicationLibraryEntry> entries = [
             new ApplicationLibraryEntry(
                 folder: 'folder 1',
-                serviceItem: serviceItems[0],
+                listing: serviceItems[0],
                 owner: profiles[0]
             ),
             new ApplicationLibraryEntry(
                 folder: null,
-                serviceItem: serviceItems[1],
+                listing: serviceItems[1],
                 owner: profiles[1]
             ),
             new ApplicationLibraryEntry(
                 folder: 'folder 1',
-                serviceItem: serviceItems[2],
+                listing: serviceItems[2],
                 owner: profiles[2]
             )
         ]
@@ -91,8 +91,8 @@ class ApplicationLibraryRepresentationUnitTest {
         assert folder.embedded.toMap().get(OzpRelationType.APPLICATION).collect {
             it.links.toMap().get(RegisteredRelationType.SELF).href
         } == [
-            "https://localhost/asdf/api/serviceItem/1",
-            "https://localhost/asdf/api/serviceItem/3"
+            "https://localhost/asdf/api/listing/1",
+            "https://localhost/asdf/api/listing/3"
         ]
 
         assert folder.embedded.toMap().get(OzpRelationType.APPLICATION).collect {
@@ -106,7 +106,7 @@ class ApplicationLibraryRepresentationUnitTest {
 
         assert rootFolder.embedded.toMap().get(OzpRelationType.APPLICATION)
             .links.toMap().get(RegisteredRelationType.SELF).href ==
-                "https://localhost/asdf/api/serviceItem/2"
+                "https://localhost/asdf/api/listing/2"
 
 
         assert rootFolder.embedded.toMap().get(OzpRelationType.APPLICATION)

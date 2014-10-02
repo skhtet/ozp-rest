@@ -8,13 +8,9 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
-import marketplace.ServiceItem
-
-import marketplace.hal.AbstractHalRepresentation
+import marketplace.Listing
 import marketplace.hal.ApplicationRootUriBuilderHolder
-import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
-import marketplace.hal.OzpRelationType
 
 @TestMixin(GrailsUnitTestMixin)
 class LibraryApplicationRepresentationUnitTest {
@@ -24,7 +20,7 @@ class LibraryApplicationRepresentationUnitTest {
         }
     ] as UriInfo)
 
-    ServiceItem serviceItem = new ServiceItem(
+    Listing serviceItem = new Listing(
         title: 'Listing 1',
         imageSmallUrl: "https://localhost/small",
         imageMediumUrl: "https://localhost/med",
@@ -37,7 +33,7 @@ class LibraryApplicationRepresentationUnitTest {
     Profile profile = new Profile()
 
     ApplicationLibraryEntry entry = new ApplicationLibraryEntry(
-        serviceItem: serviceItem,
+        listing: serviceItem,
         owner: profile
     )
 
@@ -57,7 +53,7 @@ class LibraryApplicationRepresentationUnitTest {
             'https://localhost/asdf/api/profile/98/library/12'
 
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
-            'https://localhost/asdf/api/serviceItem/12'
+            'https://localhost/asdf/api/listing/12'
     }
 
     void testGetLaunchUrls() {

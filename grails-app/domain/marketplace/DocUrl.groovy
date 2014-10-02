@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-class ServiceItemDocumentationUrl implements Serializable {
+class DocUrl implements Serializable {
 
     static searchable = {
         root false
@@ -17,7 +17,7 @@ class ServiceItemDocumentationUrl implements Serializable {
     String name
     String url
 
-    static belongsTo = [serviceItem: ServiceItem]
+    static belongsTo = [listing: Listing]
 
     static constraints = {
         name(maxSize: 255, nullable: false)
@@ -49,7 +49,7 @@ class ServiceItemDocumentationUrl implements Serializable {
         // hibernate proxies, so use the GORM 'instanceOf' method
         Boolean sameType
         try {
-            sameType = other.instanceOf(ServiceItemDocumentationUrl)
+            sameType = other.instanceOf(DocUrl)
         } catch(MissingMethodException mme) {
             sameType = false
         }

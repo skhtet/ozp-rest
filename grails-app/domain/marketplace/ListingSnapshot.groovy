@@ -4,26 +4,26 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 //TODO Is ther a reason to have this class? title is generally just the title of the serviceItem,
 //it seems redundant
-class ServiceItemSnapshot implements Serializable {
+class ListingSnapshot implements Serializable {
 
-    ServiceItem serviceItem
+    Listing listing
     String title
 
     static belongsTo = ModifyRelationshipActivity
 
     static constraints = {
-        serviceItem(nullable: true)
+        listing nullable: true
     }
 
     JSONObject asJSON() {
         return new JSONObject(
             title: title,
-            id: serviceItem?.id
+            id: listing?.id
         )
     }
 
     boolean equals(other) {
-        other instanceof ServiceItemSnapshot && this.title == other.title &&
-            this.serviceItem == other.serviceItem
+        other instanceof ListingSnapshot && this.title == other.title &&
+            this.listing == other.listing
     }
 }

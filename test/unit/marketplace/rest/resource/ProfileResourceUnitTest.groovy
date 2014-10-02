@@ -1,13 +1,11 @@
 package marketplace.rest.resource
 
-import javax.ws.rs.core.Response
-
 import org.codehaus.groovy.grails.web.json.JSONArray
 
 import marketplace.Profile
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.ItemComment
-import marketplace.ServiceItemActivity
+import marketplace.ListingActivity
 import marketplace.Constants
 
 import marketplace.testutil.FakeAuditTrailHelper
@@ -17,14 +15,14 @@ import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.mixin.TestMixin
 
 import marketplace.rest.service.ProfileRestService
-import marketplace.rest.service.ServiceItemActivityRestService
+import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.service.ItemCommentRestService
-import marketplace.rest.service.ServiceItemRestService
+import marketplace.rest.service.ListingRestService
 
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileResourceUnitTest {
 
-    def resource
+    ProfileResource resource
 
     def currentUser
 
@@ -53,38 +51,38 @@ class ProfileResourceUnitTest {
         assert resource.getOwnProfile() == currentUser
     }
 
-    void testGetServiceItemsByAuthorId() {
+    void testGetListingsByAuthorId() {
         def idPassedIn
 
-        def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
-        serviceItemRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
+        def listingRestServiceMock = mockFor(ListingRestService)
+        listingRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
             idPassedIn = id
             return null
         }
 
-        resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
+        resource.listingRestService = listingRestServiceMock.createMock()
 
         def idToPass = 1 as String
 
-        resource.getServiceItemsByAuthorId(idToPass)
+        resource.getListingsByAuthorId(idToPass)
 
         assert idPassedIn == idToPass as Integer
     }
 
-    void testGetOwnServiceItems() {
+    void testGetOwnListings() {
         currentUser = Profile.get(1)
 
         def idPassedIn
 
-        def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
-        serviceItemRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
+        def listingRestServiceMock = mockFor(ListingRestService)
+        listingRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
             idPassedIn = id
             return null
         }
 
-        resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
+        resource.listingRestService = listingRestServiceMock.createMock()
 
-        resource.getServiceItemsByAuthorId('self')
+        resource.getListingsByAuthorId('self')
 
         assert idPassedIn == currentUser.id
     }
@@ -100,7 +98,7 @@ class ProfileResourceUnitTest {
                 author: Profile.get(1),
                 text: 'blah blah',
                 rate: 1,
-                serviceItem: new ServiceItem(title: 'test serviceItem')
+                listing: new Listing(title: 'test listing')
             )] as Set
         }
 
@@ -131,7 +129,7 @@ class ProfileResourceUnitTest {
                 author: Profile.get(1),
                 text: 'blah blah',
                 rate: 1,
-                serviceItem: new ServiceItem(title: 'test serviceItem')
+                listing: new Listing(title: 'test listing')
             )] as Set
         }
 
@@ -225,32 +223,32 @@ class ProfileResourceUnitTest {
 //        assert json[0].serviceItem.id == 2
 //    }
 
-    void testGetServiceItemActivitiesByProfileId() {
+    void testGetListingActivitiesByProfileId() {
         def idPassedIn, offsetPassedIn, maxPassedIn
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
-        serviceItemActivityRestServiceMock.demand.getAllByProfileId(1..1) { id, offset, max ->
+        def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
+        listingActivityRestServiceMock.demand.getAllByProfileId(1..1) { id, offset, max ->
             idPassedIn = id
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
+            def listing = new Listing(title: 'listing 1')
+            listing.id = 2
 
-            return [new ServiceItemActivity(
+            return [new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
-                serviceItem: serviceItem
+                listing: listing
             )]
         }
 
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
 
         def idToPass = 1 as String
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getServiceItemActivitiesByProfileId(idToPass, offsetToPass, maxToPass)
+        def dtos = resource.getListingActivitiesByProfileId(idToPass, offsetToPass, maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == idToPass as Integer
@@ -260,37 +258,37 @@ class ProfileResourceUnitTest {
         assert json.size() == 1
         assert json[0].action == Constants.Action.CREATED.asJSON()
         assert json[0].author.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
+        assert json[0].listing.title == 'listing 1'
+        assert json[0].listing.id == 2
     }
 
-    void testGetOwnServiceItemActivities() {
+    void testGetOwnListingActivities() {
         currentUser = Profile.get(1)
 
         def idPassedIn, offsetPassedIn, maxPassedIn
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
-        serviceItemActivityRestServiceMock.demand.getAllByProfileId(1..1) { id, offset, max ->
+        def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
+        listingActivityRestServiceMock.demand.getAllByProfileId(1..1) { id, offset, max ->
             idPassedIn = id
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
+            def listing = new Listing(title: 'listing 1')
+            listing.id = 2
 
-            return [new ServiceItemActivity(
+            return [new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
-                serviceItem: serviceItem
+                listing: listing
             )]
         }
 
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
 
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getServiceItemActivitiesByProfileId('self', offsetToPass, maxToPass)
+        def dtos = resource.getListingActivitiesByProfileId('self', offsetToPass, maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id
@@ -300,38 +298,38 @@ class ProfileResourceUnitTest {
         assert json.size() == 1
         assert json[0].action == Constants.Action.CREATED.asJSON()
         assert json[0].author.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
+        assert json[0].listing.title == 'listing 1'
+        assert json[0].listing.id == 2
     }
 
-    void testGetServiceItemActivitiesByServiceItemOwnerId() {
+    void testGetListingActivitiesByListingOwnerId() {
         def idPassedIn, offsetPassedIn, maxPassedIn
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
-        serviceItemActivityRestServiceMock.demand.getAllByServiceItemOwnerId(1..1) { id, offset,
+        def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
+        listingActivityRestServiceMock.demand.getAllByListingOwnerId(1..1) { id, offset,
                 max ->
 
             idPassedIn = id
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
+            def listing = new Listing(title: 'listing 1')
+            listing.id = 2
 
-            return [new ServiceItemActivity(
+            return [new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
-                serviceItem: serviceItem
+                listing: listing
             )]
         }
 
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
 
         def idToPass = 1 as String
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getServiceItemActivitiesByServiceItemOwnerId(idToPass, offsetToPass,
+        def dtos = resource.getListingActivitiesByListingOwnerId(idToPass, offsetToPass,
                 maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
@@ -342,39 +340,39 @@ class ProfileResourceUnitTest {
         assert json.size() == 1
         assert json[0].action == Constants.Action.CREATED.asJSON()
         assert json[0].author.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
+        assert json[0].listing.title == 'listing 1'
+        assert json[0].listing.id == 2
     }
 
-    void testGetServiceItemActivitiesOnOwnServiceItems() {
+    void testGetListingActivitiesOnOwnListings() {
         currentUser = Profile.get(1)
 
         def idPassedIn, offsetPassedIn, maxPassedIn
 
-        def serviceItemActivityRestServiceMock = mockFor(ServiceItemActivityRestService)
-        serviceItemActivityRestServiceMock.demand.getAllByServiceItemOwnerId(1..1) { id, offset,
+        def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
+        listingActivityRestServiceMock.demand.getAllByListingOwnerId(1..1) { id, offset,
                 max ->
 
             idPassedIn = id
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def serviceItem = new ServiceItem(title: 'listing 1')
-            serviceItem.id = 2
+            def listing = new Listing(title: 'listing 1')
+            listing.id = 2
 
-            return [new ServiceItemActivity(
+            return [new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
-                serviceItem: serviceItem
+                listing: listing
             )]
         }
 
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
 
         def offsetToPass = 10
         def maxToPass = 5
 
-        def dtos = resource.getServiceItemActivitiesByServiceItemOwnerId('self', offsetToPass,
+        def dtos = resource.getListingActivitiesByListingOwnerId('self', offsetToPass,
                 maxToPass)
         def json = dtos.collect { it.asJSON() } as JSONArray
 
@@ -385,7 +383,7 @@ class ProfileResourceUnitTest {
         assert json.size() == 1
         assert json[0].action == Constants.Action.CREATED.asJSON()
         assert json[0].author.id == 1
-        assert json[0].serviceItem.title == 'listing 1'
-        assert json[0].serviceItem.id == 2
+        assert json[0].listing.title == 'listing 1'
+        assert json[0].listing.id == 2
     }
 }

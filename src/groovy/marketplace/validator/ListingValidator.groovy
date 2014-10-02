@@ -1,23 +1,20 @@
 package marketplace.validator
 
-import javax.annotation.PostConstruct
-
 import marketplace.Constants
-import marketplace.ServiceItem
-import org.springframework.beans.factory.annotation.Autowired
+import marketplace.Listing
 import org.springframework.stereotype.Component
 
 import marketplace.rest.service.ProfileRestService
 
 @Component
-class ServiceItemValidator implements DomainValidator<ServiceItem> {
+class ListingValidator implements DomainValidator<Listing> {
     ProfileRestService profileRestService
 
     /**
      * Ensures that any change in approval status is valid and allowed for this user.
      * Also ensures that approval preprequisites are met
      */
-    private void validateApprovalStatus(Map existing, ServiceItem updated) {
+    private void validateApprovalStatus(Map existing, Listing updated) {
         def newApprovalStatus = updated.approvalStatus
         def oldApprovalStatus = existing.approvalStatus
 
@@ -53,7 +50,7 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
     /**
      * Ensures that a new ServiceItem does not have an approval status other that In Progress
      */
-    private void validateNewApprovalStatus(ServiceItem newObj) {
+    private void validateNewApprovalStatus(Listing newObj) {
        if (newObj.approvalStatus != Constants.APPROVAL_STATUSES['IN_PROGRESS']) {
             throw new IllegalArgumentException("New ServiceItems cannot have an " +
                 "approvalStatus other than ${Constants.APPROVAL_STATUSES['IN_PROGRESS']}")
@@ -61,13 +58,13 @@ class ServiceItemValidator implements DomainValidator<ServiceItem> {
     }
 
     @Override
-    public void validateNew(ServiceItem newObj) {
+    public void validateNew(Listing newObj) {
         validateNewApprovalStatus(newObj)
     }
 
 
     @Override
-    public void validateChanges(Map existing, ServiceItem updated) {
+    public void validateChanges(Map existing, Listing updated) {
         validateApprovalStatus(existing, updated)
     }
 }

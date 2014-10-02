@@ -29,7 +29,7 @@ class Screenshot implements Serializable {
     static bindableProperties = ['smallImageUrl', 'largeImageUrl']
     static modifiableReferenceProperties = []
 
-    static belongsTo = [serviceItem: ServiceItem]
+    static belongsTo = [serviceItem: Listing]
 
     String smallImageUrl
     String largeImageUrl

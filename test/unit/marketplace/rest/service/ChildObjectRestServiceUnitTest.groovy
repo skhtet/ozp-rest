@@ -2,14 +2,12 @@ package marketplace.rest.service
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-
-import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
 import org.springframework.security.access.AccessDeniedException
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.Profile
 import marketplace.ItemComment
 import marketplace.Types
@@ -21,15 +19,15 @@ import marketplace.testutil.ProfileMappedByFix
 class ChildObjectRestServiceUnitTest {
     GrailsApplication grailsApplication
 
-    ChildObjectRestService<ServiceItem, ItemComment> service
+    ChildObjectRestService<Listing, ItemComment> service
 
     Profile currentUser, adminUser, nonAdminUser
 
-    private class TestService extends ChildObjectRestService<ServiceItem, ItemComment> {
+    private class TestService extends ChildObjectRestService<Listing, ItemComment> {
         TestService(GrailsApplication grailsApplication,
-                ServiceItemRestService serviceItemRestService) {
-            super(ServiceItem.class, 'serviceItem', 'itemComments', grailsApplication,
-                ItemComment.class, serviceItemRestService, null, null)
+                ListingRestService listingRestService) {
+            super(Listing.class, 'listing', 'itemComments', grailsApplication,
+                ItemComment.class, listingRestService, null, null)
         }
 
         ItemComment save(ItemComment comment) {
@@ -48,8 +46,8 @@ class ChildObjectRestServiceUnitTest {
         return comment
     }
 
-    private void makeService(serviceItemServiceMock) {
-        service = new TestService(grailsApplication, serviceItemServiceMock.createMock())
+    private void makeService(listingServiceMock) {
+        service = new TestService(grailsApplication, listingServiceMock.createMock())
     }
 
     void setUp() {
@@ -58,7 +56,7 @@ class ChildObjectRestServiceUnitTest {
 
         Types type = new Types(title: 'test type')
 
-        ServiceItem si1 = new ServiceItem(
+        Listing si1 = new Listing(
             title: 'Service Item 1',
             owners: [adminUser],
             type: type,
@@ -66,7 +64,7 @@ class ChildObjectRestServiceUnitTest {
         )
         si1.id = 1
 
-        ServiceItem si2 = new ServiceItem(
+        Listing si2 = new Listing(
             title: 'Service Item 2',
             owners: [nonAdminUser],
             launchUrl: 'https:///',
@@ -79,14 +77,14 @@ class ChildObjectRestServiceUnitTest {
 
         mockDomain(ItemComment.class)
         mockDomain(Profile.class, [adminUser, nonAdminUser])
-        mockDomain(ServiceItem.class)
+        mockDomain(Listing.class)
         [si1, si2].each { it.save(failOnError: true) }
 
 
         grailsApplication = new DefaultGrailsApplication()
         grailsApplication.refresh()
 
-        grailsApplication.addArtefact(ServiceItem.class)
+        grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(ItemComment.class)
         grailsApplication.addArtefact(Profile.class)
 
@@ -97,7 +95,7 @@ class ChildObjectRestServiceUnitTest {
 
         def viewAllowed = true
 
-        def serviceItemServiceMock = mockFor(ServiceItemRestService)
+        def serviceItemServiceMock = mockFor(ListingRestService)
         serviceItemServiceMock.demand.canView(2..2) { it -> viewAllowed }
         makeService(serviceItemServiceMock)
 
@@ -105,7 +103,7 @@ class ChildObjectRestServiceUnitTest {
 
         def returnedDto = service.createFromParentIdAndDto(1, dto)
 
-        assert returnedDto.serviceItem == ServiceItem.get(1)
+        assert returnedDto.listing == Listing.get(1)
         assert returnedDto.id != null
         assert returnedDto.text == dto.text
 
@@ -122,7 +120,7 @@ class ChildObjectRestServiceUnitTest {
 
         def viewAllowed = true
 
-        def serviceItemServiceMock = mockFor(ServiceItemRestService)
+        def serviceItemServiceMock = mockFor(ListingRestService)
         serviceItemServiceMock.demand.canView(3..100) { it -> viewAllowed }
         makeService(serviceItemServiceMock)
 
@@ -138,7 +136,7 @@ class ChildObjectRestServiceUnitTest {
         assert returnedDto.id == id
         assert returnedDto.text == makeCommentDto().text
         assert returnedDto.rate == 3
-        assert returnedDto.serviceItem == ServiceItem.get(1)
+        assert returnedDto.listing == Listing.get(1)
 
         viewAllowed = false
         shouldFail(AccessDeniedException) {
@@ -183,7 +181,7 @@ class ChildObjectRestServiceUnitTest {
     //}
 
     void testCreateFromDto() {
-        def serviceItemServiceMock = mockFor(ServiceItemRestService)
+        def serviceItemServiceMock = mockFor(ListingRestService)
         makeService(serviceItemServiceMock)
 
         //createFromDto is forbidden

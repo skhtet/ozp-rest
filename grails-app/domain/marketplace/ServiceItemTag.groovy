@@ -6,7 +6,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 class ServiceItemTag implements Serializable {
 
-    static belongsTo = [serviceItem: ServiceItem, tag: Tag, createdBy: Profile]
+    static belongsTo = [serviceItem: Listing, tag: Tag, createdBy: Profile]
 
     static bindableProperties = ['serviceItem', 'tag', 'createdBy']
 

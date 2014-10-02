@@ -38,7 +38,7 @@ public class RejectionListingService {
         if (!params.containsKey('sid')) {
             throw new ValidationException("Service Item ID is required when rejecting a listing!")
         }
-        def serviceItem = ServiceItem.get(params.sid.toLong())
+        def serviceItem = Listing.get(params.sid.toLong())
         if (!serviceItem) {
             throw new ValidationException("Service Item ID ${sid} is not a valid service item. You must specify a valid service item to reject a listing!")
         }

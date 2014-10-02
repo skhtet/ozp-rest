@@ -1,15 +1,13 @@
 package marketplace.rest.service
 
-import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
-
 import org.springframework.security.access.AccessDeniedException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
-import marketplace.ServiceItem
+import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.Types
 import marketplace.Profile
@@ -24,8 +22,8 @@ class RejectionListingRestServiceUnitTest {
     def currentUser
     def isAdmin = true
 
-    private ServiceItem makeServiceItem() {
-        ServiceItem serviceItem = new ServiceItem(
+    private Listing makeServiceItem() {
+        Listing serviceItem = new Listing(
             title: "test service item",
             description: "a test service item",
             launchUrl: "https://localhost/asf",
@@ -50,11 +48,11 @@ class RejectionListingRestServiceUnitTest {
 
         //necessary to get reflection-based marshalling to work
         grailsApplication.addArtefact(RejectionListing.class)
-        grailsApplication.addArtefact(ServiceItem.class)
+        grailsApplication.addArtefact(Listing.class)
     }
 
     private RejectionListingRestService createService(
-            ServiceItemRestService serviceItemRestService) {
+            ListingRestService serviceItemRestService) {
         createGrailsApplication()
         def service = new RejectionListingRestService(grailsApplication, serviceItemRestService)
 
@@ -73,7 +71,7 @@ class RejectionListingRestServiceUnitTest {
         FakeAuditTrailHelper.install()
 
         mockDomain(RejectionListing.class)
-        mockDomain(ServiceItem.class)
+        mockDomain(Listing.class)
 
         def serviceItem = makeServiceItem()
         serviceItem.save(failOnError: true)
@@ -84,10 +82,10 @@ class RejectionListingRestServiceUnitTest {
         Long serviceItemId = 1
         RejectionListing rl = makeRejectionListing(), rejectedListing
 
-        def serviceItemRestServiceMock = mockFor(ServiceItemRestService)
+        def serviceItemRestServiceMock = mockFor(ListingRestService)
         serviceItemRestServiceMock.demand.canView(1..1000) { si -> true }
         serviceItemRestServiceMock.demand.reject(1..1) { si, passedRejectionListing ->
-            assert si == ServiceItem.get(1)
+            assert si == Listing.get(1)
             rejectedListing = passedRejectionListing
         }
 
@@ -95,7 +93,7 @@ class RejectionListingRestServiceUnitTest {
 
         RejectionListing created = service.createFromParentIdAndDto(serviceItemId, rl)
 
-        assert created.serviceItem == ServiceItem.get(serviceItemId)
+        assert created.serviceItem == Listing.get(serviceItemId)
         assert created.author == currentUser
         assert rejectedListing == created
     }
