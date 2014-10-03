@@ -130,7 +130,7 @@ class Listing implements Serializable {
     String whatIsNew
     String descriptionShort
     String requirements
-    String approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+    ApprovalStatus approvalStatus = ApprovalStatus.APPROVED
 
     Boolean isEnabled = true
     Boolean isFeatured = false
@@ -253,7 +253,7 @@ class Listing implements Serializable {
                 ]
             }
         })
-        approvalStatus(inList:Constants.APPROVAL_STATUSES.values().toList())
+        approvalStatus(inList:ApprovalStatus.values().toList())
         lastActivity(nullable:true)
         approvedDate(nullable:true)
         owners( validator: { val ->
@@ -342,19 +342,19 @@ class Listing implements Serializable {
     }
 
     boolean statApproved() {
-        return this.approvalStatus == Constants.APPROVAL_STATUSES["APPROVED"]
+        return this.approvalStatus == ApprovalStatus.APPROVED
     }
 
     boolean statPending() {
-        return this.approvalStatus == Constants.APPROVAL_STATUSES["PENDING"]
+        return this.approvalStatus == ApprovalStatus.PENDING
     }
 
     boolean statInProgress() {
-        return this.approvalStatus == Constants.APPROVAL_STATUSES["IN_PROGRESS"]
+        return this.approvalStatus == ApprovalStatus.IN_PROGRESS
     }
 
     boolean statRejected() {
-        return this.approvalStatus == Constants.APPROVAL_STATUSES["REJECTED"]
+        return this.approvalStatus == ApprovalStatus.REJECTED
     }
 
     @Override

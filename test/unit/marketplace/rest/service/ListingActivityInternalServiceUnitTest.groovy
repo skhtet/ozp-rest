@@ -15,6 +15,7 @@ import marketplace.RejectionActivity
 import marketplace.ModifyRelationshipActivity
 import marketplace.RejectionListing
 import marketplace.Constants
+import marketplace.ApprovalStatus
 import marketplace.Types
 
 import marketplace.testutil.FakeAuditTrailHelper
@@ -35,7 +36,7 @@ class ListingActivityInternalServiceUnitTest {
             description: "a test service item",
             launchUrl: "https://localhost/asf",
             versionName: '1',
-            approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
+            approvalStatus: ApprovalStatus.IN_PROGRESS,
             version: 1
         )
 
@@ -255,7 +256,7 @@ class ListingActivityInternalServiceUnitTest {
         updated.with {
             avgRate = old.avgRate + 1.0
             totalVotes = old.totalVotes + 1
-            approvalStatus = old.approvalStatus == 'In Progress' ? 'Approved' : 'In Progress'
+            approvalStatus = old.approvalStatus == ApprovalStatus.IN_PROGRESS ? ApprovalStatus.APPROVED : ApprovalStatus.IN_PROGRESS
             addToItemComments(new ItemComment(rate: 1.0, text: 'review'))
         }
 

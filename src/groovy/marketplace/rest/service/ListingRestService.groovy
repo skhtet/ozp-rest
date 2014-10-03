@@ -9,6 +9,7 @@ import marketplace.Listing
 import marketplace.Profile
 import marketplace.ListingActivity
 import marketplace.Constants
+import marketplace.ApprovalStatus
 import marketplace.RejectionListing
 import marketplace.Relationship
 import marketplace.ListingSnapshot
@@ -111,7 +112,7 @@ class ListingRestService extends RestService<Listing> {
         if (!profileRestService.isAdmin() && !si.isOwner(profile)) {
 
             //if it is enabled and approved it is visible to everyone
-            if (!(si.isEnabled && si.approvalStatus == Constants.APPROVAL_STATUSES['APPROVED'])) {
+            if (!(si.isEnabled && si.approvalStatus == ApprovalStatus.APPROVED)) {
                 return false
             }
         }
@@ -173,11 +174,11 @@ class ListingRestService extends RestService<Listing> {
 
         if (newApprovalStatus != oldApprovalStatus) {
             switch (newApprovalStatus) {
-                case Constants.APPROVAL_STATUSES['PENDING']:
+                case ApprovalStatus.PENDING:
                     listingActivityInternalService.addListingActivity(updated,
                         Constants.Action.SUBMITTED)
                     break
-                case Constants.APPROVAL_STATUSES['APPROVED']:
+                case ApprovalStatus.APPROVED:
                     doApprove(updated)
                     break
                 default:
@@ -207,14 +208,14 @@ class ListingRestService extends RestService<Listing> {
      * RejectionListing to the ServiceItem, and creating the RejectionActivity
      */
     public void reject(Listing si, RejectionListing rejectionListing) {
-        if (si.approvalStatus != Constants.APPROVAL_STATUSES['PENDING']) {
+        if (si.approvalStatus != ApprovalStatus.PENDING) {
             throw new IllegalArgumentException("Cannot reject ServiceItem ${si.id} that has " +
                 "approval status of ${si.approvalStatus}")
         }
 
         profileRestService.checkAdmin()
 
-        si.approvalStatus = Constants.APPROVAL_STATUSES["REJECTED"]
+        si.approvalStatus = ApprovalStatus.REJECTED
         listingActivityInternalService.addRejectionActivity(si, rejectionListing)
 
         if (!si.rejectionListings?.contains(rejectionListing)) {

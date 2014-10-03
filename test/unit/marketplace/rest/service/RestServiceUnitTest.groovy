@@ -20,6 +20,7 @@ import marketplace.Tag
 import marketplace.Profile
 import marketplace.Intent
 import marketplace.Constants
+import marketplace.ApprovalStatus
 import marketplace.validator.DomainValidator
 
 import marketplace.rest.representation.in.InputRepresentation
@@ -55,7 +56,7 @@ class RestServiceUnitTest {
         String description
         String launchUrl
         String versionName
-        String approvalStatus
+        ApprovalStatus approvalStatus
     }
 
     private static class RelationshipInputRepresentation
@@ -80,7 +81,7 @@ class RestServiceUnitTest {
         launchUrl: "https://localhost/asf",
         owners: [ id: 1 ],
         versionName: '1',
-        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS']
+        approvalStatus: ApprovalStatus.IN_PROGRESS
     ]
 
     //a simple sublass of RestService that specializes in ServiceItems

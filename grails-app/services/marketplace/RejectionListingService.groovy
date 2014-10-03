@@ -56,7 +56,7 @@ public class RejectionListingService {
         }
 
         // Reject the serviceItem
-        serviceItem.approvalStatus = Constants.APPROVAL_STATUSES["REJECTED"]
+        serviceItem.approvalStatus = ApprovalStatus.REJECTED
         rejectionListing.serviceItem = serviceItem
 
         rejectionListing.scrubCR()

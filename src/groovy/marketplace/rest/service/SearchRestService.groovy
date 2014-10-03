@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Constants
+import marketplace.ApprovalStatus
 import ozone.utils.ApplicationContextHolder
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,7 +23,7 @@ class SearchRestService {
         if(!isAdmin) {
             params.enabled_only = true
             params.state_isPublished = true
-            params.statuses = [Constants.APPROVAL_STATUSES.APPROVED]
+            params.statuses = [ApprovalStatus.APPROVED]
         }
 
         params.accessType = isAdmin ? Constants.VIEW_ADMIN : Constants.VIEW_USER

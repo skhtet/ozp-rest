@@ -2,6 +2,7 @@ package marketplace.validator
 
 import grails.test.mixin.support.GrailsUnitTestMixin
 import marketplace.Listing
+import marketplace.ApprovalStatus
 import marketplace.rest.service.ProfileRestService
 
 @TestMixin(GrailsUnitTestMixin)
@@ -30,62 +31,62 @@ class ServiceItemValidatorUnitTest {
          * Test different transitions
          */
 
-        existing.approvalStatus = 'In Progress'
-        dto.approvalStatus = 'In Progress'
+        existing.approvalStatus = ApprovalStatus.IN_PROGRESS
+        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
         validator.validateChanges(existing, dto)
 
-        dto.approvalStatus = 'Pending'
+        dto.approvalStatus = ApprovalStatus.PENDING
         validator.validateChanges(existing, dto)
 
-        dto.approvalStatus = 'Rejected'
+        dto.approvalStatus = ApprovalStatus.REJECTED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        existing.approvalStatus = 'Pending'
-        dto.approvalStatus = 'In Progress'
+        existing.approvalStatus = ApprovalStatus.PENDING
+        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Pending'
+        dto.approvalStatus = ApprovalStatus.PENDING
         validator.validateChanges(existing, dto)
 
         //Rejection must be done by creating a RejectionListing. Simply setting approvalStatus
         //to Rejected should not work
-        dto.approvalStatus = 'Rejected'
+        dto.approvalStatus = ApprovalStatus.REJECTED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         validator.validateChanges(existing, dto)
 
         isAdmin = false
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        existing.approvalStatus = 'Rejected'
-        dto.approvalStatus = 'In Progress'
+        existing.approvalStatus = ApprovalStatus.REJECTED
+        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
         isAdmin = true
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Rejected'
+        dto.approvalStatus = ApprovalStatus.REJECTED
         validator.validateChanges(existing, dto)
 
-        dto.approvalStatus = 'Pending'
+        dto.approvalStatus = ApprovalStatus.PENDING
         validator.validateChanges(existing, dto)
 
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
@@ -95,24 +96,24 @@ class ServiceItemValidatorUnitTest {
             validator.validateChanges(existing, dto)
         }
 
-        existing.approvalStatus = 'Approved'
-        dto.approvalStatus = 'In Progress'
+        existing.approvalStatus = ApprovalStatus.APPROVED
+        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
         isAdmin = true
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Rejected'
+        dto.approvalStatus = ApprovalStatus.REJECTED
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Pending'
+        dto.approvalStatus = ApprovalStatus.PENDING
         shouldFail(IllegalArgumentException) {
             validator.validateChanges(existing, dto)
         }
 
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         validator.validateChanges(existing, dto)
 
         isAdmin = false
@@ -124,20 +125,20 @@ class ServiceItemValidatorUnitTest {
     void testValidateNewApprovalStatus() {
         Listing dto = new Listing()
 
-        dto.approvalStatus = 'In Progress'
+        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
         validator.validateNew(dto)
 
-        dto.approvalStatus = 'Pending'
+        dto.approvalStatus = ApprovalStatus.PENDING
         shouldFail(IllegalArgumentException) {
             validator.validateNew(dto)
         }
 
-        dto.approvalStatus = 'Rejected'
+        dto.approvalStatus = ApprovalStatus.REJECTED
         shouldFail(IllegalArgumentException) {
             validator.validateNew(dto)
         }
 
-        dto.approvalStatus = 'Approved'
+        dto.approvalStatus = ApprovalStatus.APPROVED
         shouldFail(IllegalArgumentException) {
             validator.validateNew(dto)
         }

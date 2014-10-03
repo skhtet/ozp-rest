@@ -1,6 +1,7 @@
 package marketplace.search
 
 import marketplace.Constants
+import marketplace.ApprovalStatus
 
 class AccessTypePredicate extends SingleValuePredicate {
 
@@ -24,12 +25,12 @@ class AccessTypePredicate extends SingleValuePredicate {
             switch (accessType) {
                 case Constants.VIEW_USER:
                     must {
-                        query_string(query: "(approvalStatus: ${Constants.APPROVAL_STATUSES["APPROVED"]} AND isHidden: 0) OR owners.username: \"${username}\"")
+                        query_string(query: "(approvalStatus: ${ApprovalStatus.APPROVED} AND isHidden: 0) OR owners.username: \"${username}\"")
                     }
                     break
                 case Constants.VIEW_EXTERNAL:
                     must {
-                        query_string(query: "(approvalStatus: ${Constants.APPROVAL_STATUSES["APPROVED"]} AND isHidden: 0)")
+                        query_string(query: "(approvalStatus: ${ApprovalStatus.APPROVED} AND isHidden: 0)")
                     }
                     break
                 case Constants.VIEW_ADMIN:

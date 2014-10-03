@@ -1,6 +1,6 @@
 package marketplace.validator
 
-import marketplace.Constants
+import marketplace.ApprovalStatus
 import marketplace.Listing
 import org.springframework.stereotype.Component
 
@@ -18,10 +18,10 @@ class ListingValidator implements DomainValidator<Listing> {
         def newApprovalStatus = updated.approvalStatus
         def oldApprovalStatus = existing.approvalStatus
 
-        def inProgress = Constants.APPROVAL_STATUSES['IN_PROGRESS']
-        def pending = Constants.APPROVAL_STATUSES['PENDING']
-        def approved = Constants.APPROVAL_STATUSES['APPROVED']
-        def rejected = Constants.APPROVAL_STATUSES['REJECTED']
+        def inProgress = ApprovalStatus.IN_PROGRESS
+        def pending = ApprovalStatus.PENDING
+        def approved = ApprovalStatus.APPROVED
+        def rejected = ApprovalStatus.REJECTED
 
         def validUserTransitions = [[inProgress, pending], [rejected, pending]]
 
@@ -51,9 +51,9 @@ class ListingValidator implements DomainValidator<Listing> {
      * Ensures that a new ServiceItem does not have an approval status other that In Progress
      */
     private void validateNewApprovalStatus(Listing newObj) {
-       if (newObj.approvalStatus != Constants.APPROVAL_STATUSES['IN_PROGRESS']) {
+       if (newObj.approvalStatus != ApprovalStatus.IN_PROGRESS) {
             throw new IllegalArgumentException("New ServiceItems cannot have an " +
-                "approvalStatus other than ${Constants.APPROVAL_STATUSES['IN_PROGRESS']}")
+                "approvalStatus other than ${ApprovalStatus.IN_PROGRESS}")
         }
     }
 

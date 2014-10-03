@@ -10,7 +10,7 @@ class MarketplaceConversionService {
     def updateIsOutsideFlag() {
         log.info 'updateIsOutsideFlag:'
 
-        def serviceItemsWithNullInsideFlag = Listing.findAllByIsOutsideAndApprovalStatus(null, Constants.APPROVAL_STATUSES["APPROVED"])
+        def serviceItemsWithNullInsideFlag = Listing.findAllByIsOutsideAndApprovalStatus(null, ApprovalStatus.APPROVED)
 
         serviceItemsWithNullInsideFlag*.isOutside = false
         serviceItemsWithNullInsideFlag*.save()

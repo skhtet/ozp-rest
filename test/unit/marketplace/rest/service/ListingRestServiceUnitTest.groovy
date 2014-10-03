@@ -20,6 +20,7 @@ import marketplace.RejectionListing
 import marketplace.Intent
 import marketplace.Relationship
 import marketplace.Constants
+import marketplace.ApprovalStatus
 import marketplace.ServiceItemTag
 import marketplace.Tag
 import marketplace.ChangeDetail
@@ -50,7 +51,7 @@ class ListingRestServiceUnitTest {
         versionName: '1',
         isEnabled: true,
         isOutside: true,
-        approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS']
+        approvalStatus: ApprovalStatus.IN_PROGRESS
     ]
 
     private createGrailsApplication() {
@@ -157,19 +158,19 @@ class ListingRestServiceUnitTest {
         //populate initial ServiceItem
         Listing original = makeServiceItem()
         service.populateDefaults(original)
-        original.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+        original.approvalStatus = ApprovalStatus.APPROVED
         original.save(failOnError: true)
 
         //this should succeed because owners can always edit their listings
         Listing updates = makeServiceItem()
         service.populateDefaults(updates)
-        updates.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+        updates.approvalStatus = ApprovalStatus.APPROVED
         service.updateById(exampleServiceItemProps.id, updates)
 
         //this should fail because an non-admin, non-owner user is trying to update
         shouldFail(AccessDeniedException) {
             si = Listing.get(1)
-            si.approvalStatus = Constants.APPROVAL_STATUSES['IN_PROGRESS']
+            si.approvalStatus = ApprovalStatus.IN_PROGRESS
             si.save(failOnError: true)
             currentUser = nonOwner
             service.updateById(exampleServiceItemProps.id, makeServiceItem())
@@ -214,7 +215,7 @@ class ListingRestServiceUnitTest {
         def approve = {
             dto = makeServiceItem()
             dto.id = id
-            dto.approvalStatus = Constants.APPROVAL_STATUSES['APPROVED']
+            dto.approvalStatus = ApprovalStatus.APPROVED
             dto = service.updateById(dto.id, dto)
         }
 
@@ -223,7 +224,7 @@ class ListingRestServiceUnitTest {
         id = service.createFromDto(dto).id
         dto = makeServiceItem()
         dto.id = id
-        dto.approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
+        dto.approvalStatus = ApprovalStatus.PENDING
         dto = service.updateById(dto.id, dto)
 
         //users cannot approve
@@ -236,7 +237,7 @@ class ListingRestServiceUnitTest {
 
         //need to reset the approval status because the unit tests aren't transactional and
         //the preceding failed change did not get rolled back
-        Listing.get(dto.id).approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
+        Listing.get(dto.id).approvalStatus = ApprovalStatus.PENDING
         approve()
 
         assert activity.action == Constants.Action.APPROVED
@@ -276,7 +277,7 @@ class ListingRestServiceUnitTest {
         created = makeServiceItem()
         service.populateDefaults(created)
         created.id = id
-        created.approvalStatus = Constants.APPROVAL_STATUSES['PENDING']
+        created.approvalStatus = ApprovalStatus.PENDING
         created = service.updateById(created.id, created)
 
         //in grails 2, shouldFail with a specific exception
@@ -289,7 +290,7 @@ class ListingRestServiceUnitTest {
         currentUser = admin
         reject()
 
-        assert created.approvalStatus == Constants.APPROVAL_STATUSES['REJECTED']
+        assert created.approvalStatus == ApprovalStatus.REJECTED
         assert activity.rejectionListing.description == 'bad listing'
         assert activity instanceof RejectionActivity
         assert created.rejectionListings == [activity.rejectionListing] as SortedSet
@@ -513,7 +514,7 @@ class ListingRestServiceUnitTest {
         Listing existing = Listing.get(1)
         //create a serviceitem that is approved. The default one is not
         Listing approved = makeServiceItem()
-        approved.approvalStatus = 'Approved'
+        approved.approvalStatus = ApprovalStatus.APPROVED
         approved.id = 2
         approved.save(failOnError: true)
 

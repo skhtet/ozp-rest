@@ -65,7 +65,7 @@ public class ItemCommentService {
                 serviceItem {
                     if ((!accessType.equals(Constants.VIEW_ADMIN)) || !isAdmin) {
                         or {
-                            ilike('approvalStatus', Constants.APPROVAL_STATUSES["APPROVED"])
+                            ilike('approvalStatus', ApprovalStatus.APPROVED)
                             owners {
                                 eq('username', username)
                             }

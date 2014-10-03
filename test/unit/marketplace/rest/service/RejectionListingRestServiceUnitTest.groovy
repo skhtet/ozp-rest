@@ -12,6 +12,7 @@ import marketplace.RejectionListing
 import marketplace.Types
 import marketplace.Profile
 import marketplace.Constants
+import marketplace.ApprovalStatus
 
 import marketplace.testutil.FakeAuditTrailHelper
 
@@ -30,7 +31,7 @@ class RejectionListingRestServiceUnitTest {
             versionName: '1',
             owners: [currentUser],
             type: new Types(title: 'test type'),
-            approvalStatus: Constants.APPROVAL_STATUSES['IN_PROGRESS'],
+            approvalStatus: ApprovalStatus.IN_PROGRESS,
             version: 1
         )
         serviceItem.id = 1

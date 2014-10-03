@@ -21,7 +21,7 @@ class ListingTests {
     @Ignore //disabled until approval workflow is re-enabled
     void testApprovedNotNull() {
         assert serviceItem.approvalStatus != null, "approval status should be initialized set"
-        assertEquals "approval status should be initialized to Pending", Constants.APPROVAL_STATUSES["IN_PROGRESS"], serviceItem.approvalStatus
+        assertEquals "approval status should be initialized to Pending", ApprovalStatus.IN_PROGRESS, serviceItem.approvalStatus
     }
 
     void testIsEnabledNotNull() {
