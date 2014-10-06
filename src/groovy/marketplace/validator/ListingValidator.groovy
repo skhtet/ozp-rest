@@ -1,5 +1,7 @@
 package marketplace.validator
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.ApprovalStatus
 import marketplace.Listing
 import org.springframework.stereotype.Component
@@ -8,7 +10,7 @@ import marketplace.rest.service.ProfileRestService
 
 @Component
 class ListingValidator implements DomainValidator<Listing> {
-    ProfileRestService profileRestService
+    @Autowired ProfileRestService profileRestService
 
     /**
      * Ensures that any change in approval status is valid and allowed for this user.
