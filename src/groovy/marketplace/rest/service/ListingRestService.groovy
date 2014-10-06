@@ -28,7 +28,7 @@ class ListingRestService extends RestService<Listing> {
     @Autowired
     public ListingRestService(GrailsApplication grailsApplication,
             ListingValidator listingValidator) {
-        super(grailsApplication, Listing.class, null, null)
+        super(grailsApplication, Listing.class, listingValidator, null)
     }
 
     //needed for CGLIB
@@ -161,7 +161,6 @@ class ListingRestService extends RestService<Listing> {
         }
 
         updateRelationshipsListingActivity(updated, original)
-
     }
 
     /**

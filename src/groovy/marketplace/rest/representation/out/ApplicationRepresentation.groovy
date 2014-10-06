@@ -3,6 +3,7 @@ package marketplace.rest.representation.out
 import marketplace.Intent
 import marketplace.Screenshot
 import marketplace.Listing
+import marketplace.ApprovalStatus
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.Link
 import marketplace.hal.RegisteredRelationType
@@ -19,6 +20,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     final String type
     final String description
     final String uuid
+    final ApprovalStatus approvalStatus
 
     Map<String, String> launchUrls = new HashMap()
     List<Map<String, String>> screenShots
@@ -49,6 +51,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
         this.tags = listing.tags
         this.type = listing.type.title
         this.uuid = listing.uuid
+        this.approvalStatus = listing.approvalStatus
         this.description = listing.descriptionShort
         this.screenShots = listing.screenshots.collect { Screenshot screenShot ->
             [href: screenShot.smallImageUrl]

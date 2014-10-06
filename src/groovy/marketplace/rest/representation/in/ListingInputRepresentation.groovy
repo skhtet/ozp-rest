@@ -4,6 +4,7 @@ import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Listing
 import marketplace.DocUrl
+import marketplace.ApprovalStatus
 
 class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
@@ -25,6 +26,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Boolean isFeatured = false
     Boolean isEnabled = true
     Set<String> tags
+    ApprovalStatus approvalStatus = ApprovalStatus.IN_PROGRESS
 
     TypeIdRef type
     Set<IntentPropertyRefInputRepresentation> intents

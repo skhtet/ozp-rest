@@ -130,7 +130,7 @@ class Listing implements Serializable {
     String whatIsNew
     String descriptionShort
     String requirements
-    ApprovalStatus approvalStatus = ApprovalStatus.APPROVED
+    ApprovalStatus approvalStatus = ApprovalStatus.IN_PROGRESS
 
     Boolean isEnabled = true
     Boolean isFeatured = false
