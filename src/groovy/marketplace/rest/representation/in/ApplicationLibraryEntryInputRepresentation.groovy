@@ -12,5 +12,5 @@ class ApplicationLibraryEntryInputRepresentation
     }
 
     String folder
-    ServiceItemIdRef serviceItem
+    ListingIdRef listing
 }
