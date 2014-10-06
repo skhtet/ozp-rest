@@ -104,7 +104,7 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     private void authorizeStewardshipUpdate() {
-        accountService.checkAdmin("Only admins can alter stewardship assignments")
+        checkAdmin("Only admins can alter stewardship assignments")
     }
 
     @Transactional
