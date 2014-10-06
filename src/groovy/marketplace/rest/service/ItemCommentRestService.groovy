@@ -32,7 +32,7 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
     @Override
     public void deleteById(Long id) {
         ItemComment obj = getById(id)
-        Listing listing = parentClassRestService.getById(parentId)
+        Listing listing = parentClassRestService.getById(obj.listing.id)
 
         //ensure that the Listings's statistics are updated
         listing.removeFromItemComments(obj)
