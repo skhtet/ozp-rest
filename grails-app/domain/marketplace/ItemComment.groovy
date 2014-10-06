@@ -15,7 +15,7 @@ class ItemComment implements Comparable, Serializable {
     static modifiableReferenceProperties = []
 
     String text
-    Float rate
+    Integer rate
 
     static belongsTo = [listing: Listing, author: Profile]
 
@@ -26,7 +26,7 @@ class ItemComment implements Comparable, Serializable {
 
     static constraints = {
         def maxLength = 4000
-        rate(nullable: true, min: 1F, max: 5F)
+        rate(nullable: true, min: 1, max: 5)
         text(blank: true, nullable: true, maxSize: maxLength, validator: {
             if (it?.size() > maxLength) {
                 return ["serviceItem.comment.maxsize", maxLength]

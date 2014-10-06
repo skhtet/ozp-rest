@@ -418,10 +418,11 @@ class Listing implements Serializable {
         this.totalComments = this.itemComments.size()
 
         //all of the non-null rating values
-        Collection<Float> ratings = this.itemComments.grep { it.rate != null }.collect { it.rate }
+        Collection<Integer> ratings = this.itemComments.grep { it.rate != null }
+            .collect { it.rate }
 
         //the rating values grouped
-        Map<Integer, Collection<Float>> groupedRatings = ratings.groupBy { Math.round(it) }
+        Map<Integer, Collection<Integer>> groupedRatings = ratings.groupBy { it }
 
         //update each of the totalRating1 ... totalRating5 counts
         (1..5).each { rating ->
