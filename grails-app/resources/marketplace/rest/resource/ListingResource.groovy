@@ -21,7 +21,11 @@ import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
 
+import marketplace.rest.ChildObjectCollection
 import marketplace.rest.representation.in.ListingInputRepresentation
+import marketplace.rest.representation.in.InputRepresentation
+import marketplace.rest.representation.in.ItemCommentInputRepresentation
+import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
@@ -116,27 +120,33 @@ class ListingResource extends DomainResource<Listing> {
 
     @Path('/{listingId}/itemComment')
     @GET
-    public Collection<ItemComment> getItemCommentsByListingId(
+    @Produces([ItemCommentRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    public ChildObjectCollection<Listing, ItemComment> getItemCommentsByListingId(
             @PathParam('listingId') long listingId) {
-        itemCommentRestService.getByParentId(listingId)
+        new ChildObjectCollection(itemCommentRestService.getByParentId(listingId), read(listingId))
     }
 
     @Path('/{listingId}/itemComment')
     @POST
+    @Consumes([ItemCommentInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Produces([ItemCommentRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     public ItemComment createItemComment(@PathParam('listingId') long listingId,
-            ItemComment dto) {
-        itemCommentRestService.createFromParentIdAndDto(listingId, dto)
+            InputRepresentation<ItemComment> rep) {
+        itemCommentRestService.createFromParentIdAndRepresentation(listingId, rep)
     }
 
     @Path('/{listingId}/itemComment/{itemCommentId}')
     @PUT
+    @Consumes([ItemCommentInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Produces([ItemCommentRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     public ItemComment updateItemComment(@PathParam('listingId') long listingId,
-            @PathParam('itemCommentId') long id, ItemComment dto) {
-        itemCommentRestService.updateByParentId(listingId, id, dto)
+            @PathParam('itemCommentId') long id, InputRepresentation<ItemComment> rep) {
+        itemCommentRestService.updateById(id, rep)
     }
 
     @Path('/{listingId}/itemComment/{itemCommentId}')
     @DELETE
+    @Produces([])
     public void deleteItemComment(@PathParam('itemCommentId') long itemCommentId) {
         itemCommentRestService.deleteById(itemCommentId)
     }
