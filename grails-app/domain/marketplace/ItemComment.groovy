@@ -33,6 +33,7 @@ class ItemComment implements Comparable, Serializable {
             } else
                 return true
         })
+        listing(unique: ['author'])
     }
 
     int compareTo(obj) {

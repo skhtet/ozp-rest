@@ -78,8 +78,6 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
     protected void postprocess(ItemComment updated, Map original = null) {
         super.postprocess(updated, original)
 
-        setAuthor(updated)
-
         if (original) {
             preventNonOwnerRatingChange(updated, original)
         }
@@ -88,7 +86,8 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
         updated.listing.updateRatingStats()
     }
 
-    private void setAuthor(ItemComment comment) {
+    @Override
+    protected void populateDefaults(ItemComment comment) {
         if (!comment.author) comment.author = profileRestService.currentUserProfile
     }
 
