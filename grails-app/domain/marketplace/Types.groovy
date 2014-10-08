@@ -1,9 +1,7 @@
 package marketplace
 
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import ozone.utils.Utils
-import marketplace.JSONUtil as JS
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 
@@ -48,10 +46,6 @@ class Types implements Serializable {
     static transients = ['sortTypeTitle', 'typeId']
 
     String toString() { title }
-
-    String prettyPrint() {
-        toString()
-    }
 
     def asJSON() {
         return new JSONObject(

@@ -54,12 +54,6 @@ class ItemComment implements Comparable, Serializable {
         }
     }
 
-    void scrubCR() {
-        if (this.text) {
-            this.text = this.text.replaceAll("\r", "")
-        }
-    }
-
     def getTextAsHTML() {
         def text = this.text
         if (text) {
@@ -71,10 +65,6 @@ class ItemComment implements Comparable, Serializable {
 
     String toString() {
         return author?.displayName + ": Rate " + rate + " Stars : " + text
-    }
-
-    String prettyPrint() {
-        toString()
     }
 
     def asJSON() {

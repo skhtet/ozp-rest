@@ -73,7 +73,7 @@ class TransactionUtils {
                     logger?.debug "sessionFactory.getCurrentSession(): Session not available"
                 }
                 // Test the session available to the domain objects
-                ImportTask.withSession { localSession ->
+                Listing.withSession { localSession ->
                     if (localSession) {
                         logger?.debug "---Session Details via withSession ---\n\tSession [${java.lang.Integer.toHexString(localSession.hashCode())}]\n\tSessionFactory [${Integer.toHexString(localSession.getSessionFactory().hashCode())}] \n\tTransaction: ${Integer.toHexString(session?.transaction?.hashCode())}"
                     } else {

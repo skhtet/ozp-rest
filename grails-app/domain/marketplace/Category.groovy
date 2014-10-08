@@ -2,7 +2,6 @@ package marketplace
 
 import org.codehaus.groovy.grails.web.json.JSONObject
 import ozone.utils.Utils
-import marketplace.JSONUtil as JS
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 
@@ -42,24 +41,6 @@ class Category implements Serializable {
 
     String toString() { "$title" }
 
-    String prettyPrint() {
-        toString()
-    }
-
-    String titleDisplay() {
-        if (title.size() > 12) {
-            return title.substring(0, 12) + "...";
-        } else {
-            return title;
-        }
-    }
-
-    void scrubCR() {
-        if (this.description) {
-            this.description = this.description.replaceAll("\r", "")
-        }
-    }
-
     def asJSON() {
         return new JSONObject(
             id: id,
@@ -73,18 +54,6 @@ class Category implements Serializable {
             id: id,
             title: title
         )
-    }
-
-    def bindFromJSON(JSONObject json) {
-        [
-            "title",
-            "description",
-            "uuid"
-        ].each(JS.optStr.curry(json, this))
-
-        [
-            "editedDate"
-        ].each(JS.optDate.curry(json, this))
     }
 
     Long getCategoryId() {
