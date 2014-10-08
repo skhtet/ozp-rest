@@ -8,6 +8,8 @@ In order to run this project you need JDK 6 or 7 with $JAVA_HOME defined in your
 ./grailsw run-app -https
 ```
 
+(on a windows system, ommit the leading "./")
+
 ## Use
 
 The sample security configuration uses HTTP basic auth. You have the choice of logging in as one of two roles. To log in as a regular user, login with "testUser1" and "password" as the credentials. The credentials for the admin role are "testAdmin1" and "password".
@@ -17,8 +19,10 @@ The sample security configuration uses HTTP basic auth. You have the choice of l
 Building the project has the same dependencies as running it. After satisfying the prerequisites above, build the project war file with the following invocation:
 
 ```
-./grailsw run-app -https
+./grailsw war
 ```
+
+(on a windows system, ommit the leading "./")
 
 The output (./target/marketplace.war) can generally be dropped in any servlet container and run without additional configuration. However, Marketplace defaults to using an in-memory Elasticsearch index and H2 database and may, in some cases, need additional Java heap allocated to the servlet container to avoid out of memory errors. The recommended minimum heap size is 512 Mb.
 
