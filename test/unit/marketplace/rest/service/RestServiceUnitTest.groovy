@@ -15,11 +15,8 @@ import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Category
 import marketplace.Relationship
-import marketplace.ServiceItemTag
-import marketplace.Tag
 import marketplace.Profile
 import marketplace.Intent
-import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.validator.DomainValidator
 
@@ -140,8 +137,6 @@ class RestServiceUnitTest {
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
-        grailsApplication.addArtefact(ServiceItemTag.class)
-        grailsApplication.addArtefact(Tag.class)
         restService = new TestService(grailsApplication)
     }
 

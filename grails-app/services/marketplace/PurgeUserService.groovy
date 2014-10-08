@@ -63,13 +63,6 @@ class PurgeUserService {
             it.save(flush: true)
         }
 
-        def serviceItemTags = ServiceItemTag.findAllByCreatedBy(user)
-        serviceItemTags.each{
-            it.createdBy = systemProfile
-            it.save(flush: true)
-        }
-
-
         // The gorm.AuditStamp annotation automatically adds createdBy and editedBy fields to the domain,
         // so we need to make sure we update those wherever they exist.
         grailsApplication.getDomainClasses().each { domainClass ->

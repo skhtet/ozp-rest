@@ -21,8 +21,6 @@ import marketplace.Intent
 import marketplace.Relationship
 import marketplace.Constants
 import marketplace.ApprovalStatus
-import marketplace.ServiceItemTag
-import marketplace.Tag
 import marketplace.ChangeDetail
 import marketplace.validator.ListingValidator
 import ozone.marketplace.enums.RelationshipType
@@ -66,8 +64,6 @@ class ListingRestServiceUnitTest {
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
         grailsApplication.addArtefact(Profile.class)
-        grailsApplication.addArtefact(Tag.class)
-        grailsApplication.addArtefact(ServiceItemTag.class)
 
         FakeAuditTrailHelper.install()
         ProfileMappedByFix.fixProfileMappedBy()
