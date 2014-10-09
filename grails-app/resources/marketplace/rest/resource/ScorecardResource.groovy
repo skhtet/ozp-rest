@@ -34,14 +34,14 @@ class ScorecardResource {
         ScorecardRepresentation.MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    Scorecard read(@PathParam('id') String id) {
+    Scorecard read(@PathParam('id') long id) {
 
         scorecardRestService.getById(id)
     }
 
     @DELETE
     @Path('/{id}')
-    void delete(@PathParam('id') String id) {
+    void delete(@PathParam('id') long id) {
 
         scorecardRestService.deleteById(id)
     }
@@ -80,7 +80,7 @@ class ScorecardResource {
         MediaType.APPLICATION_JSON
     ])
     @Path('/{id}')
-    Scorecard update(@PathParam('id') String id,
+    Scorecard update(@PathParam('id') long id,
                   ScorecardInputRepresentation rep) {
         scorecardRestService.updateById(id, rep)
     }

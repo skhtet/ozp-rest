@@ -34,7 +34,7 @@ class ListingResourceUnitTest {
             passedMax = max
             [activity]
         }
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
         assert resource.getActivitiesForServiceItems(1,2) == [activity]
         assert passedOffset == 1
@@ -52,7 +52,7 @@ class ListingResourceUnitTest {
             passedMax = max
             [activity]
         }
-        resource.serviceItemActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
         assert resource.getServiceItemActivitiesForServiceItem(20, 1,2) == [activity]
         assert passedParentId == 20
@@ -103,7 +103,7 @@ class ListingResourceUnitTest {
             passedParentId = parentId
             [serviceItem]
         }
-        resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
+        resource.service = serviceItemRestServiceMock.createMock()
 
         assert resource.getRequiredListings(1) == [serviceItem]
         assert passedParentId == 1
@@ -122,7 +122,7 @@ class ListingResourceUnitTest {
             passedParentId = parentId
             [serviceItem]
         }
-        resource.serviceItemRestService = serviceItemRestServiceMock.createMock()
+        resource.service = serviceItemRestServiceMock.createMock()
 
         assert resource.getRequiringListings(1) == [serviceItem]
         assert passedParentId == 1
