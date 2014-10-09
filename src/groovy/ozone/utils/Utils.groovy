@@ -16,28 +16,6 @@ class Utils {
 	private static final Logger log = Logger.getLogger(Utils)
     public static final String ELLIPSES = '...'
 
-    public static double roundTwoDecimals(double d) {
-        DecimalFormat twoDForm = new DecimalFormat("#.##");
-		return Double.valueOf(twoDForm.format(d));
-	}
-
-	public static String getMimeType(String fileUrl) throws java.io.IOException
-	{
-		FileNameMap fileNameMap = URLConnection.getFileNameMap();
-		String type = fileNameMap.getContentTypeFor(fileUrl);
-
-		return type;
-	}
-
-	static String formatQryDate(def ozoneDate)
-    {
-
-	SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd", Locale.US );
-	String formattedDate = sdf.format( ozoneDate );
-
-        return formattedDate
-    }
-
 	/***
 	 * Attempts to set by "setter" method, if not, then directly.
 	 * @param obj - Domain Class Instance

@@ -39,7 +39,6 @@ import marketplace.hal.PagedCollection
 
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
-import marketplace.rest.service.ServiceItemTagRestService
 import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.service.ApplicationLibraryEntryRestService
 import marketplace.rest.service.ProfileRestService
@@ -64,7 +63,6 @@ class ProfileResource extends RepresentationResource<Profile> {
 
     @Autowired ListingRestService listingRestService
     @Autowired ItemCommentRestService ItemCommentRestService
-    @Autowired ServiceItemTagRestService serviceItemTagRestService
     @Autowired ListingActivityRestService listingActivityRestService
     @Autowired ApplicationLibraryEntryRestService applicationLibraryEntryRestService
 

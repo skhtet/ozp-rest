@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 
 import marketplace.Listing
 import marketplace.ListingActivity
-import marketplace.ServiceItemTag
 import marketplace.RejectionActivity
 import marketplace.RejectionListing
 import marketplace.ListingSnapshot
@@ -122,32 +121,12 @@ class ListingActivityInternalService {
         }
     }
 
-    @Transactional
-    public ListingActivity addServiceItemTagActivity(Constants.Action action,
-            ServiceItemTag serviceItemTag) {
-        String tagTitle = serviceItemTag.tag.title
-        ListingActivity activity = new ListingActivity(action: action)
-        ChangeDetail changeDetail = new ChangeDetail(
-            fieldName: "Tag",
-            oldValue: null,
-            newValue: tagTitle
-        )
-
-        activity.addToChangeDetails(changeDetail)
-        return addListingActivity(serviceItemTag.serviceItem, activity)
-    }
-
     /**
      * Compares the property with name as provided by propertyName for the updated and the old
      * object and if different, adds a changeDetail to the passed in activity.
      */
     private static void logIfDifferent(ListingActivity activity, updated,
             old, String propertyName, String displayName=null) {
-
-//        // Score card change details will be handled by separate activity
-//        if(propertyName == "satisfiedScorecards")
-//            return
-
 
         def convertToComparableLogValue = { item ->
             def itemProperty = item?."$propertyName"

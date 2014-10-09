@@ -16,8 +16,8 @@ class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     IdRefInputRepresentation(Class<T> cls) { super(cls) }
 }
 
-class ServiceItemIdRef extends IdRefInputRepresentation<Listing, Long> {
-    ServiceItemIdRef() { super(Listing.class) }
+class ListingIdRef extends IdRefInputRepresentation<Listing, Long> {
+    ListingIdRef() { super(Listing.class) }
 }
 
 class ProfileIdRef extends IdRefInputRepresentation<Profile, Long> {

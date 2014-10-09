@@ -1,7 +1,6 @@
 package marketplace.rest.resource.uribuilder
 
 import javax.ws.rs.core.UriBuilder
-
 import org.springframework.stereotype.Component
 
 import marketplace.hal.ApplicationRootUriBuilderHolder

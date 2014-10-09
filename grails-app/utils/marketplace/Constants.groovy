@@ -1,10 +1,7 @@
 package marketplace
 
-import java.util.Map
 import java.util.regex.Pattern
-
 import org.codehaus.groovy.grails.web.json.JSONObject
-
 import org.apache.commons.lang.StringUtils
 
 class Constants {

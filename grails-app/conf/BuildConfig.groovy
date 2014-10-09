@@ -1,11 +1,7 @@
-System.setProperty "ivy.checksums", ""
 grails.project.plugins.dir = "${basedir}/plugins"
-grails.project.class.dir = "target/classes"
-grails.project.test.class.dir = "target/test-classes"
-grails.project.test.reports.dir = "target/test-reports"
-grails.project.dependency.resolver = "maven"
-
-grails.project.war.file = "target/marketplace.war"
+grails.project.dependency.resolver = 'maven'
+grails.project.groupId = 'org.ozoneplatform'
+grails.project.war.file = 'target/marketplace.war'
 
 coverage {
     exclusions = [
@@ -31,12 +27,6 @@ codenarc.reports = {
 
 codenarc.ruleSetFiles = "file:grails-app/conf/CodeNarcRules.groovy"
 codenarc.propertiesFile = "grails-app/conf/codenarc.properties"
-
-def props = new Properties()
-new File("application.properties").withInputStream { stream ->
-    props.load(stream)
-}
-def config = new ConfigSlurper().parse(props)
 
 def warExcludes = [
     'aopalliance-1.0-sources.jar',
@@ -108,7 +98,7 @@ grails.project.dependency.resolution = {
         //Fix for ClassNotFoundException: javax.ws.rs.ApplicationPath
         runtime('javax.ws.rs:jsr311-api:1.1.1')
 
-        compile("org.ozoneplatform:ozone-security:${config.mp.security.rev}") {
+        compile('org.ozoneplatform:ozone-security:4.0') {
             excludes([group: 'org.springframework'])
         }
 
@@ -134,7 +124,8 @@ grails.project.dependency.resolution = {
         test ':codenarc:0.20'
         test ':gmetrics:0.3.1'
 
-        build ':tomcat:7.0.52.1'
+        build ':tomcat:7.0.54'
+        build ':release:3.0.1'
 
         runtime ':cors:1.1.4' // OP-3932
         runtime ':jaxrs:0.10'

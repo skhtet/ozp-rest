@@ -100,16 +100,6 @@ class Profile implements Serializable {
         return display()
     }
 
-    String prettyPrint() {
-        return display()
-    }
-
-    void scrubCR() {
-        if (this.bio) {
-            this.bio = this.bio.replaceAll("\r", "")
-        }
-    }
-
     def asJSON() {
         new JSONObject(
             id: id,
@@ -129,20 +119,6 @@ class Profile implements Serializable {
             name: display()
         )
         return currJSON
-    }
-
-    def bindFromJSON(JSONObject json) {
-        [
-            "username",
-            "displayName",
-            "email",
-            "uuid",
-            "bio"
-        ].each(JS.optStr.curry(json, this))
-
-        [
-            "editedDate"
-        ].each(JS.optDate.curry(json, this))
     }
 
     def afterLoad() {

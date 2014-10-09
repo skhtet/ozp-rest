@@ -40,24 +40,7 @@ beans = {
         bean.factoryMethod = 'getInstance'
     }
 
-    if (GrailsUtil.environment == "production") {
-        accountService(SpringSecurityAccountService)
-    }
-    else {
-        //empty sprint security bean
-        springSecurityFilterChain(FilterChainProxy, [])
-
-        accountService(MockAccountService) {
-            loggedInUsername = "slackbot"
-            loggedInDisplayName = "Slackbot"
-            loggedInEmail = "slackbot@nowhere.com"
-            loggedInOrganization = DEFAULT_AGENCY
-            loggedInUserRoles = [
-                new SimpleGrantedAuthority(Constants.USER),
-                new SimpleGrantedAuthority(Constants.ADMIN)
-            ]
-        }
-    }
+    accountService(SpringSecurityAccountService)
 
     customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)
 

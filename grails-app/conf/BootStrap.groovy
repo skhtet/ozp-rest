@@ -3,28 +3,16 @@ import grails.util.*
 
 import marketplace.*
 import marketplace.rest.ItemCommentServiceItemDto
-import marketplace.rest.ProfileServiceItemTagDto
 import marketplace.rest.ApplicationDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
 import com.fasterxml.jackson.databind.SerializationFeature
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as confHolder
-import org.codehaus.groovy.grails.web.json.*
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
-import ozone.marketplace.enums.DefinedDefaultTypes;
-import ozone.marketplace.enums.ImageType;
-import ozone.utils.Utils
 
 class BootStrap {
-    def serviceItemService
-    def marketplaceConversionService
-	def searchableService
-	def imagesService
     def profileRestService
     def grailsApplication
-    def messageSource
-    def commonImagesLoc = '/themes/common/images'
     def sessionFactory
     def objectMapper
 
@@ -91,9 +79,7 @@ class BootStrap {
             ListingActivity,
             ModifyRelationshipActivity,
             RejectionActivity,
-            ServiceItemTag,
             ItemCommentServiceItemDto,
-            ProfileServiceItemTagDto,
             Scorecard,
             ContactType,
             ItemComment,
@@ -101,7 +87,6 @@ class BootStrap {
             Types,
             Intent,
             Profile,
-            Images,
             Listing,
             Category,
             RejectionJustification,

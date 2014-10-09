@@ -2,22 +2,29 @@
 
 ## Run
 
-In order to run this project you need Grails 2.3.7 and JDK 6 or 7. Ensure that $GRAILS_HOME/bin is on your path and that you have set $JAVA_HOME. Run the project from the base directory with the following invocation:
+In order to run this project you need JDK 6 or 7 with $JAVA_HOME defined in your environment. Run the project from the base directory with the following invocation:
 
 ```
-grails run-app
+./grailsw run-app -https
 ```
+
+(on a windows system, omit the leading "./")
+
+## Use
+
+The sample security configuration uses HTTP basic auth. You have the choice of logging in as one of two roles. To log in as a regular user, login with "testUser1" and "password" as the credentials. The credentials for the admin role are "testAdmin1" and "password".
 
 ## Build
 
 Building the project has the same dependencies as running it. After satisfying the prerequisites above, build the project war file with the following invocation:
 
 ```
-grails war
+./grailsw war
 ```
 
-The output (./target/marketplace.war) can generally be dropped in any servlet container and run without additional configuration. However, Marketplace defaults to using an in-memory Elasticsearch index and H2 database and may, in some cases, need additional Java heap allocated to the servlet container to avoid out of memory errors. The recommended minimum heap size is 512 Mb.
+(on a windows system, omit the leading "./")
 
+The output (./target/marketplace.war) can generally be dropped in any servlet container and run without additional configuration. However, Marketplace defaults to using an in-memory Elasticsearch index and H2 database and may, in some cases, need additional Java heap allocated to the servlet container to avoid out of memory errors. The recommended minimum heap size is 512 Mb.
 
 ## Load Sample Data
 

@@ -285,6 +285,6 @@ class ListingRestService extends RestService<Listing> {
         item.save(flush: true)
 
         //unhook all ServiceItemSnapshots
-        (ListingSnapshot.findAllByServiceItem(item) as Set).each { it.serviceItem = null }
+        (ListingSnapshot.findAllByListing(item) as Set).each { it.listing = null }
     }
 }

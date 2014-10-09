@@ -15,17 +15,14 @@ import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Category
 import marketplace.Relationship
-import marketplace.ServiceItemTag
-import marketplace.Tag
 import marketplace.Profile
 import marketplace.Intent
-import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.validator.DomainValidator
 
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.AbstractInputRepresentation
-import marketplace.rest.representation.in.ServiceItemIdRef
+import marketplace.rest.representation.in.ListingIdRef
 import marketplace.rest.representation.in.TypeIdRef
 import marketplace.rest.representation.in.ProfileIdRef
 
@@ -65,7 +62,7 @@ class RestServiceUnitTest {
             super(Relationship.class)
         }
 
-        Set<ServiceItemIdRef> relatedItems
+        Set<ListingIdRef> relatedItems
         RelationshipType relationshipType = RelationshipType.REQUIRE
     }
 
@@ -140,8 +137,6 @@ class RestServiceUnitTest {
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
-        grailsApplication.addArtefact(ServiceItemTag.class)
-        grailsApplication.addArtefact(Tag.class)
         restService = new TestService(grailsApplication)
     }
 
@@ -516,7 +511,7 @@ class RestServiceUnitTest {
         def ownerRep = new ProfileIdRef(id: 2)
         def typeRep = new TypeIdRef(id: 1)
         def relationships = new RelationshipInputRepresentation(
-            relatedItems: [new ServiceItemIdRef(id: 1)]
+            relatedItems: [new ListingIdRef(id: 1)]
         )
 
         def id = restService.getAll(0, 1).iterator().next().id

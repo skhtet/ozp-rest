@@ -41,14 +41,14 @@ class ApplicationLibraryEntryRestService
         parentClassRestService.getById(parentId).applicationLibrary
     }
 
-    public void deleteByParentIdAndServiceItemId(Long profileId, Long serviceItemId) {
+    public void deleteByParentIdAndServiceItemId(Long profileId, Long listingId) {
         //ensure access to profile
         Profile profile = parentClassRestService.getById(profileId)
 
         Collection<ApplicationLibraryEntry> entries =
             ApplicationLibraryEntry.createCriteria().list {
-                serviceItem {
-                    eq('id', serviceItemId)
+                listing {
+                    eq('id', listingId)
                 }
                 owner {
                     eq('id', profileId)
