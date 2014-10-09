@@ -9,16 +9,17 @@ import javax.ws.rs.core.MediaType
 import com.google.common.reflect.TypeToken
 
 import marketplace.ApplicationLibraryEntry
+import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
 
 import marketplace.rest.representation.out.ApplicationLibraryRepresentation
-import marketplace.rest.ApplicationLibrary
+import marketplace.rest.ChildObjectCollection
 
 @Provider
 @Produces([ApplicationLibraryRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-class ApplicationLibraryRepresentationWriter
-        extends AbstractRepresentationWriter<ApplicationLibrary> {
+class ApplicationLibraryRepresentationWriter extends
+        AbstractRepresentationWriter<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
     @Autowired
     ApplicationLibraryRepresentationWriter(ApplicationLibraryRepresentation.Factory factory) {
         super(factory)

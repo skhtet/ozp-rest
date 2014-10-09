@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.ApplicationLibraryEntry
+import marketplace.Profile
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.AbstractHalRepresentation
@@ -15,16 +16,16 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.ApplicationLibrary
 import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
-import marketplace.Profile
+import marketplace.rest.ChildObjectCollection
+
 
 class ApplicationLibraryRepresentation
-        extends SelfRefRepresentation<ApplicationLibrary> {
+        extends SelfRefRepresentation<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
 
     public static final String MEDIA_TYPE = 'application/vnd.ozp-library-v1+json'
 
@@ -49,11 +50,8 @@ class ApplicationLibraryRepresentation
         }
     }
 
-    /**
-     * A UriBuilder that should be initialized to the application root
-     * (e.g. https://localhost:8443/marketplace)
-     */
-    private ApplicationLibraryRepresentation(ApplicationLibrary library,
+    private ApplicationLibraryRepresentation(
+            ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
             ApplicationRootUriBuilderHolder uriBuilderHolder,
             ChildObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
             ResourceUriBuilder<Profile> profileUriBuilder) {
@@ -64,15 +62,17 @@ class ApplicationLibraryRepresentation
         )
     }
 
-    private static HalLinks createLinks(ApplicationLibrary library,
-            profileUriBuilder) {
-        URI viaUri = profileUriBuilder.getUri(library.profile)
+    private static HalLinks createLinks(
+            ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
+            ResourceUriBuilder<Profile> profileUriBuilder) {
+        URI viaUri = profileUriBuilder.getUri(library.parent)
         new HalLinks(RegisteredRelationType.VIA, new Link(viaUri))
     }
 
-    private static HalEmbedded createFolders(ApplicationLibrary library,
+    private static HalEmbedded createFolders(
+            ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        List<ApplicationLibraryEntry> entries = library.entries
+        List<ApplicationLibraryEntry> entries = library.collection
 
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
@@ -81,14 +81,14 @@ class ApplicationLibraryRepresentation
     }
 
     @Component
-    public static class Factory
-            implements RepresentationFactory<ApplicationLibrary> {
+    public static class Factory implements
+            RepresentationFactory<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
         @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
 
         @Override
         ApplicationLibraryRepresentation toRepresentation(
-                ApplicationLibrary entries,
+                ChildObjectCollection<Profile, ApplicationLibraryEntry>  entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ApplicationLibraryRepresentation(entries, uriBuilderHolder,
                 entryUriBuilderFactory.getBuilder(uriBuilderHolder),

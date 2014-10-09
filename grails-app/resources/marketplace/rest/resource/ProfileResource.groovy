@@ -52,8 +52,7 @@ import marketplace.rest.representation.out.AgencyRepresentation
 import marketplace.rest.representation.out.ApplicationLibraryEntryRepresentation
 import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.representation.out.ProfileRepresentation
-import marketplace.rest.StewardedOrganizations
-import marketplace.rest.ApplicationLibrary
+import marketplace.rest.ChildObjectCollection
 import marketplace.rest.ItemCommentServiceItemDto
 
 @Path('/api/profile')
@@ -223,10 +222,12 @@ class ProfileResource extends RepresentationResource<Profile> {
         ApplicationLibraryRepresentation.MEDIA_TYPE,
         AbstractHalRepresentation.HAL_MEDIA_TYPE
     ])
-    ApplicationLibrary getApplicationLibrary(@PathParam('profileId') String profileId) {
+    ChildObjectCollection<Profile, ApplicationLibraryEntry> getApplicationLibrary(
+            @PathParam('profileId') String profileId) {
         long id = getProfileId(profileId)
 
-        new ApplicationLibrary(id, applicationLibraryEntryRestService.getByParentId(id))
+        new ChildObjectCollection(applicationLibraryEntryRestService.getByParentId(id),
+            read(profileId))
     }
 
     /**
@@ -272,13 +273,14 @@ class ProfileResource extends RepresentationResource<Profile> {
         ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    ApplicationLibrary replaceApplicationLibrary(
+    ChildObjectCollection<Profile, ApplicationLibraryEntry> replaceApplicationLibrary(
             @PathParam('profileId') String profileId,
             List<ApplicationLibraryEntryInputRepresentation> library) {
         long id = getProfileId(profileId)
 
-        new ApplicationLibrary(id,
-            applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(id, library))
+        new ChildObjectCollection(
+            applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(id, library),
+            read(id))
     }
 
     /** remove after the demo */
@@ -308,21 +310,23 @@ class ProfileResource extends RepresentationResource<Profile> {
     @Path('/{profileId}/stewarded-organizations')
     @GET
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    StewardedOrganizations getStewardedOrganizations(@PathParam('profileId') String profileId) {
+    ChildObjectCollection<Profile, Agency> getStewardedOrganizations(
+            @PathParam('profileId') String profileId) {
         Profile profile = service.getById(getProfileId(profileId))
-        new StewardedOrganizations(profile)
+        new ChildObjectCollection(profile.stewardedOrganizations, profile)
     }
 
     @Path('/{profileId}/stewarded-organizations')
     @PUT
     @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
     @Consumes([AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    StewardedOrganizations setStewardedOrganizations(@PathParam('profileId') String profileId,
-            Collection<AgencyIdRef> organizations) {
+    ChildObjectCollection<Profile, Agency> setStewardedOrganizations(
+            @PathParam('profileId') String profileId, Collection<AgencyIdRef> organizations) {
         long id = getProfileId(profileId)
 
         service.setStewardedOrganizations(id, organizations)
-        new StewardedOrganizations(service.getById(id))
+        Profile profile = service.getById(id)
+        new ChildObjectCollection(profile.stewardedOrganizations, profile)
     }
 
     @Path('/{profileId}/stewarded-organizations')

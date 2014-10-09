@@ -12,7 +12,7 @@ import marketplace.hal.RegisteredRelationType
 import marketplace.Agency
 import marketplace.Profile
 
-import marketplace.rest.StewardedOrganizations
+import marketplace.rest.ChildObjectCollection
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
@@ -20,8 +20,8 @@ import marketplace.hal.HalLinks
 import marketplace.hal.Link
 
 class StewardedOrganizationsRepresentation extends
-        SelfRefRepresentation<StewardedOrganizations> {
-    StewardedOrganizationsRepresentation(StewardedOrganizations orgs,
+        SelfRefRepresentation<ChildObjectCollection<Profile, Agency>> {
+    StewardedOrganizationsRepresentation(ChildObjectCollection<Profile, Agency> orgs,
             ApplicationRootUriBuilderHolder uriBuilderHolder,
             ProfileUriBuilder profileUriBuilder) {
         super(
@@ -31,13 +31,13 @@ class StewardedOrganizationsRepresentation extends
         )
     }
 
-    private static HalLinks createLinks(StewardedOrganizations orgs,
+    private static HalLinks createLinks(ChildObjectCollection<Profile, Agency> orgs,
             ResourceUriBuilder<Profile> profileUriBuilder) {
         URI profileUri = profileUriBuilder.getUri(orgs.profile)
         new HalLinks(RegisteredRelationType.VIA, new Link(profileUri))
     }
 
-    private static HalEmbedded createEmbedded(StewardedOrganizations orgs,
+    private static HalEmbedded createEmbedded(ChildObjectCollection<Profile, Agency> orgs,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         RepresentationFactory<Agency> factory = new AgencyRepresentation.Factory()
 
@@ -48,10 +48,12 @@ class StewardedOrganizationsRepresentation extends
     }
 
     @Component
-    public static class Factory implements RepresentationFactory<StewardedOrganizations> {
+    public static class Factory implements
+            RepresentationFactory<ChildObjectCollection<Profile, Agency>> {
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
 
-        StewardedOrganizationsRepresentation toRepresentation(StewardedOrganizations orgs,
+        StewardedOrganizationsRepresentation toRepresentation(
+                ChildObjectCollection<Profile, Agency> orgs,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new StewardedOrganizationsRepresentation(orgs, uriBuilderHolder,
                 profileUriBuilderFactory.getBuilder(uriBuilderHolder))

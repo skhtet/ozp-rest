@@ -7,11 +7,12 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
 import marketplace.Agency
+import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
 import marketplace.hal.EmbeddedCollectionRepresentation
 
-import marketplace.rest.StewardedOrganizations
+import marketplace.rest.ChildObjectCollection
 import marketplace.rest.representation.out.StewardedOrganizationsRepresentation
 import marketplace.rest.representation.out.AgencyRepresentation
 
@@ -21,7 +22,7 @@ import marketplace.rest.representation.out.AgencyRepresentation
     MediaType.APPLICATION_JSON
 ])
 class StewardedOrganizationsRepresentationWriter extends
-        AbstractRepresentationWriter<StewardedOrganizations> {
+        AbstractRepresentationWriter<ChildObjectCollection<Profile, Agency>> {
 
     @Autowired
     StewardedOrganizationsRepresentationWriter(StewardedOrganizationsRepresentation.Factory factory) {
