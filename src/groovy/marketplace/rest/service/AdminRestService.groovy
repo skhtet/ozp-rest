@@ -26,13 +26,18 @@ class AdminRestService<T> extends RestService<T> {
     //probably is not possible.  It should be tested
     //via REST integration tests
     @RolesAllowed('ROLE_ADMIN')
-    public void deleteById(Long id) {
+    public void deleteById(Object id) {
         super.deleteById(id)
     }
 
     @RolesAllowed('ROLE_ADMIN')
-    public T updateById(Long id, T dto) {
+    public T updateById(Object id, T dto) {
         return super.updateById(id, dto)
+    }
+
+    @RolesAllowed('ROLE_ADMIN')
+    public T updateById(Object id, InputRepresentation<T> rep) {
+        return super.updateById(id, rep)
     }
 
     @RolesAllowed('ROLE_ADMIN')
