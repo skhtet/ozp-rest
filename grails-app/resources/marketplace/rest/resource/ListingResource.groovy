@@ -35,11 +35,11 @@ import static org.grails.jaxrs.response.Responses.created
 
 @Path('/api/listing')
 class ListingResource extends DomainResource<Listing> {
-    ListingRestService serviceItemRestService
-    ListingActivityRestService serviceItemActivityRestService
-    RejectionListingRestService rejectionListingRestService
-    ItemCommentRestService itemCommentRestService
-    ElasticSearchAdminService elasticSearchAdminService
+
+    @Autowired ListingActivityRestService listingActivityRestService
+    @Autowired RejectionListingRestService rejectionListingRestService
+    @Autowired ItemCommentRestService itemCommentRestService
+    @Autowired ElasticSearchAdminService elasticSearchAdminService
 
     @Autowired
     ListingResource(ListingRestService service) {
@@ -72,7 +72,7 @@ class ListingResource extends DomainResource<Listing> {
     public Collection<ListingActivity> getActivitiesForServiceItems(
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getAll(offset, max)
+        listingActivityRestService.getAll(offset, max)
     }
 
     @Path('/{listingId}/activity')
@@ -81,7 +81,7 @@ class ListingResource extends DomainResource<Listing> {
             @PathParam('listingId') long listingId,
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        serviceItemActivityRestService.getByParentId(listingId, offset, max)
+        listingActivityRestService.getByParentId(listingId, offset, max)
     }
 
     @Path('/{listingId}/rejectionListing')
@@ -106,7 +106,7 @@ class ListingResource extends DomainResource<Listing> {
     public Collection<Listing> getRequiredListings(
             @PathParam('listingId') long serviceItemId) {
 
-        serviceItemRestService.getAllRequiredListingsByParentId(serviceItemId)
+        service.getAllRequiredListingsByParentId(serviceItemId)
     }
 
     @Path('/{listingId}/requiringListings')
@@ -115,7 +115,7 @@ class ListingResource extends DomainResource<Listing> {
     public Collection<Listing> getRequiringListings(
             @PathParam('listingId') long listingId) {
 
-        serviceItemRestService.getRequiringListingsByChildId(listingId)
+        service.getRequiringListingsByChildId(listingId)
     }
 
     @Path('/{listingId}/itemComment')
