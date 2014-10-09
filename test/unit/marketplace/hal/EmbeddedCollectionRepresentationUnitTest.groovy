@@ -8,7 +8,7 @@ import grails.orm.PagedResultList
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 @TestMixin(GrailsUnitTestMixin)
 class EmbeddedCollectionRepresentationUnitTest {
@@ -30,34 +30,15 @@ class EmbeddedCollectionRepresentationUnitTest {
     }
 
     void testSelfLink() {
-        URI selfUri = new URI('https://localhost/asdf/')
-        def selfLinkResource
+        ApplicationRootUriBuilderHolder uriBuilderHolder = makeUriBuilderHolder()
 
-        ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-            getBaseUriBuilder: {
-                [
-                    clone: {
-                        [
-                            path: {
-                                selfLinkResource = it
-                                return [
-                                    build: {
-                                        selfUri
-                                    }
-                                ] as UriBuilder
-                            }
-                        ] as UriBuilder
-                    }
-                ] as UriBuilder
-            }
-        ] as UriInfo)
-
-        def representation = new EmbeddedCollectionRepresentation(null, this.getClass(), [],
+        def representation = new EmbeddedCollectionRepresentation(null,
+                new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+                [],
                 uriBuilderHolder)
 
-        assert selfLinkResource == this.getClass()
         assert representation.links.toMap().get(RegisteredRelationType.SELF).href ==
-            selfUri.toString()
+            'https://localhost/asdf/api/profile'
     }
 
     private static class EmbeddedRepresentation extends AbstractHalRepresentation {
@@ -83,7 +64,7 @@ class EmbeddedCollectionRepresentationUnitTest {
 
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             entities,
             uriBuilderHolder
         )
@@ -103,22 +84,26 @@ class EmbeddedCollectionRepresentationUnitTest {
         Collection entities = [[id: 1],[id: 2],[id: 3],[id: 4]]
         PagedCollection paged = new PagedCollection(null, null, entities)
 
+        ApplicationRootUriBuilderHolder uriBuilderHolder = makeUriBuilderHolder()
+
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         //when the inner collection is not paged, the total should be its size
         assert representation.total == 4
 
         paged = new PagedCollection(null, null, mockPagedResultList(entities, 100))
+
+        uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         assert representation.total == 100
@@ -128,11 +113,12 @@ class EmbeddedCollectionRepresentationUnitTest {
         Collection entities = [[id: 1],[id: 2],[id: 3],[id: 4]]
         PagedCollection paged = new PagedCollection(null, null, entities)
 
+        def uriBuilderHolder = makeUriBuilderHolder()
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         //with no offset and max the paging links should not be added
@@ -141,11 +127,12 @@ class EmbeddedCollectionRepresentationUnitTest {
 
         paged = new PagedCollection(null, 4, mockPagedResultList(entities, 100))
 
+        uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         //on first page - no prev link
@@ -156,11 +143,12 @@ class EmbeddedCollectionRepresentationUnitTest {
 
         paged = new PagedCollection(8, 4, mockPagedResultList(entities, 100))
 
+        uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         assert representation.links.toMap().get(RegisteredRelationType.PREV).href ==
@@ -170,11 +158,12 @@ class EmbeddedCollectionRepresentationUnitTest {
 
         paged = new PagedCollection(96, 4, mockPagedResultList(entities, 100))
 
+        uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
-            ProfileResource.class,
+            new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
             paged,
-            makeUriBuilderHolder()
+            uriBuilderHolder
         )
 
         assert representation.links.toMap().get(RegisteredRelationType.PREV).href ==

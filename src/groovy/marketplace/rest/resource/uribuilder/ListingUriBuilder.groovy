@@ -8,7 +8,7 @@ import marketplace.rest.resource.ListingResource
 import marketplace.Listing
 
 class ListingUriBuilder extends RepresentationResourceUriBuilder<Listing> {
-    private ListingUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    protected ListingUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(ListingResource.class, uriBuilderHolder)
     }
 

@@ -15,13 +15,14 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.OzpRelationType
 
-import marketplace.rest.ApplicationLibrary
+import marketplace.rest.ChildObjectCollection
+
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.AgencyUriBuilder
 
 @TestMixin(GrailsUnitTestMixin)
 class ProfileRepresentationUnitTest {
-    RepresentationFactory<Profile> factory =
-        new ProfileRepresentation.Factory()
-
+    ProfileRepresentation.Factory factory
     ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
         getBaseUriBuilder: {
             UriBuilder.fromPath('https://localhost/asdf/')
@@ -38,19 +39,57 @@ class ProfileRepresentationUnitTest {
     void setUp() {
         organizations.eachWithIndex { agency, idx -> agency.id = idx }
         profile.id = 235
+
+        factory = new ProfileRepresentation.Factory()
+
+        factory.profileUriBuilderFactory = new ProfileUriBuilder.Factory() {
+            ProfileUriBuilder getBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new ProfileUriBuilder(null) {
+                    URI getUri(Profile profile) {
+                        new URI("https://localhost/asdf/profile/${profile.id}")
+                    }
+
+                    URI getApplicationLibraryUri(Profile profile) {
+                        new URI("https://localhost/asdf/profile/${profile.id}/library")
+                    }
+
+                    URI getStewardedOrganizationsUri(Profile profile) {
+                        new URI("https://localhost/asdf/profile/${profile.id}/stewarded-organizations")
+                    }
+
+                    URI getUserDataUri(Profile profile) {
+                        new URI("https://localhost/asdf/profile/${profile.id}/user-data")
+                    }
+                }
+            }
+        }
+
+        factory.agencyRepresentationFactory = new AgencyRepresentation.Factory()
+        factory.agencyRepresentationFactory.uriBuilderFactory = new AgencyUriBuilder.Factory() {
+            AgencyUriBuilder getBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new AgencyUriBuilder(null) {
+                    URI getUri(Agency agency) {
+                        new URI("https://localhost/asdf/agency/${agency.id}")
+                    }
+                }
+            }
+        }
     }
 
     void testLinks() {
         ProfileRepresentation rep = factory.toRepresentation(profile, uriBuilderHolder)
 
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
-            'https://localhost/asdf/api/profile/235'
+            'https://localhost/asdf/profile/235'
 
         assert rep.links.toMap().get(OzpRelationType.APPLICATION_LIBRARY).href ==
-            'https://localhost/asdf/api/profile/235/library'
+            'https://localhost/asdf/profile/235/library'
 
         assert rep.links.toMap().get(OzpRelationType.STEWARDSHIP).href ==
-            'https://localhost/asdf/api/profile/235/stewarded-organizations'
+            'https://localhost/asdf/profile/235/stewarded-organizations'
+
+        assert rep.links.toMap().get(OzpRelationType.USER_DATA).href ==
+            'https://localhost/asdf/profile/235/user-data'
     }
 
     void testEmbedded() {

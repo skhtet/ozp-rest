@@ -16,12 +16,15 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.OzpRelationType
 
-import marketplace.rest.ApplicationLibrary
+import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.ChildObjectCollection
 
 @TestMixin(GrailsUnitTestMixin)
 class ApplicationLibraryRepresentationUnitTest {
-    RepresentationFactory<ApplicationLibrary> factory =
-        new ApplicationLibraryRepresentation.Factory()
+    ApplicationLibraryRepresentation.Factory factory
+
 
     ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
         getBaseUriBuilder: {
@@ -29,10 +32,48 @@ class ApplicationLibraryRepresentationUnitTest {
         }
     ] as UriInfo)
 
+    void setUp() {
+        factory = new ApplicationLibraryRepresentation.Factory()
+
+        factory.entryUriBuilderFactory = [
+            getBuilder: { uriBuilderHolder ->
+                new ApplicationLibraryEntryUriBuilder(null) {
+                    URI getCollectionUri(ChildObjectCollection library) {
+                        new URI("https://localhost/asdf/api/profile/${library.parent.id}/library")
+                    }
+                    URI getUri(ApplicationLibraryEntry entry) {
+                        new URI("https://localhost/asdf/api/profile/${entry.owner.id}/library/${entry.listing.id}")
+                    }
+                }
+            }
+        ] as ApplicationLibraryEntryUriBuilder.Factory
+
+        factory.profileUriBuilderFactory = [
+            getBuilder: { uriBuilderHolder ->
+                new ProfileUriBuilder(null) {
+                    URI getUri(Profile profile) {
+                        new URI("https://localhost/asdf/api/profile/${profile.id}")
+                    }
+                }
+            }
+        ] as ProfileUriBuilder.Factory
+
+        factory.listingUriBuilderFactory = [
+            getBuilder: { uriBuilderHolder ->
+                new ListingUriBuilder(null) {
+                    URI getUri(Listing listing) {
+                        new URI("https://localhost/asdf/api/listing/${listing.id}")
+                    }
+                }
+            }
+        ] as ListingUriBuilder.Factory
+    }
+
     void testLinks() {
-        long profileId = 132
-        ApplicationLibrary library = new ApplicationLibrary(profileId, [])
-        ApplicationLibraryRepresentation rep = factory.toRepresentation(library, uriBuilderHolder)
+        Profile profile = new Profile()
+        profile.id = 132
+        ChildObjectCollection library = new ChildObjectCollection([], profile)
+        def rep = factory.toRepresentation(library, uriBuilderHolder)
 
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
             'https://localhost/asdf/api/profile/132/library'
@@ -43,6 +84,8 @@ class ApplicationLibraryRepresentationUnitTest {
     //test the links on embedded objects
     void testEmbedded() {
         long profileId = 132
+        Profile profile = new Profile()
+        profile.id = profileId
         Collection<Listing> serviceItems = [1,2,3].collect {
             Listing si = new Listing(
                 title: "Listing $it",
@@ -53,9 +96,9 @@ class ApplicationLibraryRepresentationUnitTest {
         }
 
         Collection<Profile> profiles = [4,5,6].collect {
-            Profile profile = new Profile()
+            Profile p= new Profile()
             profile.id = it
-            return profile
+            return p
         }
 
         Collection<ApplicationLibraryEntry> entries = [
@@ -76,8 +119,8 @@ class ApplicationLibraryRepresentationUnitTest {
             )
         ]
 
-        ApplicationLibrary library = new ApplicationLibrary(profileId, entries)
-        ApplicationLibraryRepresentation rep = factory.toRepresentation(library, uriBuilderHolder)
+        ChildObjectCollection library = new ChildObjectCollection(entries, profile)
+        def rep = factory.toRepresentation(library, uriBuilderHolder)
 
         Collection folders = rep.embedded.toMap().get(RegisteredRelationType.ITEM)
 

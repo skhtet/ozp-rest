@@ -15,16 +15,54 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 
+import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.ChildObjectCollection
+
 @TestMixin(GrailsUnitTestMixin)
 class ApplicationLibraryEntryRepresentationUnitTest {
-    RepresentationFactory<ApplicationLibraryEntry> factory =
-        new ApplicationLibraryEntryRepresentation.Factory()
+    RepresentationFactory<ApplicationLibraryEntry> factory
+    ApplicationRootUriBuilderHolder uriBuilderHolder
 
-    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-        getBaseUriBuilder: {
-            UriBuilder.fromPath('https://localhost/asdf/')
+    void setUp() {
+        factory = new ApplicationLibraryEntryRepresentation.Factory()
+
+        uriBuilderHolder = new ApplicationRootUriBuilderHolder([
+            getBaseUriBuilder: {
+                UriBuilder.fromPath('https://localhost/asdf/')
+            }
+        ] as UriInfo)
+
+        factory.entryUriBuilderFactory = new ApplicationLibraryEntryUriBuilder.Factory() {
+            ApplicationLibraryEntryUriBuilder getBuilder(
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new ApplicationLibraryEntryUriBuilder(null) {
+                    URI getUri(ApplicationLibraryEntry entry) {
+                        new URI('https://localhost/asdf/api/entry/1')
+                    }
+
+                    URI getCollectionUri(ChildObjectCollection collection) {
+                        new URI('https://localhost/asdf/api/profile/entry')
+                    }
+                    URI getCollectionUri(ApplicationLibraryEntry entry) {
+                        new URI('https://localhost/asdf/api/profile/entry')
+                    }
+                }
+            }
         }
-    ] as UriInfo)
+        factory.listingUriBuilderFactory = new ListingUriBuilder.Factory() {
+            ListingUriBuilder getBuilder(
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new ListingUriBuilder(null) {
+                    URI getUri(Listing entry) {
+                        new URI('https://localhost/asdf/api/listing/1')
+                    }
+                }
+            }
+        }
+    }
 
     void testLinks() {
         Profile owner = new Profile()
@@ -42,9 +80,9 @@ class ApplicationLibraryEntryRepresentationUnitTest {
             factory.toRepresentation(entry, uriBuilderHolder)
 
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
-            'https://localhost/asdf/api/profile/16/library/13'
+            'https://localhost/asdf/api/entry/1'
         assert rep.links.toMap().get(RegisteredRelationType.COLLECTION).href ==
-            'https://localhost/asdf/api/profile/16/library'
+            'https://localhost/asdf/api/profile/entry'
     }
 
     void testEmbedded() {
@@ -62,11 +100,9 @@ class ApplicationLibraryEntryRepresentationUnitTest {
         )
 
         ApplicationLibraryEntry libraryApplicationEntry
-        ApplicationRootUriBuilderHolder libraryApplicationUriBuilderHolder
         LibraryApplicationRepresentation.metaClass.constructor = { ApplicationLibraryEntry e,
-                ApplicationRootUriBuilderHolder ubh ->
+                DomainResourceUriBuilder entryUriBuilder, ResourceUriBuilder listingUriBuilder ->
             libraryApplicationEntry = e
-            libraryApplicationUriBuilderHolder = ubh
 
             return new AbstractHalRepresentation() {}
         }
@@ -75,7 +111,6 @@ class ApplicationLibraryEntryRepresentationUnitTest {
             factory.toRepresentation(entry, uriBuilderHolder)
 
         assert libraryApplicationEntry.is(entry)
-        assert libraryApplicationUriBuilderHolder.is(uriBuilderHolder)
     }
 
     void testGetServiceItem() {

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
+import marketplace.Listing
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.AbstractHalRepresentation
@@ -17,9 +18,11 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
 import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
 import marketplace.rest.ChildObjectCollection
 
@@ -34,31 +37,34 @@ class ApplicationLibraryRepresentation
         final String folder
 
         FolderRepresentation(String folder, Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            super(null, createItems(entries, uriBuilderHolder, folder))
+                DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+                ResourceUriBuilder<Listing> listingUriBuilder) {
+            super(null, createItems(entries, entryUriBuilder, listingUriBuilder, folder))
             this.folder = folder
         }
 
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
-                ApplicationRootUriBuilderHolder uriBuilderHolder, String folder) {
+                DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+                ResourceUriBuilder<Listing> listingUriBuilder, String folder) {
             new HalEmbedded(entries.collect { entry ->
                 assert entry.folder == folder
 
                 new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
-                    new LibraryApplicationRepresentation(entry, uriBuilderHolder))
+                    new LibraryApplicationRepresentation(entry, entryUriBuilder,
+                        listingUriBuilder))
             })
         }
     }
 
     private ApplicationLibraryRepresentation(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            ChildObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Profile> profileUriBuilder) {
+            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Profile> profileUriBuilder,
+            ResourceUriBuilder<Listing> listingUriBuilder) {
         super(
             entryUriBuilder.getCollectionUri(library),
             createLinks(library, profileUriBuilder),
-            createFolders(library, uriBuilderHolder)
+            createFolders(library, entryUriBuilder, listingUriBuilder)
         )
     }
 
@@ -71,12 +77,14 @@ class ApplicationLibraryRepresentation
 
     private static HalEmbedded createFolders(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Listing> listingUriBuilder) {
         List<ApplicationLibraryEntry> entries = library.collection
 
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
-                new FolderRepresentation(folderName, folderEntries, uriBuilderHolder))
+                new FolderRepresentation(folderName, folderEntries, entryUriBuilder,
+                    listingUriBuilder))
         })
     }
 
@@ -85,14 +93,16 @@ class ApplicationLibraryRepresentation
             RepresentationFactory<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
         @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+        @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
 
         @Override
         ApplicationLibraryRepresentation toRepresentation(
                 ChildObjectCollection<Profile, ApplicationLibraryEntry>  entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationLibraryRepresentation(entries, uriBuilderHolder,
+            new ApplicationLibraryRepresentation(entries,
                 entryUriBuilderFactory.getBuilder(uriBuilderHolder),
-                profileUriBuilderFactory.getBuilder(uriBuilderHolder))
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder),
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

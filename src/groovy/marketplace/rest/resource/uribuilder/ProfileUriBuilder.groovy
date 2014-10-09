@@ -9,7 +9,7 @@ import marketplace.Profile
 import marketplace.IwcDataObject
 
 class ProfileUriBuilder extends RepresentationResourceUriBuilder<Profile> {
-    private ProfileUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    protected ProfileUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(ProfileResource.class, uriBuilderHolder)
     }
 

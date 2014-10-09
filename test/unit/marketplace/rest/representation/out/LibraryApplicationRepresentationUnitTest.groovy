@@ -12,6 +12,11 @@ import marketplace.Listing
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RegisteredRelationType
 
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
+
 @TestMixin(GrailsUnitTestMixin)
 class LibraryApplicationRepresentationUnitTest {
     ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
@@ -19,6 +24,12 @@ class LibraryApplicationRepresentationUnitTest {
             UriBuilder.fromPath('https://localhost/asdf/')
         }
     ] as UriInfo)
+
+    DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder =
+        new ApplicationLibraryEntryUriBuilder(uriBuilderHolder)
+
+    ResourceUriBuilder<Listing> listingUriBuilder =
+        new ListingUriBuilder(uriBuilderHolder)
 
     Listing serviceItem = new Listing(
         title: 'Listing 1',
@@ -44,7 +55,7 @@ class LibraryApplicationRepresentationUnitTest {
 
     void testLinks() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, uriBuilderHolder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
 
         assert rep.links.toMap().get(RegisteredRelationType.DESCRIBES).href ==
             serviceItem.launchUrl
@@ -58,14 +69,14 @@ class LibraryApplicationRepresentationUnitTest {
 
     void testGetLaunchUrls() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, uriBuilderHolder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
 
         assert rep.launchUrls.default == new URI(serviceItem.launchUrl)
     }
 
     void testGetIcons() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, uriBuilderHolder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
 
         assert rep.icons.small == new URI(serviceItem.imageSmallUrl)
         assert rep.icons.large == new URI(serviceItem.imageMediumUrl)

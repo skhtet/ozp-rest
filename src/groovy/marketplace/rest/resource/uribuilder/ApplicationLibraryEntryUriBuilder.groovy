@@ -17,7 +17,8 @@ class ApplicationLibraryEntryUriBuilder implements
         ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> {
     private ApplicationRootUriBuilderHolder uriBuilderHolder
 
-    private ApplicationLibraryEntryUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    protected ApplicationLibraryEntryUriBuilder(
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
         this.uriBuilderHolder = uriBuilderHolder
     }
 

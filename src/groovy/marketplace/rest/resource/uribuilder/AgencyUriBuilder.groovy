@@ -8,7 +8,7 @@ import marketplace.rest.resource.AgencyResource
 import marketplace.Agency
 
 class AgencyUriBuilder extends RepresentationResourceUriBuilder<Agency> {
-    private AgencyUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    protected AgencyUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(AgencyResource.class, uriBuilderHolder)
     }
 

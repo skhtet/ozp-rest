@@ -13,14 +13,32 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 
+import marketplace.rest.resource.uribuilder.AgencyUriBuilder
+
 @TestMixin(GrailsUnitTestMixin)
 class AgencyRepresentationUnitTest {
-    RepresentationFactory<Agency> factory = new AgencyRepresentation.Factory()
-    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-        getBaseUriBuilder: {
-            UriBuilder.fromPath('https://localhost/asdf/')
+    RepresentationFactory<Agency> factory
+    ApplicationRootUriBuilderHolder uriBuilderHolder
+
+    void setUp() {
+        uriBuilderHolder = new ApplicationRootUriBuilderHolder([
+            getBaseUriBuilder: {
+                UriBuilder.fromPath('https://localhost/asdf/')
+            }
+        ] as UriInfo)
+
+        factory = new AgencyRepresentation.Factory()
+
+        factory.uriBuilderFactory = new AgencyUriBuilder.Factory() {
+            AgencyUriBuilder getBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new AgencyUriBuilder(uriBuilderHolder) {
+                    URI getUri(Agency agency) {
+                        new URI('https://localhost/asdf/agency/test')
+                    }
+                }
+            }
         }
-    ] as UriInfo)
+    }
 
     void testSelfUri() {
         Agency agency = new Agency()
@@ -29,7 +47,7 @@ class AgencyRepresentationUnitTest {
         AgencyRepresentation rep = factory.toRepresentation(agency, uriBuilderHolder)
 
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
-            'https://localhost/asdf/api/agency/14'
+            'https://localhost/asdf/agency/test'
     }
 
     void testGetIcon() {

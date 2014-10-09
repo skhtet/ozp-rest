@@ -18,6 +18,7 @@ import marketplace.hal.RepresentationFactory
 
 import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
@@ -52,7 +53,7 @@ class ApplicationLibraryEntryRepresentation
     }
 
     private static HalEmbedded createEmbeddedListing(ApplicationLibraryEntry entry,
-            ResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
             ResourceUriBuilder<Listing> listingUriBuilder) {
         new HalEmbedded(OzpRelationType.APPLICATION,
             new LibraryApplicationRepresentation(entry, entryUriBuilder,
