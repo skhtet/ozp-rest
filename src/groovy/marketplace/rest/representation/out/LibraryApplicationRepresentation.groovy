@@ -8,8 +8,7 @@ import marketplace.hal.HalLinks
 import marketplace.hal.Link
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.SelfRefRepresentation
-import marketplace.rest.resource.ProfileResource
-import marketplace.rest.resource.ListingResource
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
 /**
  * A representation of a Service Item within the Application Library, with all information needed
@@ -20,13 +19,11 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     private Listing listing
 
     public LibraryApplicationRepresentation(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Listing> listingUriBuilder) {
         super(
-            uriBuilderHolder.builder
-                .path(ListingResource.class)
-                .path(ListingResource.class, 'read')
-                .buildFromMap(id: entry.listing.id),
-            createLinks(entry, uriBuilderHolder),
+            listingUriBuilder.getUri(entry.listing),
+            createLinks(entry, entryUriBuilder),
             null
         )
 
@@ -34,14 +31,9 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     }
 
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        Listing listing = entry.listing
-        URI launchUri = new URI(listing.launchUrl),
-            libraryEntryUri = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'removeFromApplicationLibrary')
-                .buildFromMap(profileId: entry.owner.id, listingId: listing.id)
-
+            ResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder) {
+        URI launchUri = new URI(entry.listing.launchUrl),
+            libraryEntryUri = entryUriBuilder.getUri(entry)
         new HalLinks([
             new AbstractMap.SimpleEntry(RegisteredRelationType.DESCRIBES, new Link(launchUri)),
             new AbstractMap.SimpleEntry(RegisteredRelationType.VIA, new Link(libraryEntryUri))

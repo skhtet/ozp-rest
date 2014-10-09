@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Listing
 import marketplace.hal.AbstractRepresentationWriter
 
@@ -15,7 +17,9 @@ import marketplace.rest.representation.out.ApplicationRepresentation
     MediaType.APPLICATION_JSON
 ])
 class ApplicationRepresentationWriter extends AbstractRepresentationWriter<Listing> {
-    ApplicationRepresentationWriter() {
-        super(new ApplicationRepresentation.Factory())
+
+    @Autowired
+    ApplicationRepresentationWriter(ApplicationRepresentation.Factory factory) {
+        super(factory)
     }
 }

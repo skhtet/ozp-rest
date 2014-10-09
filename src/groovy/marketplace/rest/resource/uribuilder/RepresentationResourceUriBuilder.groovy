@@ -10,7 +10,7 @@ import marketplace.rest.resource.RepresentationResource
  */
 abstract class RepresentationResourceUriBuilder<T> implements ResourceUriBuilder<T> {
     private Class<? extends RepresentationResource<T>> resourceCls
-    private ApplicationRootUriBuilderHolder uriBuilderHolder
+    protected ApplicationRootUriBuilderHolder uriBuilderHolder
 
     protected RepresentationResourceUriBuilder(
             Class<? extends RepresentationResource<T>> resourceCls,
@@ -24,5 +24,11 @@ abstract class RepresentationResourceUriBuilder<T> implements ResourceUriBuilder
             .path(resourceCls)
             .path(resourceCls, 'read')
             .buildFromMap(id: obj.id)
+    }
+
+    URI getRootUri() {
+        uriBuilderHolder.builder
+            .path(resourceCls)
+            .build()
     }
 }

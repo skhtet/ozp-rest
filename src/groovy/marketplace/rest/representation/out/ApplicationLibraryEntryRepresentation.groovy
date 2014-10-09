@@ -1,7 +1,11 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.ApplicationLibraryEntry
 import marketplace.Listing
+import marketplace.Profile
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RegisteredRelationType
@@ -12,7 +16,10 @@ import marketplace.hal.HalEmbedded
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.RepresentationFactory
 
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
 class ApplicationLibraryEntryRepresentation
         extends AbstractHalRepresentation<ApplicationLibraryEntry> {
@@ -21,9 +28,10 @@ class ApplicationLibraryEntryRepresentation
     private ApplicationLibraryEntry entry
 
     private ApplicationLibraryEntryRepresentation(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(createLinks(entry, uriBuilderHolder),
-            createEmbeddedListing(entry, uriBuilderHolder))
+            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Listing> listingUriBuilder) {
+        super(createLinks(entry, entryUriBuilder),
+            createEmbeddedListing(entry, entryUriBuilder, listingUriBuilder))
 
         assert entry != null
         assert entry.listing != null
@@ -32,15 +40,9 @@ class ApplicationLibraryEntryRepresentation
     }
 
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI collectionHref = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'getApplicationLibrary')
-                .buildFromMap(profileId: entry.owner.id),
-            entryHref = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'removeFromApplicationLibrary')
-                .buildFromMap(profileId: entry.owner.id, listingId: entry.listing.id)
+            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder) {
+        URI collectionHref = entryUriBuilder.getCollectionUri(entry),
+            entryHref = entryUriBuilder.getUri(entry)
 
         new HalLinks([
             new AbstractMap.SimpleEntry(RegisteredRelationType.COLLECTION,
@@ -50,9 +52,11 @@ class ApplicationLibraryEntryRepresentation
     }
 
     private static HalEmbedded createEmbeddedListing(ApplicationLibraryEntry entry,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Listing> listingUriBuilder) {
         new HalEmbedded(OzpRelationType.APPLICATION,
-            new LibraryApplicationRepresentation(entry, uriBuilderHolder))
+            new LibraryApplicationRepresentation(entry, entryUriBuilder,
+                listingUriBuilder))
     }
 
     public String getFolder() { entry.folder }
@@ -60,13 +64,18 @@ class ApplicationLibraryEntryRepresentation
         new IdRefRepresentation<Listing>(entry.listing)
     }
 
+    @Component
     public static class Factory
             implements RepresentationFactory<ApplicationLibraryEntry> {
+        @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
+        @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
 
         @Override
         ApplicationLibraryEntryRepresentation toRepresentation(ApplicationLibraryEntry entry,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationLibraryEntryRepresentation(entry, uriBuilderHolder)
+            new ApplicationLibraryEntryRepresentation(entry,
+                entryUriBuilderFactory.getBuilder(uriBuilderHolder),
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

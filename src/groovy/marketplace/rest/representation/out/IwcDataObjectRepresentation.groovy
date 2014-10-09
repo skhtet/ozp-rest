@@ -1,10 +1,13 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.IwcDataObject
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 class IwcDataObjectRepresentation extends SelfRefRepresentation<IwcDataObject> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-iwc-data-object-v1+json'
@@ -14,22 +17,23 @@ class IwcDataObjectRepresentation extends SelfRefRepresentation<IwcDataObject> {
     final String contentType
     final String key
 
-    IwcDataObjectRepresentation(IwcDataObject object, ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'readDataItem')
-                .buildFromMap(key: object.key, profileId: object.profile.id), null, null)
+    IwcDataObjectRepresentation(IwcDataObject object, ProfileUriBuilder profileUriBuilder) {
+        super(profileUriBuilder.getUserDataItemUri(object), null, null)
 
         this.entity = object.entity
         this.contentType = object.contentType
         this.key = object.key
     }
 
+    @Component
     public static class Factory implements RepresentationFactory<IwcDataObject> {
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+
         public IwcDataObjectRepresentation toRepresentation(
                 IwcDataObject entity,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new IwcDataObjectRepresentation(entity, uriBuilderHolder)
+            new IwcDataObjectRepresentation(entity,
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

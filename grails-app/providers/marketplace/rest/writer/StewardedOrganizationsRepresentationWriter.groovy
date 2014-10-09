@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
@@ -21,7 +23,8 @@ import marketplace.rest.representation.out.AgencyRepresentation
 class StewardedOrganizationsRepresentationWriter extends
         AbstractRepresentationWriter<StewardedOrganizations> {
 
-    StewardedOrganizationsRepresentationWriter() {
-        super(new StewardedOrganizationsRepresentation.Factory())
+    @Autowired
+    StewardedOrganizationsRepresentationWriter(StewardedOrganizationsRepresentation.Factory factory) {
+        super(factory)
     }
 }

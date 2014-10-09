@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalEmbedded
@@ -7,9 +10,11 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 
 import marketplace.Agency
+import marketplace.Profile
 
 import marketplace.rest.StewardedOrganizations
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -17,26 +22,18 @@ import marketplace.hal.Link
 class StewardedOrganizationsRepresentation extends
         SelfRefRepresentation<StewardedOrganizations> {
     StewardedOrganizationsRepresentation(StewardedOrganizations orgs,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(createSelfLink(orgs, uriBuilderHolder), createLinks(orgs, uriBuilderHolder),
-            createEmbedded(orgs, uriBuilderHolder))
-    }
-
-    private static URI createSelfLink(StewardedOrganizations orgs,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'getStewardedOrganizations')
-            .buildFromMap(profileId: orgs.profile.id)
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ProfileUriBuilder profileUriBuilder) {
+        super(
+            profileUriBuilder.getStewardedOrganizationsUri(orgs.profile),
+            createLinks(orgs, profileUriBuilder),
+            createEmbedded(orgs, uriBuilderHolder)
+        )
     }
 
     private static HalLinks createLinks(StewardedOrganizations orgs,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI profileUri = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'read')
-                .buildFromMap(id: orgs.profile.id)
-
+            ResourceUriBuilder<Profile> profileUriBuilder) {
+        URI profileUri = profileUriBuilder.getUri(orgs.profile)
         new HalLinks(RegisteredRelationType.VIA, new Link(profileUri))
     }
 
@@ -50,10 +47,14 @@ class StewardedOrganizationsRepresentation extends
         })
     }
 
+    @Component
     public static class Factory implements RepresentationFactory<StewardedOrganizations> {
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+
         StewardedOrganizationsRepresentation toRepresentation(StewardedOrganizations orgs,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new StewardedOrganizationsRepresentation(orgs, uriBuilderHolder)
+            new StewardedOrganizationsRepresentation(orgs, uriBuilderHolder,
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

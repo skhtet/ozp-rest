@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.hal.AbstractRepresentationWriter
 import marketplace.Profile
 import marketplace.rest.IwcApi
@@ -16,7 +18,9 @@ import marketplace.rest.representation.out.IwcApiRepresentation
     MediaType.APPLICATION_JSON
 ])
 class IwcApiRepresentationWriter extends AbstractRepresentationWriter<IwcApi> {
-    IwcApiRepresentationWriter() {
-        super(new IwcApiRepresentation.Factory())
+
+    @Autowired
+    IwcApiRepresentationWriter(IwcApiRepresentation.Factory factory) {
+        super(factory)
     }
 }

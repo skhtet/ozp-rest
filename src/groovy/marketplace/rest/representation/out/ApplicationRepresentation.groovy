@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Intent
 import marketplace.Screenshot
 import marketplace.Listing
@@ -11,6 +14,8 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 
 import marketplace.rest.resource.ListingResource
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
 class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-application-v1+json'
@@ -36,15 +41,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     ]
 
     ApplicationRepresentation(Listing listing,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(
-            uriBuilderHolder.builder
-                .path(ListingResource.class)
-                .path(ListingResource.class, 'read')
-                .buildFromMap(id: listing.id),
-            null,
-            null
-        )
+            ResourceUriBuilder<Listing> listingUriBuilder) {
+        super(listingUriBuilder.getUri(listing), null, null)
 
         this.name = listing.title
         this.launchUrls.put('default', listing.launchUrl)
@@ -63,11 +61,15 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
         this.addLink(RegisteredRelationType.DESCRIBES, new Link(new URI(listing.launchUrl)))
     }
 
+    @Component
     public static class Factory implements RepresentationFactory<Listing> {
+        @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+
         public ApplicationRepresentation toRepresentation(
                     Listing listing,
                     ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationRepresentation(listing, uriBuilderHolder)
+            new ApplicationRepresentation(listing,
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

@@ -1,5 +1,7 @@
 package marketplace.rest.resource.uribuilder
 
+import javax.ws.rs.core.UriBuilder
+
 import org.springframework.stereotype.Component
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
@@ -12,7 +14,7 @@ import marketplace.rest.ChildObjectCollection
 import marketplace.Listing
 import marketplace.ItemComment
 
-class ItemCommentUriBuilder implements ResourceUriBuilder<ItemComment>, ChildObjectCollectionUriBuilder<Listing, ItemComment> {
+class ItemCommentUriBuilder implements ChildObjectUriBuilder<Listing, ItemComment> {
     private ApplicationRootUriBuilderHolder uriBuilderHolder
 
     private ItemCommentUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
@@ -27,15 +29,22 @@ class ItemCommentUriBuilder implements ResourceUriBuilder<ItemComment>, ChildObj
     }
 
     URI getCollectionUri(ChildObjectCollection<Listing, ItemComment> collection) {
+        getCollectionBuilder().buildFromMap(listingId: collection.parent.id)
+    }
+
+    URI getCollectionUri(ItemComment comment) {
+        getCollectionBuilder().buildFromMap(listingId: comment.listing.id)
+    }
+
+    private UriBuilder getCollectionBuilder() {
         uriBuilderHolder.builder
             .path(ListingResource.class)
             .path(ListingResource.class, 'getItemCommentsByListingId')
-            .buildFromMap(listingId: collection.parent.id)
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<ItemComment>,
-            ChildObjectCollectionUriBuilder.Factory<Listing, ItemComment> {
+    public static class Factory implements
+            ChildObjectUriBuilder.Factory<Listing, ItemComment> {
         ItemCommentUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ItemCommentUriBuilder(uriBuilderHolder)

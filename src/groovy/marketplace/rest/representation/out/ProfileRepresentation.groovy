@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Profile
 import marketplace.Agency
 
@@ -13,6 +16,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.AbstractHalRepresentation
 
 import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-profile-v1+json'
@@ -20,45 +24,39 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
 
     private Profile profile
 
-    ProfileRepresentation(Profile profile, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    ProfileRepresentation(Profile profile, ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ProfileUriBuilder profileUriBuilder,
+            RepresentationFactory<Agency> agencyRepresentationFactory) {
         super(
-            uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'read')
-                .buildFromMap(id: profile.id),
-            createLinks(profile, uriBuilderHolder),
-            createEmbedded(profile, uriBuilderHolder)
+            profileUriBuilder.getUri(profile),
+            createLinks(profile, profileUriBuilder),
+            createEmbedded(profile, uriBuilderHolder, agencyRepresentationFactory)
         )
 
         this.profile = profile
     }
 
     private static HalLinks createLinks(Profile profile,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI applicationLibraryUri = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'getApplicationLibrary')
-                .buildFromMap(profileId: profile.id)
-        URI stewardshipUri = uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'getStewardedOrganizations')
-                .buildFromMap(profileId: profile.id)
-        //TODO add link to userdata once a resource for it exists
+            ProfileUriBuilder profileUriBuilder) {
+        URI applicationLibraryUri = profileUriBuilder.getApplicationLibraryUri(profile),
+            stewardshipUri = profileUriBuilder.getStewardedOrganizationsUri(profile),
+            userDataUri = profileUriBuilder.getUserDataUri(profile)
 
         new HalLinks([
             new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION_LIBRARY,
                     new Link(applicationLibraryUri)),
-            new AbstractMap.SimpleEntry(OzpRelationType.STEWARDSHIP, new Link(stewardshipUri))
+            new AbstractMap.SimpleEntry(OzpRelationType.STEWARDSHIP, new Link(stewardshipUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.USER_DATA, new Link(userDataUri))
         ])
     }
 
     private static HalEmbedded createEmbedded(Profile profile,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        RepresentationFactory<Agency> agencyFactory = new AgencyRepresentation.Factory()
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            RepresentationFactory<Agency> agencyRepresentationFactory) {
 
         Collection<Map.Entry> organizationEmbedded = profile.organizations.collect {
             AbstractHalRepresentation<Agency> rep =
-                agencyFactory.toRepresentation(it, uriBuilderHolder)
+                agencyRepresentationFactory.toRepresentation(it, uriBuilderHolder)
 
             new AbstractMap.SimpleEntry(OzpRelationType.ORGANIZATION, rep)
         }
@@ -76,11 +74,17 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
         profile.organizations.collect { new IdRefRepresentation(it) }
     }
 
+    @Component
     public static class Factory extends RepresentationFactory<Profile> {
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+        @Autowired AgencyRepresentation.Factory agencyRepresentationFactory
+
         @Override
         public ProfileRepresentation toRepresentation(Profile profile,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ProfileRepresentation(profile, uriBuilderHolder)
+            new ProfileRepresentation(profile, uriBuilderHolder,
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder),
+                agencyRepresentationFactory)
         }
     }
 }

@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.ApplicationLibraryEntry
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
@@ -13,7 +16,12 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
 import marketplace.rest.ApplicationLibrary
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+
+import marketplace.Profile
 
 class ApplicationLibraryRepresentation
         extends SelfRefRepresentation<ApplicationLibrary> {
@@ -46,34 +54,25 @@ class ApplicationLibraryRepresentation
      * (e.g. https://localhost:8443/marketplace)
      */
     private ApplicationLibraryRepresentation(ApplicationLibrary library,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ChildObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ResourceUriBuilder<Profile> profileUriBuilder) {
         super(
-            uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'getApplicationLibrary')
-                .buildFromMap(profileId: library.profileId),
-            createLinks(library, uriBuilderHolder),
+            entryUriBuilder.getCollectionUri(library),
+            createLinks(library, profileUriBuilder),
             createFolders(library, uriBuilderHolder)
         )
     }
 
     private static HalLinks createLinks(ApplicationLibrary library,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        URI viaUri = uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'read')
-            .buildFromMap(id: library.profileId)
-
+            profileUriBuilder) {
+        URI viaUri = profileUriBuilder.getUri(library.profile)
         new HalLinks(RegisteredRelationType.VIA, new Link(viaUri))
     }
 
     private static HalEmbedded createFolders(ApplicationLibrary library,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         List<ApplicationLibraryEntry> entries = library.entries
-        URI collectionUri = uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'read')
-            .buildFromMap(id: library.profileId)
 
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
@@ -81,13 +80,19 @@ class ApplicationLibraryRepresentation
         })
     }
 
+    @Component
     public static class Factory
             implements RepresentationFactory<ApplicationLibrary> {
+        @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+
         @Override
         ApplicationLibraryRepresentation toRepresentation(
                 ApplicationLibrary entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ApplicationLibraryRepresentation(entries, uriBuilderHolder)
+            new ApplicationLibraryRepresentation(entries, uriBuilderHolder,
+                entryUriBuilderFactory.getBuilder(uriBuilderHolder),
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

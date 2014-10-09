@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.hal.AbstractRepresentationWriter
 import marketplace.rest.IwcUserIntents
 import marketplace.rest.representation.out.IwcUserIntentsRepresentation
@@ -17,7 +19,8 @@ import marketplace.rest.representation.out.IntentRepresentation
 ])
 class IwcUserIntentsRepresentationWriter extends AbstractRepresentationWriter<IwcUserIntents> {
 
-    IwcUserIntentsRepresentationWriter() {
-        super(new IwcUserIntentsRepresentation.Factory())
+    @Autowired
+    IwcUserIntentsRepresentationWriter(IwcUserIntentsRepresentation.Factory factory) {
+        super(factory)
     }
 }

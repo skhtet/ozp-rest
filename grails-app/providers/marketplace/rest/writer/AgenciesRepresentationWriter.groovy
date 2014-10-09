@@ -4,6 +4,8 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Agency
 
 import marketplace.hal.AbstractRepresentationWriter
@@ -11,6 +13,7 @@ import marketplace.hal.EmbeddedCollectionRepresentation
 
 import marketplace.rest.representation.out.AgencyRepresentation
 import marketplace.rest.resource.AgencyResource
+import marketplace.rest.resource.uribuilder.AgencyUriBuilder
 
 @Provider
 @Produces([
@@ -20,8 +23,10 @@ import marketplace.rest.resource.AgencyResource
 class AgenciesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<Agency>> {
 
-    AgenciesRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(new AgencyRepresentation.Factory(),
-            AgencyResource.class))
+    @Autowired
+    AgenciesRepresentationWriter(AgencyRepresentation.Factory factory,
+            AgencyUriBuilder.Factory agencyUriBuilderFactory) {
+        super(EmbeddedCollectionRepresentation.createFactory(factory,
+            agencyUriBuilderFactory))
     }
 }

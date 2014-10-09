@@ -4,6 +4,8 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
@@ -11,6 +13,7 @@ import marketplace.hal.EmbeddedCollectionRepresentation
 
 import marketplace.rest.representation.out.ProfileRepresentation
 import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 @Provider
 @Produces([
@@ -20,8 +23,10 @@ import marketplace.rest.resource.ProfileResource
 class ProfilesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<Profile>> {
 
-    ProfilesRepresentationWriter() {
-        super(EmbeddedCollectionRepresentation.createFactory(new ProfileRepresentation.Factory(),
-            ProfileResource.class))
+    @Autowired
+    ProfilesRepresentationWriter(ProfileRepresentation.Factory factory,
+            ProfileUriBuilder.Factory profileUriBuilderFactory) {
+        super(EmbeddedCollectionRepresentation.createFactory(factory,
+            profileUriBuilderFactory))
     }
 }

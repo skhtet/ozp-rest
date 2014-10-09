@@ -11,7 +11,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.AbstractHalRepresentation
 
-import marketplace.rest.resource.CategoryResource
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
 class CategoryRepresentation extends SelfRefRepresentation<Category> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-category-v1+json'
@@ -19,18 +19,10 @@ class CategoryRepresentation extends SelfRefRepresentation<Category> {
     private Category category
 
     private CategoryRepresentation(Category category,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(createSelfUri(category, uriBuilderHolder), null, null)
+            ResourceUriBuilder<Category> categoryUriBuilder) {
+        super(categoryUriBuilder.getUri(category), null, null)
 
         this.category = category
-    }
-
-    private static URI createSelfUri(Category category,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        uriBuilderHolder.builder
-            .path(CategoryResource.class)
-            .path(CategoryResource.class, 'read')
-            .buildFromMap(id: category.id)
     }
 
     public String getTitle() { category.title }

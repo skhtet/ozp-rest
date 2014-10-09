@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Scorecard
 import marketplace.hal.AbstractRepresentationWriter
 
@@ -15,7 +17,9 @@ import marketplace.rest.representation.out.ScorecardRepresentation
     MediaType.APPLICATION_JSON
 ])
 class ScorecardRepresentationWriter extends AbstractRepresentationWriter<Scorecard> {
-    ScorecardRepresentationWriter() {
-        super(new ScorecardRepresentation.Factory())
+
+    @Autowired
+    ScorecardRepresentationWriter(ScorecardRepresentation.Factory factory) {
+        super(factory)
     }
 }

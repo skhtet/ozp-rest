@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
@@ -19,8 +21,10 @@ import marketplace.rest.representation.out.ApplicationLibraryEntryRepresentation
 ])
 class ApplicationLibraryEntryRepresentationWriter
         extends AbstractRepresentationWriter<ApplicationLibraryEntry> {
-    ApplicationLibraryEntryRepresentationWriter() {
-        super(new ApplicationLibraryEntryRepresentation.Factory())
+
+    @Autowired
+    ApplicationLibraryEntryRepresentationWriter(ApplicationLibraryEntryRepresentation.Factory factory) {
+        super(factory)
     }
 }
 

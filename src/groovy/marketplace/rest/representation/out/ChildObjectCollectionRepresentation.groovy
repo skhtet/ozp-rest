@@ -12,13 +12,13 @@ import marketplace.hal.Link
 
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
-import marketplace.rest.resource.uribuilder.ChildObjectCollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
 
 class ChildObjectCollectionRepresentation<P,T> extends SelfRefRepresentation<Collection<T>> {
 
     protected ChildObjectCollectionRepresentation(ChildObjectCollection<P,T> collection,
             ApplicationRootUriBuilderHolder uriBuilderHolder, RepresentationFactory<T> itemFactory,
-            ChildObjectCollectionUriBuilder<P,T> collectionUriBuilder,
+            ChildObjectUriBuilder<P,T> collectionUriBuilder,
             ResourceUriBuilder<P> parentUriBuilder) {
         super(
             collectionUriBuilder.getCollectionUri(collection),
@@ -44,7 +44,7 @@ class ChildObjectCollectionRepresentation<P,T> extends SelfRefRepresentation<Col
     }
 
     public static <P,T> RepresentationFactory<ChildObjectCollection<P,T>> createFactory(RepresentationFactory<T> itemFactory,
-            ChildObjectCollectionUriBuilder.Factory<P,T> collectionUriBuilderFactory,
+            ChildObjectUriBuilder.Factory<P,T> collectionUriBuilderFactory,
             ResourceUriBuilder.Factory<P> parentUriBuilderFactory) {
         //due to GROOVY-6556, cannot use anonymous class here
         [

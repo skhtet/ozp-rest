@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Intent
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
@@ -8,35 +11,38 @@ import marketplace.hal.RegisteredRelationType
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.IwcUserIntents
-import marketplace.rest.resource.IntentResource
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.IntentUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
 class IwcUserIntentsRepresentation extends SelfRefRepresentation<IwcUserIntents> {
-    IwcUserIntentsRepresentation(IwcUserIntents userIntents, ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(uriBuilderHolder.builder
-                .path(ProfileResource.class)
-                .path(ProfileResource.class, 'readIntentsForApplicationsOfCurrentUser')
-                .buildFromMap([profileId: userIntents.user.id]),
-            linkIntents(userIntents.intents, uriBuilderHolder), null
+    IwcUserIntentsRepresentation(IwcUserIntents userIntents,
+            ProfileUriBuilder profileUriBuilder, ResourceUriBuilder<Intent> intentUriBuilder) {
+        super(
+            profileUriBuilder.getIntentsUri(userIntents.user),
+            linkIntents(userIntents.intents, intentUriBuilder), null
         )
     }
 
-    private static HalLinks linkIntents(Collection<Intent> intents, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private static HalLinks linkIntents(Collection<Intent> intents,
+            ResourceUriBuilder<Intent> intentUriBuilder) {
         new HalLinks(intents.collect { intent ->
-            URI href = uriBuilderHolder.builder
-                    .path(IntentResource)
-                    .path(IntentResource, 'read')
-                    .buildFromMap([id: intent.id])
-
+            URI href = intentUriBuilder.getUri(intent)
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
         })
     }
 
+    @Component
     static class Factory implements RepresentationFactory<IwcUserIntents> {
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+        @Autowired IntentUriBuilder.Factory intentUriBuilderFactory
+
         public IwcUserIntentsRepresentation toRepresentation(
                 IwcUserIntents userIntents,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new IwcUserIntentsRepresentation(userIntents, uriBuilderHolder)
+            new IwcUserIntentsRepresentation(userIntents,
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder),
+                intentUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

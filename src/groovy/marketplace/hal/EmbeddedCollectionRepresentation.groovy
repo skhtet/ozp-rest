@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 
+import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+
 /**
  * Representation of a collection where all of the elements are embedded representations
  */
@@ -18,15 +20,13 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
     EmbeddedCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            Class<?> domainResourceType,
+            ResourceUriBuilder<T> resourceUriBuilder,
             Collection<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
         super(
-            uriBuilderHolder.builder
-                .path(domainResourceType)
-                .build(),
-            createLinks(domainResourceType, entities, uriBuilderHolder),
+            resourceUriBuilder.getRootUri(),
+            createLinks(resourceUriBuilder, entities),
             createEmbedded(embeddedRepFactory, entities, uriBuilderHolder)
         )
 
@@ -43,17 +43,15 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
         })
     }
 
-    private static HalLinks createLinks(Class<?> domainResourceType, Collection entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private static HalLinks createLinks(ResourceUriBuilder<T> resourceUriBuilder,
+            Collection entities) {
         Collection<Map.Entry> navLinks = []
 
         //set up next and prev links if we have paging info
         if (entities instanceof PagedCollection) {
             Map prevPageParams = getPrevPageParams(entities)
             Map nextPageParams = getNextPageParams(entities)
-            UriBuilder pagingUriBuilder = uriBuilderHolder.builder
-                .path(domainResourceType)
-
+            UriBuilder pagingUriBuilder = UriBuilder.fromUri(resourceUriBuilder.getRootUri())
 
             //add link to previous page in collection
             if (prevPageParams) {
@@ -82,17 +80,9 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
 
         Collection<Map.Entry> itemLinks = entities.collect { entity ->
-            Map props = entity.properties as HashMap ?: [:]
-            props.id = entity.id
-
-            URI href = uriBuilderHolder.builder
-                    .path(domainResourceType)
-                    .path(domainResourceType, 'read')
-                    .buildFromMap(props)
-
+            URI href = resourceUriBuilder.getUri(entity)
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
         }
-
 
         new HalLinks(itemLinks + navLinks)
     }
@@ -134,13 +124,14 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
      */
     public static <T> RepresentationFactory<Collection<T>> createFactory(
             RepresentationFactory<T> embeddedRepFactory,
-            Class<?> domainResourceType) {
+            ResourceUriBuilder.Factory<T> uriBuilderFactory) {
 
         new RepresentationFactory() {
             EmbeddedCollectionRepresentation toRepresentation(entities,
                     ApplicationRootUriBuilderHolder uriBuilderHolder) {
                 new EmbeddedCollectionRepresentation<T>(embeddedRepFactory,
-                        domainResourceType, entities, uriBuilderHolder)
+                        uriBuilderFactory.getBuilder(uriBuilderHolder), entities,
+                        uriBuilderHolder)
             }
         }
     }

@@ -1,5 +1,8 @@
 package marketplace.rest.representation.out
 
+import org.springframework.stereotype.Component
+import org.springframework.beans.factory.annotation.Autowired
+
 import marketplace.Profile
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalEmbedded
@@ -9,57 +12,66 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.IwcApi
-import marketplace.rest.resource.IwcResource
-import marketplace.rest.resource.IwcSystemResource
-import marketplace.rest.resource.ProfileResource
+import marketplace.rest.resource.uribuilder.IwcUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+
 
 class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-iwc-v1+json'
 
     IwcApiRepresentation(IwcApi api,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            IwcUriBuilder iwcUriBuilder,
+            ProfileUriBuilder profileUriBuilder,
+            RepresentationFactory<Profile> userRepresentationFactory) {
         super(
-            uriBuilderHolder.builder
-                .path(IwcResource.class)
-                .build(),
-            linkResources(api.user, uriBuilderHolder),
-            embedResources(api.user, uriBuilderHolder)
+            iwcUriBuilder.getRootUri(),
+            linkResources(api.user, iwcUriBuilder, profileUriBuilder),
+            embedResources(api.user, uriBuilderHolder, userRepresentationFactory)
         )
     }
 
-    private static HalEmbedded embedResources(Profile user, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+    private static HalEmbedded embedResources(Profile user,
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            RepresentationFactory<Profile> userRepresentationFactory) {
         new HalEmbedded([
-                new AbstractMap.SimpleEntry(OzpRelationType.USER, new UserRepresentation(user, uriBuilderHolder)),
-                new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM, new IwcSystemRepresentation(uriBuilderHolder))
+            new AbstractMap.SimpleEntry(OzpRelationType.USER,
+                userRepresentationFactory.toRepresentation(user, uriBuilderHolder)),
+            new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM,
+                new IwcSystemRepresentation(uriBuilderHolder))
         ])
     }
 
-    private static HalLinks linkResources(Profile user, ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        def createLink = { OzpRelationType rel, String method = null ->
-            def userMap = [profileId: user.id, id: user.id]
-            def resource = ProfileResource.class
-
-            URI href = method ? uriBuilderHolder.builder.path(resource).path(resource, method).buildFromMap(userMap) :
-                    uriBuilderHolder.builder.path(resource).buildFromMap(userMap)
-
-            new AbstractMap.SimpleEntry(rel, new Link(href))
-        }
+    private static HalLinks linkResources(Profile user, IwcUriBuilder iwcUriBuilder,
+            ProfileUriBuilder profileUriBuilder) {
+        URI appUri = profileUriBuilder.getApplicationsUri(user),
+            intentsUri = profileUriBuilder.getIntentsUri(user),
+            userDataUri = profileUriBuilder.getUserDataUri(user),
+            userUri = profileUriBuilder.getUri(user),
+            systemUri = iwcUriBuilder.getSystemUri()
 
         new HalLinks([
-                createLink(OzpRelationType.APPLICATION, 'readApplicationsForCurrentUser'),
-                createLink(OzpRelationType.INTENT, 'readIntentsForApplicationsOfCurrentUser'),
-                createLink(OzpRelationType.USER_DATA, 'readAllData'),
-                createLink(OzpRelationType.USER, 'read'),
-                new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM,
-                        new Link(uriBuilderHolder.builder.path(IwcSystemResource.class).build()))
+            new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION, appUri),
+            new AbstractMap.SimpleEntry(OzpRelationType.INTENT, intentsUri),
+            new AbstractMap.SimpleEntry(OzpRelationType.USER_DATA, userDataUri),
+            new AbstractMap.SimpleEntry(OzpRelationType.USER, userUri),
+            new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM, systemUri)
         ])
     }
 
+    @Component
     static class Factory implements RepresentationFactory<IwcApi> {
+        @Autowired IwcUriBuilder.Factory iwcUriBuilderFactory
+        @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
+        @Autowired UserRepresentation.Factory userRepresentationFactory
+
         public IwcApiRepresentation toRepresentation(
                     IwcApi api,
                     ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new IwcApiRepresentation(api, uriBuilderHolder)
+            new IwcApiRepresentation(api, uriBuilderHolder,
+                iwcUriBuilderFactory.getBuilder(uriBuilderHolder),
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder),
+                userRepresentationFactory)
         }
     }
 }
