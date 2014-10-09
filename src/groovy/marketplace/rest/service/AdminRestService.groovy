@@ -1,5 +1,7 @@
 package marketplace.rest.service
 
+import marketplace.rest.representation.in.InputRepresentation
+
 import javax.annotation.security.RolesAllowed
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -36,5 +38,10 @@ class AdminRestService<T> extends RestService<T> {
     @RolesAllowed('ROLE_ADMIN')
     public T createFromDto(T dto) {
         return super.createFromDto(dto)
+    }
+
+    @RolesAllowed('ROLE_ADMIN')
+    public T createFromRepresentation(InputRepresentation<T> rep) {
+        super.createFromRepresentation(rep)
     }
 }
