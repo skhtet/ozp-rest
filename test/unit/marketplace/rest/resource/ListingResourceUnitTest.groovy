@@ -12,6 +12,10 @@ import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ListingActivityRestService
 
+import marketplace.rest.ChildObjectCollection
+
+import marketplace.rest.representation.in.ItemCommentInputRepresentation
+
 @TestMixin(DomainClassUnitTestMixin)
 class ListingResourceUnitTest {
     ListingResource resource
@@ -129,51 +133,63 @@ class ListingResourceUnitTest {
 
     void testGetItemCommentsByServiceItem() {
         ItemComment comment = new ItemComment()
+        Listing listing = new Listing()
         def passedParentId
+        def passedListingId
 
         def itemCommentRestServiceMock = mockFor(ItemCommentRestService)
         itemCommentRestServiceMock.demand.getByParentId(1..1) { parentId ->
             passedParentId = parentId
             [comment]
         }
-        resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
+        def listingRestServiceMock = mockFor(ListingRestService)
+        listingRestServiceMock.demand.getById(1..1) { id ->
+            passedListingId = id
+            return listing
+        }
 
-        assert resource.getItemCommentsByListingId(20) == [comment]
+        resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
+        resource.service = listingRestServiceMock.createMock()
+
+        ChildObjectCollection result = resource.getItemCommentsByListingId(20)
+
+        assert result.collection == [comment]
+        assert result.parent == listing
         assert passedParentId == 20
+        assert passedListingId == 20
     }
 
     void testCreateItemComment() {
-        ItemComment comment = new ItemComment()
-        def passedParentId, passedDto
+        def comment = new ItemCommentInputRepresentation()
+        def passedParentId, passedDto, createdComment
 
         def itemCommentRestServiceMock = mockFor(ItemCommentRestService)
-        itemCommentRestServiceMock.demand.createFromParentIdAndDto(1..1) { parentId, dto ->
+        itemCommentRestServiceMock.demand.createFromParentIdAndRepresentation(1..1) {
+                parentId, dto ->
             passedParentId = parentId
             passedDto = dto
-            dto
+            createdComment = new ItemComment()
         }
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
-        assert resource.createItemComment(1, comment) == comment
+        assert resource.createItemComment(1, comment) == createdComment
         assert passedParentId == 1
         assert passedDto == comment
     }
 
     void testUpdateItemComment() {
-        ItemComment comment = new ItemComment()
-        def passedParentId, passedId, passedDto
+        def comment = new ItemCommentInputRepresentation()
+        def passedId, passedDto, createdComment
 
         def itemCommentRestServiceMock = mockFor(ItemCommentRestService)
-        itemCommentRestServiceMock.demand.updateByParentId(1..1) { parentId, id, dto ->
-            passedParentId = parentId
+        itemCommentRestServiceMock.demand.updateById(1..1) { id, dto ->
             passedId = id
             passedDto = dto
-            dto
+            createdComment = new ItemComment()
         }
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
-        assert resource.updateItemComment(1, 50, comment) == comment
-        assert passedParentId == 1
+        assert resource.updateItemComment(1, 50, comment) == createdComment
         assert passedId == 50
         assert passedDto == comment
     }
