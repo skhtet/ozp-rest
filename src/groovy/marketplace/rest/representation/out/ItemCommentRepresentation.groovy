@@ -11,7 +11,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import marketplace.rest.resource.uribuilder.ItemCommentUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
@@ -28,12 +28,12 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
     private ItemComment itemComment
 
     ItemCommentRepresentation(ItemComment itemComment,
-            ResourceUriBuilder<Listing> listingUriBuiler,
-            ResourceUriBuilder<ItemComment> itemCommentUriBuiler,
-            ResourceUriBuilder<Profile> profileUriBuilder) {
+            DomainResourceUriBuilder<Listing> listingUriBuilder,
+            DomainResourceUriBuilder<ItemComment> itemCommentUriBuiler,
+            DomainResourceUriBuilder<Profile> profileUriBuilder) {
         super(
             itemCommentUriBuiler.getUri(itemComment),
-            createLinks(itemComment, listingUriBuiler, profileUriBuilder),
+            createLinks(itemComment, listingUriBuilder, profileUriBuilder),
             null
         )
 
@@ -41,8 +41,8 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
     }
 
     private static HalLinks createLinks(ItemComment itemComment,
-            ResourceUriBuilder<Listing> listingUriBuilder,
-            ResourceUriBuilder<Profile> profileUriBuilder) {
+            DomainResourceUriBuilder<Listing> listingUriBuilder,
+            DomainResourceUriBuilder<Profile> profileUriBuilder) {
 
         URI appUri = listingUriBuilder.getUri(itemComment.listing),
             authorUri = profileUriBuilder.getUri(itemComment.author)
