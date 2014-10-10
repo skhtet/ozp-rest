@@ -25,7 +25,9 @@ import marketplace.rest.ChildObjectCollection
 import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
+import marketplace.rest.representation.in.RejectionListingInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
+import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
@@ -85,13 +87,25 @@ class ListingResource extends DomainResource<Listing> {
     }
 
     @Path('/{listingId}/rejectionListing')
+    @Produces([
+        RejectionListingRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    @Consumes([
+        RejectionListingInputRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @POST
     public RejectionListing createRejectionListing(@PathParam('listingId') long listingId,
-            RejectionListing dto) {
-        rejectionListingRestService.createFromParentIdAndDto(listingId, dto)
+            InputRepresentation<RejectionListing> rep) {
+        rejectionListingRestService.createFromParentIdAndRepresentation(listingId, rep)
     }
 
     @Path('/{listingId}/rejectionListing')
+    @Produces([
+        RejectionListingRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @GET
     public RejectionListing getMostRecentRejectionListing(
             @PathParam('listingId') long listingId) {
