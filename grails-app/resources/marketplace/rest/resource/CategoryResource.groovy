@@ -13,7 +13,7 @@ class CategoryResource extends RepresentationResource<Category> {
 
     @Autowired
     public CategoryResource(CategoryRestService categoryRestService) {
-        super(Category.class, categoryRestService)
+        super(categoryRestService)
     }
 
     CategoryResource() {}
