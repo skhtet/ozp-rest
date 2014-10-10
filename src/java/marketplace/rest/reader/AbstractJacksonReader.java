@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import marketplace.rest.representation.in.InputRepresentation;
 
-abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
+public abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
 
     private ObjectMapper objectMapper;
 

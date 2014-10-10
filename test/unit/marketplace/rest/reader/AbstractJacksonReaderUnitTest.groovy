@@ -39,14 +39,14 @@ class AbstractJacksonReaderUnitTest {
 
     void setUp() {
         reader =
-            new AbstractJacksonReader<ClassToRead<Number>>() {}
+            new AbstractJacksonReader<ClassToRead<Integer>>() {}
     }
 
     void testIsReadable() {
-        assert !reader.isReadable(Object.class, Object.class, null, null)
+        assert reader.isReadable(Object.class, Object.class, null, null)
 
-        assert reader.isReadable(ClassToRead.class, makeTypeToken(Number), null, null)
-        assert reader.isReadable(ClassToRead.class, makeTypeToken(Float), null, null)
+        assert !reader.isReadable(ClassToRead.class, makeTypeToken(Number), null, null)
+        assert !reader.isReadable(ClassToRead.class, makeTypeToken(Float), null, null)
         assert reader.isReadable(ClassToRead.class, makeTypeToken(Integer), null, null)
         assert !reader.isReadable(ClassToRead.class, makeTypeToken(Object), null, null)
         assert !reader.isReadable(ClassToRead.class, makeTypeToken(AbstractJacksonReaderUnitTest), null, null)
@@ -58,10 +58,10 @@ class AbstractJacksonReaderUnitTest {
         reader.objectMapper = new ObjectMapper()
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream('{"name": "bob", "age": 10}'.getBytes('UTF-8'))
-        ClassToRead obj = writer.writeTo(ClassToRead.class, makeTypeToken(Integer), null, MediaType.APPLICATION_JSON_TYPE,
+        ClassToRead obj = reader.readFrom(ClassToRead.class, makeTypeToken(Integer), null, MediaType.APPLICATION_JSON_TYPE,
             null, inputStream)
 
-        assert obj.age == 1
+        assert obj.age == 10
         assert obj.name == 'bob'
     }
 }
