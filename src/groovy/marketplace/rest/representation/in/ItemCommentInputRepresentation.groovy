@@ -9,6 +9,6 @@ class ItemCommentInputRepresentation extends AbstractInputRepresentation<ItemCom
         super(ItemComment.class)
     }
 
-    final int rate
+    final Integer rate
     final String text
 }
