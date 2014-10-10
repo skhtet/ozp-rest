@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,6 +55,9 @@ abstract class AbstractJacksonReader<T> implements MessageBodyReader<T> {
         }
         catch (JsonMappingException e) {
             throw new IllegalArgumentException(e);
+        }
+        catch (JsonParseException e2) {
+            throw new IllegalArgumentException(e2);
         }
     }
 }
