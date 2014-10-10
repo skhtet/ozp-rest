@@ -9,7 +9,7 @@ import marketplace.Category
 import marketplace.rest.service.CategoryRestService
 
 @Path('api/category')
-class CategoryResource extends DomainResource<Category> {
+class CategoryResource extends RepresentationResource<Category> {
 
     @Autowired
     public CategoryResource(CategoryRestService categoryRestService) {
