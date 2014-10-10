@@ -51,11 +51,11 @@ class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
             systemUri = iwcUriBuilder.getSystemUri()
 
         new HalLinks([
-            new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION, appUri),
-            new AbstractMap.SimpleEntry(OzpRelationType.INTENT, intentsUri),
-            new AbstractMap.SimpleEntry(OzpRelationType.USER_DATA, userDataUri),
-            new AbstractMap.SimpleEntry(OzpRelationType.USER, userUri),
-            new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM, systemUri)
+            new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION, new Link(appUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.INTENT, new Link(intentsUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.USER_DATA, new Link(userDataUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.USER, new Link(userUri)),
+            new AbstractMap.SimpleEntry(OzpRelationType.SYSTEM, new Link(systemUri))
         ])
     }
 
