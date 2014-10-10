@@ -18,14 +18,14 @@ import marketplace.rest.representation.in.InputRepresentation
 
 @TestMixin(DomainClassUnitTestMixin)
 class RepresentationResourceUnitTest {
-    DomainResource<Agency> domainResource
+    RepresentationResource<Agency> resource
     GrailsApplication grailsApplication
 
     def restService
 
     private static final agencyProps = [
         title: "Agency Name",
-        iconUrl: "https://localhost/icon.png"
+        icon: new URI("https://localhost/icon.png")
     ]
 
     void setUp() {
@@ -35,13 +35,17 @@ class RepresentationResourceUnitTest {
     //call this method after setting up mocking demands in
     //each test
     private void setUpResource() {
-        domainResource = new RepresentationResource(restService)
+        resource = new RepresentationResource(restService)
     }
 
     void testCreate() {
+        def agency
+
         restService = [
             createFromRepresentation: { rep ->
-                new Agency(rep.inputProperties + [id: 1])
+                agency = new Agency(rep.inputProperties)
+                agency.id = 1
+                agency
             },
             authorizeUpdate: { a -> }
         ] as RestService
@@ -49,7 +53,7 @@ class RepresentationResourceUnitTest {
         setUpResource()
 
         def agencyRep = new AgencyInputRepresentation(agencyProps)
-        def response = domainResource.create(agencyRep)
+        def response = resource.create(agencyRep)
 
         assert response.status == SC_CREATED
         assert response.entity == agency
@@ -63,7 +67,7 @@ class RepresentationResourceUnitTest {
 
         setUpResource()
 
-        Collection<Agency> retval = domainResource.readAll(null, null)
+        Collection<Agency> retval = resource.readAll(null, null)
 
         assert retval instanceof Collection
         assert retval.size() == 1
@@ -85,36 +89,37 @@ class RepresentationResourceUnitTest {
 
         setUpResource()
 
-        Agency agency = domainResource.read(id)
+        Agency agency = resource.read(id)
         assert agency instanceof Agency
         assert agency == newAgency
     }
 
     void testUpdate() {
-        final id = 1, newName = 'New Name', newIcon = 'icon2.png'
+        final id = 1, newName = 'New Name',
+            newIcon = new URI('icon2.png')
 
         def existingAgency = new Agency(agencyProps)
         existingAgency.id = id
         def updates = new AgencyInputRepresentation(
-            id: id,
             title: newName,
-            iconUrl: newIcon
+            icon: newIcon
         )
 
         restService = [
             updateById: { Long serviceId, InputRepresentation<Agency> rep ->
                 assert serviceId == id
                 existingAgency.properties = rep.inputProperties
+                existingAgency.iconUrl = rep.icon.toString()
                 existingAgency
             }
         ] as RestService
 
         setUpResource()
 
-        Agency agency = domainResource.update(id, updates)
+        Agency agency = resource.update(id, updates)
         assert agency instanceof Agency
         assert agency.title == newName
-        assert agency.iconUrl == newIcon
+        assert agency.iconUrl == newIcon.toString()
         assert agency.id == id
     }
 
@@ -129,6 +134,6 @@ class RepresentationResourceUnitTest {
 
         setUpResource()
 
-        domainResource.delete(id)
+        resource.delete(id)
     }
 }

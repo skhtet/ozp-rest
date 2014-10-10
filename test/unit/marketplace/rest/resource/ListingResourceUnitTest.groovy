@@ -15,6 +15,7 @@ import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.ChildObjectCollection
 
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
+import marketplace.rest.representation.in.RejectionListingInputRepresentation
 
 @TestMixin(DomainClassUnitTestMixin)
 class ListingResourceUnitTest {
@@ -61,18 +62,18 @@ class ListingResourceUnitTest {
     }
 
     void testCreateRejectionListing() {
-        RejectionListing rejectionListing = new RejectionListing()
-        def passedParentId, passedDto
+        RejectionListingInputRepresentation rejectionListing = new RejectionListingInputRepresentation()
+        def passedParentId, passedDto, returnedObj
 
         def rejectionListingRestServiceMock = mockFor(RejectionListingRestService)
-        rejectionListingRestServiceMock.demand.createFromParentIdAndDto(1..1) { parentId, dto ->
+        rejectionListingRestServiceMock.demand.createFromParentIdAndRepresentation(1..1) { parentId, dto ->
             passedParentId = parentId
             passedDto = dto
-            dto
+            return (returnedObj = new RejectionListing())
         }
         resource.rejectionListingRestService = rejectionListingRestServiceMock.createMock()
 
-        assert resource.createRejectionListing(1, rejectionListing) == rejectionListing
+        assert resource.createRejectionListing(1, rejectionListing) == returnedObj
         assert passedParentId == 1
         assert passedDto == rejectionListing
     }
