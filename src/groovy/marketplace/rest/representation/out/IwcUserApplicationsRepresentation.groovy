@@ -34,7 +34,7 @@ class IwcUserApplicationsRepresentation extends SelfRefRepresentation<IwcUserApp
     @Component
     static class Factory implements RepresentationFactory<IwcUserApplications> {
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
-        @Autowired ListingUriBuilder.Factory listingUriBuilerFactory
+        @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
 
         public IwcUserApplicationsRepresentation toRepresentation(
                 IwcUserApplications userApplications,
