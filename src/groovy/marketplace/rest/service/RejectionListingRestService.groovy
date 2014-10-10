@@ -45,18 +45,17 @@ class RejectionListingRestService extends ChildObjectRestService<Listing, Reject
         throw new AccessDeniedException("Cannot update RejectionListings")
     }
 
-    protected RejectionListing getMostRecentRejectionListing(long serviceItemId) {
-        List<RejectionListing> rls = RejectionListing
-                                        .createCriteria()
-                                        .list(sort: 'createdDate', order: 'desc', limit: 1) {
-                                            serviceItem {
-                                                eq('id', serviceItemId)
-                                            }
-                                        }
+    public RejectionListing getMostRecentRejectionListing(long serviceItemId) {
+        List<RejectionListing> rls = RejectionListing.createCriteria()
+            .list(sort: 'createdDate', order: 'desc', limit: 1) {
+                serviceItem {
+                    eq('id', serviceItemId)
+                }
+            }
+
         if(rls.size() > 0)
             rls.get(0)
         else
             throw new DomainObjectNotFoundException(RejectionListing, serviceItemId)
-
     }
 }
