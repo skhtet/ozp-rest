@@ -36,12 +36,12 @@ class CategoryRepresentation extends SelfRefRepresentation<Category> {
 
     @Component
     public static class Factory implements RepresentationFactory<Category> {
-        @Autowired CategoryUriBuilder.Factory categoryUriBuilderFactory
+        @Autowired CategoryUriBuilder.Factory uriBuilderFactory
 
         CategoryRepresentation toRepresentation(Category category,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new CategoryRepresentation(category,
-                categoryUriBuilderFactory.getBuilder(uriBuilderHolder))
+                uriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }
