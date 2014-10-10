@@ -15,7 +15,6 @@ import marketplace.Screenshot
 import marketplace.Profile
 import marketplace.ListingActivity
 import marketplace.RejectionActivity
-import marketplace.RejectionJustification
 import marketplace.RejectionListing
 import marketplace.Intent
 import marketplace.Relationship
@@ -259,10 +258,6 @@ class ListingRestServiceUnitTest {
 
         def reject = {
             service.reject(created, new RejectionListing(
-                justification: new RejectionJustification(
-                    title: 'Test Justification',
-                    description: 'A test justification'
-                ),
                 description: 'bad listing'
             ))
         }

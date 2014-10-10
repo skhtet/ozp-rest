@@ -12,7 +12,6 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 public class RejectionListing implements Comparable, Serializable {
 
     static bindableProperties = [
-        'justification',
         'serviceItem',
         'description'
     ]
@@ -23,12 +22,10 @@ public class RejectionListing implements Comparable, Serializable {
 
     static belongsTo = [
             serviceItem: Listing,
-            author: Profile,
-            justification: RejectionJustification
+            author: Profile
     ]
 
     static constraints = {
-        justification(blank: true, nullable: true)
         description(blank: true, nullable: true, maxSize: 2000, validator: {
             if (it && it.size() > 2000) {
                 return ["rejectionListing.description.maxsize", 2000]
@@ -79,7 +76,6 @@ public class RejectionListing implements Comparable, Serializable {
             id: id,
                 description: description,
                 author: author?.asJSONRef(),
-                justification: justification?.asJSON(),
                 createdDate: createdDate
         )
     }

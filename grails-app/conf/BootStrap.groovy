@@ -89,7 +89,6 @@ class BootStrap {
             Profile,
             Listing,
             Category,
-            RejectionJustification,
             RejectionListing,
             ApplicationLibraryEntry,
             ApplicationDto,

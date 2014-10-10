@@ -77,7 +77,7 @@ class ListingResourceUnitTest {
         assert passedDto == rejectionListing
     }
 
-    void testGetMostRecentRejectionJustification() {
+    void testGetMostRecentRejectionListing() {
         RejectionListing rejectionListing = new RejectionListing()
         def passedParentId
 
