@@ -3,13 +3,6 @@ package marketplace.rest.representation.out
 import marketplace.Category
 
 import marketplace.hal.SelfRefRepresentation
-import marketplace.hal.ApplicationRootUriBuilderHolder
-import marketplace.hal.HalLinks
-import marketplace.hal.HalEmbedded
-import marketplace.hal.Link
-import marketplace.hal.RepresentationFactory
-import marketplace.hal.OzpRelationType
-import marketplace.hal.AbstractHalRepresentation
 
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 
@@ -27,5 +20,4 @@ class CategoryRepresentation extends SelfRefRepresentation<Category> {
 
     public String getTitle() { category.title }
     public String getDescription() { category.description }
-    public String getUuid() { category.uuid }
 }

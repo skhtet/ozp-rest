@@ -86,7 +86,7 @@ class ListingRestServiceUnitTest {
         def admin = new Profile(username: 'admin')
         admin.id = 3
 
-        def type = new Types(title: 'Test Type', ozoneAware: true)
+        def type = new Types(title: 'Test Type')
         type.id = 1
 
         type1 = type

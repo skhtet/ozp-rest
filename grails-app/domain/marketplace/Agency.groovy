@@ -7,62 +7,43 @@ class Agency implements Serializable {
     final static bindableProperties = ['title', 'iconUrl']
     final static modifiableReferenceProperties = []
 
-	//For searching
     static searchable = {
         root false
-        title index: 'analyzed', excludeFromAll: false
+        title index: 'not_analyzed'
         iconUrl index: 'not_analyzed', excludeFromAll: true
-        only = ['id', 'title', 'iconUrl']
+        only = ['title', 'iconUrl']
     }
-
-    static constraints = {
-        title(blank: false, nullable:false, maxSize:255, validator: { val, obj ->
-            def agency = Agency.findByTitleIlike(val)
-            return (!agency || obj.id == agency.id) ? true : ['unique']
-        })
-        iconUrl(blank: true, nullable:true, maxSize:2000, unique: false)
-		agencyId(nullable: true) //	//For searching
-    }
-
-	//For searching
-	static transients = ['agencyId', 'description']
 
     String title
     String iconUrl
-    //long parentId
+
+    static constraints = {
+        title blank: false, maxSize: 255
+        iconUrl blank: true, nullable: true, maxSize: Constants.MAX_URL_SIZE
+    }
+
+    static mapping = {
+        id natural: [properties: ['title'], mutable: true]
+    }
 
     JSONObject asJSON() {
         new JSONObject([
-            id: this.id,
-            title: this.title,
-            iconUrl: this.iconUrl
+            id: id,
+            title: title,
+            iconUrl: iconUrl
         ])
     }
 
-	//For searching
-	Long getAgencyId() {
-		id
-	}
+    @Override
+    String toString() { title }
 
-	//For searching
-	String toString() { "$id : $title" }
-
-
-	String getDescription(){
-		null
-	}
-
+    @Override
     boolean equals(other) {
-        other instanceof Agency && this.title == other.title
+        other instanceof Agency && title == other.title
     }
 
-    /**
-     * This method is used by the import logic to create a Domain object.
-     */
-    void bindFromJSON(JSONObject obj) {
-        this.with {
-            title = obj.title
-            iconUrl = obj.iconUrl
-        }
+    @Override
+    int hashCode() {
+        title.hashCode()
     }
 }

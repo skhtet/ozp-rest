@@ -28,22 +28,4 @@ class TypesTests {
     void testSizeContraints(){
         TestUtil.checkSizeConstraintProperty('title',types, 50)
     }
-
-    void testFindDuplicates(){
-        def testTypes = new Types(title: "type1", uuid: "1234")
-        mockDomain(Types, [testTypes])
-
-        def duplicateUuidTypes = new JSONObject(title: "type2", uuid: "1234")
-        assertEquals testTypes.uuid, duplicateUuidTypes.uuid
-        assertTrue Types.findDuplicates(duplicateUuidTypes)
-
-        def duplicateTitleTypes = new JSONObject(title: "type1", uuid: "4321")
-        assertTrue(testTypes.title == duplicateTitleTypes.title)
-        assertTrue Types.findDuplicates(duplicateTitleTypes)
-
-        def uniqueTypes = new JSONObject(title: "type3", uuid: "4321")
-        assertFalse(testTypes.uuid == uniqueTypes.uuid)
-        assertFalse(testTypes.title == uniqueTypes.title)
-        assertFalse Types.findDuplicates(uniqueTypes)
-    }
 }

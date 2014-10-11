@@ -14,8 +14,6 @@ import marketplace.hal.Link
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.AbstractHalRepresentation
-
-import marketplace.rest.resource.ProfileResource
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 class ProfileRepresentation extends SelfRefRepresentation<Profile> {
@@ -75,7 +73,7 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     }
 
     @Component
-    public static class Factory extends RepresentationFactory<Profile> {
+    public static class Factory implements RepresentationFactory<Profile> {
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
         @Autowired AgencyRepresentation.Factory agencyRepresentationFactory
 

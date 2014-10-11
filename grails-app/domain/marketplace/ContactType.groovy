@@ -10,7 +10,7 @@ class ContactType implements Serializable {
 
     static searchable = {
         root false
-        title excludeFromAll: true
+        title index: 'not_analyzed', excludeFromAll: true
         only = ['title']
     }
 
@@ -18,8 +18,12 @@ class ContactType implements Serializable {
     Boolean required = false
 
     static constraints = {
-        title blank: false, nullable: false, maxSize: 50, unique: true
-        required nullable: false
+        title blank: false, maxSize: 50
+    }
+
+    static mapping = {
+        cache true
+        id natural: [properties: ['title'], mutable: true]
     }
 
     final static bindableProperties = ['title', 'required']
@@ -29,7 +33,6 @@ class ContactType implements Serializable {
     int hashCode() {
         new HashCodeBuilder()
             .append(title)
-            .append(required)
             .toHashCode()
     }
 
@@ -38,7 +41,6 @@ class ContactType implements Serializable {
         if (other instanceof ContactType) {
             return new EqualsBuilder()
                 .append(title, other.title)
-                .append(required, other.required)
                 .isEquals()
         }
         return false
@@ -52,29 +54,8 @@ class ContactType implements Serializable {
         ])
     }
 
-    String prettyPrint() {
-        toString()
-    }
-
     @Override
-    String toString() {
-        "title: $title, required: $required"
-    }
-
-    void scrubCR() {
-        //Don't think we really need to do anything here, but the MarketplaceAdminController calls it
-    }
-
-    static boolean findDuplicates(def obj) {
-        obj?.title && findByTitle(obj.title)
-    }
-
-    void bindFromJSON(JSONObject obj) {
-        this.with {
-            title = obj.title
-            required = obj.required
-        }
-    }
+    String toString() { title }
 
     def beforeDelete() {
         ContactType.withNewSession {

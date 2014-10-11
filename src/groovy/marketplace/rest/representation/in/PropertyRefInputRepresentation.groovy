@@ -1,6 +1,11 @@
 package marketplace.rest.representation.in
 
+import marketplace.Agency
+import marketplace.ContactType
 import marketplace.Intent
+import marketplace.Profile
+import marketplace.Types
+import marketplace.Category
 
 /**
  * Similar to the IdRefInputRepresentation, but uses identifying properties rather than database id to look up the object
@@ -25,12 +30,8 @@ class IntentPropertyRefInputRepresentation extends PropertyRefInputRepresentatio
     String action
     String type
 
-    IntentPropertyRefInputRepresentation() {
-        super(Intent.class)
-    }
-
     IntentPropertyRefInputRepresentation(String id) {
-        this()
+        super(Intent.class)
         def props = id.split('/')
         action = props[2]
         type = "${props[0]}/${props[1]}"
@@ -39,4 +40,45 @@ class IntentPropertyRefInputRepresentation extends PropertyRefInputRepresentatio
     public Map<String, String> getIdentifyingProperties() {
         [action: action, type: type]
     }
+}
+
+class ProfilePropertyInputRepresentation extends PropertyRefInputRepresentation<Profile> {
+    String username
+
+    ProfilePropertyInputRepresentation() {
+        super(Profile.class)
+    }
+
+    public Map<String, String> getIdentifyingProperties() {
+        [username: username]
+    }
+}
+
+class TitleRefInputRepresentation<T> extends PropertyRefInputRepresentation<T> {
+    String title
+
+    TitleRefInputRepresentation(Class<T> representedClass, String title) {
+        super(representedClass)
+        this.title = title
+    }
+
+    public Map<String, String> getIdentifyingProperties() {
+        [title: title]
+    }
+}
+
+class TypeTitleInputRepresentation extends TitleRefInputRepresentation<Types> {
+    TypeTitleInputRepresentation(String title) { super(Types.class, title) }
+}
+
+class CategoryTitleInputRepresentation extends TitleRefInputRepresentation<Category> {
+    CategoryTitleInputRepresentation(String title) { super(Category.class, title) }
+}
+
+class AgencyTitleInputRepresentation extends TitleRefInputRepresentation<Agency> {
+    AgencyTitleInputRepresentation(String title) { super(Agency.class, title) }
+}
+
+class ContactTypeTitleInputRepresentation extends TitleRefInputRepresentation<ContactType> {
+    ContactTypeTitleInputRepresentation(String title) { super(ContactType.class, title) }
 }

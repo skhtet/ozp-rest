@@ -8,15 +8,9 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.Profile
 import marketplace.Agency
-
-import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.ApplicationRootUriBuilderHolder
-import marketplace.hal.RepresentationFactory
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.OzpRelationType
-
-import marketplace.rest.ChildObjectCollection
-
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.AgencyUriBuilder
 
@@ -29,7 +23,7 @@ class ProfileRepresentationUnitTest {
         }
     ] as UriInfo)
 
-    Collection<Agency> organizations = [ new Agency(), new Agency() ]
+    Collection<Agency> organizations = [ new Agency(title: 'org1'), new Agency(title: 'org2') ]
 
     Profile profile = new Profile(
         username: 'testUser',

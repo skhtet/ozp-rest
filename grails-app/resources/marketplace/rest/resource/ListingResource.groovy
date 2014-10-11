@@ -10,7 +10,6 @@ import javax.ws.rs.Produces
 import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -26,15 +25,21 @@ import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
+import marketplace.rest.representation.out.ApplicationRepresentation
+import marketplace.rest.representation.out.ListingRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingActivityRestService
 
-import static org.grails.jaxrs.response.Responses.created
-
 @Path('/api/listing')
-class ListingResource extends DomainResource<Listing> {
+@Produces([
+    ListingRepresentation.MEDIA_TYPE,
+    ApplicationRepresentation.MEDIA_TYPE,
+    MediaType.APPLICATION_JSON
+])
+@Consumes([ListingInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+class ListingResource extends RepresentationResource<Listing> {
 
     @Autowired ListingActivityRestService listingActivityRestService
     @Autowired RejectionListingRestService rejectionListingRestService
@@ -43,33 +48,14 @@ class ListingResource extends DomainResource<Listing> {
 
     @Autowired
     ListingResource(ListingRestService service) {
-        super(Listing.class, service)
+        super(service)
     }
 
     ListingResource() {}
 
-    @POST
-    @Consumes([
-        ListingInputRepresentation.MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    Response create(ListingInputRepresentation rep) {
-        created service.createFromRepresentation(rep)
-    }
-
-    @PUT
-    @Path('/{id}')
-    @Consumes([
-        ListingInputRepresentation.MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    Listing update(@PathParam('id') long id, ListingInputRepresentation rep) {
-        service.updateById(id, rep)
-    }
-
     @Path('/activity')
     @GET
-    public Collection<ListingActivity> getActivitiesForServiceItems(
+    public Collection<ListingActivity> getActivitiesForListings(
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
         listingActivityRestService.getAll(offset, max)
@@ -77,7 +63,7 @@ class ListingResource extends DomainResource<Listing> {
 
     @Path('/{listingId}/activity')
     @GET
-    public Collection<ListingActivity> getServiceItemActivitiesForServiceItem(
+    public Collection<ListingActivity> getListingActivitiesForListing(
             @PathParam('listingId') long listingId,
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
@@ -99,18 +85,14 @@ class ListingResource extends DomainResource<Listing> {
     }
 
     @Path('/{listingId}/requiredListings')
-    //add JSONP support.  javascript has to be first in the list because browsers
-    //send */* Accept headers for script tags, which is quite unhelpful
-    @Produces(['application/javascript', 'text/javascript', 'application/json'])
     @GET
     public Collection<Listing> getRequiredListings(
-            @PathParam('listingId') long serviceItemId) {
+            @PathParam('listingId') long listingId) {
 
-        service.getAllRequiredListingsByParentId(serviceItemId)
+        service.getAllRequiredListingsByParentId(listingId)
     }
 
     @Path('/{listingId}/requiringListings')
-    @Produces(['application/javascript', 'text/javascript', 'application/json'])
     @GET
     public Collection<Listing> getRequiringListings(
             @PathParam('listingId') long listingId) {
@@ -149,30 +131,5 @@ class ListingResource extends DomainResource<Listing> {
     @Produces([])
     public void deleteItemComment(@PathParam('itemCommentId') long itemCommentId) {
         itemCommentRestService.deleteById(itemCommentId)
-    }
-
-    @Override
-    public void delete(long id) {
-        super.delete(id)
-        refreshElasticSearch()
-    }
-
-    @Override
-    public Response create(Listing dto) {
-        Response retval = super.create(dto)
-        refreshElasticSearch()
-        return retval
-    }
-
-    @Override
-    public Listing update(long id, Listing dto) {
-        Listing retval = super.update(id, dto)
-        refreshElasticSearch()
-        return retval
-    }
-
-    private void refreshElasticSearch() {
-        //ensure elastic search is finished updating before returning response
-        elasticSearchAdminService.refresh(Listing)
     }
 }

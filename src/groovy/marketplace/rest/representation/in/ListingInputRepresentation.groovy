@@ -8,6 +8,7 @@ import marketplace.ApprovalStatus
 
 class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
+
     ListingInputRepresentation() {
         super(Listing.class)
     }
@@ -27,18 +28,33 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Boolean isEnabled = true
     Set<String> tags
     ApprovalStatus approvalStatus = ApprovalStatus.IN_PROGRESS
-
-    TypeIdRef type
+    TypeTitleInputRepresentation type
     Set<IntentPropertyRefInputRepresentation> intents
     Set<ContactInputRepresentation> contacts
-    Set<OwnerIdRef> owners
-    Set<CategoryIdRef> categories
-    AgencyIdRef agency
+    Set<ProfilePropertyInputRepresentation> owners
+    Set<CategoryTitleInputRepresentation> categories
+    AgencyTitleInputRepresentation agency
     Set<ResourceInputRepresentation> docUrls
     List<ScreenshotInputRepresentation> screenshots
 
+    public void setType(String typeTitle) {
+        this.type = new TypeTitleInputRepresentation(typeTitle)
+    }
+
+    public void setAgency(String agencyTitle) {
+        this.agency = new AgencyTitleInputRepresentation(agencyTitle)
+    }
+
+    public void setCategories(Collection<String> categoryTitles) {
+        this.categories = categoryTitles.collect { new CategoryTitleInputRepresentation(it) }
+    }
+
     public void setIntents(Collection<String> intents) {
         this.intents = intents.collect { new IntentPropertyRefInputRepresentation(it) }
+    }
+
+    public void setApprovalStatus(String status) {
+        this.approvalStatus = ApprovalStatus.findByStatus(status)
     }
 }
 
@@ -70,5 +86,10 @@ class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {
     String unsecurePhone
     String organization
     String name
-    ContactTypeIdRef type
+    ContactTypeTitleInputRepresentation type
+
+    public void setType(String typeTitle) {
+        this.type = new ContactTypeTitleInputRepresentation(typeTitle)
+    }
+
 }

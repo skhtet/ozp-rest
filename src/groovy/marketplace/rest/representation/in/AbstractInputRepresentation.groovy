@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 abstract class AbstractInputRepresentation<T> implements InputRepresentation<T> {
-    private Class<T> representedClass;
+    private Class<T> representedClass
 
     AbstractInputRepresentation(Class<T> representedClass) {
         this.representedClass = representedClass
@@ -14,6 +14,6 @@ abstract class AbstractInputRepresentation<T> implements InputRepresentation<T> 
 
     Map<String, Object> getInputProperties() {
         //filter out inputProperties from properties
-        this.properties.findAll { k, v -> !(k in ['inputProperties', 'class']) }
+        this.properties.findAll { String k, v -> !(k in ['inputProperties', 'class']) }
     }
 }

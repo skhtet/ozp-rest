@@ -87,7 +87,6 @@ class BootStrap {
             Types,
             Intent,
             Profile,
-            Listing,
             Category,
             RejectionListing,
             ApplicationLibraryEntry,
