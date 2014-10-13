@@ -13,7 +13,10 @@ import marketplace.hal.AbstractRepresentationWriter
 import marketplace.rest.representation.out.CategoryRepresentation
 
 @Provider
-@Produces([CategoryRepresentation.MEDIA_TYPE])
+@Produces([
+    CategoryRepresentation.MEDIA_TYPE,
+    MediaType.APPLICATION_JSON
+])
 class CategoryRepresentationWriter extends AbstractRepresentationWriter<Category> {
 
     @Autowired

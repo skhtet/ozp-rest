@@ -20,4 +20,3 @@ class CategoryUriBuilder extends RepresentationResourceUriBuilder<Category> {
         }
     }
 }
-
