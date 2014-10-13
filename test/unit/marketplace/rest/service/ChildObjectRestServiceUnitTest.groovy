@@ -10,7 +10,7 @@ import org.springframework.security.access.AccessDeniedException
 import marketplace.Listing
 import marketplace.Profile
 import marketplace.ItemComment
-import marketplace.Types
+import marketplace.Type
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
@@ -54,7 +54,7 @@ class ChildObjectRestServiceUnitTest {
         adminUser = new Profile(username: 'admin')
         nonAdminUser = new Profile(username: 'user')
 
-        Types type = new Types(title: 'test type')
+        Type type = new Type(title: 'test type')
 
         Listing si1 = new Listing(
             title: 'Service Item 1',

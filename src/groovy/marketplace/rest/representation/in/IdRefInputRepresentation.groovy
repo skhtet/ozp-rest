@@ -4,7 +4,7 @@ import marketplace.Agency
 import marketplace.ContactType
 import marketplace.Profile
 import marketplace.Listing
-import marketplace.Types
+import marketplace.Type
 import marketplace.Category
 
 class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
@@ -24,8 +24,8 @@ class ProfileIdRef extends IdRefInputRepresentation<Profile, Long> {
     ProfileIdRef() { super(Profile.class) }
 }
 
-class TypeIdRef extends IdRefInputRepresentation<Types, Long> {
-    TypeIdRef() { super(Types.class) }
+class TypeIdRef extends IdRefInputRepresentation<Type, Long> {
+    TypeIdRef() { super(Type.class) }
 }
 
 class AgencyIdRef extends IdRefInputRepresentation<Agency, Long> {

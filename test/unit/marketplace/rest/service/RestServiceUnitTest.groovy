@@ -9,7 +9,7 @@ import grails.validation.ValidationException
 import org.springframework.security.access.AccessDeniedException
 import marketplace.rest.DomainObjectNotFoundException
 import marketplace.Listing
-import marketplace.Types
+import marketplace.Type
 import marketplace.DocUrl
 import marketplace.Contact
 import marketplace.Screenshot
@@ -103,7 +103,7 @@ class RestServiceUnitTest {
         def newOwner = new Profile(username: 'testUser2')
         newOwner.id = 2
 
-        def type = new Types(title: 'Test Type')
+        def type = new Type(title: 'Test Type')
         type.id = 1
 
         def exampleServiceItem = new Listing(exampleServiceItemProps + [
@@ -123,7 +123,7 @@ class RestServiceUnitTest {
         mockDomain(Relationship.class)
         mockDomain(Listing.class, [exampleServiceItem])
         mockDomain(Profile.class, [owner, newOwner])
-        mockDomain(Types.class, [type])
+        mockDomain(Type.class, [type])
 
 
         grailsApplication = new DefaultGrailsApplication()
@@ -176,7 +176,7 @@ class RestServiceUnitTest {
         def ownerDto = new Profile()
         ownerDto.id = 2
 
-        def typeDto = new Types()
+        def typeDto = new Type()
         typeDto.id = 1
 
         def relationship = new Relationship(
@@ -201,7 +201,7 @@ class RestServiceUnitTest {
         //ensure that properties we didn't change do not change
         assert retval.description == exampleServiceItemProps.description
         assert retval.owners == [Profile.get(2)] as Set
-        assert retval.type == Types.get(1)
+        assert retval.type == Type.get(1)
 
         assert retval.id == id
 
@@ -218,7 +218,7 @@ class RestServiceUnitTest {
         def ownerDto = new Profile()
         ownerDto.id = 1
 
-        def typeDto = new Types()
+        def typeDto = new Type()
         typeDto.id = 1
 
         def goodId = restService.getAll(0, 1).iterator().next().id
@@ -254,7 +254,7 @@ class RestServiceUnitTest {
         def ownerDto = new Profile()
         ownerDto.id = 1
 
-        def typeDto = new Types()
+        def typeDto = new Type()
         typeDto.id = 1
 
         def goodId = restService.getAll(0, 1).iterator().next().id
@@ -301,7 +301,7 @@ class RestServiceUnitTest {
         ownerDto.id = ownerId
 
         def typeId = 1
-        Types typeDto = new Types()
+        Type typeDto = new Type()
         typeDto.id = typeId
 
         Listing newServiceItem = new Listing(exampleServiceItemProps + [
@@ -314,7 +314,7 @@ class RestServiceUnitTest {
         assert retval instanceof Listing
         assert retval.title == exampleServiceItemProps.title
         assert retval.owners == [Profile.get(ownerId)] as Set
-        assert retval.type == Types.get(typeId)
+        assert retval.type == Type.get(typeId)
 
         assertNotNull retval.id
     }
@@ -337,7 +337,7 @@ class RestServiceUnitTest {
         def ownerDto = new Profile()
         ownerDto.id = 2
 
-        def typeDto = new Types()
+        def typeDto = new Type()
         typeDto.id = 1
 
         def id = restService.getAll(0, 1).iterator().next().id
@@ -530,7 +530,7 @@ class RestServiceUnitTest {
         //ensure that properties we didn't change do not change
         assert retval.description == exampleServiceItemProps.description
         assert retval.owners == [Profile.get(2)] as Set
-        assert retval.type == Types.get(1)
+        assert retval.type == Type.get(1)
 
         assert retval.id == id
 
@@ -559,7 +559,7 @@ class RestServiceUnitTest {
         assert retval instanceof Listing
         assert retval.title == exampleServiceItemProps.title
         assert retval.owners == [Profile.get(ownerId)] as Set
-        assert retval.type == Types.get(typeId)
+        assert retval.type == Type.get(typeId)
 
         assertNotNull retval.id
     }

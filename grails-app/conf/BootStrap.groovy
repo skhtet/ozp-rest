@@ -84,7 +84,7 @@ class BootStrap {
             ContactType,
             ItemComment,
             Agency,
-            Types,
+            Type,
             Intent,
             Profile,
             Listing,

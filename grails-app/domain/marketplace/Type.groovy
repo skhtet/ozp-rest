@@ -6,7 +6,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 
 @gorm.AuditStamp
-class Types implements Serializable {
+class Type implements Serializable {
     final static bindableProperties = ['title', 'description']
     final static modifiableReferenceProperties = []
 
@@ -77,8 +77,8 @@ class Types implements Serializable {
 
     @Override
     boolean equals(Object obj) {
-        if (obj instanceof Types) {
-            Types other = (Types) obj
+        if (obj instanceof Type) {
+            Type other = (Type) obj
             EqualsBuilder builder = new EqualsBuilder()
             builder.append(id, other.id)
                 .append(uuid, other.uuid)

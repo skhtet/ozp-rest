@@ -9,7 +9,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.Listing
-import marketplace.Types
+import marketplace.Type
 import marketplace.DocUrl
 import marketplace.Screenshot
 import marketplace.Profile
@@ -35,7 +35,7 @@ class ListingRestServiceUnitTest {
     ListingRestService service
 
     Profile currentUser, owner, nonOwner, admin
-    Types type1
+    Type type1
 
     private static final exampleServiceItemProps = [
         id: 1,
@@ -86,7 +86,7 @@ class ListingRestServiceUnitTest {
         def admin = new Profile(username: 'admin')
         admin.id = 3
 
-        def type = new Types(title: 'Test Type', ozoneAware: true)
+        def type = new Type(title: 'Test Type', ozoneAware: true)
         type.id = 1
 
         type1 = type
@@ -104,7 +104,7 @@ class ListingRestServiceUnitTest {
         mockDomain(Relationship.class)
         mockDomain(RejectionListing.class)
 
-        mockDomain(Types.class, [type])
+        mockDomain(Type.class, [type])
         mockDomain(Intent.class, [intent])
         mockDomain(Profile.class, [owner, nonOwner, admin])
 

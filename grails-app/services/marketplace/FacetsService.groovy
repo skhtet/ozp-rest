@@ -23,9 +23,9 @@ class FacetsService {
             // Currently have separate procedural logic for each type of facet returned
             if (facets.types) {
                 termCounts = facets.types.termCounts
-                returnValue['types'] = new TreeMap<Types, Integer>(comparator)
+                returnValue['types'] = new TreeMap<Type, Integer>(comparator)
                 termCounts.each { entry ->
-                    Types type = Types.get(Integer.valueOf(entry.term))
+                    Type type = Type.get(Integer.valueOf(entry.term))
                     returnValue['types'][(type)] = entry.count
                 }
             }

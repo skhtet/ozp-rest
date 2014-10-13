@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
-import marketplace.Types
+import marketplace.Type
 
 @Service
-class TypeRestService extends AdminRestService<Types> {
+class TypeRestService extends AdminRestService<Type> {
     @Autowired
     public TypeRestService(GrailsApplication grailsApplication) {
-        super(grailsApplication, Types.class, null, null)
+        super(grailsApplication, Type.class, null, null)
     }
 
     TypeRestService() {}

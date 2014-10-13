@@ -16,7 +16,7 @@ import marketplace.ModifyRelationshipActivity
 import marketplace.RejectionListing
 import marketplace.Constants
 import marketplace.ApprovalStatus
-import marketplace.Types
+import marketplace.Type
 
 import marketplace.testutil.FakeAuditTrailHelper
 
@@ -274,7 +274,7 @@ class ListingActivityInternalServiceUnitTest {
         updated.with {
             title = old.title + ' new!'
             description = old.description + 'new!'
-            type = new Types(title: 'new type!!')
+            type = new Type(title: 'new type!!')
         }
 
         def (activityCountBefore, activityCountAfter, activity) = doChangeLog(updated, old.properties)

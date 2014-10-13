@@ -69,7 +69,7 @@
            overflowToDisk="false">
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </cache>
-    <cache name="marketplace.Types"
+    <cache name="marketplace.Type"
            maxElementsInMemory="1000"
            timeToLiveSeconds="3600"
            eternal="false"

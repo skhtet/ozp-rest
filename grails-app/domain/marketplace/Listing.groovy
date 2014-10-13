@@ -150,7 +150,7 @@ class Listing implements Serializable {
 
     ListingActivity lastActivity
     Agency agency
-    Types type
+    Type type
 
     static transients = ['sortTitle', 'lastActivityDate']
 
