@@ -8,12 +8,16 @@ import marketplace.hal.EmbeddedCollectionRepresentation
 
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
 
 import marketplace.rest.representation.out.IntentRepresentation
 import marketplace.rest.resource.uribuilder.IntentUriBuilder
 
 @Provider
-@Produces([IntentRepresentation.COLLECTION_MEDIA_TYPE])
+@Produces([
+    IntentRepresentation.COLLECTION_MEDIA_TYPE,
+    MediaType.APPLICATION_JSON
+])
 class IntentsRepresentationWriter extends AbstractRepresentationWriter<Collection<Intent>> {
 
     @Autowired
