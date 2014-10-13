@@ -1,7 +1,6 @@
 package marketplace.rest.representation.out
 
 import marketplace.Contact
-import marketplace.ContactType
 import marketplace.DocUrl
 import marketplace.Listing
 import marketplace.Profile
@@ -45,10 +44,10 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getRequirements() { listing.requirements }
     String getWhatIsNew() { listing.whatIsNew }
     Date getApprovedDate() { listing.approvedDate }
-    String getApprovalStatus() { listing.approvalStatus.toString() }
-    Collection<String> getTags() { listing.tags }
-    String getType() { listing.type.title }
-    String getAgency() { listing.agency.title }
+    String getApprovalStatus() { listing.approvalStatus?.toString() }
+    Collection<String> getTags() { listing.tags ?: [] }
+    String getType() { listing.type?.title }
+    String getAgency() { listing.agency?.title }
 
     Collection<String> getCategories() { listing.categories.collect { it.title }}
 
