@@ -11,5 +11,4 @@ class TypeInputRepresentation extends AbstractInputRepresentation<Type> {
 
     String title
     String description
-    String uuid
 }

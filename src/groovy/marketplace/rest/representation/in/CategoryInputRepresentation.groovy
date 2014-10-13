@@ -1,6 +1,6 @@
 package marketplace.rest.representation.in
 
-import marketplace.Profile
+import marketplace.Category
 
 class CategoryInputRepresentation extends AbstractInputRepresentation<Category> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-category-v1+json'
@@ -11,5 +11,4 @@ class CategoryInputRepresentation extends AbstractInputRepresentation<Category> 
 
     String title
     String description
-    String uuid
 }
