@@ -1,7 +1,6 @@
 package marketplace
 
 import org.codehaus.groovy.grails.web.json.JSONObject
-import ozone.utils.Utils
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 
@@ -12,96 +11,49 @@ class Type implements Serializable {
 
     static searchable = {
         root false
-        title index: 'analyzed', excludeFromAll: false
-        ozoneAware index: 'not_analyzed', excludeFromAll: true
-        only = ['id', 'title', 'ozoneAware']
+        title index: 'not_analyzed'
+        only = ['title']
     }
 
     String title
     String description
-    boolean ozoneAware = true
-    boolean hasLaunchUrl = true
-    boolean hasIcons = true
-    String uuid
-    Boolean isPermanent = false
-
-    def beforeInsert() {
-        if (!uuid) {
-            uuid = Utils.generateUUID();
-        }
-    }
 
     static constraints = {
-        title(blank: false, nullable: false, maxSize: 50)
-        description(nullable: true, maxSize: 250)
-        typeId(nullable: true)
-        uuid(nullable: true, unique: true)
-        isPermanent(nullable: true)
+        title blank: false, nullable: false, maxSize: 50
+        description nullable: true, maxSize: 255
     }
 
     static mapping = {
+        id natural: [properties: ['title'], mutable: true]
         cache true
     }
 
-    static transients = ['sortTypeTitle', 'typeId']
-
+    @Override
     String toString() { title }
 
     def asJSON() {
         return new JSONObject(
             id: id,
             title: title,
-            description: description,
+            description: description
         )
-    }
-
-    Long getTypeId() {
-        id
-    }
-
-    String getSortTypeTitle() {
-        title?.toLowerCase()
     }
 
     @Override
     int hashCode() {
-        HashCodeBuilder builder = new HashCodeBuilder()
-        builder.append(id)
+        new HashCodeBuilder()
             .append(title)
-            .append(description)
-            .append(version)
-            .append(uuid)
-        def code = builder.toHashCode()
-        return code;
+            .toHashCode()
     }
 
     @Override
-    boolean equals(Object obj) {
-        if (obj instanceof Type) {
-            Type other = (Type) obj
-            EqualsBuilder builder = new EqualsBuilder()
-            builder.append(id, other.id)
-                .append(uuid, other.uuid)
-                .append(version, other.version)
-                .append(description, other.description)
+    boolean equals(Object other) {
+        if (other instanceof Type) {
+            return new EqualsBuilder()
                 .append(title, other.title)
-            return builder.isEquals();
+                .isEquals()
         }
-        return false;
-    }
 
-    static boolean findDuplicates(def obj) {
-        if (obj?.has('uuid')) {
-            def allUuids = findAllByUuid(obj.uuid);
-            if (allUuids.size() == 0) {
-                if (obj.has('title')) {
-                    def allTitles = findAllByTitle(obj.title);
-                    return (allTitles.size() > 0) ?: false;
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
+        false
     }
 }

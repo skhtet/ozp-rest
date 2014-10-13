@@ -6,7 +6,6 @@ import static marketplace.ValidationUtil.validateUrl
 
 import ozone.utils.Utils
 
-import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 import org.apache.commons.lang.builder.HashCodeBuilder
@@ -145,8 +144,8 @@ class Listing implements Serializable {
     Integer totalComments = 0
 
     SortedSet rejectionListings
-    List screenshots
-    List listingActivities
+    List<Screenshot> screenshots
+    List<ListingActivity> listingActivities
 
     ListingActivity lastActivity
     Agency agency
@@ -207,19 +206,9 @@ class Listing implements Serializable {
         totalRate2(nullable: true)
         totalRate1(nullable: true)
         launchUrl(nullable: true, maxSize: Constants.MAX_URL_SIZE, validator: { val, obj ->
-            if (obj.type?.hasLaunchUrl && (!val || 0 == val.trim().size())) {
+            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
                 return [
-                    'serviceItem.launchUrl.required'
-                ]
-            }
-            if (obj.type?.hasLaunchUrl && !val && !validateUrl(val)) {
-                return [
-                    'serviceItem.launchUrl.url.invalid'
-                ]
-            }
-            if (val != null && val.trim().size() > 0 && !validateUrl(val)) {
-                return [
-                    'serviceItem.launchUrl.url.invalid'
+                        'serviceItem.launchUrl.url.invalid'
                 ]
             }
         })
@@ -267,94 +256,12 @@ class Listing implements Serializable {
         return "${id}:${title}:${uuid}:${approvalStatus}"
     }
 
-    String prettyPrint() {
-        return "${id}:${title}:${uuid}:${approvalStatus}:${type}:${categories}"
-    }
-
-    // The parameter requires allows the caller to pass in a list of required listings which will be
-    // add to the JSON structure being returned.
-    def asJSON(requires = null) {
-        def currJSON = new JSONObject(
-            id: id,
-            title: title,
-            versionName: versionName,
-            approvedDate: approvedDate,
-            lastActivity: new JSONObject(activityDate: lastActivity?.activityDate),
-            approvalStatus: approvalStatus,
-            isFeatured: isFeatured,
-            avgRate: avgRate,
-            agency: agency?.asJSON(),
-            totalVotes: totalVotes,
-            totalRate5: totalRate5,
-            totalRate4: totalRate4,
-            totalRate3: totalRate3,
-            totalRate2: totalRate2,
-            totalRate1: totalRate1,
-            totalComments: totalComments,
-            categories: (categories?.collect { it.asJSONRef()} ?: []) as JSONArray,
-            owners: (owners?.collect { it.username } ?: []) as JSONArray,
-            description: description,
-            docUrls: (docUrls?.collect {it.asJSON()} ?: []) as JSONArray,
-            imageSmallUrl: imageSmallUrl,
-            imageMediumUrl: imageMediumUrl,
-            imageLargeUrl: imageLargeUrl,
-            imageXlargeUrl: imageXlargeUrl,
-            isPublished: true,
-            launchUrl: launchUrl,
-            validLaunchUrl: validateUrl(launchUrl),
-            satisfiedScorecards: satisfiedScorecards?.collect { it.asJSON() } as JSONArray,
-            requirements: requirements,
-            screenshots: (this.screenshots.collect { it?.asJSON() }.findAll { it != null }) as JSONArray,
-            type: type?.asJSON(),
-            class: getClass(),
-            uuid: uuid,
-            isEnabled: isEnabled,
-            intents: intents as JSONArray,
-            contacts: contacts.collect { it.asJSON() } as JSONArray,
-            relationships: relationships.collect{ it.asJSON() } as JSONArray,
-            tags: tags as JSONArray,
-            descriptionShort: descriptionShort,
-            whatIsNew: whatIsNew
-        )
-
-        JSONUtil.addCreatedAndEditedInfo(currJSON, this)
-        if (owners != null) {
-            currJSON.put('owners', new JSONArray(owners?.collect {
-                new JSONObject(id: it.id, name: it.displayName, username: it.username)
-            }))
-        }
-
-        if (requires != null) {
-            currJSON.put("requires", new JSONArray(requires?.collect {
-                new JSONObject(id: it.id, title: it.title, uuid: it.uuid)
-            }))
-        }
-
-        return currJSON
-    }
-
     def asJSONMinimum () {
         return new JSONObject(
             id: id,
             title: title,
             imageSmallUrl: imageSmallUrl
         )
-    }
-
-    boolean statApproved() {
-        return this.approvalStatus == ApprovalStatus.APPROVED
-    }
-
-    boolean statPending() {
-        return this.approvalStatus == ApprovalStatus.PENDING
-    }
-
-    boolean statInProgress() {
-        return this.approvalStatus == ApprovalStatus.IN_PROGRESS
-    }
-
-    boolean statRejected() {
-        return this.approvalStatus == ApprovalStatus.REJECTED
     }
 
     @Override

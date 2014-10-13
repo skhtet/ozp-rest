@@ -12,6 +12,34 @@ class ListingUriBuilder extends RepresentationResourceUriBuilder<Listing> {
         super(ListingResource.class, uriBuilderHolder)
     }
 
+    URI getListingActivitiesUri(Listing listing) {
+        uriBuilderHolder.builder
+            .path(ListingResource.class)
+            .path(ListingResource.class, 'getListingActivitiesForListing')
+            .buildFromMap(listingId: listing.id)
+    }
+
+    URI getListingCommentsUri(Listing listing) {
+        uriBuilderHolder.builder
+            .path(ListingResource.class)
+            .path(ListingResource.class, 'getItemCommentsByListingId')
+            .buildFromMap(listingId: listing.id)
+    }
+
+    URI getRequiredListingsUri(Listing listing) {
+        uriBuilderHolder.builder
+            .path(ListingResource.class)
+            .path(ListingResource.class, 'getRequiredListings')
+            .buildFromMap(listingId: listing.id)
+    }
+
+    URI getRequiringListingsUri(Listing listing) {
+        uriBuilderHolder.builder
+            .path(ListingResource.class)
+            .path(ListingResource.class, 'getRequiringListings')
+            .buildFromMap(listingId: listing.id)
+    }
+
     @Component
     public static class Factory implements ResourceUriBuilder.Factory<Listing> {
         ListingUriBuilder getBuilder(

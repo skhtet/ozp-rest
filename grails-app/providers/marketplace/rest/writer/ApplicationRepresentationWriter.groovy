@@ -12,10 +12,7 @@ import javax.ws.rs.Produces
 import marketplace.rest.representation.out.ApplicationRepresentation
 
 @Provider
-@Produces([
-    ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
-    MediaType.APPLICATION_JSON
-])
+@Produces([ApplicationRepresentation.MEDIA_TYPE])
 class ApplicationRepresentationWriter extends AbstractRepresentationWriter<Listing> {
 
     @Autowired

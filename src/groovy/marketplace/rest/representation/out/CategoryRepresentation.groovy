@@ -6,13 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import marketplace.Category
 
 import marketplace.hal.SelfRefRepresentation
-import marketplace.hal.ApplicationRootUriBuilderHolder
-import marketplace.hal.HalLinks
-import marketplace.hal.HalEmbedded
-import marketplace.hal.Link
 import marketplace.hal.RepresentationFactory
-import marketplace.hal.OzpRelationType
-import marketplace.hal.AbstractHalRepresentation
+import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import marketplace.rest.resource.uribuilder.ResourceUriBuilder
 import marketplace.rest.resource.uribuilder.CategoryUriBuilder
@@ -32,7 +27,6 @@ class CategoryRepresentation extends SelfRefRepresentation<Category> {
 
     public String getTitle() { category.title }
     public String getDescription() { category.description }
-    public String getUuid() { category.uuid }
     public Long getId() { category.id }
 
     @Component

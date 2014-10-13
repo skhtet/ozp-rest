@@ -32,7 +32,6 @@ class TypeRepresentation extends SelfRefRepresentation<Type> {
 
     public String getTitle() { type.title }
     public String getDescription() { type.description }
-    public String getUuid() { type.uuid }
     public Long getId() { type.id }
 
     @Component

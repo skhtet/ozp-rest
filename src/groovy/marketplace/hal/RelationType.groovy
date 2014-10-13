@@ -166,7 +166,11 @@ enum OzpRelationType implements HalCuriedRelationType {
     APPLICATION_LIBRARY('application-library'),
     ORGANIZATION('organization'),
     STEWARDSHIP('stewardship'),
-    SYSTEM('system')
+    SYSTEM('system'),
+    REVIEW('review'),
+    ACTIVITY('activity'),
+    REQUIRED('required'),
+    REQUIRED_BY('required-by')
 
     private String name
 

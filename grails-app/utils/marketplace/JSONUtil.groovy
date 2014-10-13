@@ -114,9 +114,9 @@ class JSONUtil {
 
     static def addCreatedAndEditedInfo(JSONObject jsonObject, def domainObj) {
         jsonObject.put("createdDate", domainObj.createdDate ?: new Date())
-        if (domainObj.createdBy) jsonObject.put("createdBy", new JSONObject(id: domainObj.createdBy?.id, name: domainObj.createdBy?.display(), username: domainObj.createdBy?.username))
+        if (domainObj.createdBy) jsonObject.put("createdBy", new JSONObject(id: domainObj.createdBy?.id, name: domainObj.createdBy?.displayName, username: domainObj.createdBy?.username))
         jsonObject.put("editedDate", domainObj.editedDate ?: new Date())
-        if (domainObj.editedBy) jsonObject.put("editedBy", new JSONObject(id: domainObj.editedBy?.id, name: domainObj.editedBy?.display(), username: domainObj.editedBy?.username))
+        if (domainObj.editedBy) jsonObject.put("editedBy", new JSONObject(id: domainObj.editedBy?.id, name: domainObj.editedBy?.displayName, username: domainObj.editedBy?.username))
     }
 
 }

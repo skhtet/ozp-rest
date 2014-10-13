@@ -37,7 +37,7 @@ class ListingResourceUnitTest {
         }
         resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        assert resource.getActivitiesForServiceItems(1,2) == [activity]
+        assert resource.getActivitiesForListings(1,2) == [activity]
         assert passedOffset == 1
         assert passedMax == 2
     }
@@ -55,7 +55,7 @@ class ListingResourceUnitTest {
         }
         resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        assert resource.getServiceItemActivitiesForServiceItem(20, 1,2) == [activity]
+        assert resource.getListingActivitiesForListing(20, 1,2) == [activity]
         assert passedParentId == 20
         assert passedOffset == 1
         assert passedMax == 2
