@@ -6,7 +6,7 @@ import marketplace.Agency
 import marketplace.ContactType
 import marketplace.Intent
 import marketplace.Profile
-import marketplace.Types
+import marketplace.Type
 import marketplace.Category
 
 @TestMixin(GrailsUnitTestMixin)
@@ -39,7 +39,7 @@ class PropertyRefInputRepresentationUnitTest {
     void testTypeTitleInputRef() {
         rep = new TypeTitleInputRepresentation('')
 
-        assert rep.representedClass() == Types.class
+        assert rep.representedClass() == Type.class
     }
 
     void testCategoryTitleInputRef() {
