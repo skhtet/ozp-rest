@@ -19,6 +19,7 @@ import marketplace.rest.resource.uribuilder.CategoryUriBuilder
 
 class CategoryRepresentation extends SelfRefRepresentation<Category> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-category-v1+json'
+    public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-categories-v1+json'
 
     private Category category
 

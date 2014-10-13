@@ -58,7 +58,7 @@ import marketplace.rest.ItemCommentServiceItemDto
 @Path('/api/profile')
 @Produces([ProfileRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
 @Consumes([ProfileInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-class ProfileResource extends RepresentationResource<Profile> {
+class ProfileResource extends RepresentationResource<Profile, ProfileInputRepresentation> {
 
     @Autowired ListingRestService listingRestService
     @Autowired ItemCommentRestService ItemCommentRestService

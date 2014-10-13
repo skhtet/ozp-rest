@@ -22,7 +22,7 @@ import marketplace.rest.representation.in.InputRepresentation
  * objects, using Representation classes for input
  */
 
-class RepresentationResource<T> {
+class RepresentationResource<T, R extends InputRepresentation<T>> {
 
     protected RestService<T> service
 
@@ -37,7 +37,7 @@ class RepresentationResource<T> {
     protected RepresentationResource() {}
 
     @POST
-    Response create(InputRepresentation<T> rep) {
+    Response create(R rep) {
         created service.createFromRepresentation(rep)
     }
 
@@ -62,7 +62,7 @@ class RepresentationResource<T> {
 
     @PUT
     @Path('/{id}')
-    T update(@PathParam('id') long id, InputRepresentation<T> rep) {
+    T update(@PathParam('id') long id, R rep) {
         service.updateById(id, rep)
     }
 
