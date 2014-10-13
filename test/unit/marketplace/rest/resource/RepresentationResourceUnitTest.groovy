@@ -18,7 +18,7 @@ import marketplace.rest.representation.in.InputRepresentation
 
 @TestMixin(DomainClassUnitTestMixin)
 class RepresentationResourceUnitTest {
-    RepresentationResource<Agency> resource
+    RepresentationResource<Agency, AgencyInputRepresentation> resource
     GrailsApplication grailsApplication
 
     def restService
