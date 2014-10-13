@@ -4,7 +4,7 @@ import marketplace.Agency
 import marketplace.ContactType
 import marketplace.Intent
 import marketplace.Profile
-import marketplace.Types
+import marketplace.Type
 import marketplace.Category
 
 /**
@@ -67,8 +67,8 @@ class TitleRefInputRepresentation<T> extends PropertyRefInputRepresentation<T> {
     }
 }
 
-class TypeTitleInputRepresentation extends TitleRefInputRepresentation<Types> {
-    TypeTitleInputRepresentation(String title) { super(Types.class, title) }
+class TypeTitleInputRepresentation extends TitleRefInputRepresentation<Type> {
+    TypeTitleInputRepresentation(String title) { super(Type.class, title) }
 }
 
 class CategoryTitleInputRepresentation extends TitleRefInputRepresentation<Category> {
