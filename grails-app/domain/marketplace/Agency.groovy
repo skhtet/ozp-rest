@@ -22,9 +22,14 @@ class Agency implements Serializable {
         iconUrl blank: true, nullable: true, maxSize: Constants.MAX_URL_SIZE
     }
 
+    static transients = { 'description' }
+
     static mapping = {
         id natural: [properties: ['title'], mutable: true]
     }
+
+    //see line 93 of JSONUtil.groovy
+    public String getDescription() { null }
 
     JSONObject asJSON() {
         new JSONObject([
