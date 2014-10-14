@@ -13,12 +13,4 @@ enum ApprovalStatus {
     }
 
     public String toString() { name }
-
-    public static ApprovalStatus findByStatus(String status) throws IllegalArgumentException {
-        ApprovalStatus value = values().find { it.name == status }
-
-        if(!value) throw new IllegalArgumentException("'$status' is not a valid approval status")
-
-        value
-    }
 }

@@ -38,6 +38,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getDescriptionShort() { listing.descriptionShort }
     Long getTotalComments() { listing.totalComments }
     String getImageSmallUrl() { listing.imageSmallUrl }
+    String getLaunchUrl() { listing.launchUrl }
     String getImageMediumUrl() { listing.imageMediumUrl }
     String getImageLargeUrl() { listing.imageLargeUrl }
     String getImageXlargeUrl() { listing.imageXlargeUrl }
