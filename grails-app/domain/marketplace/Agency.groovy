@@ -18,7 +18,7 @@ class Agency implements Serializable {
     String iconUrl
 
     static constraints = {
-        title blank: false, maxSize: 255
+        title blank: false, maxSize: 255, unique: true
         iconUrl blank: true, nullable: true, maxSize: Constants.MAX_URL_SIZE
     }
 
