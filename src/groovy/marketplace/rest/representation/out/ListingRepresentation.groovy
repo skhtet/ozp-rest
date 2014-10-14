@@ -5,6 +5,7 @@ import marketplace.DocUrl
 import marketplace.Listing
 import marketplace.Profile
 import marketplace.Screenshot
+import marketplace.ApprovalStatus
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -44,7 +45,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getRequirements() { listing.requirements }
     String getWhatIsNew() { listing.whatIsNew }
     Date getApprovedDate() { listing.approvedDate }
-    String getApprovalStatus() { listing.approvalStatus?.toString() }
+    ApprovalStatus getApprovalStatus() { listing.approvalStatus }
     Collection<String> getTags() { listing.tags ?: [] }
     String getType() { listing.type?.title }
     String getAgency() { listing.agency?.title }

@@ -52,10 +52,6 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public void setIntents(Collection<String> intents) {
         this.intents = intents.collect { new IntentPropertyRefInputRepresentation(it) }
     }
-
-    public void setApprovalStatus(String status) {
-        this.approvalStatus = ApprovalStatus.findByStatus(status)
-    }
 }
 
 class ResourceInputRepresentation extends AbstractInputRepresentation<DocUrl> {
