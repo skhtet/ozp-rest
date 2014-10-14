@@ -19,7 +19,7 @@ class Agency implements Serializable {
 
     static constraints = {
         title blank: false, maxSize: 255, unique: true
-        iconUrl blank: true, nullable: true, maxSize: Constants.MAX_URL_SIZE
+        iconUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
     }
 
     static transients = { 'description' }

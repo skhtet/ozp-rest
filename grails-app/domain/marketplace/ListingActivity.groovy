@@ -30,10 +30,6 @@ class ListingActivity implements Serializable {
         return AdminObjectFormatter.fullDateDisplay(activityDate)
     }
 
-    String prettyPrint() {
-        toString()
-    }
-
     JSONObject asJSON() {
         new JSONObject(
             author: author.asJSONRef(),

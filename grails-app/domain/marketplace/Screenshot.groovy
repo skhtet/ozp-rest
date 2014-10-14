@@ -20,12 +20,6 @@ class Screenshot implements Serializable {
         only = ['smallImageUrl', 'largeImageUrl']
     }
 
-    private static smallImageUrlValidator =
-        ValidationUtil.&validateUrlConstraint.curry('screenshot.smallImageUrl.url.invalid')
-
-    private static largeImageUrlValidator =
-        ValidationUtil.&validateUrlConstraint.curry('screenshot.largeImageUrl.url.invalid')
-
     static bindableProperties = ['smallImageUrl', 'largeImageUrl']
     static modifiableReferenceProperties = []
 
@@ -35,10 +29,8 @@ class Screenshot implements Serializable {
     String largeImageUrl
 
     static constraints = {
-        smallImageUrl(blank:false, nullable:false, maxSize:Constants.MAX_URL_SIZE,
-            validator: smallImageUrlValidator)
-        largeImageUrl(blank:false, nullable:true, maxSize:Constants.MAX_URL_SIZE,
-            validator: largeImageUrlValidator)
+        smallImageUrl blank: false, nullable: false, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        largeImageUrl blank: false, nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
     }
 
     public String getLargeImageUrl() {

@@ -20,8 +20,8 @@ class DocUrl implements Serializable {
     static belongsTo = [listing: Listing]
 
     static constraints = {
-        name(maxSize: 255, nullable: false)
-        url(maxSize: Constants.MAX_URL_SIZE, nullable: false)
+        name maxSize: 255, nullable: false
+        url maxSize: Constants.MAX_URL_SIZE, nullable: false, matches: Constants.URL_REGEX
     }
 
     def asJSON() {
@@ -29,10 +29,6 @@ class DocUrl implements Serializable {
             name: name,
             url: url
         )
-    }
-
-    def asJSONRef() {
-        asJSON()
     }
 
     @Override

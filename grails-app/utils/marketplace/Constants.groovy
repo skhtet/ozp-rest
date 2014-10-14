@@ -7,8 +7,11 @@ import org.apache.commons.lang.StringUtils
 class Constants {
 
     //Source: http://tools.ietf.org/html/rfc6838#section-4.2
-    static final String MEDIA_TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
-    static final String INTENT_ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+    public static final String MEDIA_TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+
+    public static final String INTENT_ACTION_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
+
+    public static final String URL_REGEX = /^(((https|http|ftp|sftp|file):\/)|(\/)){1}(.*)+$/
 
     // TODO: See ticket MARKETPLACE-268: May want to use these constants from UserViews, instead
     public static final String VIEW_ADMIN = "Administrator"
@@ -87,7 +90,6 @@ class Constants {
 
     public static final String DEFAULT_SERVICE_ITEM_STATE = 'Active'
 
-    public static final Pattern URL_PATTERN = ~/^(((https|http|ftp|sftp|file):\/)|(\/)){1}(.*)+$/
     // From RFC 3986 Appendix B (http://www.ietf.org/rfc/rfc3986.txt)
     public static final Pattern URL_PARSER = ~/^(([^#:\/?]+):)?(\/\/([^#\/?]*))?([^#?]*)(\\?([^#]*))?(#(.*))?/
 

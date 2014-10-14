@@ -2,8 +2,6 @@ package marketplace
 
 import marketplace.converter.JsonDateConverter
 
-import static marketplace.ValidationUtil.validateUrl
-
 import ozone.utils.Utils
 
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -205,43 +203,13 @@ class Listing implements Serializable {
         totalRate3(nullable: true)
         totalRate2(nullable: true)
         totalRate1(nullable: true)
-        launchUrl(nullable: true, maxSize: Constants.MAX_URL_SIZE, validator: { val, obj ->
-            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
-                return [
-                        'serviceItem.launchUrl.url.invalid'
-                ]
-            }
-        })
+        launchUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         categories(nullable: true)
         uuid(nullable:false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/)
-        imageSmallUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
-            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
-                return [
-                    'serviceItem.imageSmallUrl.url.invalid'
-                ]
-            }
-        })
-        imageMediumUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
-            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
-                return [
-                    'serviceItem.imageLargeUrl.url.invalid'
-                ]
-            }
-        })
-        imageLargeUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
-            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
-                return [
-                    'serviceItem.imageLargeUrl.url.invalid'
-                ]
-            }
-        })
-        imageXlargeUrl(nullable:true, maxSize:Constants.MAX_URL_SIZE, validator:{ val, obj ->
-            if(val?.trim()?.size() > 0 && !validateUrl(val)) {
-                return [
-                    'serviceItem.imageXlargeUrl.url.invalid'
-                ]
-            }
-        })
+        imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         approvalStatus(inList:ApprovalStatus.values().toList())
         lastActivity(nullable:true)
         approvedDate(nullable:true)
