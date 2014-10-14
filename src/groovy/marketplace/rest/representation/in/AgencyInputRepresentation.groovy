@@ -15,6 +15,6 @@ class AgencyInputRepresentation extends AbstractInputRepresentation<Agency> {
 
     @Override
     Map<String, Object> getInputProperties() {
-        [title: title, iconUrl: icon.toString()]
+        [title: title, iconUrl: icon?.toString()]
     }
 }
