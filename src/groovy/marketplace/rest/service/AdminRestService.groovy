@@ -31,18 +31,8 @@ class AdminRestService<T> extends RestService<T> {
     }
 
     @RolesAllowed('ROLE_ADMIN')
-    public T updateById(Object id, T dto) {
-        return super.updateById(id, dto)
-    }
-
-    @RolesAllowed('ROLE_ADMIN')
     public T updateById(Object id, InputRepresentation<T> rep) {
         return super.updateById(id, rep)
-    }
-
-    @RolesAllowed('ROLE_ADMIN')
-    public T createFromDto(T dto) {
-        return super.createFromDto(dto)
     }
 
     @RolesAllowed('ROLE_ADMIN')

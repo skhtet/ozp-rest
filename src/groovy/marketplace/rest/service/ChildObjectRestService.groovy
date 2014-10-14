@@ -71,17 +71,6 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
         return object
     }
 
-    @Deprecated //use createFromParentIdAndRepresentation
-    public T createFromParentIdAndDto(Long parentId, T dto) {
-        dto[parentPropertyName] = makeParentDto(parentId)
-        return super.createFromDto(dto)
-    }
-
-    public T updateByParentId(Long parentId, Long id, T dto) {
-        dto[parentPropertyName] = makeParentDto(parentId)
-        return updateById(id, dto)
-    }
-
     /**
      * Get the items that are have the matching parent and which this user is authorized to view
      */
@@ -119,29 +108,9 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
         return list.collect { createFromParentIdAndRepresentation(parentId, it) }
     }
 
-    @Transactional
-    @Deprecated //use replaceAllByParentIdAndRepresentation
-    public List<T> replaceAllByParentIdAndDto(Long parentId, List<T> list) {
-        P parent = parentClassRestService.getById(parentId)
-
-        //delete all current children
-        Collection<T> existing = new ArrayList(parent[parentBackrefPropertyName])
-        parent[parentBackrefPropertyName].clear()
-        existing.each { if (it) deleteById(it.id) }
-
-        return list.collect { createFromParentIdAndDto(parentId, it) }
-    }
-
-    /**
-     * Directly creating a child object with this method is not supported. Use
-     * createFromParentIdAndDto instead
-     *
-     * @throws UnsupportedOperationException
-     */
-    @Override
-    public T createFromDto(T dto) {
-        throw new UnsupportedOperationException("Child objects cannot be created without " +
-            "reference to the parent")
+    public T createFromRepresentation(InputRepresentation<T> rep) {
+        throw new UnsupportedOperationException(
+            "ChildObjectRestService cannot create objects directly")
     }
 
     /**

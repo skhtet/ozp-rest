@@ -100,66 +100,6 @@ abstract class RestService<T> {
         return save(toUpdate)
     }
 
-    @Deprecated //use updateById(Long, InputRepresentation<T>)
-    public T updateById(Object id, T dto) {
-        //ensure that the ID from the request body and the ID
-        //from the URL match
-        if (dto.id != id) {
-            throw new IllegalArgumentException(
-                "Attempt to update resource with different id")
-        }
-
-        T toUpdate = getById(id)
-
-        //we need an extra copy that doesn't get changed by the update
-        //so we can pass it to postprocess.  This creates a shallow copy
-        Map old = new HashMap()
-        old.putAll(toUpdate.properties)
-        old.id = toUpdate.id   //the above does not copy the id
-        copyCollections(old)
-
-        preprocess(dto)
-        authorizeUpdate(toUpdate)
-
-        bind(toUpdate, dto)
-
-        validator?.validateChanges(old, toUpdate)
-        postprocess(toUpdate, old)
-
-        return save(toUpdate)
-    }
-
-    /**
-     * An alternative update method meant for service-to-service calls.
-     * This method avoids the need for services to create "fake" DTOs
-     * to pass to each other.  This method does not validate that the
-     * changes in the updates map are authorized or valid. This method
-     * is also currently limited to simple updates - no subobject
-     * updates
-     * @param skipValidation If true, the DomainValidator is not run
-     */
-    @Deprecated
-    protected T update(T existing, Map updates, boolean skipValidation = false) {
-        T old = makeOldCopy(existing)
-        authorizeUpdate(existing)
-
-        //use untyped variable to get around groovy closure/generics bug
-        def existingObj = existing
-        updates.entrySet().each { update ->
-            if (update.key in DomainClass.bindableProperties) {
-                existingObj[update.key] = update.value
-            }
-        }
-
-        if (!skipValidation) {
-            validator?.validateChanges(old.properties, existing)
-        }
-
-        postprocess(existing, old)
-
-        return save(existing)
-    }
-
     private Map makeOldCopy(T toUpdate) {
         Map old = new HashMap()
         old.putAll(toUpdate.properties)
@@ -441,22 +381,6 @@ abstract class RestService<T> {
         postprocess(object)
 
         return save(object)
-    }
-
-    public T createFromDto(T dto) {
-        populateDefaults(dto)
-        preprocess(dto)
-        authorizeCreate(dto)
-
-        //we cannot just save the dto because we need to make sure
-        //only the allowed properties are saved.  bind ensures this
-        T newObj = DomainClass.metaClass.invokeConstructor()
-        bind(newObj, dto)
-
-        validator?.validateNew(dto)
-        postprocess(newObj)
-
-        return save(newObj)
     }
 
     public Collection<T> createFromDtoCollection(Collection<T> dtos) {

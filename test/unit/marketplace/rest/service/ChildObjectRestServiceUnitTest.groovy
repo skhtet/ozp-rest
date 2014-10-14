@@ -15,6 +15,8 @@ import marketplace.Type
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
+import marketplace.rest.representation.in.ItemCommentInputRepresentation
+
 @TestMixin(DomainClassUnitTestMixin)
 class ChildObjectRestServiceUnitTest {
     GrailsApplication grailsApplication
@@ -37,11 +39,10 @@ class ChildObjectRestServiceUnitTest {
         }
     }
 
-    private ItemComment makeCommentDto(id=null) {
-        ItemComment comment = new ItemComment(
+    private ItemCommentInputRepresentation makeCommentDto(id=null) {
+        ItemCommentInputRepresentation comment = new ItemCommentInputRepresentation(
             text: 'test comment text'
         )
-        comment.id = id
 
         return comment
     }
@@ -90,103 +91,13 @@ class ChildObjectRestServiceUnitTest {
 
     }
 
-    void testCreateFromParentIdAndDto() {
-        currentUser = adminUser
-
-        def viewAllowed = true
-
-        def serviceItemServiceMock = mockFor(ListingRestService)
-        serviceItemServiceMock.demand.canView(2..2) { it -> viewAllowed }
-        makeService(serviceItemServiceMock)
-
-        ItemComment dto = makeCommentDto()
-
-        def returnedDto = service.createFromParentIdAndDto(1, dto)
-
-        assert returnedDto.listing == Listing.get(1)
-        assert returnedDto.id != null
-        assert returnedDto.text == dto.text
-
-
-        //test unauthorized create
-        viewAllowed = false
-        shouldFail(AccessDeniedException) {
-            service.createFromParentIdAndDto(1, dto)
-        }
-    }
-
-    void testUpdateByParentId() {
-        currentUser = adminUser
-
-        def viewAllowed = true
-
-        def serviceItemServiceMock = mockFor(ListingRestService)
-        serviceItemServiceMock.demand.canView(3..100) { it -> viewAllowed }
-        makeService(serviceItemServiceMock)
-
-        ItemComment dto = makeCommentDto()
-
-        def returnedDto = service.createFromParentIdAndDto(1, dto)
-        def id = returnedDto.id
-
-        dto = makeCommentDto(id)
-        dto.rate = 3
-        returnedDto = service.updateByParentId(1, id, dto)
-
-        assert returnedDto.id == id
-        assert returnedDto.text == makeCommentDto().text
-        assert returnedDto.rate == 3
-        assert returnedDto.listing == Listing.get(1)
-
-        viewAllowed = false
-        shouldFail(AccessDeniedException) {
-            returnedDto = service.updateByParentId(1, id, makeCommentDto(id))
-        }
-    }
-
-    //This test doesn't work because createCriteria is not mocked
-    //void testGetByParentId() {
-        //currentUser = adminUser
-
-        //def serviceItemServiceMock = mockFor(ServiceItemRestService)
-        //serviceItemServiceMock.demand.canView(4..4) { it -> true }
-        //serviceItemServiceMock.demand.getById(6..6) { id -> ServiceItem.get(id) }
-        //makeService(serviceItemServiceMock)
-
-        //service.createFromParentIdAndDto(1, makeCommentDto())
-        //service.createFromParentIdAndDto(1, makeCommentDto())
-        //service.createFromParentIdAndDto(1, makeCommentDto())
-        //service.createFromParentIdAndDto(1, makeCommentDto())
-
-        //assert service.getByParentId(1).size() == 4
-        //assert service.getByParentId(2).size() == 0
-
-        ////test paging
-        //def singleton = service.getByParentId(1, 0, 1)
-        //assert singleton.size() == 1
-        //assert singleton[0].id == 1
-        //assert singleton instanceof ItemComment
-
-        //singleton = service.getByParentId(1, 1, 1)
-        //assert singleton.size() == 1
-        //assert singleton[0].id == 2
-
-        //def two = service.getByParentId(1, 1, 2)
-        //assert two.size() == 2
-        //assert two*.id as Set == [2,3] as Set
-
-        //def many = service.getByParentId(1, 1, 500)
-        //assert many.size() == 3
-        //assert many*.id as Set == [2,3,4] as Set
-    //}
-
     void testCreateFromDto() {
         def serviceItemServiceMock = mockFor(ListingRestService)
         makeService(serviceItemServiceMock)
 
         //createFromDto is forbidden
         shouldFail(UnsupportedOperationException) {
-            service.createFromDto(makeCommentDto())
+            service.createFromRepresentation(makeCommentDto())
         }
     }
 }

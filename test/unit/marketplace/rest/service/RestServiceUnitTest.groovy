@@ -17,6 +17,7 @@ import marketplace.Category
 import marketplace.Relationship
 import marketplace.Profile
 import marketplace.Intent
+import marketplace.Agency
 import marketplace.ApprovalStatus
 import marketplace.validator.DomainValidator
 
@@ -25,6 +26,8 @@ import marketplace.rest.representation.in.AbstractInputRepresentation
 import marketplace.rest.representation.in.ListingIdRef
 import marketplace.rest.representation.in.TypeIdRef
 import marketplace.rest.representation.in.ProfileIdRef
+import marketplace.rest.representation.in.AgencyInputRepresentation
+import marketplace.rest.representation.in.CategoryInputRepresentation
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
@@ -124,6 +127,7 @@ class RestServiceUnitTest {
         mockDomain(Listing.class, [exampleServiceItem])
         mockDomain(Profile.class, [owner, newOwner])
         mockDomain(Type.class, [type])
+        mockDomain(Agency.class, [type])
 
 
         grailsApplication = new DefaultGrailsApplication()
@@ -137,6 +141,7 @@ class RestServiceUnitTest {
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
+        grailsApplication.addArtefact(Agency.class)
         restService = new TestService(grailsApplication)
     }
 
@@ -170,108 +175,6 @@ class RestServiceUnitTest {
         }
     }
 
-    void testUpdateById() {
-        final newTitle = 'Updated Name', newUniversalName = 'test.service.item.2'
-
-        def ownerDto = new Profile()
-        ownerDto.id = 2
-
-        def typeDto = new Type()
-        typeDto.id = 1
-
-        def relationship = new Relationship(
-            relationshipType: RelationshipType.REQUIRE,
-            relatedItems: [ id: 1 ]
-        )
-
-        def id = restService.getAll(0, 1).iterator().next().id
-        Listing updates = new Listing(exampleServiceItemProps + [
-            title: newTitle,
-            owners: [ownerDto],
-            type: typeDto,
-            //use Relationship test updating a modifiableReferenceProperty collection
-            relationships: [relationship]
-        ])
-        updates.id = id
-
-        Listing retval = restService.updateById(id, updates)
-        assert retval instanceof Listing
-        assert retval.title == newTitle
-
-        //ensure that properties we didn't change do not change
-        assert retval.description == exampleServiceItemProps.description
-        assert retval.owners == [Profile.get(2)] as Set
-        assert retval.type == Type.get(1)
-
-        assert retval.id == id
-
-        //ensure that the changes were actually saved
-        Listing fromGet = restService.getById(id)
-        assert fromGet.title == newTitle
-        assert fromGet.owners == [Profile.get(2)] as Set
-    }
-
-
-    void testUpdateByIdInvalidId() {
-        final newTitle = 'Updated Name', newUniversalName = 'test.service.item.2'
-
-        def ownerDto = new Profile()
-        ownerDto.id = 1
-
-        def typeDto = new Type()
-        typeDto.id = 1
-
-        def goodId = restService.getAll(0, 1).iterator().next().id
-        def badId = ~goodId //bitwise NOT
-        Listing updates = new Listing(exampleServiceItemProps + [
-            title: newTitle,
-            owners: [ownerDto],
-            type: typeDto
-        ])
-        updates.id = badId
-
-        shouldFail(DomainObjectNotFoundException) {
-            restService.updateById(badId, updates)
-        }
-    }
-
-    void testUpdateByIdInvalidDto() {
-        def id = restService.getAll(0, 1).iterator().next().id
-        Listing updates = new Listing()
-        updates.id = id
-
-        shouldFail(ValidationException) {
-            def retval = restService.updateById(id, updates)
-
-            //shouldn't get here
-            throw new RuntimeException("Retval: ${retval.dump()}")
-        }
-    }
-
-    void testUpdateByIdInvalidDtoId() {
-        final newTitle = 'Updated Name', newUniversalName = 'test.service.item.2'
-
-        def ownerDto = new Profile()
-        ownerDto.id = 1
-
-        def typeDto = new Type()
-        typeDto.id = 1
-
-        def goodId = restService.getAll(0, 1).iterator().next().id
-        def badId = ~goodId //bitwise NOT
-        Listing updates = new Listing(exampleServiceItemProps + [
-            id: badId,
-            title: newTitle,
-            owners: [ownerDto],
-            type: typeDto
-        ])
-
-        shouldFail(IllegalArgumentException) {
-            //using goodId for the first arg, badId in the second
-            restService.updateById(goodId, updates)
-        }
-    }
-
     void testDeleteById() {
         def id = restService.getAll(0, 1).iterator().next().id
 
@@ -291,93 +194,25 @@ class RestServiceUnitTest {
         }
     }
 
-    void testCreateFromDto() {
-        Relationship newRelationship = new Relationship(exampleServiceItemProps.relationships[0])
-
-        //the  serviceitem dto will have an owner object that only specifies the id of the actual
-        //profile to look up
-        def ownerId = 1
-        Profile ownerDto = new Profile()
-        ownerDto.id = ownerId
-
-        def typeId = 1
-        Type typeDto = new Type()
-        typeDto.id = typeId
-
-        Listing newServiceItem = new Listing(exampleServiceItemProps + [
-            owners: [ownerDto],
-            type: typeDto,
-            relationships: [newRelationship]
-        ] - [id: 1])
-
-        Listing retval = restService.createFromDto(newServiceItem)
-        assert retval instanceof Listing
-        assert retval.title == exampleServiceItemProps.title
-        assert retval.owners == [Profile.get(ownerId)] as Set
-        assert retval.type == Type.get(typeId)
-
-        assertNotNull retval.id
-    }
-
-    void testCreateFromDtoInvalidDto() {
-        Listing invalidDto = new Listing()
-
-        shouldFail(ValidationException) {
-            restService.createFromDto(invalidDto)
-        }
-    }
-
-    /**
-     * Test that only properties that are allowed to be modified are actually modified
-     */
-    void testOnlyBindAllowedProperties() {
-        final newTitle = 'Updated Name', newUniversalName = 'test.service.item.2'
-        final newCreatedDate = new Date(0x7FFFFFFFFFFFFFFFL)
-
-        def ownerDto = new Profile()
-        ownerDto.id = 2
-
-        def typeDto = new Type()
-        typeDto.id = 1
-
-        def id = restService.getAll(0, 1).iterator().next().id
-        Listing updates = new Listing(exampleServiceItemProps + [
-            title: newTitle,
-            owners: [ownerDto],
-            type: typeDto,
-            relationships: [new Relationship(exampleServiceItemProps.relationships[0])],
-            createdDate: newCreatedDate    //trying to change createdDate to the far future
-        ])
-        updates.id = id
-
-        Listing retval = restService.updateById(id, updates)
-
-        assert retval.createdDate != newCreatedDate
-    }
-
     void testAuthorizeUpdate() {
         def authorizedUser = Profile.get(1), unauthorizedUser = Profile.get(2)
 
         def currentUser
 
-        def restService = new RestService<Screenshot>(grailsApplication, Screenshot.class, null,
+        def restService = new RestService<Agency>(grailsApplication, Agency.class, null,
                 null) {
             @Override
-            void authorizeUpdate(Screenshot screenshot) {
+            void authorizeUpdate(Agency agency) {
                 if (currentUser != authorizedUser) {
                     throw new AccessDeniedException('Denied')
                 }
             }
         }
 
-        def makeScreenshot = {
-            def serviceItem = new Listing()
-            serviceItem.id = 1
-
-            new Screenshot(
-                smallImageUrl: 'https://localhost/small',
-                largeImageUrl: 'https://localhost/large',
-                serviceItem: serviceItem
+        def makeRep = {
+            new AgencyInputRepresentation(
+                title: "test agency",
+                icon: new URI("https:///")
             )
         }
 
@@ -385,29 +220,28 @@ class RestServiceUnitTest {
         //default impl of authorizeCreate defers to authorizeUpdate
         shouldFail(AccessDeniedException) {
             currentUser = unauthorizedUser
-            restService.createFromDto(makeScreenshot())
+            restService.createFromRepresentation(makeRep())
         }
         currentUser = authorizedUser
-        def screenshotId = makeScreenshot().save(failOnError: true).id
+        def agencyId = restService.createFromRepresentation(makeRep()).id
 
         //test updateById
-        def screenshot = makeScreenshot()
+        def agency = makeRep()
         shouldFail(AccessDeniedException) {
             currentUser = unauthorizedUser
-            screenshot.id = screenshotId
 
-            restService.updateById(screenshotId, screenshot)
+            restService.updateById(agencyId, agency)
         }
         currentUser = authorizedUser
-        restService.updateById(screenshotId, screenshot)
+        restService.updateById(agencyId, agency)
 
         //test deleteById
         shouldFail(AccessDeniedException) {
             currentUser = unauthorizedUser
-            restService.deleteById(screenshotId)
+            restService.deleteById(agencyId)
         }
         currentUser = authorizedUser
-        restService.deleteById(screenshotId)
+        restService.deleteById(agencyId)
     }
 
     void testAuthorizeCreate() {
@@ -454,7 +288,7 @@ class RestServiceUnitTest {
     void testValidator() {
         //make a category with only one field populated with a value
         def makeCategory = { fieldToPopulate, value ->
-            def category = new Category()
+            def category = new CategoryInputRepresentation()
             category[fieldToPopulate] = value
 
             return category
@@ -484,24 +318,22 @@ class RestServiceUnitTest {
         }
 
         shouldFail(IllegalArgumentException) {
-            restService.createFromDto(makeCategory('description', 'asdf'))
+            restService.createFromRepresentation(makeCategory('description', 'asdf'))
         }
 
         def successfulCategory = makeCategory('title', 'asdf')
-        def categoryId = restService.createFromDto(successfulCategory).id
+        def categoryId = restService.createFromRepresentation(successfulCategory).id
 
         def failureUpdate
         shouldFail(IllegalArgumentException) {
             failureUpdate = makeCategory('description', 'asdf')
             failureUpdate.title = failureUpdate.description
-            failureUpdate.id = categoryId
 
             restService.updateById(categoryId, failureUpdate)
         }
 
         def successfulUpdate = makeCategory('description', 'qwerty')
         successfulUpdate.title = failureUpdate.title
-        successfulUpdate.id = categoryId
         assert restService.updateById(categoryId, successfulUpdate).id == categoryId
     }
 
@@ -538,6 +370,18 @@ class RestServiceUnitTest {
         Listing fromGet = restService.getById(id)
         assert fromGet.title == newTitle
         assert fromGet.owners == [Profile.get(2)] as Set
+    }
+
+    void testUpdateByIdInvalidDto() {
+        def id = restService.getAll(0, 1).iterator().next().id
+        InputRepresentation<Listing> updates = new ServiceItemInputRepresentation()
+
+        shouldFail(ValidationException) {
+            def retval = restService.updateById(id, updates)
+
+            //shouldn't get here
+            throw new RuntimeException("Retval: ${retval.dump()}")
+        }
     }
 
     void testCreateFromRepresentation() {
