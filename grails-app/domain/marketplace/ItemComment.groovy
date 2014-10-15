@@ -11,9 +11,6 @@ class ItemComment implements Comparable, Serializable {
         text excludeFromAll: true
     }
 
-    static bindableProperties = ['text', 'rate', 'listing']
-    static modifiableReferenceProperties = []
-
     String text
     Integer rate
 

@@ -14,26 +14,18 @@ import gorm.AuditStamp
 
 @AuditStamp
 class Listing implements Serializable {
-
-    //these two fields are used by the RestService to determine
-    //how to handle marshalling of this domain
-    //TODO: even though we've switched to input representations, these fields are still used for generating change logs
-    final static bindableProperties = [
+    public static final CHANGE_LOG_PROPERTIES = [
         'type', 'owners',
         'categories', 'intents',
-        'approvalStatus', 'contacts',
+        'contacts',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
         'versionName', 'imageLargeUrl',
         'imageSmallUrl', 'imageMediumUrl',
         'launchUrl', 'docUrls', 'descriptionShort',
         'screenshots', 'imageXlargeUrl',
-        'isEnabled', 'tags', 'satisfiedScorecards',
-        'relationships', 'isFeatured'
-    ]
+        'tags', 'satisfiedScorecards'
 
-    final static modifiableReferenceProperties = [
-        'docUrls', 'screenshots', 'relationships', 'contacts'
     ]
 
     static searchable = {
@@ -271,8 +263,20 @@ class Listing implements Serializable {
     }
 
     def beforeValidate() {
+        List childProperties = [
+            'listingActivities',
+            'lastActivity',
+            'itemComments',
+            'rejectionListings',
+            'listingActivities',
+            'docUrls',
+            'screenshots',
+            'relationships',
+            'contacts'
+        ]
+
         //make audit trail plugin work on child items
-        (modifiableReferenceProperties + ['listingActivities', 'lastActivity']).each { prop ->
+        childProperties.each { prop ->
             Utils.singleOrCollectionDo(this[prop]) {
                 //call beforeValidate if it exists
                 if (it?.metaClass?.respondsTo(it, 'beforeValidate')) {

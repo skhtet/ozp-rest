@@ -36,26 +36,6 @@ abstract class RestService<T> {
 
     protected final Sorter sorter
 
-    /**
-     * This class expects the domain objects that it deals with to include
-     * the following static fields:
-     *
-     * bindableProperties: A whitelist of properties that this service is allowed to
-     * bind on update.  This prevents properties that should be read-only
-     * from being changeable by the caller
-     *
-     * modifiableReferenceProperties: A list of properties that contain references to other
-     * domain objects that can be modified or created by
-     * PUTs or POSTs to this service.  Reference properties not
-     * listed here will be treated as references to separated
-     * objects, where the reference can be changed to a different
-     * object, but the object itself cannot be modified.
-     * Example: for ServiceItem, owfProperties would be in this
-     * list, but Agency would not be
-     *
-     * modifiableReferenceProperties should be a subset of bindableProperties
-     */
-
     protected RestService(GrailsApplication grailsApplication, Class<T> DomainClass,
             DomainValidator<T> validator, Sorter<T> sorter) {
         this.grailsApplication = grailsApplication
@@ -129,47 +109,6 @@ abstract class RestService<T> {
             }
             else {
                 obj[property.name] = new HashSet(oldCollection)
-            }
-        }
-    }
-
-    /**
-     * Overridable method that implements the binding of new
-     * properties from a dto to an existing domain object.
-     * This default implementation binds only properties that
-     * are present in the bindableProperties list.
-     *
-     * @param obj The existing domain object that will be updated
-     * @param dto The dto that contains the new property set
-     * of the object
-     */
-    protected void bind(T obj, T dto) {
-        //originally DataBindingUtils was used for this, but for some reason it would
-        //create empty subobjects for all relationship properties not specificied in the
-        //include list
-
-        //These cast to def get us past a groovy 1.7.8 bug with generic instantiation
-        def persistedObj = obj
-        def incomingDto = dto
-        grailsDomainClass.persistentProperties.each { property ->
-            def key = property.name
-            def value = incomingDto[key]
-            def existingVal = persistedObj[key]
-
-            if (DomainClass.bindableProperties.contains(key)) {
-                if (existingVal instanceof Collection || value instanceof Collection) {
-                    existingVal?.clear()
-
-                    //use the addTo* methods to add collection elements. This
-                    //allows back-references to be set automatically
-                    def addMethodName = "addTo" + key.capitalize()
-                    value.each {
-                        persistedObj."$addMethodName"(it)
-                    }
-                }
-                else {
-                    persistedObj[key] = value
-                }
             }
         }
     }
@@ -248,94 +187,6 @@ abstract class RestService<T> {
         }
         else {
             representation.representedClass().metaClass.invokeConstructor(props)
-        }
-    }
-
-    /**
-     * DTOs for a PUT will often come in with subobjects which may
-     * or may not be missing fields, and which shouldn't be taken
-     * as full new objects so much as references to existing
-     * subobjects.  Therefore what we want to do is take any
-     * subobjects which have their id filled in and replace them
-     * with the actual domain object of that type with that id,
-     * loaded from the database.  This method takes care of that.
-     *
-     * Subobject properties listed in the modifiableReferenceProperties
-     * list will be treated differently.  They will essentially be treated
-     * as part of the main object itself, and will thus be recursed into
-     *
-     * @param grailsDomainClass The GrailsDomainClass for the class of dto
-     *
-     * @param dto The parent object to perform subobject
-     * marshalling on.
-     */
-    protected void marshallSubObjects(GrailsDomainClass grailsDomainClass, dto) {
-        /**
-         * invoke GORM 'get' method to retrieve from db
-         * by id.
-         * @param parent The parent object (the dto or collection)
-         * @param index The property name or collection index of
-         * the subobject being handled
-         * @param type The expected Class of the subobject. Must
-         * be a domain class type
-         */
-        def getSubObjectFromDb = { obj ->
-            if (obj) {
-                def retval = obj.class.get(obj.id)
-                if (retval == null) {
-                    throw new IllegalArgumentException("Attempted to find non-existant object " +
-                        "of type ${obj.class} with id ${obj.id}")
-                }
-
-                return retval
-            }
-        }
-
-        if (dto == null) return
-
-        grailsDomainClass.properties.grep {
-            dto.class.bindableProperties.contains it.name
-        }.each { property ->
-            //recurse into modifiableReferenceProps instead of marshalling
-            //them
-            if (grailsDomainClass.clazz.modifiableReferenceProperties.contains(property.name)) {
-                //property.referencedDomainClass would be better, but it doesn't appear to work
-                //during unit tests
-                GrailsDomainClass referencedClass = grailsApplication.getDomainClass(
-                    property.referencedPropertyType.name)
-
-                singleOrCollectionDo(dto[property.name],
-                    this.&marshallSubObjects.curry(referencedClass))
-            }
-            else {
-                //if direct reference to subobject
-                if (grailsApplication.isDomainClass(property.type)) {
-                    dto[property.name] = getSubObjectFromDb(dto[property.name])
-                }
-
-                //if reference to collection of subobjects
-                else if (grailsApplication.isDomainClass(property.referencedPropertyType)) {
-                    dto[property.name] = dto[property.name].collect(getSubObjectFromDb)
-                }
-            }
-        }
-    }
-
-    /**
-     * Go through the object's modifiableReferenceProperties and remove ids to ensure that
-     * a new object is created
-     */
-    protected void stripModifiableReferenceIds(T dto) {
-        def stripId = { obj ->
-            if (obj != null) {
-                obj.id = null
-                this.stripModifiableReferenceIds(obj)
-            }
-        }
-
-        def incomingDto = dto   //This gets us past an ugly groovy 1.7.8 bug
-        incomingDto.modifiableReferenceProperties.each { property ->
-            singleOrCollectionDo(incomingDto[property], stripId)
         }
     }
 
@@ -441,19 +292,6 @@ abstract class RestService<T> {
         if (!canView(obj)) {
             throw new AccessDeniedException("Unauthorized attempt to view ${obj.class} $obj")
         }
-    }
-
-    /**
-     * Perform tasks that should occur before a domain object is saved.  This is called before
-     * both create and update.  Subclasses should be sure to call the superclass method first
-     * before their own logic runs.  This method can modify the dto But should not independently
-     * create and persist other domain objects and validation of the dto is not performed until
-     * after this method is called.
-     * @param dto The dto being updated or created
-     */
-    protected void preprocess(T dto) {
-        marshallSubObjects(grailsDomainClass, dto)
-        stripModifiableReferenceIds(dto)
     }
 
     /**

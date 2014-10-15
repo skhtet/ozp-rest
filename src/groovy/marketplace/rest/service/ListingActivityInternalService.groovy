@@ -42,7 +42,7 @@ class ListingActivityInternalService {
         def propsChangeLogger = (ListingActivityInternalService.&logIfDifferent).curry(
                 activity, updated, original)
 
-        (Listing.bindableProperties - Listing.auditable.ignore).each(propsChangeLogger)
+        Listing.CHANGE_LOG_PROPERTIES.each(propsChangeLogger)
 
         activity.changeDetails ? addListingActivity(updated, activity) : activity
     }

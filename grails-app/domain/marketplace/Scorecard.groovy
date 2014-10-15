@@ -6,9 +6,6 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 @gorm.AuditStamp
 class Scorecard implements Serializable {
-    final static bindableProperties = ['question', 'description']
-    final static modifiableReferenceProperties = []
-
     String question
     String description
     String image

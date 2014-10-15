@@ -7,10 +7,6 @@ import ozone.marketplace.enums.RelationshipType
 
 class Relationship implements Serializable {
 
-    static bindableProperties = ['relatedItems', 'relationshipType']
-    static modifiableReferenceProperties = []
-
-
     List<Listing> relatedItems
     RelationshipType relationshipType
 

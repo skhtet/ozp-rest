@@ -12,9 +12,6 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
 
     static belongsTo = [owner: Profile, listing: Listing]
 
-    static bindableProperties = ['folder', 'owner', 'listing']
-    static modifiableReferenceProperties = []
-
     static mapping = {
         listing fetch: 'join' //we will pretty much always want the Listing
     }

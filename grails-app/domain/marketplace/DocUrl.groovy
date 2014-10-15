@@ -11,9 +11,6 @@ class DocUrl implements Serializable {
         only = ['name', 'url']
     }
 
-    static bindableProperties = ['name', 'url']
-    static modifiableReferenceProperties = []
-
     String name
     String url
 

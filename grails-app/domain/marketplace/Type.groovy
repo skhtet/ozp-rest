@@ -6,9 +6,6 @@ import org.apache.commons.lang.builder.EqualsBuilder
 
 @gorm.AuditStamp
 class Type implements Serializable {
-    final static bindableProperties = ['title', 'description']
-    final static modifiableReferenceProperties = []
-
     static searchable = {
         root false
         title index: 'not_analyzed'

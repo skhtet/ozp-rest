@@ -26,9 +26,6 @@ class ContactType implements Serializable {
         id natural: [properties: ['title'], mutable: true]
     }
 
-    final static bindableProperties = ['title', 'required']
-    final static modifiableReferenceProperties = []
-
     @Override
     int hashCode() {
         new HashCodeBuilder()

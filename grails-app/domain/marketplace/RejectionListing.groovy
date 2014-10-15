@@ -11,13 +11,6 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 @gorm.AuditStamp
 public class RejectionListing implements Comparable, Serializable {
 
-    static bindableProperties = [
-        'serviceItem',
-        'description'
-    ]
-
-    static modifiableReferenceProperties = []
-
     String description
 
     static belongsTo = [

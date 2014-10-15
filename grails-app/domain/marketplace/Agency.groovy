@@ -4,8 +4,6 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 @gorm.AuditStamp
 class Agency implements Serializable {
-    final static bindableProperties = ['title', 'iconUrl']
-    final static modifiableReferenceProperties = []
 
     static searchable = {
         root false

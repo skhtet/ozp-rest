@@ -31,9 +31,6 @@ class Contact {
 
     static belongsTo = [listing: Listing]
 
-    static bindableProperties = ['type', 'securePhone', 'unsecurePhone', 'email', 'name', 'organization']
-    static modifiableReferenceProperties = []
-
     //If a phone number is blank or null, then the other phone number must not be blank
     static phoneNumberValidator(String otherProp, String val, Contact obj) {
         if(!val || val.trim().size() == 0) {
