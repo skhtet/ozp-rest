@@ -1,10 +1,9 @@
 import marketplace.*
-import ozone.utils.Utils
 
 testDataConfig {
     sampleData {
         Listing {
-            uuid = { Utils.generateUUID() }
+            uuid = { UUID.randomUUID() }
             isHidden = 0
             launchUrl = "http://launch.url.gov"
             imageSmallUrl = "http://launch.url.gov/image.gif"

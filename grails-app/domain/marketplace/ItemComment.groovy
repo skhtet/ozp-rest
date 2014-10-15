@@ -76,7 +76,6 @@ class ItemComment implements Comparable, Serializable {
                 displayName: author.displayName
             )
         )
-        JSONUtil.addCreatedAndEditedInfo(currJSON, this)
         return currJSON
     }
 }

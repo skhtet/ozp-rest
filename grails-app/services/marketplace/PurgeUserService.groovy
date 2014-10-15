@@ -6,7 +6,7 @@ class PurgeUserService {
     boolean transactional = true
 
     def accountService
-    def itemCommentService
+    def itemCommentRestService
     def grailsApplication
 
     void purgeInactiveAccounts() {
@@ -53,7 +53,7 @@ class PurgeUserService {
         itemComments.each {
             def si = it.listing
             si.refresh()
-            itemCommentService.deleteItemComment(it, si)
+            itemCommentRestService.deleteById(it.id)
             si.save(flush: true)
         }
 

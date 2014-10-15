@@ -7,7 +7,7 @@ import org.springframework.security.access.AccessDeniedException
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
-import static ozone.utils.Utils.singleOrCollectionDo
+import static marketplace.util.Utils.singleOrCollectionDo
 
 import marketplace.validator.DomainValidator
 

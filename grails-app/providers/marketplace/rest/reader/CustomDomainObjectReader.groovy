@@ -23,7 +23,6 @@ import static org.grails.jaxrs.support.ConverterUtils.getDefaultJSONEncoding
 import static org.grails.jaxrs.support.ConverterUtils.getDefaultXMLEncoding
 import static org.grails.jaxrs.support.ProviderUtils.isJsonType
 import static org.grails.jaxrs.support.ProviderUtils.isXmlType
-import static ozone.utils.Utils.collectEntries
 
 @Provider
 @Consumes(['text/x-json', 'application/json'])
@@ -166,7 +165,7 @@ class CustomDomainObjectReader extends DomainObjectReaderSupport {
 
         GrailsDomainClass grailsClass = grailsApplication.getDomainClass(type.name)
 
-        collectEntries(map) { key, value ->
+        map.collectEntries { key, value ->
             if (key != 'class') {
                 try {
                     //the given property of the parent domain class
@@ -219,7 +218,7 @@ class CustomDomainObjectReader extends DomainObjectReaderSupport {
 
         //preprocess an json object
         def handleObject = {
-            collectEntries(it) { key, value ->
+            it.collectEntries { key, value ->
                 [key, recurseOrPrimitive(value)]
             }
         }

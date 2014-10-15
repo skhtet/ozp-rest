@@ -1,7 +1,6 @@
 package marketplace.rest.resource
 
 import marketplace.FacetsService
-import marketplace.JSONUtil
 import marketplace.SearchableService
 import marketplace.search.SearchCriteria
 
@@ -37,6 +36,13 @@ class SearchResource extends JsonResource {
     }
 
     private Map doSearch(Map params) {
+        def mapCount = { facet ->
+            facet.properties.collectEntries { k, v ->
+                def key = (k == 'value') ? 'count' : k
+                [key, v]
+            }
+        }
+
         SearchCriteria searchBean = new SearchCriteria(params)
         searchBean.facets = true
 
@@ -48,9 +54,9 @@ class SearchResource extends JsonResource {
             total: result?.total ?: resultsList.size(),
             data: resultsList,
             facets: [
-                type:    JSONUtil.getListFromDomainObject(facets.types),
-                category:  JSONUtil.getListFromDomainObject(facets.categories),
-                agency: JSONUtil.getListFromDomainObject(facets.agencies)
+                type: facets.types.collect(mapCount),
+                category: facets.categories.collect(mapCount),
+                agency: facets.agencies.collect(mapCount)
             ]
         ]
     }

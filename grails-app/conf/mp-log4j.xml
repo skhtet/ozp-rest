@@ -124,11 +124,6 @@
         <appender-ref ref="ozone-async"/>
     </logger>
 
-    <logger name="ozone.utils.Utils" additivity="false">
-        <level value="error"/>
-        <appender-ref ref="ozone-async"/>
-    </logger>
-
     <logger name="grails" additivity="false">
         <level value="error"/>
         <appender-ref ref="ozone-async"/>

@@ -2,7 +2,7 @@ package marketplace
 
 import marketplace.converter.JsonDateConverter
 
-import ozone.utils.Utils
+import marketplace.util.Utils
 
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -111,7 +111,7 @@ class Listing implements Serializable {
     String description
     String launchUrl
     String versionName
-    String uuid = Utils.generateUUID()
+    String uuid = UUID.randomUUID()
     String imageSmallUrl
     String imageMediumUrl
     String imageLargeUrl
