@@ -34,14 +34,6 @@ class Screenshot implements Serializable {
         this.largeImageUrl == null ? this.smallImageUrl : this.largeImageUrl
     }
 
-    JSONObject asJSON() {
-        new JSONObject([
-            id: this.id,
-            smallImageUrl: this.smallImageUrl,
-            largeImageUrl: this.getLargeImageUrl()
-        ])
-    }
-
     @Override
     boolean equals(other) {
         // Since screenshots is a lazy loaded collection, the instances could be

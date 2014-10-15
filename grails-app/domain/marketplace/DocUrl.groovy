@@ -21,13 +21,6 @@ class DocUrl implements Serializable {
         url maxSize: Constants.MAX_URL_SIZE, nullable: false, matches: Constants.URL_REGEX
     }
 
-    def asJSON() {
-        return new JSONObject(
-            name: name,
-            url: url
-        )
-    }
-
     @Override
     int hashCode() {
         new HashCodeBuilder()

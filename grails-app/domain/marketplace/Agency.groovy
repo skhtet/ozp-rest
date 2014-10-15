@@ -29,14 +29,6 @@ class Agency implements Serializable {
     //see line 93 of JSONUtil.groovy
     public String getDescription() { null }
 
-    JSONObject asJSON() {
-        new JSONObject([
-            id: id,
-            title: title,
-            iconUrl: iconUrl
-        ])
-    }
-
     @Override
     String toString() { title }
 

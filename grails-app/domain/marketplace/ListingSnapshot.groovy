@@ -15,13 +15,6 @@ class ListingSnapshot implements Serializable {
         listing nullable: true
     }
 
-    JSONObject asJSON() {
-        return new JSONObject(
-            title: title,
-            id: listing?.id
-        )
-    }
-
     boolean equals(other) {
         other instanceof ListingSnapshot && this.title == other.title &&
             this.listing == other.listing

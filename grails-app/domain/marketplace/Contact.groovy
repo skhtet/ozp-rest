@@ -89,18 +89,6 @@ class Contact {
         return false
     }
 
-    JSONObject asJSON() {
-        new JSONObject([
-                id: id,
-                type: type.asJSON(),
-                securePhone: securePhone,
-                unsecurePhone: unsecurePhone,
-                email: email,
-                name: name,
-                organization: organization
-        ])
-    }
-
     @Override
     String toString() {
         String val = "$name, $email"

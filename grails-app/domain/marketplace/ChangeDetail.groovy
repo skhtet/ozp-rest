@@ -25,16 +25,6 @@ class ChangeDetail implements Serializable {
 
     String toString() { "id:${id} field ${fieldName} was ${oldValue} now is ${newValue}" }
 
-    def asJSON() {
-        new JSONObject(
-            id: id,
-            displayName: Constants.getSiListingName(fieldName),
-            fieldName: fieldName,
-            oldValue: oldValue,
-            newValue: newValue
-        )
-    }
-
     public void setOldValue(String oldValue) {
         this.oldValue = truncateValue(oldValue)
     }

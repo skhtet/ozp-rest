@@ -17,13 +17,6 @@ class Relationship implements Serializable {
         owningEntity(nullable: false)
     }
 
-    JSONObject asJSON() {
-        new JSONObject(
-            relatedItems: (this.getRelatedItems().collect { it?.asJSONMinimum() }.findAll { it != null }) as JSONArray,
-            relationshipType: relationshipType.name()
-        )
-    }
-
     /**
      * Find all Relationships whose relatedItems include the specificed ServiceItem
      */

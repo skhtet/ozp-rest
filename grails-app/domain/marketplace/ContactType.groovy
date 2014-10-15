@@ -43,14 +43,6 @@ class ContactType implements Serializable {
         return false
     }
 
-    JSONObject asJSON() {
-        new JSONObject([
-            id: id,
-            title: title,
-            required: required
-        ])
-    }
-
     @Override
     String toString() { title }
 

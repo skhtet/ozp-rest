@@ -64,15 +64,6 @@ public class RejectionListing implements Comparable, Serializable {
         }
     }
 
-    def asJSON() {
-        new JSONObject(
-            id: id,
-                description: description,
-                author: author?.asJSONRef(),
-                createdDate: createdDate
-        )
-    }
-
     //ensure that carriage returns are always removed
     def beforeValidate() {
         this.scrubCR()

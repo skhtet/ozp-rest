@@ -75,23 +75,7 @@ class BootStrap {
 			new Profile(username:username).save()
 		}
 
-        [
-            ListingActivity,
-            ModifyRelationshipActivity,
-            RejectionActivity,
-            ItemCommentServiceItemDto,
-            Scorecard,
-            ContactType,
-            ItemComment,
-            Agency,
-            Type,
-            Intent,
-            Profile,
-            Category,
-            RejectionListing,
-            ApplicationLibraryEntry,
-            ApplicationDto,
-        ].each { Class ->
+        [ApplicationLibraryEntry].each { Class ->
             JSON.registerObjectMarshaller(Class, { it.asJSON() })
         }
 

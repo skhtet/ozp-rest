@@ -75,26 +75,6 @@ class Profile implements Serializable {
     @Override
     String toString() { username }
 
-    def asJSON() {
-        new JSONObject(
-            id: id,
-            username: username,
-            displayName: displayName,
-            email: email,
-            bio: bio,
-            organizations: organizations.collect { it.asJSON() }
-        )
-    }
-
-    def asJSONRef() {
-        def currJSON = new JSONObject(
-            id: id,
-            username: username,
-            name: displayName
-        )
-        return currJSON
-    }
-
     @Override
     public int hashCode() {
         new HashCodeBuilder()

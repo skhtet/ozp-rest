@@ -29,14 +29,4 @@ class ListingActivity implements Serializable {
     String toString(){
         return AdminObjectFormatter.fullDateDisplay(activityDate)
     }
-
-    JSONObject asJSON() {
-        new JSONObject(
-            author: author.asJSONRef(),
-            action: action.asJSON(),
-            activityDate: activityDate,
-            listing: listing.asJSONMinimum(),
-            changeDetails: changeDetails.collect { it.asJSON() }
-        )
-    }
 }

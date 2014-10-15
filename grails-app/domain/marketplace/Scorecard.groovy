@@ -24,16 +24,6 @@ class Scorecard implements Serializable {
         cache true
     }
 
-    JSONObject asJSON() {
-      new JSONObject([
-              id: id,
-              question: question,
-              description: description,
-              image: image,
-              showOnListing: showOnListing
-      ])
-    }
-
     @Override
     int hashCode() {
         new HashCodeBuilder()

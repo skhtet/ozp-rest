@@ -107,7 +107,7 @@ class ProfileResourceUnitTest {
         def idToPass = 1 as String
 
         def dtos = resource.getItemCommentsByAuthorId(idToPass)
-        def json = dtos.collect { it.asJSON() } as JSONArray
+        def json = dtos.collect { it.asJSON() }
 
         assert idPassedIn == idToPass as Integer
 
@@ -136,7 +136,7 @@ class ProfileResourceUnitTest {
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
         def dtos = resource.getItemCommentsByAuthorId('self')
-        def json = dtos.collect { it.asJSON() } as JSONArray
+        def json = dtos.collect { it.asJSON() }
 
         assert idPassedIn == currentUser.id
 
@@ -249,17 +249,16 @@ class ProfileResourceUnitTest {
         def maxToPass = 5
 
         def dtos = resource.getListingActivitiesByProfileId(idToPass, offsetToPass, maxToPass)
-        def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == idToPass as Integer
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
-        assert json.size() == 1
-        assert json[0].action == Constants.Action.CREATED.asJSON()
-        assert json[0].author.id == 1
-        assert json[0].listing.title == 'listing 1'
-        assert json[0].listing.id == 2
+        assert dtos.size() == 1
+        assert dtos[0].action == Constants.Action.CREATED
+        assert dtos[0].author.id == 1
+        assert dtos[0].listing.title == 'listing 1'
+        assert dtos[0].listing.id == 2
     }
 
     void testGetOwnListingActivities() {
@@ -289,17 +288,16 @@ class ProfileResourceUnitTest {
         def maxToPass = 5
 
         def dtos = resource.getListingActivitiesByProfileId('self', offsetToPass, maxToPass)
-        def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
-        assert json.size() == 1
-        assert json[0].action == Constants.Action.CREATED.asJSON()
-        assert json[0].author.id == 1
-        assert json[0].listing.title == 'listing 1'
-        assert json[0].listing.id == 2
+        assert dtos.size() == 1
+        assert dtos[0].action == Constants.Action.CREATED
+        assert dtos[0].author.id == 1
+        assert dtos[0].listing.title == 'listing 1'
+        assert dtos[0].listing.id == 2
     }
 
     void testGetListingActivitiesByListingOwnerId() {
@@ -331,17 +329,16 @@ class ProfileResourceUnitTest {
 
         def dtos = resource.getListingActivitiesByListingOwnerId(idToPass, offsetToPass,
                 maxToPass)
-        def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == idToPass as Integer
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
-        assert json.size() == 1
-        assert json[0].action == Constants.Action.CREATED.asJSON()
-        assert json[0].author.id == 1
-        assert json[0].listing.title == 'listing 1'
-        assert json[0].listing.id == 2
+        assert dtos.size() == 1
+        assert dtos[0].action == Constants.Action.CREATED
+        assert dtos[0].author.id == 1
+        assert dtos[0].listing.title == 'listing 1'
+        assert dtos[0].listing.id == 2
     }
 
     void testGetListingActivitiesOnOwnListings() {
@@ -374,16 +371,15 @@ class ProfileResourceUnitTest {
 
         def dtos = resource.getListingActivitiesByListingOwnerId('self', offsetToPass,
                 maxToPass)
-        def json = dtos.collect { it.asJSON() } as JSONArray
 
         assert idPassedIn == currentUser.id
         assert offsetPassedIn == offsetToPass
         assert maxPassedIn == maxToPass
 
-        assert json.size() == 1
-        assert json[0].action == Constants.Action.CREATED.asJSON()
-        assert json[0].author.id == 1
-        assert json[0].listing.title == 'listing 1'
-        assert json[0].listing.id == 2
+        assert dtos.size() == 1
+        assert dtos[0].action == Constants.Action.CREATED
+        assert dtos[0].author.id == 1
+        assert dtos[0].listing.title == 'listing 1'
+        assert dtos[0].listing.id == 2
     }
 }

@@ -13,12 +13,4 @@ class ModifyRelationshipActivity extends ListingActivity {
         items joinTable: [name: "relationship_activity_log", key: 'mod_rel_activity_id']
         items batchSize: 50
     }
-
-    JSONObject asJSON() {
-        def retval = super.asJSON()
-
-        retval.put('relatedItems', new JSONArray(items.collect { ListingSnapshot snapshot ->
-            snapshot.asJSON()
-        }))
-    }
 }

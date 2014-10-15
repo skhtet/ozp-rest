@@ -53,16 +53,6 @@ class Intent implements Serializable {
 
     String toString() { "$type/$action" }
 
-    JSONObject asJSON() {
-        return new JSONObject(
-            action: action,
-            type: type,
-            icon: icon,
-            label: label,
-            id: id
-        )
-    }
-
     @Override
     int hashCode() {
         new HashCodeBuilder()

@@ -28,14 +28,6 @@ class Type implements Serializable {
     @Override
     String toString() { title }
 
-    def asJSON() {
-        return new JSONObject(
-            id: id,
-            title: title,
-            description: description
-        )
-    }
-
     @Override
     int hashCode() {
         new HashCodeBuilder()
