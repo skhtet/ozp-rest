@@ -210,6 +210,11 @@ class Listing implements Serializable {
                 return 'empty'
             }
         })
+        tags(validator: { ts ->
+            if (ts.any { it.length() > 16 }) {
+                return 'maxSize.exceeded'
+            }
+        })
     }
 
     String toString() {
