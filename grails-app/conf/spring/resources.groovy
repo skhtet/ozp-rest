@@ -11,6 +11,8 @@ import marketplace.authentication.MockAccountService
 import marketplace.authentication.SpringSecurityAccountService
 import ozone.utils.ApplicationContextHolder
 
+import marketplace.search.MarketplaceSearchAuditEventListener
+
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
@@ -34,6 +36,11 @@ beans = {
         elasticSearchContextHolder = ref('elasticSearchContextHolder')
         indexRequestQueue = ref('indexRequestQueue')
         grailsApplication = ref('grailsApplication')
+    }
+
+    auditListener(MarketplaceSearchAuditEventListener, ref('hibernateDatastore')) {
+        elasticSearchContextHolder = ref('elasticSearchContextHolder')
+        indexRequestQueue = ref('indexRequestQueue')
     }
 
     applicationContextHolder(ApplicationContextHolder) { bean ->
