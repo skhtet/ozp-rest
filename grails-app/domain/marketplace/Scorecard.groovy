@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+
 @gorm.AuditStamp
 class Scorecard implements Serializable {
     String question
@@ -16,8 +17,8 @@ class Scorecard implements Serializable {
     static constraints = {
         question(blank: false, nullable: false, maxSize: SMALL_FIELD_SIZE, unique: false)
         description(blank: false, nullable: false, maxSize: 500, unique: false)
-        image(nullable: true, maxSize: SMALL_FIELD_SIZE, unique: false)
         showOnListing(blank: true, nullable: true)
+        image(nullable:true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX)
     }
 
     static mapping = {
