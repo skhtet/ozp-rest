@@ -6,6 +6,9 @@ import org.apache.commons.lang.StringUtils
 
 class Constants {
 
+    public static final SYSTEM_USER_USERNAME='System'
+    public static final SYSTEM_USER_DISPLAYNAME = 'System'
+
     //Source: http://tools.ietf.org/html/rfc6838#section-4.2
     public static final String MEDIA_TYPE_REGEX = /^[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?\/[-\w]([-\w\+\$\!\#\&\-\_\^\.]{1,63})?$/
 

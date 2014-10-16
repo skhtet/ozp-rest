@@ -1,8 +1,3 @@
-import grails.util.*
-
-import org.springframework.web.context.request.RequestContextHolder as RCH
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
-
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 def userConfig = System.properties.userConfig ?: "${userHome}/.ozone/MarketplaceConfig.groovy"
@@ -77,16 +72,10 @@ grails {
             editedBy.constraints = 'nullable: true'
             editedDate.field = "editedDate"//use this field instead of the grails default lastUpdated
             currentUserClosure = { ctx ->
-                Long returnValue
-                if(RCH?.getRequestAttributes()?.getSession()?.profileID != null)
-                {
-                    returnValue = RCH?.getRequestAttributes()?.getSession()?.profileID
+                String username = ctx.accountService.loggedInUsername ?: marketplace.Constants.SYSTEM_USER_USERNAME
+                marketplace.Profile.withNewSession {
+                    marketplace.Profile.findByUsername(username)
                 }
-                if (returnValue)
-                    return marketplace.Profile.get(returnValue)
-                else
-                    return marketplace.Profile.get(
-                        ConfigurationHolder.config.system_user_id)
             }
         }
     }
