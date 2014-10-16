@@ -60,10 +60,10 @@ abstract class ChildObjectRestService<P, T> extends RestService<T> {
 
         merge(object, rep)
 
-        authorizeCreate(object)
-
         String addMethodName = "addTo${parentBackrefPropertyName.capitalize()}"
         parent."$addMethodName"(object)
+
+        authorizeCreate(object)
 
         postprocess(object)
         save(object)
