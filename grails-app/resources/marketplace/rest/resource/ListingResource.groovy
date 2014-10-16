@@ -10,6 +10,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -33,6 +34,8 @@ import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingActivityRestService
+
+import static org.grails.jaxrs.response.Responses.*
 
 @Path('/api/listing')
 @Produces([
@@ -126,9 +129,9 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     @POST
     @Consumes([ItemCommentInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
     @Produces([ItemCommentRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    public ItemComment createItemComment(@PathParam('listingId') long listingId,
+    public Response createItemComment(@PathParam('listingId') long listingId,
             InputRepresentation<ItemComment> rep) {
-        itemCommentRestService.createFromParentIdAndRepresentation(listingId, rep)
+        created itemCommentRestService.createFromParentIdAndRepresentation(listingId, rep)
     }
 
     @Path('/{listingId}/itemComment/{itemCommentId}')
