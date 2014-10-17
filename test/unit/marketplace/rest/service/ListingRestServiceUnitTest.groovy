@@ -1,8 +1,10 @@
 package marketplace.rest.service
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import marketplace.Contact
+import marketplace.ContactType
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
@@ -30,6 +32,7 @@ import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
+@Mock([ContactType])
 class ListingRestServiceUnitTest {
 
     GrailsApplication grailsApplication

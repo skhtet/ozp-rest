@@ -183,13 +183,12 @@ class Listing implements Serializable {
     static constraints = {
         whatIsNew nullable: true, maxSize: 250
         descriptionShort nullable: true, maxSize: 150
-        isFeatured(nullable: true)
-        title(blank: false, maxSize: 256)
-        description(maxSize: 4000, nullable: true)
-        versionName(maxSize: 256, nullable: true)
-        type(blank: false)
-        requirements(nullable: true, maxSize: 1000)
-        agency(nullable: true)
+        isFeatured nullable: true
+        title blank: false, maxSize: 255
+        description maxSize: 4000, nullable: true
+        versionName maxSize: 255, nullable: true
+        requirements nullable: true, maxSize: 1000
+        agency nullable: true
         totalRate5(nullable: true)
         totalRate4(nullable: true)
         totalRate3(nullable: true)
@@ -197,7 +196,7 @@ class Listing implements Serializable {
         totalRate1(nullable: true)
         launchUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         categories(nullable: true)
-        uuid(nullable:false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/)
+        uuid blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
         imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
@@ -215,6 +214,15 @@ class Listing implements Serializable {
                 return 'maxSize.exceeded'
             }
         })
+        contacts validator: { val ->
+            withNewSession {
+                def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
+                    !val.find { contact -> contact.type == type }
+                }
+
+                if(missingRequiredTypes) ['requiredContactType', missingRequiredTypes*.title]
+            }
+        }
     }
 
     String toString() {

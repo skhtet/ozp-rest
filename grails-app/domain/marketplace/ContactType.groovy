@@ -47,8 +47,8 @@ class ContactType implements Serializable {
     String toString() { title }
 
     def beforeDelete() {
-        ContactType.withNewSession {
-            Contact.findAllByType(this)*.delete()
+        withNewSession {
+            Contact.findAllByType(this)*.delete(flush: true)
         }
     }
 }

@@ -1,5 +1,7 @@
 package marketplace.rest.service
 
+import grails.test.mixin.Mock
+import marketplace.ContactType
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import grails.test.mixin.TestMixin
@@ -18,6 +20,7 @@ import marketplace.testutil.ProfileMappedByFix
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 
 @TestMixin(DomainClassUnitTestMixin)
+@Mock([ContactType])
 class ChildObjectRestServiceUnitTest {
     GrailsApplication grailsApplication
 

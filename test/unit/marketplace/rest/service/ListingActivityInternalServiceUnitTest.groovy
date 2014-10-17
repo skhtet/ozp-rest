@@ -1,8 +1,10 @@
 package marketplace.rest.service
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import marketplace.Contact
+import marketplace.ContactType
 import marketplace.Screenshot
 import marketplace.ItemComment
 import marketplace.Listing
@@ -21,6 +23,7 @@ import marketplace.Type
 import marketplace.testutil.FakeAuditTrailHelper
 
 @TestMixin(DomainClassUnitTestMixin)
+@Mock([ContactType])
 class ListingActivityInternalServiceUnitTest {
     ListingActivityInternalService service
 
