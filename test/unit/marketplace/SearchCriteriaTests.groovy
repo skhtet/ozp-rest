@@ -26,22 +26,6 @@ class SearchCriteriaTests {
         ApplicationContextHolder.metaClass.static.getConfig = { config }
     }
 
-    public void testFacetsAreAdded() {
-        Integer facetCount = 0
-
-        SearchSourceBuilder.metaClass.facet = { ToXContent facetBuilder ->
-            facetCount += 1
-        }
-
-        def criteria = new SearchCriteria(defaultSearchParams)
-        criteria.facets = true
-
-        SearchSourceBuilder source = criteria.extraSearchSource
-
-        assert source != null
-        assert facetCount == SearchCriteria.TERM_FACETS.size()
-    }
-
     public void testSortByScore() {
         Boolean scoreSort = false
         Integer secondarySortCount = 0

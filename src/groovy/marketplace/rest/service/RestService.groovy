@@ -1,22 +1,18 @@
 package marketplace.rest.service
 
-import marketplace.rest.representation.in.AbstractInputRepresentation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.access.AccessDeniedException
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
-import static marketplace.util.Utils.singleOrCollectionDo
-
+import marketplace.Sorter
 import marketplace.validator.DomainValidator
-
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.IdRefInputRepresentation
 import marketplace.rest.DomainObjectNotFoundException
 import marketplace.rest.representation.in.PropertyRefInputRepresentation
-
-import marketplace.Sorter
+import marketplace.rest.representation.in.AbstractInputRepresentation
 
 /**
  * Parent class of services designed to support the
@@ -149,15 +145,8 @@ abstract class RestService<T> {
                 merge(existingValue, repValue)
             }
             else if (repValue instanceof Collection) {
-                Iterator existingIter = existingValue?.iterator()
-                def existing
-
                 repValue.collect {
-                    if (existingIter?.hasNext()) {
-                        existing = existingIter.next()
-                    }
-
-                    getNestedValue(it, existing)
+                    getNestedValue it, null
                 }
             }
             else {

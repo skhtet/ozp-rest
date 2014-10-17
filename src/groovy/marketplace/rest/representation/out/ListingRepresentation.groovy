@@ -57,7 +57,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
         "${it.type}/${it.action}".toString()
     }}
 
-    Collection<ScreenshotRepresentation> getScreenShots() { listing.screenshots.collect {
+    Collection<ScreenshotRepresentation> getScreenshots() { listing.screenshots.collect {
         new ScreenshotRepresentation(it)
     }}
 

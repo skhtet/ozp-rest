@@ -126,7 +126,7 @@ class ListingRepresentationUnitTest {
         testCollectionSizeAndElementType(rep.owners, owners, OwnerRepresentation.class)
         testCollectionSizeAndElementType(rep.docUrls, docUrls, DocUrlRepresentation.class)
         testCollectionSizeAndElementType(rep.contacts, contacts, ContactRepresentation.class)
-        testCollectionSizeAndElementType(rep.screenShots, screenshots, ScreenshotRepresentation.class)
+        testCollectionSizeAndElementType(rep.screenshots, screenshots, ScreenshotRepresentation.class)
 
         assert rep.type == type.title
         assert rep.agency == organization.title
