@@ -1,40 +1,19 @@
-import grails.util.GrailsUtil
-
-import org.springframework.security.web.FilterChainProxy
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import marketplace.*
-import marketplace.search.MarketplaceElasticSearchService
-import marketplace.authentication.MockAccountService
 import marketplace.authentication.SpringSecurityAccountService
 import ozone.utils.ApplicationContextHolder
-
 import marketplace.search.MarketplaceSearchAuditEventListener
-
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.ozoneplatform.auditing.AuditLogListener
+import util.CustomPropertyEditorRegistrar
 
 // Place your Spring DSL code here
 beans = {
+    xmlns context: 'http://www.springframework.org/schema/context'
+    context.'component-scan'('base-package': 'marketplace.validator,marketplace.rest')
 
-    def DEFAULT_AGENCY = 'DEFAULT_STORE_NAME'
-
-	xmlns context: 'http://www.springframework.org/schema/context'
-	context.'component-scan'('base-package': 'marketplace.validator,marketplace.rest')
-
-    auditLogListener(org.ozoneplatform.auditing.AuditLogListener) {
+    auditLogListener(AuditLogListener) {
         sessionFactory = ref('sessionFactory')
         accountService = ref('accountService')
-        grailsApplication = ref('grailsApplication')
-    }
-
-    elasticSearchService(MarketplaceElasticSearchService) {
-        elasticSearchHelper = ref('elasticSearchHelper')
-        domainInstancesRebuilder = ref('domainInstancesRebuilder')
-        elasticSearchContextHolder = ref('elasticSearchContextHolder')
-        indexRequestQueue = ref('indexRequestQueue')
         grailsApplication = ref('grailsApplication')
     }
 
@@ -49,7 +28,7 @@ beans = {
 
     accountService(SpringSecurityAccountService)
 
-    customPropertyEditorRegistrar(util.CustomPropertyEditorRegistrar)
+    customPropertyEditorRegistrar(CustomPropertyEditorRegistrar)
 
     objectMapper(ObjectMapper)
 

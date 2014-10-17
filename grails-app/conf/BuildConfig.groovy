@@ -115,7 +115,7 @@ grails.project.dependency.resolution = {
         compile ':pretty-time:2.1.3.Final-1.0.1'
         compile ':cache:1.1.5'
         compile 'org.ozoneplatform:ozone-auditing:1.2.1'
-        compile ':elasticsearch:0.0.2.6'
+        compile ':elasticsearch:0.0.3.4'
         compile ':audit-trail:2.0.2'
         compile ':hibernate:3.6.10.12'
 

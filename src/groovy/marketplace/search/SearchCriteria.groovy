@@ -215,7 +215,7 @@ class SearchCriteria implements Cloneable, Serializable {
         SearchSourceBuilder source = new SearchSourceBuilder()
 
         addSort(source)
-        addFacets(source)
+        //addFacets(source)
 
         return source
     }
@@ -242,11 +242,11 @@ class SearchCriteria implements Cloneable, Serializable {
         }
     }
 
-    def addFacets(SearchSourceBuilder source) {
-        if(facets) {
-            TERM_FACETS.each { String term ->
-                source.facet(new TermsFacetBuilder(term).field("${term}.id").size(DEFAULT_FACET_SIZE))
-            }
-        }
-    }
+//    def addFacets(SearchSourceBuilder source) {
+//        if(facets) {
+//            TERM_FACETS.each { String term ->
+//                source.facet(new TermsFacetBuilder(term).field("${term}.id").size(DEFAULT_FACET_SIZE))
+//            }
+//        }
+//    }
 }

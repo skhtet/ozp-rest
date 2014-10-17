@@ -14,8 +14,6 @@ import javax.ws.rs.core.Response
 
 import org.springframework.beans.factory.annotation.Autowired
 
-import org.grails.plugins.elasticsearch.ElasticSearchAdminService
-
 import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.ItemComment
@@ -49,7 +47,6 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     @Autowired ListingActivityRestService listingActivityRestService
     @Autowired RejectionListingRestService rejectionListingRestService
     @Autowired ItemCommentRestService itemCommentRestService
-    @Autowired ElasticSearchAdminService elasticSearchAdminService
 
     @Autowired
     ListingResource(ListingRestService service) {
