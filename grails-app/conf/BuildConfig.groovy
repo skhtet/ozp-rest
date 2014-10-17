@@ -120,8 +120,9 @@ grails.project.dependency.resolution = {
         build ':release:3.0.1'
 
         test ':codenarc:0.22'
+        test ':code-coverage:2.0.3-2'
 
-        runtime ':cors:1.1.4' // OP-3932
+        runtime ':cors:1.1.6' // OP-3932
         runtime ':jaxrs:0.10'
     }
 }
