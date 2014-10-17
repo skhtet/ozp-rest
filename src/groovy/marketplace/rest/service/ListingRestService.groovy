@@ -1,6 +1,5 @@
 package marketplace.rest.service
 
-import grails.plugin.executor.PersistenceContextExecutorWrapper
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
     @Autowired ListingActivityInternalService listingActivityInternalService
-    @Autowired PersistenceContextExecutorWrapper executorService
     @Autowired SessionFactory sessionFactory
 
     @Autowired

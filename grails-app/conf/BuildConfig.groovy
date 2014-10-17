@@ -109,23 +109,17 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile ':database-migration:1.4.0'
-        compile ':executor:0.3'
-        compile ':feeds:1.6'
         compile ':quartz:1.0.1'
-        compile ':pretty-time:2.1.3.Final-1.0.1'
         compile ':cache:1.1.5'
         compile 'org.ozoneplatform:ozone-auditing:1.2.1'
         compile ':elasticsearch:0.0.3.4'
         compile ':audit-trail:2.0.2'
         compile ':hibernate:3.6.10.12'
 
-        test ':code-coverage:1.2.5'
-        test ':build-test-data:1.1.0'
-        test ':codenarc:0.20'
-        test ':gmetrics:0.3.1'
-
         build ':tomcat:7.0.54'
         build ':release:3.0.1'
+
+        test ':codenarc:0.22'
 
         runtime ':cors:1.1.4' // OP-3932
         runtime ':jaxrs:0.10'
