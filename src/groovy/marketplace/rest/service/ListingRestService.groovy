@@ -150,10 +150,11 @@ class ListingRestService extends RestService<Listing> {
         if (original) {
             updateEnabledListingActivity(updated, original)
             updateApprovalStatus(updated, original)
+            updated.save(failOnError: true)
             listingActivityInternalService.createChangeLog(updated, original)
         }
         else {
-            //create
+            updated.save(failOnError: true)
             listingActivityInternalService.addListingActivity(updated,
                 Constants.Action.CREATED)
         }
