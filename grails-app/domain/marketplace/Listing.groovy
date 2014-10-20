@@ -46,8 +46,8 @@ class Listing implements Serializable {
         agency component: true
         title boost: 2.0
         sortTitle index: 'not_analyzed'
-        description boost: 1.9
-        requirements boost: 1.8
+        description boost: 1.6
+        descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
         imageSmallUrl index: 'not_analyzed', excludeFromAll: true

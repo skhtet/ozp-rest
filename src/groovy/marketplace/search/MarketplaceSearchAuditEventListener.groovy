@@ -18,7 +18,7 @@ class MarketplaceSearchAuditEventListener extends AuditEventListener {
     void onPostInsert(PostInsertEvent event) {
         def entity = getEventEntity(event)
         if(entity && entity instanceof Listing){
-            if(entity.approvalStatus != ApprovalStatus.APPROVED){
+            if(!shouldIndexListing(entity)) {
                 return
             }
         }
@@ -29,11 +29,15 @@ class MarketplaceSearchAuditEventListener extends AuditEventListener {
     void onPostUpdate(PostUpdateEvent event) {
         def entity = getEventEntity(event)
         if(entity && entity instanceof Listing){
-            if(entity.approvalStatus != ApprovalStatus.APPROVED){
+            if(!shouldIndexListing(entity)) {
                 pushToDelete(entity)
                 return
             }
         }
         super.onPostUpdate(event)
+    }
+
+    private static boolean shouldIndexListing(listing) {
+        listing.isEnabled && listing.approvalStatus == ApprovalStatus.APPROVED
     }
 }

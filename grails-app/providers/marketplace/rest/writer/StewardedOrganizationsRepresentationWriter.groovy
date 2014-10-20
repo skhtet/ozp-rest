@@ -10,8 +10,6 @@ import marketplace.Agency
 import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
-import marketplace.hal.EmbeddedCollectionRepresentation
-
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.representation.out.StewardedOrganizationsRepresentation
 import marketplace.rest.representation.out.AgencyRepresentation

@@ -9,10 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
-import marketplace.hal.EmbeddedCollectionRepresentation
+import marketplace.rest.representation.out.EmbeddedCollectionRepresentation
 
 import marketplace.rest.representation.out.ProfileRepresentation
-import marketplace.rest.resource.ProfileResource
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 @Provider

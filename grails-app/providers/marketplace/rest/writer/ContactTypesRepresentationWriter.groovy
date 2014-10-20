@@ -9,10 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import marketplace.ContactType
 
 import marketplace.hal.AbstractRepresentationWriter
-import marketplace.hal.EmbeddedCollectionRepresentation
+import marketplace.rest.representation.out.EmbeddedCollectionRepresentation
 
 import marketplace.rest.representation.out.ContactTypeRepresentation
-import marketplace.rest.resource.ContactTypeResource
 import marketplace.rest.resource.uribuilder.ContactTypeUriBuilder
 
 @Provider

@@ -1,5 +1,7 @@
 package marketplace.hal
 
+import marketplace.rest.representation.out.EmbeddedCollectionRepresentation
+
 import javax.ws.rs.core.UriBuilder
 import javax.ws.rs.core.UriInfo
 

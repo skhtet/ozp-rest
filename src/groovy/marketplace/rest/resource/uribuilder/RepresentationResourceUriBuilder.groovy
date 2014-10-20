@@ -1,7 +1,7 @@
 package marketplace.rest.resource.uribuilder
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
-
+import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.resource.RepresentationResource
 
 /**
@@ -9,11 +9,11 @@ import marketplace.rest.resource.RepresentationResource
  * T must have an id field
  */
 abstract class RepresentationResourceUriBuilder<T> implements ResourceUriBuilder<T> {
-    private Class<? extends RepresentationResource<T, ?>> resourceCls
+    private Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>> resourceCls
     protected ApplicationRootUriBuilderHolder uriBuilderHolder
 
     protected RepresentationResourceUriBuilder(
-            Class<? extends RepresentationResource<T, ?>> resourceCls,
+            Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>> resourceCls,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         this.resourceCls = resourceCls
         this.uriBuilderHolder = uriBuilderHolder

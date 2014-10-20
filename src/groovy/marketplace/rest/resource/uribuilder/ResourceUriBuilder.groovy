@@ -3,6 +3,7 @@ package marketplace.rest.resource.uribuilder
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import marketplace.rest.ChildObjectCollection
+import marketplace.search.SearchResult
 
 /**
  * Interface for objects which define the
@@ -51,6 +52,20 @@ interface SubCollectionUriBuilder<P,T> {
     interface Factory<P,T> {
         SubCollectionUriBuilder<P,T> getBuilder(
             ApplicationRootUriBuilderHolder uriBuilderHolder)
+    }
+}
+
+/**
+ * Interface for builders of URIs of resources that are searchable
+ *
+ * @param < T >
+ */
+interface SearchableResourceUriBuilder<T> extends ResourceUriBuilder<T> {
+    URI getSearchUri(SearchResult<T> entities)
+
+    interface Factory<T> extends ResourceUriBuilder.Factory<T> {
+        SearchableResourceUriBuilder<T> getBuilder(
+                ApplicationRootUriBuilderHolder uriBuilderHolder)
     }
 }
 

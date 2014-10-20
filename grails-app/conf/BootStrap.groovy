@@ -2,8 +2,6 @@ import grails.converters.JSON
 import grails.util.*
 
 import marketplace.*
-import marketplace.rest.ItemCommentServiceItemDto
-import marketplace.rest.ApplicationDto
 import org.apache.log4j.helpers.*
 import org.apache.log4j.xml.*
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -15,8 +13,18 @@ class BootStrap {
     def grailsApplication
     def sessionFactory
     def objectMapper
+    def elasticSearchService
 
     def init = { servletContext ->
+
+        /**
+         * Sync the search index with the database. All listings that are both Approved and Enabled
+         * will be indexed. All others will not.
+         */
+        def listingsToIndex = Listing.findAllByIsEnabledAndApprovalStatus(true, ApprovalStatus.APPROVED)
+        def listingsToUnidex = Listing.findAll() - listingsToIndex
+        elasticSearchService.index(listingsToIndex)
+        elasticSearchService.unindex(listingsToUnidex)
 
         // setting it to a million clauses by default
         // http://stackoverflow.com/questions/1534789/help-needed-figuring-out-reason-for-maxclausecount-is-set-to-1024-error

@@ -2,10 +2,10 @@
 // config files can either be Java properties files or ConfigSlurper scripts
 def userConfig = System.properties.userConfig ?: "${userHome}/.ozone/MarketplaceConfig.groovy"
 grails.config.locations = [
-        MetadataConfig,
         'classpath:MarketplaceConfig.groovy',
         "classpath:OzoneConfig.properties",
-        "file:${userConfig}"
+        "file:${userConfig}",
+        RequiredConfig
 ]
 
 environments {
@@ -89,6 +89,22 @@ elasticSearch {
     client.mode = 'local'
     index.store.type = 'memory'
     path.data = "${System.properties['catalina.home']}/temp/data"
+
+    //Note: We do our own custom indexing in Bootstrap.groovy. If this is overridden
+    //search indexing will not behave as expected - specifically all listings will be
+    //indexed on app startup, rather than just approved/enabled listings.
+    bulkIndexOnStartup = false
+}
+
+/**
+ * Contains values for reference metadata domain objects such as Types, States, and Categories.
+ */
+marketplace {
+    metadata {
+        profiles = [
+                [username: marketplace.Constants.SYSTEM_USER_USERNAME, displayName: marketplace.Constants.SYSTEM_USER_DISPLAYNAME]
+        ]
+    }
 }
 
 environments {

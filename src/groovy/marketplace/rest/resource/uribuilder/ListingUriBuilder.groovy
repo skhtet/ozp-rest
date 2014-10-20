@@ -7,7 +7,7 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.rest.resource.ListingResource
 import marketplace.Listing
 
-class ListingUriBuilder extends RepresentationResourceUriBuilder<Listing> {
+class ListingUriBuilder extends SearchableRepresentationResourceUriBuilder<Listing> {
     protected ListingUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(ListingResource.class, uriBuilderHolder)
     }
@@ -41,7 +41,7 @@ class ListingUriBuilder extends RepresentationResourceUriBuilder<Listing> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Listing> {
+    public static class Factory implements SearchableResourceUriBuilder.Factory<Listing> {
         ListingUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ListingUriBuilder(uriBuilderHolder)

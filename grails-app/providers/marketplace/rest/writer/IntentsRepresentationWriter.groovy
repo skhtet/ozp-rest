@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Intent
 import marketplace.hal.AbstractRepresentationWriter
-import marketplace.hal.EmbeddedCollectionRepresentation
+import marketplace.rest.representation.out.EmbeddedCollectionRepresentation
 
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
