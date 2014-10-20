@@ -41,16 +41,47 @@ interface ResourceUriBuilder<T> extends DomainResourceUriBuilder<T>, RootResourc
     }
 }
 
-interface ChildObjectCollectionUriBuilder<P,T> {
+/**
+ * Interface for builders of URIs to sub-collections within a resource.  For example, listings
+ * owned by a given profile.
+ */
+interface SubCollectionUriBuilder<P,T> {
     URI getCollectionUri(ChildObjectCollection<P,T> collection)
-    URI getCollectionUri(T childObj)
 
     interface Factory<P,T> {
+        SubCollectionUriBuilder<P,T> getBuilder(
+            ApplicationRootUriBuilderHolder uriBuilderHolder)
+    }
+}
+
+/**
+ * Convenience interface to unify DomainResourceUriBuilder and SubCollectionUriBuilder
+ */
+interface SubObjectUriBuilder<P,T> extends
+        DomainResourceUriBuilder<T>, SubCollectionUriBuilder<P,T> {
+    interface Factory<P,T> extends
+            DomainResourceUriBuilder.Factory<T>, SubCollectionUriBuilder.Factory<P,T> {
+        SubObjectUriBuilder<P,T> getBuilder(
+            ApplicationRootUriBuilderHolder uriBuilderHolder)
+    }
+}
+
+/**
+ * Specialization of SubCollectionUriBuilder for objects that are truly children of
+ * the parent, and whose URIs can be generated from a single child object
+ */
+interface ChildObjectCollectionUriBuilder<P,T> extends SubCollectionUriBuilder<P,T> {
+    URI getCollectionUri(T childObj)
+
+    interface Factory<P,T> extends SubCollectionUriBuilder.Factory<P,T> {
         ChildObjectCollectionUriBuilder<P,T> getBuilder(
             ApplicationRootUriBuilderHolder uriBuilderHolder)
     }
 }
 
+/**
+ * Convenience interface to unify DomainResourceUriBuilder and ChildObjectCollectionUriBuilder
+ */
 interface ChildObjectUriBuilder<P,T> extends
         DomainResourceUriBuilder<T>, ChildObjectCollectionUriBuilder<P,T> {
     interface Factory<P,T> extends

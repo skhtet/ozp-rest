@@ -57,7 +57,7 @@ class ProfileResourceUnitTest {
         def listingRestServiceMock = mockFor(ListingRestService)
         listingRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
             idPassedIn = id
-            return null
+            return []
         }
 
         resource.listingRestService = listingRestServiceMock.createMock()
@@ -77,7 +77,7 @@ class ProfileResourceUnitTest {
         def listingRestServiceMock = mockFor(ListingRestService)
         listingRestServiceMock.demand.getAllByAuthorId(1..1) { id ->
             idPassedIn = id
-            return null
+            return []
         }
 
         resource.listingRestService = listingRestServiceMock.createMock()

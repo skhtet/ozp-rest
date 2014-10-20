@@ -94,8 +94,10 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @GET
     @Produces([MediaType.APPLICATION_JSON])
     @Consumes([MediaType.APPLICATION_JSON])
-    Set<Listing> getListingsByAuthorId(@PathParam('profileId') String profileId) {
-        listingRestService.getAllByAuthorId(getProfileId(profileId))
+    ChildObjectCollection<Profile, Listing> getListingsByAuthorId(
+            @PathParam('profileId') String profileId) {
+        long id = getProfileId(profileId)
+        new ChildObjectCollection(listingRestService.getAllByAuthorId(id), read(id))
     }
 
     @Path('/{profileId}/itemComment')
