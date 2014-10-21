@@ -14,6 +14,8 @@ import marketplace.rest.service.ListingActivityRestService
 
 import marketplace.rest.ChildObjectCollection
 
+import static javax.servlet.http.HttpServletResponse.*
+
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
 
@@ -161,21 +163,25 @@ class ListingResourceUnitTest {
     }
 
     void testCreateItemComment() {
-        def comment = new ItemCommentInputRepresentation()
-        def passedParentId, passedDto, createdComment
+        def passedParentId, passedRep, createdComment
 
         def itemCommentRestServiceMock = mockFor(ItemCommentRestService)
         itemCommentRestServiceMock.demand.createFromParentIdAndRepresentation(1..1) {
-                parentId, dto ->
+                parentId, rep ->
             passedParentId = parentId
-            passedDto = dto
+            passedRep = rep
             createdComment = new ItemComment()
+            createdComment.id = 1
+            createdComment
         }
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
+        def commentRep = new ItemCommentInputRepresentation([rate: 1, text: "blah"])
+        def response = resource.createItemComment(1, commentRep)
 
-        assert resource.createItemComment(1, comment) == createdComment
+        assert response.status == SC_CREATED
+        assert response.entity == createdComment
         assert passedParentId == 1
-        assert passedDto == comment
+        assert passedRep == commentRep
     }
 
     void testUpdateItemComment() {
