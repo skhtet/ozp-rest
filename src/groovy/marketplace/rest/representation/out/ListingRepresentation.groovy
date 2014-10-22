@@ -47,6 +47,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getRequirements() { listing.requirements }
     String getWhatIsNew() { listing.whatIsNew }
     Date getApprovedDate() { listing.approvedDate }
+    Date getEditedDate() { listing.editedDate }
     ApprovalStatus getApprovalStatus() { listing.approvalStatus }
     Collection<String> getTags() { listing.tags ?: [] }
     String getType() { listing.type?.title }
