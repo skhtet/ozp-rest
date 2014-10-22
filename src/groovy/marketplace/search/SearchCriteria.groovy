@@ -3,7 +3,7 @@ package marketplace.search
 class SearchCriteria {
 
     final static ALLOWED_FILTERS = [
-            category: 'categories.title',
+            categories: 'categories.title',
             agency: 'agency.title',
             type: 'type.title',
             isFeatured: 'isFeatured'
@@ -50,7 +50,7 @@ class SearchCriteria {
         }
 
         List<String> queryStringParam = queryParams.get('queryString')
-        if(queryStringParam) {
+        if(queryStringParam && queryStringParam[0]) {
             sc.queryString = queryStringParam[0]
         }
 
