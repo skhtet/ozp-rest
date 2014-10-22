@@ -2,7 +2,7 @@ package marketplace.rest.writer
 
 import marketplace.Listing
 import marketplace.hal.AbstractRepresentationWriter
-import marketplace.hal.EmbeddedCollectionRepresentation
+import marketplace.rest.representation.out.EmbeddedCollectionRepresentation
 import marketplace.rest.representation.out.ListingRepresentation
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import org.springframework.beans.factory.annotation.Autowired
