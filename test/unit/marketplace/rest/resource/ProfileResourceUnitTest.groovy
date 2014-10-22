@@ -107,7 +107,7 @@ class ProfileResourceUnitTest {
         def idToPass = 1 as String
 
         def dtos = resource.getItemCommentsByAuthorId(idToPass)
-        def json = dtos.collect { it.asJSON() }
+        def json = dtos.collect { it }
 
         assert idPassedIn == idToPass as Integer
 
@@ -136,7 +136,7 @@ class ProfileResourceUnitTest {
         resource.itemCommentRestService = itemCommentRestServiceMock.createMock()
 
         def dtos = resource.getItemCommentsByAuthorId('self')
-        def json = dtos.collect { it.asJSON() }
+        def json = dtos.collect { it }
 
         assert idPassedIn == currentUser.id
 

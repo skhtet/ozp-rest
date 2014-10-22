@@ -107,7 +107,8 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     List<ItemCommentServiceItemDto> getItemCommentsByAuthorId(
             @PathParam('profileId') String profileId) {
         itemCommentRestService.getAllByAuthorId(getProfileId(profileId)).collect {
-            new ItemCommentServiceItemDto(it)
+            ItemCommentServiceItemDto itemComment = new ItemCommentServiceItemDto(it)
+            itemComment.asJSON()
         }
     }
 
