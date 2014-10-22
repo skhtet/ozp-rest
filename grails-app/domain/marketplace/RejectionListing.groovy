@@ -1,7 +1,5 @@
 package marketplace
 
-import org.codehaus.groovy.grails.web.json.JSONObject
-
 /**
  * Created by IntelliJ IDEA.
  * Date: Jul 21, 2010

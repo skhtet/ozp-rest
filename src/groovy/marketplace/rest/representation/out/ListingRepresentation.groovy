@@ -4,6 +4,7 @@ import marketplace.Contact
 import marketplace.DocUrl
 import marketplace.Listing
 import marketplace.Profile
+import marketplace.RejectionListing
 import marketplace.Screenshot
 import marketplace.ApprovalStatus
 import marketplace.hal.ApplicationRootUriBuilderHolder
@@ -50,6 +51,9 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     Collection<String> getTags() { listing.tags ?: [] }
     String getType() { listing.type?.title }
     String getAgency() { listing.agency?.title }
+    CurrentRejectionRepresentation getCurrentRejection() { listing.rejectionListings ?
+        new CurrentRejectionRepresentation(listing.rejectionListings.first()) : null
+    }
 
     Collection<String> getCategories() { listing.categories.collect { it.title }}
 
@@ -147,4 +151,20 @@ class ScreenshotRepresentation {
 
     String getSmallImageUrl() { screenshot.smallImageUrl }
     String getLargeImageUrl() { screenshot.largeImageUrl }
+}
+
+class CurrentRejectionRepresentation {
+    private RejectionListing rejection
+
+    CurrentRejectionRepresentation(RejectionListing rejection) {
+        this.rejection = rejection
+    }
+
+    OwnerRepresentation getAuthor() {
+        new OwnerRepresentation(rejection.author)
+    }
+
+    String getDescription() {
+        rejection.description
+    }
 }

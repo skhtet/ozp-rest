@@ -133,7 +133,7 @@ class Listing implements Serializable {
     Integer totalRate1 = 0
     Integer totalComments = 0
 
-    SortedSet rejectionListings
+    SortedSet<RejectionListing> rejectionListings
     List<Screenshot> screenshots
     List<ListingActivity> listingActivities
 
