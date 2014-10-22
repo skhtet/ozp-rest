@@ -22,9 +22,8 @@ class BootStrap {
          * will be indexed. All others will not.
          */
         def listingsToIndex = Listing.findAllByIsEnabledAndApprovalStatus(true, ApprovalStatus.APPROVED)
-        def listingsToUnidex = Listing.findAll() - listingsToIndex
+        elasticSearchService.unindex(Listing)
         elasticSearchService.index(listingsToIndex)
-        elasticSearchService.unindex(listingsToUnidex)
 
         // setting it to a million clauses by default
         // http://stackoverflow.com/questions/1534789/help-needed-figuring-out-reason-for-maxclausecount-is-set-to-1024-error

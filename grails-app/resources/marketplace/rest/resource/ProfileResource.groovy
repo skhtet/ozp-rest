@@ -193,10 +193,9 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
                             @HeaderParam(HttpHeaders.CONTENT_TYPE) String contentType) {
         long id = getProfileId(profileId)
 
-        IwcDataObject putValue = service.updateDataItem(id,
-                keyFromPath(key), value, typeFromHeader(contentType))
+        service.updateDataItem(id, keyFromPath(key), value, typeFromHeader(contentType))
 
-        putValue ? Response.noContent().build() : Response.created(UriBuilder.fromPath(key).build()).build()
+        Response.noContent().build()
     }
 
     @Path('/{profileId}/data/{key:.+}')

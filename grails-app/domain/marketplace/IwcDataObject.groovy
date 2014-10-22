@@ -13,6 +13,7 @@ class IwcDataObject {
     static mapping = {
         id natural: [properties: ['key', 'profile']]
         key column: "`key`"
+        entity type: 'text'
     }
 
     static constraints = {
