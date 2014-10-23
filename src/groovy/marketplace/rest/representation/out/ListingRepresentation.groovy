@@ -52,6 +52,8 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     Collection<String> getTags() { listing.tags ?: [] }
     String getType() { listing.type?.title }
     String getAgency() { listing.agency?.title }
+    String getAgencyShort() { listing.agency?.shortName }
+
     CurrentRejectionRepresentation getCurrentRejection() { listing.rejectionListings ?
         new CurrentRejectionRepresentation(listing.rejectionListings.first()) : null
     }

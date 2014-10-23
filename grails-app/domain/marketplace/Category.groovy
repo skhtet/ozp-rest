@@ -1,6 +1,5 @@
 package marketplace
 
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 

@@ -1,7 +1,5 @@
 package marketplace
 
-import org.codehaus.groovy.grails.web.json.JSONObject
-
 @gorm.AuditStamp
 class Agency implements Serializable {
 
@@ -9,14 +7,17 @@ class Agency implements Serializable {
         root false
         title index: 'not_analyzed'
         iconUrl index: 'not_analyzed', excludeFromAll: true
-        only = ['title', 'iconUrl']
+        shortName index: 'not_analyzed', excludeFromAll: true
+        only = ['title', 'shortName', 'iconUrl']
     }
 
     String title
     String iconUrl
+    String shortName
 
     static constraints = {
-        title blank: false, maxSize: 255, unique: true
+        title blank: false, maxSize: 255
+        shortName blank: false, maxSize: 8, unique: true
         iconUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
     }
 
@@ -25,9 +26,6 @@ class Agency implements Serializable {
     static mapping = {
         id natural: [properties: ['title'], mutable: true]
     }
-
-    //see line 93 of JSONUtil.groovy
-    public String getDescription() { null }
 
     @Override
     String toString() { title }
