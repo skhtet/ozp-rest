@@ -28,31 +28,18 @@ codenarc.reports = {
 codenarc.ruleSetFiles = "file:grails-app/conf/CodeNarcRules.groovy"
 codenarc.propertiesFile = "grails-app/conf/codenarc.properties"
 
-def warExcludes = [
-    'aopalliance-1.0-sources.jar',
-    'asm-3.0.jar',
-    'asm-tree-3.0.jar',
-    'cobertura-1.9.4.1.jar',
-    'commons-codec-1.3-javadoc.jar',
-    'commons-codec-1.3-sources.jar',
-    'commons-lang-2.4-javadoc.jar',
-    'commons-lang-2.4-sources.jar',
-    'compass-2.2.1-src.jar',
-    'core-3.1.1.jar',
-    'jasper-compiler-5.5.15.jar',
-    'jasper-compiler-jdt-5.5.15.jar',
-    'jasper-runtime-5.5.15',
-    'jsp-api-2.0-6.1.21.jar',
-    'standard-1.1.2.jar',
-    'servlet-api*.jar',
-    "rome-0.9.jar"
-]
-
 grails.war.resources = { stagingDir ->
-    def libDir = "${stagingDir}/WEB-INF/lib"
-    warExcludes.each { exclude ->
-        delete(file: "${libDir}/${exclude}")
-    }
+
+    def classesDir = "$stagingDir/WEB-INF/classes"
+
+    //Delete sample security configuration
+    [
+        'SecurityContext.xml', 
+        'OzoneConfig.properties',
+        'users.properties'
+    ].each { delete file: "$classesDir/$it" }
+
+    delete dir: "$classesDir/ozone-security-beans"
 }
 
 grails.project.dependency.resolution = {
@@ -68,7 +55,7 @@ grails.project.dependency.resolution = {
         grailsPlugins()
         grailsHome()
         mavenLocal()
-        mavenRepo "https://www.owfgoss.org/nexus/content/groups/public"
+        mavenRepo 'https://www.owfgoss.org/nexus/content/groups/public'
         grailsCentral()
         mavenCentral()
     }
@@ -99,7 +86,7 @@ grails.project.dependency.resolution = {
         runtime('javax.ws.rs:jsr311-api:1.1.1')
 
         compile('org.ozoneplatform:ozone-security:4.0') {
-            excludes([group: 'org.springframework'])
+            excludes([group: 'org.springframework'], [name: 'servlet-api'])
         }
 
         compile 'com.google.guava:guava:18.0'
