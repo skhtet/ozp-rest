@@ -14,6 +14,8 @@ import marketplace.rest.service.ListingActivityRestService
 
 import marketplace.rest.ChildObjectCollection
 
+import marketplace.hal.PagedCollection
+
 import static javax.servlet.http.HttpServletResponse.*
 
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
@@ -39,14 +41,15 @@ class ListingResourceUnitTest {
         }
         resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        assert resource.getActivitiesForListings(1,2) == [activity]
+        assert resource.getActivitiesForListings(1,2) == new PagedCollection(1, 2, [activity])
         assert passedOffset == 1
         assert passedMax == 2
     }
 
     void testGetServiceItemActivitiesForServiceItem() {
         ListingActivity activity = new ListingActivity()
-        def passedParentId, passedOffset, passedMax
+        def passedParentId, passedParentServiceId, passedOffset, passedMax
+        def parent = new Listing()
 
         def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getByParentId(1..1) { parentId, offset, max ->
@@ -55,10 +58,21 @@ class ListingResourceUnitTest {
             passedMax = max
             [activity]
         }
-        resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        assert resource.getListingActivitiesForListing(20, 1,2) == [activity]
+        def listingRestServiceMock = mockFor(ListingRestService)
+        listingRestServiceMock.demand.getById(1..1) { id ->
+            passedParentServiceId = id
+            parent
+        }
+
+        resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
+        resource.service = listingRestServiceMock.createMock()
+
+        def result = resource.getListingActivitiesForListing(20, 1,2)
+        assert result.collection == [activity]
+        assert result.parent == parent
         assert passedParentId == 20
+        assert passedParentServiceId == 20
         assert passedOffset == 1
         assert passedMax == 2
     }
