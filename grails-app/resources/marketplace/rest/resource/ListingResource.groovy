@@ -33,10 +33,13 @@ import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
 import marketplace.rest.representation.out.ListingRepresentation
+import marketplace.rest.representation.out.ListingActivityRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingActivityRestService
+
+import marketplace.hal.PagedCollection
 
 import javax.ws.rs.core.UriInfo
 
@@ -64,20 +67,31 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     ListingResource() {}
 
     @Path('/activity')
+    @Produces([
+        ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @GET
-    public Collection<ListingActivity> getActivitiesForListings(
+    public PagedCollection<ListingActivity> getActivitiesForListings(
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        listingActivityRestService.getAll(offset, max)
+        new PagedCollection(offset, max, listingActivityRestService.getAll(offset, max))
     }
 
     @Path('/{listingId}/activity')
+    @Produces([
+        ListingActivityRepresentation.CHILD_COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @GET
-    public Collection<ListingActivity> getListingActivitiesForListing(
+    public ChildObjectCollection<Listing, ListingActivity> getListingActivitiesForListing(
             @PathParam('listingId') long listingId,
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        listingActivityRestService.getByParentId(listingId, offset, max)
+        new ChildObjectCollection(
+            listingActivityRestService.getByParentId(listingId, offset, max),
+            read(listingId)
+        );
     }
 
     @Path('/{listingId}/rejectionListing')

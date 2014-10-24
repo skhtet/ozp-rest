@@ -9,7 +9,7 @@ import marketplace.search.SearchResult
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.RootResourceUriBuilder
 
 /**
  * Representation of a collection where all of the elements are embedded representations
@@ -23,7 +23,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
     EmbeddedCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            ResourceUriBuilder<T> resourceUriBuilder,
+            RootResourceUriBuilder resourceUriBuilder,
             Collection<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
@@ -46,7 +46,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
      */
     public static <T> RepresentationFactory<Collection<T>> createFactory(
             RepresentationFactory<T> embeddedRepFactory,
-            ResourceUriBuilder.Factory<T> uriBuilderFactory) {
+            RootResourceUriBuilder.Factory uriBuilderFactory) {
 
         new RepresentationFactory() {
             EmbeddedCollectionRepresentation toRepresentation(entities,

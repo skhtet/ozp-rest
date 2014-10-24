@@ -7,7 +7,8 @@ import marketplace.hal.Link
 import marketplace.hal.PagedCollection
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.RepresentationFactory
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.RootResourceUriBuilder
+import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
 import marketplace.search.SearchResult
 
 import javax.ws.rs.core.UriBuilder
@@ -21,7 +22,7 @@ class HalCollectionRepresentationSupport {
         })
     }
 
-    static HalLinks createLinks(ResourceUriBuilder resourceUriBuilder,
+    static HalLinks createLinks(RootResourceUriBuilder resourceUriBuilder,
                                         Collection entities) {
         Collection<Map.Entry> navLinks = []
 
@@ -59,10 +60,13 @@ class HalCollectionRepresentationSupport {
         }
 
 
-        Collection<Map.Entry> itemLinks = entities.collect { entity ->
-            URI href = resourceUriBuilder.getUri(entity)
-            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
-        }
+        //generate links to items if possible
+        Collection<Map.Entry> itemLinks =
+            (resourceUriBuilder instanceof DomainResourceUriBuilder) ?
+                entities.collect { entity ->
+                    URI href = resourceUriBuilder.getUri(entity)
+                    new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
+                } : []
 
         new HalLinks(itemLinks + navLinks)
     }
