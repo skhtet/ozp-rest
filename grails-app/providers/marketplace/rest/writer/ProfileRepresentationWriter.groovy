@@ -13,7 +13,10 @@ import marketplace.hal.AbstractRepresentationWriter
 import marketplace.rest.representation.out.ProfileRepresentation
 
 @Provider
-@Produces([ProfileRepresentation.MEDIA_TYPE])
+@Produces([
+    ProfileRepresentation.MEDIA_TYPE,
+    MediaType.APPLICATION_JSON
+])
 class ProfileRepresentationWriter extends AbstractRepresentationWriter<Profile> {
 
     @Autowired
