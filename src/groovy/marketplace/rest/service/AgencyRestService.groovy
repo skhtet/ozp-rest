@@ -8,6 +8,7 @@ import org.hibernate.Criteria
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import marketplace.Agency
+import marketplace.Listing
 
 @Service
 class AgencyRestService extends AdminRestService<Agency> {
@@ -27,4 +28,16 @@ class AgencyRestService extends AdminRestService<Agency> {
 		}
 		agencyList
 	}
+
+    @Override
+    public void deleteById(id) {
+        Agency agency = getById(id)
+        if (Listing.countByAgency(agency) > 0) {
+            throw new IllegalArgumentException(
+                "Cannot delete organization with associated listings")
+        }
+        else {
+            super.deleteById(id)
+        }
+    }
 }
