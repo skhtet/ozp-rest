@@ -24,6 +24,7 @@ import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
 
+import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
@@ -80,17 +81,19 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
 
     @Path('/{listingId}/activity')
     @Produces([
-        ListingActivityRepresentation.CHILD_COLLECTION_MEDIA_TYPE,
+        ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
     @GET
-    public ChildObjectCollection<Listing, ListingActivity> getListingActivitiesForListing(
+    public PagingChildObjectCollection<Listing, ListingActivity> getListingActivitiesForListing(
             @PathParam('listingId') long listingId,
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        new ChildObjectCollection(
+        new PagingChildObjectCollection(
             listingActivityRestService.getByParentId(listingId, offset, max),
-            read(listingId)
+            read(listingId),
+            offset,
+            max
         );
     }
 

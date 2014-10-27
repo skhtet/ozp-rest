@@ -4,7 +4,7 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.PagedCollection
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
-import marketplace.search.SearchResult
+import marketplace.Paging
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
@@ -24,6 +24,15 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
     EmbeddedCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
             RootResourceUriBuilder resourceUriBuilder,
+            Paging<T> entities,
+            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+        this(embeddedRepFactory, resourceUriBuilder, (Collection<T>)entities, uriBuilderHolder)
+        this.total = entities.total
+    }
+
+    EmbeddedCollectionRepresentation(
+            RepresentationFactory<T> embeddedRepFactory,
+            RootResourceUriBuilder resourceUriBuilder,
             Collection<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
@@ -32,10 +41,6 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             HalCollectionRepresentationSupport.createLinks(resourceUriBuilder, entities),
             HalCollectionRepresentationSupport.createEmbedded(embeddedRepFactory, entities, uriBuilderHolder)
         )
-
-        if (entities instanceof PagedCollection || entities instanceof SearchResult) {
-            this.total = entities.total
-        }
     }
 
     /**

@@ -1,18 +1,20 @@
 package marketplace.search
 
+import marketplace.Paging
+
 /**
  * This class decorates a list of search results with total, max, offset, etc
  */
-class SearchResult<E> implements List<E> {
+class SearchResult<E> implements List<E>, Paging<E> {
     List<E> items
     int total
     SearchCriteria searchCriteria
 
-    public int getOffset() {
+    public Integer getOffset() {
         searchCriteria.offset
     }
 
-    public int getMax() {
+    public Integer getMax() {
         searchCriteria.max
     }
 

@@ -7,6 +7,8 @@ import marketplace.ListingActivity
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
+import grails.orm.PagedResultList
+
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingRestService
@@ -47,16 +49,27 @@ class ListingResourceUnitTest {
     }
 
     void testGetServiceItemActivitiesForServiceItem() {
+
         ListingActivity activity = new ListingActivity()
         def passedParentId, passedParentServiceId, passedOffset, passedMax
         def parent = new Listing()
+
+        /* Mocking PagedResultList, see http://stackoverflow.com/a/19216929 */
+        def mockC = mockFor(org.hibernate.Criteria)
+        mockC.demand.list { return []} //PagedResultList constructor calls this
+        def pagedList = new PagedResultList(null, mockC.createMock()){{
+           //Using a static block to set private variables
+           //since we can't call a constructor here!
+           list = [activity]
+           totalCount = 1
+        }}
 
         def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getByParentId(1..1) { parentId, offset, max ->
             passedParentId = parentId
             passedOffset = offset
             passedMax = max
-            [activity]
+            pagedList
         }
 
         def listingRestServiceMock = mockFor(ListingRestService)
@@ -69,7 +82,7 @@ class ListingResourceUnitTest {
         resource.service = listingRestServiceMock.createMock()
 
         def result = resource.getListingActivitiesForListing(20, 1,2)
-        assert result.collection == [activity]
+        assert result.collection.is(pagedList)
         assert result.parent == parent
         assert passedParentId == 20
         assert passedParentServiceId == 20

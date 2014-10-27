@@ -27,8 +27,6 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-activity-v1+json'
     public static final String COLLECTION_MEDIA_TYPE =
         'application/vnd.ozp-listing-activities-v1+json'
-    public static final String CHILD_COLLECTION_MEDIA_TYPE =
-        'application/vnd.ozp-listing-child-activities-v1+json'
 
     private ListingActivity activity
 

@@ -1,12 +1,14 @@
 package marketplace.hal
 
+import marketplace.Paging
+
 import grails.orm.PagedResultList
 
 /**
  * A wrapper object that represents a collection of elements from a paged source, along with
  * paging information
  */
-class PagedCollection<E> implements Collection<E> {
+class PagedCollection<E> implements Collection<E>, Paging<E> {
     /**
      * The offset parameter that resulted in this collection
      */

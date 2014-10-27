@@ -26,6 +26,5 @@ class ListingActivitiesRepresentationWriter extends
             ListingActivityUriBuilder.Factory listingActivityUriBuilderFactory) {
         super(EmbeddedCollectionRepresentation.createFactory(factory,
             listingActivityUriBuilderFactory))
-System.err.println "creating ListingActivitiesRepresentationWriter"
     }
 }
