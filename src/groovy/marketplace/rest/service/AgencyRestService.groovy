@@ -1,5 +1,7 @@
 package marketplace.rest.service
 
+import javax.annotation.security.RolesAllowed
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -30,6 +32,7 @@ class AgencyRestService extends AdminRestService<Agency> {
 	}
 
     @Override
+    @RolesAllowed('ROLE_ADMIN')
     public void deleteById(id) {
         Agency agency = getById(id)
         if (Listing.countByAgency(agency) > 0) {
