@@ -63,6 +63,7 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     }
 
     String getUsername() { profile.username }
+    Long getId() { profile.id }
     String getDisplayName() { profile.displayName }
     String getEmail() { profile.email }
     String getBio() { profile.bio }
