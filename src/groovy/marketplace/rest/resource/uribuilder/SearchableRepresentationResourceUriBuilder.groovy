@@ -20,13 +20,14 @@ abstract class SearchableRepresentationResourceUriBuilder<T>
                 .path(ListingResource.class)
                 .path(ListingResource.class, 'search')
 
-        searchResult.filters.each {String field, List values ->
+        searchResult.filters.each { String field, List values ->
             String fieldPath = field.contains(".") ? field.split("\\.")[0] : field
             values.each { value ->
                 uriBuilder.queryParam(fieldPath, value)
             }
         }
 
+        uriBuilder.queryParam('queryString', searchResult.queryString)
         uriBuilder.queryParam('sort', searchResult.sort)
         uriBuilder.queryParam('order', searchResult.order)
         uriBuilder.queryParam('max', searchResult.max)
