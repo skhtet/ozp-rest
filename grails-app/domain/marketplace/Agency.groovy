@@ -16,7 +16,7 @@ class Agency implements Serializable {
     String shortName
 
     static constraints = {
-        title blank: false, maxSize: 255
+        title blank: false, maxSize: 255, unique: true
         shortName blank: false, maxSize: 8, unique: true
         iconUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
     }
