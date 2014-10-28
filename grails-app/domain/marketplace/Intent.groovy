@@ -2,8 +2,6 @@ package marketplace
 
 import gorm.AuditStamp
 
-import org.codehaus.groovy.grails.web.json.JSONObject
-
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
