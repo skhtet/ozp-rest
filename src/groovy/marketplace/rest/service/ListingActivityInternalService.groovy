@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import marketplace.Profile
+import marketplace.ItemComment
 import marketplace.Listing
 import marketplace.ListingActivity
 import marketplace.RejectionActivity
@@ -80,6 +82,32 @@ class ListingActivityInternalService {
 
         addListingActivity(listing, activity)
         return activity
+    }
+
+    @Transactional
+    public void addReviewEditedActivity(Listing listing,
+            Profile commentOwner, String newCommentText, String oldCommentText) {
+        if (newCommentText != oldCommentText) {
+            ListingActivity activity = addListingActivity(listing, new ListingActivity(
+                action: Constants.Action.REVIEW_EDITED
+            ))
+            activity.addToChangeDetails(new ChangeDetail(
+                fieldName: "${commentOwner.displayName}'s Review",
+                newValue: newCommentText,
+                oldValue: oldCommentText
+            ))
+        }
+    }
+
+    @Transactional
+    public void addReviewDeletedActivity(ItemComment review) {
+        ListingActivity activity = addListingActivity(review.listing, new ListingActivity(
+            action: Constants.Action.REVIEW_DELETED
+        ))
+        activity.addToChangeDetails(new ChangeDetail(
+            fieldName: "reviewOwner",
+            newValue: review.author.displayName
+        ))
     }
 
     /**

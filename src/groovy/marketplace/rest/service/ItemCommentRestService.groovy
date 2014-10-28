@@ -17,6 +17,7 @@ import marketplace.Constants
 @Service
 class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment> {
     @Autowired ProfileRestService profileRestService
+    @Autowired ListingActivityInternalService listingActivityInternalService
 
     @Autowired
     ItemCommentRestService(GrailsApplication grailsApplication,
@@ -33,6 +34,8 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
     public void deleteById(Long id) {
         ItemComment obj = getById(id)
         Listing listing = parentClassRestService.getById(obj.listing.id)
+
+        listingActivityInternalService.addReviewDeletedActivity(obj)
 
         //ensure that the Listings's statistics are updated
         listing.removeFromItemComments(obj)
@@ -80,6 +83,8 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
 
         if (original) {
             preventNonOwnerRatingChange(updated, original)
+            listingActivityInternalService.addReviewEditedActivity(updated.listing,
+                updated.author, updated.text, original.text)
         }
 
         syncListingStats(updated)
