@@ -9,6 +9,8 @@ import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
+import javax.ws.rs.Consumes
+import javax.ws.rs.Produces
 import javax.ws.rs.core.Response
 
 import marketplace.hal.PagedCollection
@@ -68,6 +70,8 @@ class RepresentationResource<T, R extends InputRepresentation<T>> {
 
     @DELETE
     @Path('/{id}')
+    @Consumes()
+    @Produces()
     void delete(@PathParam('id') long id) {
         service.deleteById(id)
     }
