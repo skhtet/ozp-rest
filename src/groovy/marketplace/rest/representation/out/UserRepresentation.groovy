@@ -9,13 +9,13 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 class UserRepresentation extends SelfRefRepresentation<Profile> {
     final String userName
     final String name
 
-    UserRepresentation(Profile user, ResourceUriBuilder<Profile> profileUriBuilder) {
+    UserRepresentation(Profile user, ObjectUriBuilder<Profile> profileUriBuilder) {
         super(profileUriBuilder.getUri(user), null, null)
 
         this.name = user.displayName

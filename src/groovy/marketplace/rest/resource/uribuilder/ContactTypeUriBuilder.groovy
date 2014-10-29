@@ -13,7 +13,8 @@ class ContactTypeUriBuilder extends RepresentationResourceUriBuilder<ContactType
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<ContactType> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<ContactType>, CollectionUriBuilder.Factory<ContactType> {
         ContactTypeUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ContactTypeUriBuilder(uriBuilderHolder)

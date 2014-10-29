@@ -11,9 +11,12 @@ import marketplace.rest.resource.ListingResource
 import marketplace.rest.ChildObjectCollection
 
 import marketplace.Listing
+import marketplace.Profile
 import marketplace.ItemComment
 
-class ItemCommentUriBuilder implements ChildObjectUriBuilder<Listing, ItemComment> {
+class ItemCommentUriBuilder implements
+        ObjectUriBuilder<ItemComment>,
+        ChildCollectionUriBuilder<Listing, ItemComment> {
     private ApplicationRootUriBuilderHolder uriBuilderHolder
 
     private ItemCommentUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
@@ -28,11 +31,20 @@ class ItemCommentUriBuilder implements ChildObjectUriBuilder<Listing, ItemCommen
     }
 
     URI getCollectionUri(ChildObjectCollection<Listing, ItemComment> collection) {
-        getCollectionBuilder().buildFromMap(listingId: collection.parent.id)
+        getCollectionUri(collection.parent)
     }
 
-    URI getCollectionUri(ItemComment comment) {
-        getCollectionBuilder().buildFromMap(listingId: comment.listing.id)
+    URI getCollectionUri(Listing listing) {
+        getCollectionBuilder().buildFromMap(listingId: listing.id)
+    }
+
+    CollectionUriBuilder<ItemComment> getCollectionUriBuilder(Listing parent) {
+        { -> getCollectionUri(parent) } as CollectionUriBuilder
+    }
+
+    CollectionUriBuilder<ItemComment> getCollectionUriBuilder(
+            ChildObjectCollection<Profile, Listing> collection) {
+        { -> getCollectionUri(collection) } as CollectionUriBuilder
     }
 
     private UriBuilder getCollectionBuilder() {
@@ -43,7 +55,8 @@ class ItemCommentUriBuilder implements ChildObjectUriBuilder<Listing, ItemCommen
 
     @Component
     public static class Factory implements
-            ChildObjectUriBuilder.Factory<Listing, ItemComment> {
+            ObjectUriBuilder.Factory<ItemComment>,
+            ChildCollectionUriBuilder.Factory<Listing, ItemComment> {
         ItemCommentUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ItemCommentUriBuilder(uriBuilderHolder)

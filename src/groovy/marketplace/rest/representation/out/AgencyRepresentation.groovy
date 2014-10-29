@@ -10,7 +10,7 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 
 import marketplace.rest.resource.AgencyResource
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.AgencyUriBuilder
 
 class AgencyRepresentation extends SelfRefRepresentation<Agency> {
@@ -19,7 +19,7 @@ class AgencyRepresentation extends SelfRefRepresentation<Agency> {
 
     private Agency agency
 
-    AgencyRepresentation(Agency agency, ResourceUriBuilder<Agency> agencyUriBuilder) {
+    AgencyRepresentation(Agency agency, ObjectUriBuilder<Agency> agencyUriBuilder) {
         super(agencyUriBuilder.getUri(agency), null, null)
         this.agency = agency
     }

@@ -13,7 +13,8 @@ class AgencyUriBuilder extends RepresentationResourceUriBuilder<Agency> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Agency> {
+    public static class Factory implements ObjectUriBuilder.Factory<Agency>,
+            CollectionUriBuilder.Factory<Agency> {
         AgencyUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new AgencyUriBuilder(uriBuilderHolder)

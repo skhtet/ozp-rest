@@ -17,9 +17,8 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ChildCollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
@@ -37,15 +36,15 @@ class ApplicationLibraryRepresentation
         final String folder
 
         FolderRepresentation(String folder, Collection<ApplicationLibraryEntry> entries,
-                DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-                ResourceUriBuilder<Listing> listingUriBuilder) {
+                ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+                ObjectUriBuilder<Listing> listingUriBuilder) {
             super(null, createItems(entries, entryUriBuilder, listingUriBuilder, folder))
             this.folder = folder
         }
 
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
-                DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-                ResourceUriBuilder<Listing> listingUriBuilder, String folder) {
+                ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+                ObjectUriBuilder<Listing> listingUriBuilder, String folder) {
             new HalEmbedded(entries.collect { entry ->
                 assert entry.folder == folder
 
@@ -58,9 +57,10 @@ class ApplicationLibraryRepresentation
 
     private ApplicationLibraryRepresentation(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
-            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Profile> profileUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
+            ObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<Profile> profileUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         super(
             entryUriBuilder.getCollectionUri(library),
             createLinks(library, profileUriBuilder),
@@ -70,15 +70,15 @@ class ApplicationLibraryRepresentation
 
     private static HalLinks createLinks(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
-            ResourceUriBuilder<Profile> profileUriBuilder) {
+            ObjectUriBuilder<Profile> profileUriBuilder) {
         URI viaUri = profileUriBuilder.getUri(library.parent)
         new HalLinks(RegisteredRelationType.VIA, new Link(viaUri))
     }
 
     private static HalEmbedded createFolders(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
-            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         List<ApplicationLibraryEntry> entries = library.collection
 
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
@@ -99,8 +99,13 @@ class ApplicationLibraryRepresentation
         ApplicationLibraryRepresentation toRepresentation(
                 ChildObjectCollection<Profile, ApplicationLibraryEntry>  entries,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
+
+            ApplicationLibraryEntryUriBuilder entryUriBuilder =
+                entryUriBuilderFactory.getBuilder(uriBuilderHolder)
+
             new ApplicationLibraryRepresentation(entries,
-                entryUriBuilderFactory.getBuilder(uriBuilderHolder),
+                entryUriBuilder,
+                entryUriBuilder,
                 profileUriBuilderFactory.getBuilder(uriBuilderHolder),
                 listingUriBuilderFactory.getBuilder(uriBuilderHolder))
         }

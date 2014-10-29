@@ -13,18 +13,18 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.IwcUserApplications
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 class IwcUserApplicationsRepresentation extends SelfRefRepresentation<IwcUserApplications> {
     IwcUserApplicationsRepresentation(IwcUserApplications userApplications,
             ProfileUriBuilder profileUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         super(profileUriBuilder.getApplicationsUri(userApplications.user),
             linkApplications(userApplications.listings, listingUriBuilder), null)
     }
 
     private static HalLinks linkApplications(Collection<Listing> items,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         new HalLinks(items.collect { item ->
             URI href = listingUriBuilder.getUri(item)
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))

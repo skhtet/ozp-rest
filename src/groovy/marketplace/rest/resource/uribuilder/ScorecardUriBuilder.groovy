@@ -13,7 +13,9 @@ class ScorecardUriBuilder extends RepresentationResourceUriBuilder<Scorecard> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Scorecard> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<Scorecard>,
+            CollectionUriBuilder.Factory<Scorecard> {
         ScorecardUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ScorecardUriBuilder(uriBuilderHolder)

@@ -16,9 +16,8 @@ import marketplace.hal.HalEmbedded
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.RepresentationFactory
 
-import marketplace.rest.resource.uribuilder.ChildObjectUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ChildCollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
@@ -28,10 +27,12 @@ class ApplicationLibraryEntryRepresentation
 
     private ApplicationLibraryEntry entry
 
-    private ApplicationLibraryEntryRepresentation(ApplicationLibraryEntry entry,
-            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
-        super(createLinks(entry, entryUriBuilder),
+    private ApplicationLibraryEntryRepresentation(
+            ApplicationLibraryEntry entry,
+            ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder) {
+        super(createLinks(entry, entryCollectionUriBuilder, entryUriBuilder),
             createEmbeddedListing(entry, entryUriBuilder, listingUriBuilder))
 
         assert entry != null
@@ -40,9 +41,11 @@ class ApplicationLibraryEntryRepresentation
         this.entry = entry
     }
 
-    private static HalLinks createLinks(ApplicationLibraryEntry entry,
-            ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder) {
-        URI collectionHref = entryUriBuilder.getCollectionUri(entry),
+    private static HalLinks createLinks(
+            ApplicationLibraryEntry entry,
+            ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder) {
+        URI collectionHref = entryCollectionUriBuilder.getCollectionUri(entry.owner),
             entryHref = entryUriBuilder.getUri(entry)
 
         new HalLinks([
@@ -53,8 +56,8 @@ class ApplicationLibraryEntryRepresentation
     }
 
     private static HalEmbedded createEmbeddedListing(ApplicationLibraryEntry entry,
-            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         new HalEmbedded(OzpRelationType.APPLICATION,
             new LibraryApplicationRepresentation(entry, entryUriBuilder,
                 listingUriBuilder))
@@ -74,8 +77,12 @@ class ApplicationLibraryEntryRepresentation
         @Override
         ApplicationLibraryEntryRepresentation toRepresentation(ApplicationLibraryEntry entry,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ApplicationLibraryEntryUriBuilder entryUriBuilder =
+                entryUriBuilderFactory.getBuilder(uriBuilderHolder)
+
             new ApplicationLibraryEntryRepresentation(entry,
-                entryUriBuilderFactory.getBuilder(uriBuilderHolder),
+                entryUriBuilder,
+                entryUriBuilder,
                 listingUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }

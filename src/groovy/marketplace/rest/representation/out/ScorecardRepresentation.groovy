@@ -8,7 +8,7 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ScorecardUriBuilder
 
 import marketplace.Scorecard
@@ -22,7 +22,7 @@ class ScorecardRepresentation extends SelfRefRepresentation<Scorecard> {
     final Boolean showOnListing
 
     ScorecardRepresentation(Scorecard scorecard,
-                         ResourceUriBuilder<Scorecard> scorecardUriBuilder) {
+                         ObjectUriBuilder<Scorecard> scorecardUriBuilder) {
         super(scorecardUriBuilder.getUri(scorecard), null, null)
 
         this.question = scorecard.question

@@ -9,7 +9,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 
 import marketplace.rest.resource.IntentResource
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.IntentUriBuilder
 
 class IntentRepresentation extends SelfRefRepresentation<Intent> {
@@ -22,7 +22,7 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
     final String icon
 
     IntentRepresentation(Intent intent,
-                         ResourceUriBuilder<Intent> intentUriBuilder) {
+                         ObjectUriBuilder<Intent> intentUriBuilder) {
         super(intentUriBuilder.getUri(intent), null, null)
 
         this.type = intent.type

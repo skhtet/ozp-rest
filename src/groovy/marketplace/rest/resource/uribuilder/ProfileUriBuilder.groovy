@@ -56,7 +56,9 @@ class ProfileUriBuilder extends RepresentationResourceUriBuilder<Profile> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Profile> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<Profile>,
+            CollectionUriBuilder.Factory<Profile> {
         ProfileUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ProfileUriBuilder(uriBuilderHolder)

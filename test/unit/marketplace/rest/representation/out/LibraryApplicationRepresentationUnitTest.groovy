@@ -12,8 +12,7 @@ import marketplace.Listing
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
@@ -25,10 +24,10 @@ class LibraryApplicationRepresentationUnitTest {
         }
     ] as UriInfo)
 
-    DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder =
+    ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder =
         new ApplicationLibraryEntryUriBuilder(uriBuilderHolder)
 
-    ResourceUriBuilder<Listing> listingUriBuilder =
+    ObjectUriBuilder<Listing> listingUriBuilder =
         new ListingUriBuilder(uriBuilderHolder)
 
     Listing serviceItem = new Listing(

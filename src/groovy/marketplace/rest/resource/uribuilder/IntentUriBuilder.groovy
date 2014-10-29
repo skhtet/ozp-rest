@@ -13,7 +13,8 @@ class IntentUriBuilder extends RepresentationResourceUriBuilder<Intent> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Intent> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<Intent>, CollectionUriBuilder.Factory<Intent> {
         IntentUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new IntentUriBuilder(uriBuilderHolder)

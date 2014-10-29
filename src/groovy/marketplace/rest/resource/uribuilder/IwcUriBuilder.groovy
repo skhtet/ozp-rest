@@ -7,14 +7,16 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.rest.resource.IwcResource
 import marketplace.rest.resource.IwcSystemResource
 
-class IwcUriBuilder implements RootResourceUriBuilder {
+import marketplace.rest.IwcApi
+
+class IwcUriBuilder implements CollectionUriBuilder<IwcApi> {
     private ApplicationRootUriBuilderHolder uriBuilderHolder
 
     private IwcUriBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
         this.uriBuilderHolder = uriBuilderHolder
     }
 
-    URI getRootUri() {
+    URI getCollectionUri() {
         uriBuilderHolder.builder
             .path(IwcResource.class)
             .build()
@@ -27,7 +29,7 @@ class IwcUriBuilder implements RootResourceUriBuilder {
     }
 
     @Component
-    public static class Factory implements RootResourceUriBuilder.Factory {
+    public static class Factory implements CollectionUriBuilder.Factory {
         IwcUriBuilder getBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new IwcUriBuilder(uriBuilderHolder)
         }

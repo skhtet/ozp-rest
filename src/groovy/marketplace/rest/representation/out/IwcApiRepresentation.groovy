@@ -25,7 +25,7 @@ class IwcApiRepresentation extends SelfRefRepresentation<Profile> {
             ProfileUriBuilder profileUriBuilder,
             RepresentationFactory<Profile> userRepresentationFactory) {
         super(
-            iwcUriBuilder.getRootUri(),
+            iwcUriBuilder.getCollectionUri(),
             linkResources(api.user, iwcUriBuilder, profileUriBuilder),
             embedResources(api.user, uriBuilderHolder, userRepresentationFactory)
         )

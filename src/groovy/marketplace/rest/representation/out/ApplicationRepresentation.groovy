@@ -14,7 +14,7 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 
 import marketplace.rest.resource.ListingResource
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 
 class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
@@ -41,7 +41,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     ]
 
     ApplicationRepresentation(Listing listing,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         super(listingUriBuilder.getUri(listing), null, null)
 
         this.name = listing.title

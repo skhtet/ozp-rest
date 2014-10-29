@@ -14,7 +14,7 @@ import marketplace.Profile
 
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -33,7 +33,7 @@ class StewardedOrganizationsRepresentation extends
     }
 
     private static HalLinks createLinks(ChildObjectCollection<Profile, Agency> orgs,
-            ResourceUriBuilder<Profile> profileUriBuilder) {
+            ObjectUriBuilder<Profile> profileUriBuilder) {
         URI profileUri = profileUriBuilder.getUri(orgs.parent)
         new HalLinks(RegisteredRelationType.VIA, new Link(profileUri))
     }

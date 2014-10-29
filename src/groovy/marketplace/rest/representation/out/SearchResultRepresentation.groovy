@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
-import marketplace.rest.resource.uribuilder.SearchableResourceUriBuilder
+import marketplace.rest.resource.uribuilder.SearchUriBuilder
 import marketplace.search.SearchResult
 
 class SearchResultRepresentation<T> extends SelfRefRepresentation<SearchResult<T>> {
@@ -16,7 +16,7 @@ class SearchResultRepresentation<T> extends SelfRefRepresentation<SearchResult<T
     final Integer total
 
     SearchResultRepresentation(RepresentationFactory<T> embeddedRepFactory,
-            SearchableResourceUriBuilder<T> resourceUriBuilder, SearchResult<T> entities,
+            SearchUriBuilder<T> resourceUriBuilder, SearchResult<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
 
         super(resourceUriBuilder.getSearchUri(entities),
@@ -34,7 +34,7 @@ class SearchResultRepresentation<T> extends SelfRefRepresentation<SearchResult<T
      */
     public static <T> RepresentationFactory<SearchResult<T>> createFactory(
             RepresentationFactory<T> embeddedRepFactory,
-            SearchableResourceUriBuilder.Factory<T> uriBuilderFactory) {
+            SearchUriBuilder.Factory<T> uriBuilderFactory) {
 
         new RepresentationFactory() {
             SearchResultRepresentation toRepresentation(entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {

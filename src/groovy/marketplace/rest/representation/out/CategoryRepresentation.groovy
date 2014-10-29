@@ -9,7 +9,7 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.CategoryUriBuilder
 
 class CategoryRepresentation extends SelfRefRepresentation<Category> {
@@ -19,7 +19,7 @@ class CategoryRepresentation extends SelfRefRepresentation<Category> {
     private Category category
 
     private CategoryRepresentation(Category category,
-            ResourceUriBuilder<Category> categoryUriBuilder) {
+            ObjectUriBuilder<Category> categoryUriBuilder) {
         super(categoryUriBuilder.getUri(category), null, null)
 
         this.category = category

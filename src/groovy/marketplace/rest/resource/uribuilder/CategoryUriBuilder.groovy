@@ -13,7 +13,8 @@ class CategoryUriBuilder extends RepresentationResourceUriBuilder<Category> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Category> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<Category>, CollectionUriBuilder.Factory<Category> {
         CategoryUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new CategoryUriBuilder(uriBuilderHolder)

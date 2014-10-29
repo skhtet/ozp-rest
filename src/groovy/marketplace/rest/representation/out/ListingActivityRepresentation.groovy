@@ -12,7 +12,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import marketplace.rest.resource.uribuilder.ListingActivityUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
@@ -34,8 +34,8 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
     protected ListingActivity activity
 
     ListingActivityRepresentation(ListingActivity activity,
-            DomainResourceUriBuilder<Listing> listingUriBuilder,
-            DomainResourceUriBuilder<Profile> profileUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ObjectUriBuilder<Profile> profileUriBuilder,
             RepresentationFactory<Profile> profileRepresentationFactory,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(
@@ -47,8 +47,8 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
     }
 
     private static HalLinks createLinks(ListingActivity activity,
-            DomainResourceUriBuilder<Listing> listingUriBuilder,
-            DomainResourceUriBuilder<Profile> profileUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ObjectUriBuilder<Profile> profileUriBuilder) {
 
         URI appUri = listingUriBuilder.getUri(activity.listing),
             authorUri = profileUriBuilder.getUri(activity.author)
@@ -89,8 +89,8 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
             ListingActivityRepresentation {
         //stupid GORM proxy classes prevent decent static typing here
         RejectionListingActivityRepresentation(ListingActivity activity,
-                DomainResourceUriBuilder<Listing> listingUriBuilder,
-                DomainResourceUriBuilder<Profile> profileUriBuilder,
+                ObjectUriBuilder<Listing> listingUriBuilder,
+                ObjectUriBuilder<Profile> profileUriBuilder,
                 RepresentationFactory<Profile> profileRepresentationFactory,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             super(activity, listingUriBuilder, profileUriBuilder,
@@ -109,10 +109,10 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         @Override
         ListingActivityRepresentation toRepresentation(ListingActivity activity,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            DomainResourceUriBuilder<Listing> listingUriBuilder =
+            ObjectUriBuilder<Listing> listingUriBuilder =
                 listingUriBuilderFactory.getBuilder(uriBuilderHolder)
 
-            DomainResourceUriBuilder<Profile> profileUriBuilder =
+            ObjectUriBuilder<Profile> profileUriBuilder =
                 profileUriBuilderFactory.getBuilder(uriBuilderHolder)
 
             //GORM subclassses returned from db queries are proxy objects not real

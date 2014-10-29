@@ -8,8 +8,7 @@ import marketplace.hal.HalLinks
 import marketplace.hal.Link
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.SelfRefRepresentation
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 /**
  * A representation of a Service Item within the Application Library, with all information needed
@@ -20,8 +19,8 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     private Listing listing
 
     public LibraryApplicationRepresentation(ApplicationLibraryEntry entry,
-            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ResourceUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder) {
         super(
             listingUriBuilder.getUri(entry.listing),
             createLinks(entry, entryUriBuilder),
@@ -32,7 +31,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     }
 
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
-            DomainResourceUriBuilder<ApplicationLibraryEntry> entryUriBuilder) {
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder) {
         URI launchUri = new URI(entry.listing.launchUrl),
             libraryEntryUri = entryUriBuilder.getUri(entry)
         new HalLinks([

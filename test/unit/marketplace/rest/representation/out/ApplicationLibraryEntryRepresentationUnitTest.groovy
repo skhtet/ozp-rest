@@ -17,8 +17,7 @@ import marketplace.hal.RegisteredRelationType
 
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.ChildObjectCollection
 
 @TestMixin(GrailsUnitTestMixin)
@@ -46,7 +45,7 @@ class ApplicationLibraryEntryRepresentationUnitTest {
                     URI getCollectionUri(ChildObjectCollection collection) {
                         new URI('https://localhost/asdf/api/profile/entry')
                     }
-                    URI getCollectionUri(ApplicationLibraryEntry entry) {
+                    URI getCollectionUri(Profile parent) {
                         new URI('https://localhost/asdf/api/profile/entry')
                     }
                 }
@@ -101,7 +100,7 @@ class ApplicationLibraryEntryRepresentationUnitTest {
 
         ApplicationLibraryEntry libraryApplicationEntry
         LibraryApplicationRepresentation.metaClass.constructor = { ApplicationLibraryEntry e,
-                DomainResourceUriBuilder entryUriBuilder, ResourceUriBuilder listingUriBuilder ->
+                ObjectUriBuilder entryUriBuilder, ObjectUriBuilder listingUriBuilder ->
             libraryApplicationEntry = e
 
             return new AbstractHalRepresentation() {}

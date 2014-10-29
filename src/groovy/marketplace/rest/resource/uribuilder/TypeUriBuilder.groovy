@@ -13,7 +13,9 @@ class TypeUriBuilder extends RepresentationResourceUriBuilder<Type> {
     }
 
     @Component
-    public static class Factory implements ResourceUriBuilder.Factory<Type> {
+    public static class Factory implements
+            ObjectUriBuilder.Factory<Type>,
+            CollectionUriBuilder.Factory<Type> {
         TypeUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new TypeUriBuilder(uriBuilderHolder)

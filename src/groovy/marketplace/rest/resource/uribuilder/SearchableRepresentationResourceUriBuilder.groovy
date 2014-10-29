@@ -7,15 +7,16 @@ import marketplace.rest.resource.RepresentationResource
 import marketplace.search.SearchResult
 
 abstract class SearchableRepresentationResourceUriBuilder<T>
-        extends RepresentationResourceUriBuilder<T> implements SearchableResourceUriBuilder<T> {
+        extends RepresentationResourceUriBuilder<T> implements SearchUriBuilder<T> {
 
     protected SearchableRepresentationResourceUriBuilder(
-            Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>> resourceCls,
+            Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>>
+                resourceCls,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(resourceCls, uriBuilderHolder)
     }
 
-    URI getSearchUri(SearchResult searchResult) {
+    URI getSearchUri(SearchResult<T> searchResult) {
         def uriBuilder = uriBuilderHolder.builder
                 .path(ListingResource.class)
                 .path(ListingResource.class, 'search')
@@ -34,5 +35,9 @@ abstract class SearchableRepresentationResourceUriBuilder<T>
         uriBuilder.queryParam('offset', searchResult.offset)
 
         uriBuilder.build()
+    }
+
+    CollectionUriBuilder<T> getCollectionUriBuilder(SearchResult<T> searchResult) {
+        { -> getSearchUri(searchResult) } as CollectionUriBuilder
     }
 }

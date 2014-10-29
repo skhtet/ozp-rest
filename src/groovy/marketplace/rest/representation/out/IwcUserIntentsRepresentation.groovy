@@ -13,11 +13,11 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.IwcUserIntents
 import marketplace.rest.resource.uribuilder.IntentUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 class IwcUserIntentsRepresentation extends SelfRefRepresentation<IwcUserIntents> {
     IwcUserIntentsRepresentation(IwcUserIntents userIntents,
-            ProfileUriBuilder profileUriBuilder, ResourceUriBuilder<Intent> intentUriBuilder) {
+            ProfileUriBuilder profileUriBuilder, ObjectUriBuilder<Intent> intentUriBuilder) {
         super(
             profileUriBuilder.getIntentsUri(userIntents.user),
             linkIntents(userIntents.intents, intentUriBuilder), null
@@ -25,7 +25,7 @@ class IwcUserIntentsRepresentation extends SelfRefRepresentation<IwcUserIntents>
     }
 
     private static HalLinks linkIntents(Collection<Intent> intents,
-            ResourceUriBuilder<Intent> intentUriBuilder) {
+            ObjectUriBuilder<Intent> intentUriBuilder) {
         new HalLinks(intents.collect { intent ->
             URI href = intentUriBuilder.getUri(intent)
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))

@@ -41,7 +41,10 @@ class ListingUriBuilder extends SearchableRepresentationResourceUriBuilder<Listi
     }
 
     @Component
-    public static class Factory implements SearchableResourceUriBuilder.Factory<Listing> {
+    public static class Factory implements
+            SearchUriBuilder.Factory<Listing>,
+            ObjectUriBuilder.Factory<Listing>,
+            CollectionUriBuilder.Factory<Listing> {
         ListingUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ListingUriBuilder(uriBuilderHolder)

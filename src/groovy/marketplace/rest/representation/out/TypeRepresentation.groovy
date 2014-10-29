@@ -14,7 +14,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.AbstractHalRepresentation
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.TypeUriBuilder
 
 class TypeRepresentation extends SelfRefRepresentation<Type> {
@@ -24,7 +24,7 @@ class TypeRepresentation extends SelfRefRepresentation<Type> {
     private Type type
 
     private TypeRepresentation(Type type,
-            ResourceUriBuilder<Type> typeUriBuilder) {
+            ObjectUriBuilder<Type> typeUriBuilder) {
         super(typeUriBuilder.getUri(type), null, null)
 
         this.type = type

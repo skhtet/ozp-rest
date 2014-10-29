@@ -229,7 +229,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
         long id = getProfileId(profileId)
 
         new ChildObjectCollection(applicationLibraryEntryRestService.getByParentId(id),
-            read(profileId))
+            read(id))
     }
 
     /**

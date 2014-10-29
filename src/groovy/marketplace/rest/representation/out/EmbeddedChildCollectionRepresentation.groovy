@@ -7,8 +7,9 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.Link
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.RootResourceUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.CollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ChildCollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 import marketplace.rest.ChildObjectCollection
 
@@ -19,11 +20,13 @@ import marketplace.rest.ChildObjectCollection
 class EmbeddedChildCollectionRepresentation<P, T> extends EmbeddedCollectionRepresentation<T> {
     EmbeddedChildCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            RootResourceUriBuilder resourceUriBuilder,
-            DomainResourceUriBuilder<P> parentUriBuilder,
+            ChildCollectionUriBuilder<P,T> resourceUriBuilder,
+            ObjectUriBuilder<P> parentUriBuilder,
             ChildObjectCollection<P,T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(embeddedRepFactory, resourceUriBuilder, entities, uriBuilderHolder)
+        super(embeddedRepFactory,
+            resourceUriBuilder.getCollectionUriBuilder(entities),
+            entities, uriBuilderHolder)
 
         this.addLink(RegisteredRelationType.VIA,
             new Link(parentUriBuilder.getUri(entities.parent)))
@@ -31,8 +34,8 @@ class EmbeddedChildCollectionRepresentation<P, T> extends EmbeddedCollectionRepr
 
     public static <P,T> RepresentationFactory<ChildObjectCollection<P,T>> createFactory(
             RepresentationFactory<T> embeddedRepFactory,
-            RootResourceUriBuilder.Factory uriBuilderFactory,
-            DomainResourceUriBuilder.Factory<P> parentUriBuilderFactory) {
+            ChildCollectionUriBuilder.Factory uriBuilderFactory,
+            ObjectUriBuilder.Factory<P> parentUriBuilderFactory) {
 
         new RepresentationFactory() {
             EmbeddedChildCollectionRepresentation toRepresentation(

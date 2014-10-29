@@ -7,8 +7,9 @@ import marketplace.hal.Link
 import marketplace.hal.PagedCollection
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.RepresentationFactory
-import marketplace.rest.resource.uribuilder.RootResourceUriBuilder
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.CollectionUriBuilder
+import marketplace.rest.resource.uribuilder.SearchUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.search.SearchResult
 
 import marketplace.Paging
@@ -17,21 +18,34 @@ import javax.ws.rs.core.UriBuilder
 
 class HalCollectionRepresentationSupport {
     static HalEmbedded createEmbedded(RepresentationFactory embeddedRepFactory,
-                                              Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
+              Collection entities, ApplicationRootUriBuilderHolder uriBuilderHolder) {
         new HalEmbedded(entities.collect { Object entity ->
             new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                     embeddedRepFactory.toRepresentation(entity, uriBuilderHolder))
         })
     }
 
-    static HalLinks createLinks(RootResourceUriBuilder resourceUriBuilder, Paging entities) {
+    static <T> HalLinks createLinks(
+            SearchUriBuilder<T> searchUriBuilder,
+            ObjectUriBuilder<T> objectUriBuilder,
+            SearchResult<T> entities) {
+        createLinks(
+            searchUriBuilder.getCollectionUriBuilder(entities),
+            objectUriBuilder,
+            (Paging<T>)entities
+        )
+    }
+
+    static <T> HalLinks createLinks(
+            CollectionUriBuilder<T> collectionUriBuilder,
+            ObjectUriBuilder<T> objectUriBuilder,
+            Paging<T> entities) {
         Collection<Map.Entry> navLinks = []
 
         Map prevPageParams = getPrevPageParams(entities)
         Map nextPageParams = getNextPageParams(entities)
-        UriBuilder pagingUriBuilder = entities instanceof SearchResult ?
-                UriBuilder.fromUri(resourceUriBuilder.getSearchUri(entities)) :
-                UriBuilder.fromUri(resourceUriBuilder.getRootUri())
+        UriBuilder pagingUriBuilder =
+            UriBuilder.fromUri(collectionUriBuilder.getCollectionUri())
 
         //add link to previous page in collection
         if (prevPageParams) {
@@ -57,23 +71,32 @@ class HalCollectionRepresentationSupport {
                     new Link(nextPageUriBuilder.build()))
         }
 
-        HalLinks links = createLinks(resourceUriBuilder, (Collection)entities)
-        links.addLinks(new HalLinks(navLinks))
+        HalLinks links = new HalLinks(navLinks)
+        links.addLinks(createLinks(collectionUriBuilder, objectUriBuilder, (Collection)entities))
 
         return links
     }
 
-    static HalLinks createLinks(RootResourceUriBuilder resourceUriBuilder,
-                                        Collection entities) {
-        //generate links to items if possible
-        Collection<Map.Entry> itemLinks =
-            (resourceUriBuilder instanceof DomainResourceUriBuilder) ?
+    /**
+     * This signature is intentionally parallel to that of the previous method, in order
+     * to allow polymorphism to select the correct implementation
+     */
+    static <T> HalLinks createLinks(
+            CollectionUriBuilder<T> collectionUriBuilder,
+            ObjectUriBuilder<T> objectUriBuilder,
+            Collection<T> entities) {
+        if (objectUriBuilder) {
+            Collection<Map.Entry> itemLinks =
                 entities.collect { entity ->
-                    URI href = resourceUriBuilder.getUri(entity)
+                    URI href = objectUriBuilder.getUri(entity)
                     new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM, new Link(href))
-                } : []
+                }
 
-        new HalLinks(itemLinks)
+            new HalLinks(itemLinks)
+        }
+        else {
+            new HalLinks()
+        }
     }
 
     private static Map getPrevPageParams(Paging entities) {

@@ -14,7 +14,8 @@ import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
 
 class ApplicationLibraryEntryUriBuilder implements
-        ChildObjectUriBuilder<Profile, ApplicationLibraryEntry> {
+        ObjectUriBuilder<ApplicationLibraryEntry>,
+        ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> {
     private ApplicationRootUriBuilderHolder uriBuilderHolder
 
     protected ApplicationLibraryEntryUriBuilder(
@@ -30,11 +31,20 @@ class ApplicationLibraryEntryUriBuilder implements
     }
 
     URI getCollectionUri(ChildObjectCollection<Profile, ApplicationLibraryEntry> collection) {
-        getCollectionBuilder().buildFromMap(profileId: collection.parent.id)
+        getCollectionUri(collection.parent)
     }
 
-    URI getCollectionUri(ApplicationLibraryEntry entry) {
-        getCollectionBuilder().buildFromMap(profileId: entry.owner.id)
+    URI getCollectionUri(Profile parent) {
+        getCollectionBuilder().buildFromMap(profileId: parent.id)
+    }
+
+    CollectionUriBuilder<ApplicationLibraryEntry> getCollectionUriBuilder(Profile parent) {
+        { -> getCollectionUri(parent) } as CollectionUriBuilder<ApplicationLibraryEntry>
+    }
+
+    CollectionUriBuilder<ApplicationLibraryEntry> getCollectionUriBuilder(
+            ChildObjectCollection<Profile, ApplicationLibraryEntry> collection) {
+        { -> getCollectionUri(collection) } as CollectionUriBuilder<ApplicationLibraryEntry>
     }
 
     private UriBuilder getCollectionBuilder() {
@@ -45,7 +55,9 @@ class ApplicationLibraryEntryUriBuilder implements
 
     @Component
     public static class Factory implements
-            ChildObjectUriBuilder.Factory<Profile, ApplicationLibraryEntry> {
+            ChildCollectionUriBuilder.Factory<Profile, ApplicationLibraryEntry>,
+            ObjectUriBuilder.Factory<ApplicationLibraryEntry> {
+
         ApplicationLibraryEntryUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ApplicationLibraryEntryUriBuilder(uriBuilderHolder)

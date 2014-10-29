@@ -8,12 +8,18 @@ import marketplace.rest.resource.RepresentationResource
  * Logic for getting resource URIs from a RepresentationResource class. Objects of type
  * T must have an id field
  */
-abstract class RepresentationResourceUriBuilder<T> implements ResourceUriBuilder<T> {
-    private Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>> resourceCls
+abstract class RepresentationResourceUriBuilder<T> implements
+        ObjectUriBuilder<T>,
+        CollectionUriBuilder<T> {
+
     protected ApplicationRootUriBuilderHolder uriBuilderHolder
 
+    private Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>>
+        resourceCls
+
     protected RepresentationResourceUriBuilder(
-            Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>> resourceCls,
+            Class<? extends RepresentationResource<T, ? extends InputRepresentation<T>>>
+                resourceCls,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         this.resourceCls = resourceCls
         this.uriBuilderHolder = uriBuilderHolder
@@ -26,7 +32,7 @@ abstract class RepresentationResourceUriBuilder<T> implements ResourceUriBuilder
             .buildFromMap(id: obj.id)
     }
 
-    URI getRootUri() {
+    URI getCollectionUri() {
         uriBuilderHolder.builder
             .path(resourceCls)
             .build()

@@ -9,7 +9,7 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
-import marketplace.rest.resource.uribuilder.ResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ContactTypeUriBuilder
 
 class ContactTypeRepresentation extends SelfRefRepresentation<ContactType> {
@@ -19,7 +19,7 @@ class ContactTypeRepresentation extends SelfRefRepresentation<ContactType> {
     private ContactType contactType
 
     private ContactTypeRepresentation(ContactType contactType,
-            ResourceUriBuilder<ContactType> contactTypeUriBuilder) {
+            ObjectUriBuilder<ContactType> contactTypeUriBuilder) {
         super(contactTypeUriBuilder.getUri(contactType), null, null)
 
         this.contactType = contactType

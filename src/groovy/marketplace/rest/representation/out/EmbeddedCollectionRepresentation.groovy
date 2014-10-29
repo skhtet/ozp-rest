@@ -9,7 +9,8 @@ import marketplace.Paging
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 
-import marketplace.rest.resource.uribuilder.RootResourceUriBuilder
+import marketplace.rest.resource.uribuilder.CollectionUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 /**
  * Representation of a collection where all of the elements are embedded representations
@@ -23,23 +24,27 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
 
     EmbeddedCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            RootResourceUriBuilder resourceUriBuilder,
+            CollectionUriBuilder<T> collectionUriBuilder,
             Paging<T> entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        this(embeddedRepFactory, resourceUriBuilder, (Collection<T>)entities, uriBuilderHolder)
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ObjectUriBuilder<T> objectUriBuilder = null) {
+        this(embeddedRepFactory, collectionUriBuilder, (Collection<T>)entities, uriBuilderHolder)
         this.total = entities.total
     }
 
     EmbeddedCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            RootResourceUriBuilder resourceUriBuilder,
+            CollectionUriBuilder<T> collectionUriBuilder,
             Collection<T> entities,
-            ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ObjectUriBuilder<T> objectUriBuilder = null) {
 
         super(
-            resourceUriBuilder.getRootUri(),
-            HalCollectionRepresentationSupport.createLinks(resourceUriBuilder, entities),
-            HalCollectionRepresentationSupport.createEmbedded(embeddedRepFactory, entities, uriBuilderHolder)
+            collectionUriBuilder.getCollectionUri(),
+            HalCollectionRepresentationSupport.createLinks(collectionUriBuilder,
+                objectUriBuilder, entities),
+            HalCollectionRepresentationSupport.createEmbedded(
+                embeddedRepFactory, entities, uriBuilderHolder)
         )
     }
 
@@ -51,7 +56,7 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
      */
     public static <T> RepresentationFactory<Collection<T>> createFactory(
             RepresentationFactory<T> embeddedRepFactory,
-            RootResourceUriBuilder.Factory uriBuilderFactory) {
+            CollectionUriBuilder.Factory uriBuilderFactory) {
 
         new RepresentationFactory() {
             EmbeddedCollectionRepresentation toRepresentation(entities,

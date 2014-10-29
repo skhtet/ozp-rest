@@ -17,7 +17,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.AbstractHalRepresentation
 
-import marketplace.rest.resource.uribuilder.DomainResourceUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
@@ -28,8 +28,8 @@ class RejectionListingRepresentation extends AbstractHalRepresentation<Rejection
     private RejectionListing rejection
 
     RejectionListingRepresentation(RejectionListing rejection,
-            DomainResourceUriBuilder<Listing> listingUriBuilder,
-            DomainResourceUriBuilder<Profile> profileUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ObjectUriBuilder<Profile> profileUriBuilder) {
         super(
             createLinks(rejection, listingUriBuilder, profileUriBuilder),
             null
@@ -39,8 +39,8 @@ class RejectionListingRepresentation extends AbstractHalRepresentation<Rejection
     }
 
     private static HalLinks createLinks(RejectionListing rejection,
-            DomainResourceUriBuilder<Listing> listingUriBuilder,
-            DomainResourceUriBuilder<Profile> profileUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ObjectUriBuilder<Profile> profileUriBuilder) {
         URI listingUri = listingUriBuilder.getUri(rejection.serviceItem),
             authorUri = profileUriBuilder.getUri(rejection.author)
 
