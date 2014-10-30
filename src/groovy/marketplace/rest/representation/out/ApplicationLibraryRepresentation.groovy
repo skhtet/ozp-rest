@@ -58,11 +58,11 @@ class ApplicationLibraryRepresentation
     private ApplicationLibraryRepresentation(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
             ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
-            ObjectUriBuilder<Profile, ApplicationLibraryEntry> entryUriBuilder,
+            ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
             ObjectUriBuilder<Profile> profileUriBuilder,
             ObjectUriBuilder<Listing> listingUriBuilder) {
         super(
-            entryUriBuilder.getCollectionUri(library),
+            entryCollectionUriBuilder.getCollectionUri(library),
             createLinks(library, profileUriBuilder),
             createFolders(library, entryUriBuilder, listingUriBuilder)
         )

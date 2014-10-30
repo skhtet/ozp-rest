@@ -32,12 +32,18 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
 
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder) {
-        URI launchUri = new URI(entry.listing.launchUrl),
+        String launchUrl = entry.listing.launchUrl
+        URI launchUri = launchUrl ? new URI(launchUrl): null,
             libraryEntryUri = entryUriBuilder.getUri(entry)
+
+        Map.Entry launchLinkEntry = launchUri ?
+            new AbstractMap.SimpleEntry(RegisteredRelationType.DESCRIBES, new Link(launchUri)) :
+            null
+
         new HalLinks([
-            new AbstractMap.SimpleEntry(RegisteredRelationType.DESCRIBES, new Link(launchUri)),
+            launchLinkEntry,
             new AbstractMap.SimpleEntry(RegisteredRelationType.VIA, new Link(libraryEntryUri))
-        ])
+        ] - null)
     }
 
     public String getTitle() { listing.title }
