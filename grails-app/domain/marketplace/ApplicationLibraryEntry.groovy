@@ -53,6 +53,7 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
             folder: folder,
             listing: new JSONObject(
                 id: listing.id,
+                uuid: listing.uuid,
                 title: listing.title,
                 imageMediumUrl: listing.imageMediumUrl,
                 imageLargeUrl: listing.imageLargeUrl,
