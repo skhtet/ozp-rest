@@ -1,0 +1,16 @@
+{
+	"id": "66ab53eb-15ab-ba31-299b-f4a5811e8294",
+	"name": "ozp_nextgen_dev",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "https://www.owfgoss.org/ng/dev-alpha/mp",
+			"type": "text",
+			"name": "baseUrl",
+			"enabled": true
+		}
+	],
+	"timestamp": 1414686082098,
+	"synced": false,
+	"syncedFilename": ""
+}

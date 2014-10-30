@@ -1,0 +1,16 @@
+{
+	"id": "aa1421fc-f3e8-cc61-9bc2-0b7e782cbfe0",
+	"name": "ozp_local_dev",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:8443/marketplace",
+			"type": "text",
+			"name": "baseUrl",
+			"enabled": true
+		}
+	],
+	"timestamp": 1414635911797,
+	"synced": false,
+	"syncedFilename": ""
+}

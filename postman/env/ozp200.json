@@ -1,0 +1,16 @@
+{
+	"id": "13f44635-52a5-2718-8f23-fc2912719a20",
+	"name": "ozp200",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "http://ozpcenter200.goss.owfgoss.org:8080/marketplace",
+			"type": "text",
+			"name": "baseUrl",
+			"enabled": true
+		}
+	],
+	"timestamp": 1414691012606,
+	"synced": false,
+	"syncedFilename": ""
+}
