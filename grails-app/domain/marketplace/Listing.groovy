@@ -184,30 +184,45 @@ class Listing implements Serializable {
         applicationLibraryEntries cascade: 'all-delete-orphan'
     }
 
+    //A closure to use to validate that properties are present on a listing
+    //that is in any approvalStatus other than IN_PROGRESS
+    static requiredUnlessInProgress = { val, Listing listing ->
+        (listing.approvalStatus != ApprovalStatus.IN_PROGRESS &&     //reject if not draft
+            (val == null ||                                          //and val is null
+                (val.respondsTo('size') && val.size() == 0)          //or empty/blank
+            )
+        ) ? "requiredUnlessInProgress" : true
+    }
+
     static constraints = {
-        width nullable: true
-        height nullable: true
-        whatIsNew nullable: true, maxSize: 250
-        descriptionShort nullable: true, maxSize: 150
-        isFeatured nullable: true
+        width nullable: true, validator: requiredUnlessInProgress
+        height nullable: true, validator: requiredUnlessInProgress
+        whatIsNew nullable: true, maxSize: 250, validator: requiredUnlessInProgress
+        descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
+        isFeatured nullable: true, validator: requiredUnlessInProgress
         title nullable: false, blank: false, maxSize: 255
-        description maxSize: 4000, nullable: true
-        versionName maxSize: 255, nullable: true
-        requirements nullable: true, maxSize: 1000
-        agency nullable: true
+        description maxSize: 4000, nullable: true, validator: requiredUnlessInProgress
+        versionName maxSize: 255, nullable: true, validator: requiredUnlessInProgress
+        requirements nullable: true, maxSize: 1000, validator: requiredUnlessInProgress
+        agency nullable: true, validator: requiredUnlessInProgress
         type nullable: false
         totalRate5(nullable: true)
         totalRate4(nullable: true)
         totalRate3(nullable: true)
         totalRate2(nullable: true)
         totalRate1(nullable: true)
-        launchUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        categories(nullable: true)
+        launchUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX,
+            validator: requiredUnlessInProgress
+        categories(nullable: true, validator: requiredUnlessInProgress)
         uuid nullable: false, blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
-        imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE,
+            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
+        imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
+            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
+        imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
+            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
+        imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE,
+            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
         approvalStatus(inList:ApprovalStatus.values().toList())
         lastActivity(nullable:true)
         approvedDate(nullable:true)
@@ -221,15 +236,25 @@ class Listing implements Serializable {
                 return 'maxSize.exceeded'
             }
         })
-        contacts validator: { val ->
-            withNewSession {
-                def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
-                    !val.find { contact -> contact.type == type }
-                }
+        contacts validator: { val, obj ->
+            def requiredCheck = requiredUnlessInProgress(val, obj)
 
-                if(missingRequiredTypes) ['requiredContactType', missingRequiredTypes*.title]
+            if (requiredCheck) {
+                withNewSession {
+                    def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
+                        !val.find { contact -> contact.type == type }
+                    }
+
+                    if(missingRequiredTypes)
+                        return ['requiredContactType', missingRequiredTypes*.title]
+                }
+            }
+            else {
+                return requiredCheck
             }
         }
+        screenshots validator: requiredUnlessInProgress
+        docUrls validator: requiredUnlessInProgress
     }
 
     String toString() {
