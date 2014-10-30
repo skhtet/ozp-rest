@@ -25,7 +25,6 @@ class ProfilesRepresentationWriter extends
     @Autowired
     ProfilesRepresentationWriter(ProfileRepresentation.Factory factory,
             ProfileUriBuilder.Factory profileUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
-            profileUriBuilderFactory))
+        super(EmbeddedCollectionRepresentation.createFactory(factory, profileUriBuilderFactory))
     }
 }

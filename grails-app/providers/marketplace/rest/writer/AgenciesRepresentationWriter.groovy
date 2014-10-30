@@ -25,7 +25,6 @@ class AgenciesRepresentationWriter extends
     @Autowired
     AgenciesRepresentationWriter(AgencyRepresentation.Factory factory,
             AgencyUriBuilder.Factory agencyUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
-            agencyUriBuilderFactory))
+        super(EmbeddedCollectionRepresentation.createFactory(factory, agencyUriBuilderFactory))
     }
 }

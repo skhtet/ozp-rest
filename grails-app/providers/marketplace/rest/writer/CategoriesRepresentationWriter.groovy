@@ -25,8 +25,7 @@ class CategoriesRepresentationWriter extends
     @Autowired
     CategoriesRepresentationWriter(CategoryRepresentation.Factory factory,
             CategoryUriBuilder.Factory categoryUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
-            categoryUriBuilderFactory))
+        super(EmbeddedCollectionRepresentation.createFactory(factory, categoryUriBuilderFactory))
     }
 }
 

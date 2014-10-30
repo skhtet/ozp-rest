@@ -5,6 +5,7 @@ import marketplace.hal.AbstractRepresentationWriter
 import marketplace.rest.representation.out.ListingRepresentation
 import marketplace.rest.representation.out.SearchResultRepresentation
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ListingSearchUriBuilder
 import marketplace.search.SearchResult
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -20,7 +21,11 @@ import javax.ws.rs.ext.Provider
 class ListingSearchResultWriter extends AbstractRepresentationWriter<SearchResult<Listing>> {
 
     @Autowired
-    ListingSearchResultWriter(ListingRepresentation.Factory factory, ListingUriBuilder.Factory uriBuilderFactory) {
-        super(SearchResultRepresentation.createFactory(factory, uriBuilderFactory))
+    ListingSearchResultWriter(
+            ListingRepresentation.Factory factory,
+            ListingSearchUriBuilder.Factory searchUriBuilderFactory,
+            ListingUriBuilder.Factory uriBuilderFactory) {
+        super(SearchResultRepresentation.createFactory(factory, searchUriBuilderFactory,
+            uriBuilderFactory))
     }
 }

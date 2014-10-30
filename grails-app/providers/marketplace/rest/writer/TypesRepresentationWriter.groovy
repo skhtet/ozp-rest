@@ -25,8 +25,7 @@ class TypesRepresentationWriter extends
     @Autowired
     TypesRepresentationWriter(TypeRepresentation.Factory factory,
             TypeUriBuilder.Factory typeUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
-            typeUriBuilderFactory))
+        super(EmbeddedCollectionRepresentation.createFactory(factory, typeUriBuilderFactory))
     }
 }
 

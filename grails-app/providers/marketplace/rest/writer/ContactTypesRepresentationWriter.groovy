@@ -25,7 +25,6 @@ class ContactTypesRepresentationWriter extends
     @Autowired
     ContactTypesRepresentationWriter(ContactTypeRepresentation.Factory factory,
             ContactTypeUriBuilder.Factory typeUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
-            typeUriBuilderFactory))
+        super(EmbeddedCollectionRepresentation.createFactory(factory, typeUriBuilderFactory))
     }
 }

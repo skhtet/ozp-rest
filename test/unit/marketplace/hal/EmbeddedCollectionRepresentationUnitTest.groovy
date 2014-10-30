@@ -36,6 +36,7 @@ class EmbeddedCollectionRepresentationUnitTest {
 
         def representation = new EmbeddedCollectionRepresentation(null,
                 new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+                null,
                 [],
                 uriBuilderHolder)
 
@@ -67,6 +68,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             entities,
             uriBuilderHolder
         )
@@ -91,6 +93,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
@@ -104,6 +107,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
@@ -119,6 +123,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         def representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
@@ -133,6 +138,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
@@ -149,6 +155,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
@@ -164,6 +171,7 @@ class EmbeddedCollectionRepresentationUnitTest {
         representation = new EmbeddedCollectionRepresentation(
             new EmbeddedRepresentation.Factory(),
             new ProfileUriBuilder.Factory().getBuilder(uriBuilderHolder),
+            null,
             paged,
             uriBuilderHolder
         )
