@@ -40,7 +40,7 @@ class ProfileListingUriBuilder implements
     }
 
     URI getCollectionUri(ChildObjectCollection<Profile, Listing> collection) {
-        getCollectionUri(parent)
+        getCollectionUri(collection.parent)
     }
 
     URI getCollectionUri(Profile parent) {
@@ -53,7 +53,7 @@ class ProfileListingUriBuilder implements
     }
 
     CollectionUriBuilder<Listing> getCollectionUriBuilder(Profile parent) {
-        { -> getCollectionUri(collection) } as CollectionUriBuilder<Listing>
+        { -> getCollectionUri(parent) } as CollectionUriBuilder<Listing>
     }
 
     @Component
