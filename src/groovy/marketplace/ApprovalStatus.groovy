@@ -11,6 +11,4 @@ enum ApprovalStatus {
     private ApprovalStatus(String name) {
         this.name = name
     }
-
-    public String toString() { name }
 }
