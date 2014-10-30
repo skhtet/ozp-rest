@@ -190,11 +190,12 @@ class Listing implements Serializable {
         whatIsNew nullable: true, maxSize: 250
         descriptionShort nullable: true, maxSize: 150
         isFeatured nullable: true
-        title blank: false, maxSize: 255
+        title nullable: false, blank: false, maxSize: 255
         description maxSize: 4000, nullable: true
         versionName maxSize: 255, nullable: true
         requirements nullable: true, maxSize: 1000
         agency nullable: true
+        type nullable: false
         totalRate5(nullable: true)
         totalRate4(nullable: true)
         totalRate3(nullable: true)
@@ -202,7 +203,7 @@ class Listing implements Serializable {
         totalRate1(nullable: true)
         launchUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         categories(nullable: true)
-        uuid blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
+        uuid nullable: false, blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
         imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
         imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
