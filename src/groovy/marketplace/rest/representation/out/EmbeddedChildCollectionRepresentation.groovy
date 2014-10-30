@@ -20,12 +20,12 @@ import marketplace.rest.ChildObjectCollection
 class EmbeddedChildCollectionRepresentation<P, T> extends EmbeddedCollectionRepresentation<T> {
     EmbeddedChildCollectionRepresentation(
             RepresentationFactory<T> embeddedRepFactory,
-            ChildCollectionUriBuilder<P,T> resourceUriBuilder,
+            ChildCollectionUriBuilder<P,T> collectionUriBuilder,
             ObjectUriBuilder<P> parentUriBuilder,
             ChildObjectCollection<P,T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(embeddedRepFactory,
-            resourceUriBuilder.getCollectionUriBuilder(entities),
+            collectionUriBuilder.getCollectionUriBuilder(entities),
             entities, uriBuilderHolder)
 
         this.addLink(RegisteredRelationType.VIA,

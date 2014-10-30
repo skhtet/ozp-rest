@@ -14,6 +14,8 @@ import marketplace.testutil.ProfileMappedByFix
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.mixin.TestMixin
 
+import grails.orm.PagedResultList
+
 import marketplace.rest.service.ProfileRestService
 import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.service.ItemCommentRestService
@@ -25,6 +27,15 @@ class ProfileResourceUnitTest {
     ProfileResource resource
 
     def currentUser
+
+    private makePagedResultList(contents) {
+        def mockC = mockFor(org.hibernate.Criteria)
+        mockC.demand.list { return []} //PagedResultList constructor calls this
+        new PagedResultList(null, mockC.createMock()){{
+            list = contents
+            totalCount = contents.size()
+        }}
+    }
 
     void setUp() {
         def testUser = new Profile(username: 'testUser')
@@ -235,11 +246,11 @@ class ProfileResourceUnitTest {
             def listing = new Listing(title: 'listing 1')
             listing.id = 2
 
-            return [new ListingActivity(
+            return makePagedResultList([new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
                 listing: listing
-            )]
+            )])
         }
 
         resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
@@ -266,20 +277,22 @@ class ProfileResourceUnitTest {
 
         def idPassedIn, offsetPassedIn, maxPassedIn
 
+        def listing = new Listing(title: 'listing 1')
+        listing.id = 2
+
+        def pagedList = makePagedResultList([new ListingActivity(
+            action: Constants.Action.CREATED,
+            author: Profile.get(1),
+            listing: listing
+        )])
+
         def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
         listingActivityRestServiceMock.demand.getAllByProfileId(1..1) { id, offset, max ->
             idPassedIn = id
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def listing = new Listing(title: 'listing 1')
-            listing.id = 2
-
-            return [new ListingActivity(
-                action: Constants.Action.CREATED,
-                author: Profile.get(1),
-                listing: listing
-            )]
+            return pagedList
         }
 
         resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
@@ -303,6 +316,14 @@ class ProfileResourceUnitTest {
     void testGetListingActivitiesByListingOwnerId() {
         def idPassedIn, offsetPassedIn, maxPassedIn
 
+        def listing = new Listing(title: 'listing 1')
+        listing.id = 2
+        def pagedList = makePagedResultList([new ListingActivity(
+            action: Constants.Action.CREATED,
+            author: Profile.get(1),
+            listing: listing
+        )])
+
         def listingActivityRestServiceMock = mockFor(ListingActivityRestService)
         listingActivityRestServiceMock.demand.getAllByListingOwnerId(1..1) { id, offset,
                 max ->
@@ -311,14 +332,7 @@ class ProfileResourceUnitTest {
             offsetPassedIn = offset
             maxPassedIn = max
 
-            def listing = new Listing(title: 'listing 1')
-            listing.id = 2
-
-            return [new ListingActivity(
-                action: Constants.Action.CREATED,
-                author: Profile.get(1),
-                listing: listing
-            )]
+            return pagedList
         }
 
         resource.listingActivityRestService = listingActivityRestServiceMock.createMock()
@@ -357,11 +371,11 @@ class ProfileResourceUnitTest {
             def listing = new Listing(title: 'listing 1')
             listing.id = 2
 
-            return [new ListingActivity(
+            return makePagedResultList([new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
                 listing: listing
-            )]
+            )])
         }
 
         resource.listingActivityRestService = listingActivityRestServiceMock.createMock()

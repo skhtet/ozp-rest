@@ -8,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.rest.representation.out.ListingActivityRepresentation
 import marketplace.rest.representation.out.EmbeddedChildCollectionRepresentation
-import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileUriBuilder
+import marketplace.rest.resource.uribuilder.ProfileOwnedListingActivityUriBuilder
 import marketplace.rest.resource.uribuilder.ListingActivityUriBuilder
 
-import marketplace.rest.PagingChildObjectCollection
+import marketplace.rest.ProfileOwnedListingActivities
 
 import marketplace.hal.AbstractRepresentationWriter
 
-import marketplace.Listing
+import marketplace.Profile
 import marketplace.ListingActivity
 
 @Provider
@@ -23,13 +24,14 @@ import marketplace.ListingActivity
     ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
     MediaType.APPLICATION_JSON
 ])
-class ListingActivitiesChildRepresentationWriter extends
-        AbstractRepresentationWriter<PagingChildObjectCollection<Listing, ListingActivity>> {
+class ProfileOwnedListingActivitiesRepresentationWriter extends
+        AbstractRepresentationWriter<ProfileOwnedListingActivities> {
 
     @Autowired
-    ListingActivitiesChildRepresentationWriter(ListingActivityRepresentation.Factory factory,
-            ListingActivityUriBuilder.Factory collectionUriBuilderFactory,
-            ListingUriBuilder.Factory parentUriBuilderFactory) {
+    ProfileOwnedListingActivitiesRepresentationWriter(
+            ListingActivityRepresentation.Factory factory,
+            ProfileOwnedListingActivityUriBuilder.Factory collectionUriBuilderFactory,
+            ProfileUriBuilder.Factory parentUriBuilderFactory) {
         super(EmbeddedChildCollectionRepresentation.createFactory(factory,
                 collectionUriBuilderFactory, parentUriBuilderFactory))
     }

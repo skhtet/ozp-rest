@@ -52,7 +52,10 @@ import marketplace.rest.representation.out.AgencyRepresentation
 import marketplace.rest.representation.out.ApplicationLibraryEntryRepresentation
 import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.representation.out.ProfileRepresentation
+import marketplace.rest.representation.out.ListingActivityRepresentation
 import marketplace.rest.ChildObjectCollection
+import marketplace.rest.PagingChildObjectCollection
+import marketplace.rest.ProfileOwnedListingActivities
 import marketplace.rest.ItemCommentServiceItemDto
 
 @Path('/api/profile')
@@ -114,22 +117,40 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
 
     @Path('/{profileId}/activity')
     @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    List<ListingActivity> getListingActivitiesByProfileId(
+    @Produces([
+        ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    PagingChildObjectCollection<Profile, ListingActivity> getListingActivitiesByProfileId(
             @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        listingActivityRestService.getAllByProfileId(getProfileId(profileId), offset, max)
+        long id = getProfileId(profileId)
+
+        new PagingChildObjectCollection(
+            listingActivityRestService.getAllByProfileId(id, offset, max),
+            read(id),
+            offset,
+            max
+        )
     }
 
     @Path('/{profileId}/listing/activity')
     @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([MediaType.APPLICATION_JSON])
-    List<ListingActivity> getListingActivitiesByListingOwnerId(
+    @Produces([
+        ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    ProfileOwnedListingActivities getListingActivitiesByListingOwnerId(
             @PathParam('profileId') String profileId, @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
-        listingActivityRestService.getAllByListingOwnerId(getProfileId(profileId), offset, max)
+        long id = getProfileId(profileId)
+
+        new ProfileOwnedListingActivities(
+            listingActivityRestService.getAllByListingOwnerId(id, offset, max),
+            read(id),
+            offset,
+            max
+        )
     }
 
     @GET

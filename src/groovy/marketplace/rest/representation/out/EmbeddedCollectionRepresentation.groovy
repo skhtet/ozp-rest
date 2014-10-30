@@ -28,7 +28,8 @@ class EmbeddedCollectionRepresentation<T> extends SelfRefRepresentation<Collecti
             Paging<T> entities,
             ApplicationRootUriBuilderHolder uriBuilderHolder,
             ObjectUriBuilder<T> objectUriBuilder = null) {
-        this(embeddedRepFactory, collectionUriBuilder, (Collection<T>)entities, uriBuilderHolder)
+        this(embeddedRepFactory, collectionUriBuilder, (Collection<T>)entities,
+            uriBuilderHolder, objectUriBuilder)
         this.total = entities.total
     }
 
