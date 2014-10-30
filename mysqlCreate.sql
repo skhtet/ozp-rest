@@ -2,7 +2,7 @@
 --  Update Database Script
 --  *********************************************************************
 --  Change Log: changelog.groovy
---  Ran at: 10/27/14 4:46 PM
+--  Ran at: 10/30/14 12:13 PM
 --  Against: root@localhost@jdbc:mysql://localhost:3306/ozp_empty
 --  Liquibase version: 2.0.5
 --  *********************************************************************
@@ -16,7 +16,7 @@ INSERT INTO `DATABASECHANGELOGLOCK` (`ID`, `LOCKED`) VALUES (1, 0);
 --  Create Database Change Log Table
 CREATE TABLE `DATABASECHANGELOG` (`ID` VARCHAR(63) NOT NULL, `AUTHOR` VARCHAR(63) NOT NULL, `FILENAME` VARCHAR(200) NOT NULL, `DATEEXECUTED` DATETIME NOT NULL, `ORDEREXECUTED` INT NOT NULL, `EXECTYPE` VARCHAR(10) NOT NULL, `MD5SUM` VARCHAR(35) NULL, `DESCRIPTION` VARCHAR(255) NULL, `COMMENTS` VARCHAR(255) NULL, `TAG` VARCHAR(255) NULL, `LIQUIBASE` VARCHAR(20) NULL, CONSTRAINT `PK_DATABASECHANGELOG` PRIMARY KEY (`ID`, `AUTHOR`, `FILENAME`)) ENGINE=InnoDB;
 
---  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:239e61640505387f91a3f730af929123)
+--  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:a04a157c279c58df8a15fe1bd458df16)
 CREATE TABLE `profile` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `bio` VARCHAR(1000) NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `display_name` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `email` VARCHAR(255) NULL, `highest_role` VARCHAR(255) NOT NULL, `last_login` DATETIME NOT NULL, `username` VARCHAR(255) NOT NULL, CONSTRAINT `profilePK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
 
 CREATE INDEX `FKED8E89A97666C6D2` ON `profile`(`created_by_id`);
@@ -85,7 +85,7 @@ ALTER TABLE `listing_activity` ADD CONSTRAINT `FK9CE7FE6A7666C6D2` FOREIGN KEY (
 
 ALTER TABLE `listing_activity` ADD CONSTRAINT `FK9CE7FE6AE31CB353` FOREIGN KEY (`edited_by_id`) REFERENCES `profile` (`id`);
 
-CREATE TABLE `listing` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `agency_id` BIGINT NULL, `approval_status` VARCHAR(255) NOT NULL, `approved_date` DATETIME NULL, `avg_rate` FLOAT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(4000) NULL, `description_short` VARCHAR(150) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `image_large_url` VARCHAR(2083) NULL, `image_medium_url` VARCHAR(2083) NULL, `image_small_url` VARCHAR(2083) NULL, `image_xlarge_url` VARCHAR(2083) NULL, `is_enabled` bit NOT NULL, `is_featured` bit NULL, `last_activity_id` BIGINT NULL, `launch_url` VARCHAR(2083) NULL, `requirements` VARCHAR(1000) NULL, `title` VARCHAR(255) NOT NULL, `total_comments` INT NOT NULL, `total_rate1` INT NULL, `total_rate2` INT NULL, `total_rate3` INT NULL, `total_rate4` INT NULL, `total_rate5` INT NULL, `total_votes` INT NOT NULL, `type_id` BIGINT NOT NULL, `uuid` VARCHAR(255) NOT NULL, `version_name` VARCHAR(255) NULL, `what_is_new` VARCHAR(250) NULL, CONSTRAINT `listingPK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
+CREATE TABLE `listing` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `agency_id` BIGINT NULL, `approval_status` VARCHAR(255) NOT NULL, `approved_date` DATETIME NULL, `avg_rate` FLOAT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(4000) NULL, `description_short` VARCHAR(150) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `image_large_url` VARCHAR(2083) NULL, `image_medium_url` VARCHAR(2083) NULL, `image_small_url` VARCHAR(2083) NULL, `image_xlarge_url` VARCHAR(2083) NULL, `is_enabled` bit NOT NULL, `is_featured` bit NULL, `last_activity_id` BIGINT NULL, `launch_url` VARCHAR(2083) NULL, `requirements` VARCHAR(1000) NULL, `title` VARCHAR(255) NOT NULL, `total_comments` INT NOT NULL, `total_rate1` INT NULL, `total_rate2` INT NULL, `total_rate3` INT NULL, `total_rate4` INT NULL, `total_rate5` INT NULL, `total_votes` INT NOT NULL, `type_id` BIGINT NOT NULL, `uuid` VARCHAR(255) NOT NULL, `version_name` VARCHAR(255) NULL, `what_is_new` VARCHAR(250) NULL, `width` INT NULL, `singleton` bit NOT NULL, `height` INT NULL, CONSTRAINT `listingPK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
 
 CREATE INDEX `FKAD8BA84143B24BD` ON `listing`(`agency_id`);
 
@@ -355,5 +355,5 @@ CREATE INDEX `FKE68D3F715416850B` ON `modify_relationship_activity`(`id`);
 
 ALTER TABLE `modify_relationship_activity` ADD CONSTRAINT `FKE68D3F715416850B` FOREIGN KEY (`id`) REFERENCES `listing_activity` (`id`);
 
-INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x4), Create Table, Create Index (x3), Add Foreign Key Constraint (x5), Create Table, Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:239e61640505387f91a3f730af929123', 1);
+INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x4), Create Table, Create Index (x3), Add Foreign Key Constraint (x5), Create Table, Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:a04a157c279c58df8a15fe1bd458df16', 1);
 

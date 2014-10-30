@@ -353,6 +353,13 @@ databaseChangeLog = {
             column(name: "version_name", type: "varchar(255)")
 
             column(name: "what_is_new", type: "varchar(250)")
+
+            column(name: 'width', type: 'integer')
+
+            column(name: 'singleton', type: 'bit') {
+                constraints(nullable: "false")
+            }
+            column(name: 'height', type: 'integer')
         }
 
         createIndex(indexName: "FKAD8BA84143B24BD", tableName: "listing") {
