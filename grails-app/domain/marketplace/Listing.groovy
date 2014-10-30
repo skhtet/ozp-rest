@@ -72,7 +72,7 @@ class Listing implements Serializable {
             'itemComments', 'contacts', 'totalRate1', 'totalRate2',
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'versionName', 'sortTitle', 'isFeatured',
-            'title', 'agency', 'docUrls', 'uuid', 'launchUrl',
+            'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'singleton', 'width', 'height',
             'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
             'createdDate', 'editedDate', 'isEnabled', 'tags', 'descriptionShort', 'whatIsNew'
         ]
@@ -133,6 +133,10 @@ class Listing implements Serializable {
     Integer totalRate1 = 0
     Integer totalComments = 0
 
+    boolean singleton = false
+    Integer width = 300
+    Integer height = 300
+
     SortedSet<RejectionListing> rejectionListings
     List<Screenshot> screenshots
     List<ListingActivity> listingActivities
@@ -181,6 +185,8 @@ class Listing implements Serializable {
     }
 
     static constraints = {
+        width nullable: true
+        height nullable: true
         whatIsNew nullable: true, maxSize: 250
         descriptionShort nullable: true, maxSize: 150
         isFeatured nullable: true

@@ -53,6 +53,9 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getType() { listing.type?.title }
     String getAgency() { listing.agency?.title }
     String getAgencyShort() { listing.agency?.shortName }
+    Integer getHeight() { listing.height }
+    Integer getWidth() { listing.width }
+    Boolean singleton() { listing.singleton }
 
     CurrentRejectionRepresentation getCurrentRejection() { listing.rejectionListings ?
         new CurrentRejectionRepresentation(listing.rejectionListings.first()) : null

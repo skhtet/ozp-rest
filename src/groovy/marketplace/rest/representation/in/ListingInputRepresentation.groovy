@@ -24,6 +24,9 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     String imageXlargeUrl
     String versionName
     String whatIsNew
+    Integer width
+    Integer height
+    Boolean singleton = false
     Boolean isFeatured = false
     Boolean isEnabled = true
     Set<String> tags
