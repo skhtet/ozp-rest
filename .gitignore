@@ -62,7 +62,6 @@ plugins/*
 node_modules
 js-build
 .vagrant
-data/
 
 # Project files
 ######################
