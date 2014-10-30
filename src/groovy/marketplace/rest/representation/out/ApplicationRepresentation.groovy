@@ -24,6 +24,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     String getName() { listing.title }
     String getType() { listing.type.title }
     String getDescription() { listing.description }
+    String getDescriptionShort() { listing.descriptionShort }
     String getId() { listing.uuid }
     ApprovalStatus getApprovalStatus() { listing.approvalStatus }
     Map<String, String> getLaunchUrls() { [default: listing.launchUrl] }
@@ -38,6 +39,13 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     }}
 
     UiHintsRepresentation getUiHints() { new UiHintsRepresentation(listing) }
+
+    Map<String, String> getIcons() {[
+            small: listing.imageSmallUrl,
+            large: listing.imageMediumUrl,
+            banner: listing.imageLargeUrl,
+            featuredBanner: listing.imageXlargeUrl
+    ]}
 
     //TODO: What is state?
     final String state = 'Active'
