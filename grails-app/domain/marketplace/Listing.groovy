@@ -195,6 +195,8 @@ class Listing implements Serializable {
     }
 
     static constraints = {
+        width nullable: true
+        height nullable: true
         whatIsNew nullable: true, maxSize: 250, validator: requiredUnlessInProgress
         descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
         isFeatured nullable: true, validator: requiredUnlessInProgress
