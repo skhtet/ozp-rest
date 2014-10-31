@@ -10,6 +10,9 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
 import org.springframework.security.access.AccessDeniedException
 
+import marketplace.Category
+import marketplace.Agency
+import marketplace.ContactType
 import marketplace.Listing
 import marketplace.Type
 import marketplace.DocUrl
@@ -27,12 +30,16 @@ import marketplace.validator.ListingValidator
 import ozone.marketplace.enums.RelationshipType
 
 import marketplace.rest.representation.in.ListingInputRepresentation
+import marketplace.rest.representation.in.ProfilePropertyInputRepresentation
+import marketplace.rest.representation.in.ResourceInputRepresentation
+import marketplace.rest.representation.in.ScreenshotInputRepresentation
+import marketplace.rest.representation.in.ContactInputRepresentation
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
 @TestMixin(DomainClassUnitTestMixin)
-@Mock([ContactType])
+@Mock([ContactType, Screenshot, Contact, DocUrl])
 class ListingRestServiceUnitTest {
 
     GrailsApplication grailsApplication
@@ -41,16 +48,44 @@ class ListingRestServiceUnitTest {
 
     Profile currentUser, owner, nonOwner, admin
     Type type1
+    Agency agency1
+    ContactType contactType1
+    Category category1
 
     private static final exampleServiceItemProps = [
+        height: 10,
+        width: 10,
         title: "test service item",
-        type: [ id: 1 ],
+        type: "Test Type",
         description: "a test service item",
         launchUrl: "https://localhost/asf",
-        owners: [ id: 1 ],
+        owners: [[ username: 'owner' ]],
         versionName: '1',
         isEnabled: true,
-        approvalStatus: ApprovalStatus.IN_PROGRESS
+        approvalStatus: ApprovalStatus.IN_PROGRESS,
+        docUrls: [[
+            name: "doc 1",
+            url: "https://localhost"
+        ]],
+        screenshots: [[
+            smallImageUrl: "https://localhost",
+            largeImageUrl: "https://localhost"
+        ]],
+        imageSmallUrl: "https://localhost/asdf",
+        imageMediumUrl: "https://localhost/asdf",
+        imageLargeUrl: "https://localhost/asdf",
+        imageXlargeUrl: "https://localhost/asdf",
+        whatIsNew: "nothin'",
+        descriptionShort: "asdf",
+        categories: ["Test Category"],
+        agency: "Test Agency",
+        requirements: "stuff",
+        contacts: [[
+            unsecurePhone: "555-555-5555",
+            email: "me@you.com",
+            name: "jim bob",
+            type: "Test Contact Type"
+        ]]
     ]
 
     private createGrailsApplication() {
@@ -71,9 +106,39 @@ class ListingRestServiceUnitTest {
     }
 
     private makeServiceItem() {
-        def exampleServiceItem = new ListingInputRepresentation(exampleServiceItemProps + [
+        def exampleServiceItem = new Listing(exampleServiceItemProps + [
             owners: [owner],
-            type: type1
+            type: type1,
+            agency: agency1,
+            categories: [category1],
+            docUrls: exampleServiceItemProps.docUrls.collect {
+                new DocUrl(it)
+            },
+            screenshots: exampleServiceItemProps.screenshots.collect {
+                new Screenshot(it)
+            },
+            contacts: exampleServiceItemProps.contacts.collect {
+                new Contact(it + [
+                    type: contactType1
+                ])
+            }
+        ])
+    }
+
+    private makeServiceItemInputRepresentation() {
+        def exampleServiceItem = new ListingInputRepresentation(exampleServiceItemProps + [
+            owners: exampleServiceItemProps.owners.collect {
+                new ProfilePropertyInputRepresentation(it)
+            },
+            docUrls: exampleServiceItemProps.docUrls.collect {
+                new ResourceInputRepresentation(it)
+            },
+            screenshots: exampleServiceItemProps.screenshots.collect {
+                new ScreenshotInputRepresentation(it)
+            },
+            contacts: exampleServiceItemProps.contacts.collect {
+                new ContactInputRepresentation(it)
+            }
         ])
 
         return exampleServiceItem
@@ -88,10 +153,14 @@ class ListingRestServiceUnitTest {
         admin.id = 3
 
 
-        def type = new Type(title: 'Test Type', ozoneAware: true)
-        type.id = 1
-
-        type1 = type
+        type1 = new Type(title: 'Test Type')
+        type1.id = 1
+        agency1 = new Agency(title: 'Test Agency', shortName: "TA")
+        agency1.id = 1
+        contactType1 = new ContactType(title: 'Test Contact Type')
+        contactType1.id = 1
+        category1 = new Category(title: 'Test Category')
+        category1.id = 1
 
         def intent = new Intent(
             action: 'run',
@@ -106,7 +175,10 @@ class ListingRestServiceUnitTest {
         mockDomain(Relationship.class)
         mockDomain(RejectionListing.class)
 
-        mockDomain(Type.class, [type])
+        mockDomain(Type.class, [type1])
+        mockDomain(ContactType.class, [contactType1])
+        mockDomain(Category.class, [category1])
+        mockDomain(Agency.class, [agency1])
         mockDomain(Intent.class, [intent])
         mockDomain(Profile.class, [owner, nonOwner, admin])
 
@@ -116,10 +188,7 @@ class ListingRestServiceUnitTest {
         this.nonOwner = nonOwner
 
         mockDomain(Listing.class)
-        def exampleServiceItem = new Listing(exampleServiceItemProps + [
-            owners: [owner],
-            type: type1
-        ])
+        def exampleServiceItem = makeServiceItem()
         exampleServiceItem.save(failOnError:true)
 
         def serviceItemValidator = [
@@ -154,19 +223,16 @@ class ListingRestServiceUnitTest {
 
         //this should work because the listing is in progress
         currentUser = Profile.findByUsername('owner')
-        service.updateById(1, makeServiceItem())
+        service.updateById(1, makeServiceItemInputRepresentation())
 
         //populate initial ServiceItem
-        Listing original = new Listing(exampleServiceItemProps + [
-            owners: [owner],
-            type: type1
-        ])
+        Listing original = makeServiceItem()
         service.populateDefaults(original)
         original.approvalStatus = ApprovalStatus.APPROVED
         def id = original.save(failOnError: true).id
 
         //this should succeed because owners can always edit their listings
-        ListingInputRepresentation updates = makeServiceItem()
+        ListingInputRepresentation updates = makeServiceItemInputRepresentation()
         updates.approvalStatus = ApprovalStatus.APPROVED
         service.updateById(id, updates)
 
@@ -176,12 +242,12 @@ class ListingRestServiceUnitTest {
             si.approvalStatus = ApprovalStatus.IN_PROGRESS
             si.save(failOnError: true)
             currentUser = nonOwner
-            service.updateById(id, makeServiceItem())
+            service.updateById(id, makeServiceItemInputRepresentation())
         }
 
         //this should succeed because admins can always edit
         currentUser = admin
-        service.updateById(id, makeServiceItem())
+        service.updateById(id, makeServiceItemInputRepresentation())
     }
 
     void testAuthorizeCreate() {
@@ -192,11 +258,11 @@ class ListingRestServiceUnitTest {
 
         //ensure that normal users can create
         currentUser = Profile.findByUsername('nonOwner')
-        service.createFromRepresentation(makeServiceItem())
+        service.createFromRepresentation(makeServiceItemInputRepresentation())
 
         //ensure that admins can create
         currentUser = Profile.findByUsername('admin')
-        Listing dto = service.createFromRepresentation(makeServiceItem())
+        Listing dto = service.createFromRepresentation(makeServiceItemInputRepresentation())
 
         assertNotNull dto
     }
@@ -217,15 +283,15 @@ class ListingRestServiceUnitTest {
         ] as ListingActivityInternalService
 
         def approve = {
-            dto = makeServiceItem()
+            dto = makeServiceItemInputRepresentation()
             dto.approvalStatus = ApprovalStatus.APPROVED
             listing = service.updateById(id, dto)
         }
 
-        dto = makeServiceItem()
+        dto = makeServiceItemInputRepresentation()
 
         id = service.createFromRepresentation(dto).id
-        dto = makeServiceItem()
+        dto = makeServiceItemInputRepresentation()
         dto.approvalStatus = ApprovalStatus.PENDING
         listing = service.updateById(id, dto)
 
@@ -268,12 +334,10 @@ class ListingRestServiceUnitTest {
             ))
         }
 
-        def id = service.createFromRepresentation(makeServiceItem()).id
+        def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
 
         //make a fresh dto
-        created = new Listing(exampleServiceItemProps + [
-            owners: [owner]
-        ])
+        created = makeServiceItem()
         service.populateDefaults(created)
         created.id = id
         created.approvalStatus = ApprovalStatus.PENDING
@@ -307,7 +371,7 @@ class ListingRestServiceUnitTest {
         ] as ProfileRestService
 
         //create a dto with no defaults filled in
-        ListingInputRepresentation dto = makeServiceItem()
+        ListingInputRepresentation dto = makeServiceItemInputRepresentation()
         dto.owners = null
 
 
@@ -316,7 +380,7 @@ class ListingRestServiceUnitTest {
         assert created.owners == [currentUser] as Set
 
         //create a dto with defaults filled in and ensure that ey are preserved
-        dto = makeServiceItem()
+        dto = makeServiceItemInputRepresentation()
         dto.owners = [Profile.findByUsername('nonOwner')]
 
         created = service.createFromRepresentation(dto)
@@ -326,7 +390,7 @@ class ListingRestServiceUnitTest {
 
     void testUpdateHiddenServiceItemActivity() {
         //isEnabled = true is the default
-        def id = service.createFromRepresentation(makeServiceItem()).id
+        def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
         def activity
 
         service.listingActivityInternalService = [
@@ -335,7 +399,7 @@ class ListingRestServiceUnitTest {
             }
         ] as ListingActivityInternalService
 
-        ListingInputRepresentation dto = makeServiceItem()
+        ListingInputRepresentation dto = makeServiceItemInputRepresentation()
         Listing listing
         dto.isEnabled = false
 
@@ -344,7 +408,7 @@ class ListingRestServiceUnitTest {
         assert activity.action == Constants.Action.DISABLED
 
 
-        dto = makeServiceItem()
+        dto = makeServiceItemInputRepresentation()
         dto.isEnabled = true
 
         listing = service.updateById(id, dto)
@@ -365,11 +429,11 @@ class ListingRestServiceUnitTest {
 
         currentUser = Profile.findByUsername('admin')
 
-        def id = service.createFromRepresentation(makeServiceItem()).id
+        def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
         def parent, added, removed
         def relationship = makeRelationship()
-        def relatedItem1 = service.createFromRepresentation(makeServiceItem())
-        def relatedItem2 = service.createFromRepresentation(makeServiceItem())
+        def relatedItem1 = service.createFromRepresentation(makeServiceItemInputRepresentation())
+        def relatedItem2 = service.createFromRepresentation(makeServiceItemInputRepresentation())
 
         service.listingActivityInternalService = [
             addListingActivity: { si, action -> },
@@ -380,7 +444,7 @@ class ListingRestServiceUnitTest {
             }
         ] as ListingActivityInternalService
 
-        Listing dto = makeServiceItem()
+        Listing dto = makeServiceItemInputRepresentation()
         dto.id = id
         dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
         service.updateById(id, dto)
@@ -419,7 +483,7 @@ class ListingRestServiceUnitTest {
             )
         }
 
-        def id = service.createFromRepresentation(makeServiceItem()).id
+        def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
 
         def getRequired = {
             service.getAllRequiredListingsByParentId(id)
@@ -427,8 +491,8 @@ class ListingRestServiceUnitTest {
         }
 
         def relationship = makeRelationship()
-        def relatedItem1 = service.createFromRepresentation(makeServiceItem())
-        def relatedItem2 = makeServiceItem()
+        def relatedItem1 = service.createFromRepresentation(makeServiceItemInputRepresentation())
+        def relatedItem2 = makeServiceItemInputRepresentation()
         relatedItem2 = service.createFromRepresentation(relatedItem2)
 
         service.listingActivityInternalService = [
@@ -436,7 +500,7 @@ class ListingRestServiceUnitTest {
             addRelationshipActivities: { p, a, r -> }
         ] as ListingActivityInternalService
 
-        Listing dto = makeServiceItem()
+        Listing dto = makeServiceItemInputRepresentation()
         dto.id = id
         dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
         service.updateById(id, dto)
@@ -486,21 +550,21 @@ class ListingRestServiceUnitTest {
             addRelationshipActivities: { p, a, r -> }
         ] as ListingActivityInternalService
 
-        def relatedItem1Id = service.createFromRepresentation(makeServiceItem()).id
-        def relatedItem2Id = service.createFromRepresentation(makeServiceItem()).id
+        def relatedItem1Id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
+        def relatedItem2Id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
 
-        def relatedItem1Dto = makeServiceItem()
+        def relatedItem1Dto = makeServiceItemInputRepresentation()
         relatedItem1Dto.id = relatedItem1Id
         relatedItem1Dto.relationships = [makeRelationship([relatedItem2Id])]
 
-        def relatedItem2Dto = makeServiceItem()
+        def relatedItem2Dto = makeServiceItemInputRepresentation()
         relatedItem2Dto.id = relatedItem2Id
         relatedItem2Dto.relationships = [makeRelationship([relatedItem1Id])]
 
         def relatedItem1 = service.updateById(relatedItem1Id, relatedItem1Dto)
         def relatedItem2 = service.updateById(relatedItem2Id, relatedItem2Dto)
 
-        def dto = makeServiceItem()
+        def dto = makeServiceItemInputRepresentation()
         dto.relationships = [makeRelationship([relatedItem1Id])]
         id = service.createFromRepresentation(dto).id
 
@@ -514,9 +578,7 @@ class ListingRestServiceUnitTest {
 
         Listing existing = Listing.get(1)
         //create a serviceitem that is approved. The default one is not
-        Listing approved = new Listing(exampleServiceItemProps + [
-            owners: [owner]
-        ])
+        Listing approved = makeServiceItem()
         approved.approvalStatus = ApprovalStatus.APPROVED
         approved.save(failOnError: true)
 

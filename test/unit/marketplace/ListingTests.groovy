@@ -8,14 +8,24 @@ import ozone.utils.TestUtil
 import static org.junit.Assert.*
 
 import marketplace.testutil.FakeAuditTrailHelper
+import marketplace.testutil.ProfileMappedByFix
 
 @TestFor(Listing)
-@Mock([ContactType])
 class ListingTests {
     def listing
 
     void setUp() {
         FakeAuditTrailHelper.install()
+        ProfileMappedByFix.fixProfileMappedBy()
+
+        mockDomain(Profile)
+        mockDomain(ContactType)
+        mockDomain(Type)
+        mockDomain(Agency)
+        mockDomain(Category)
+        mockDomain(Contact)
+        mockDomain(Listing)
+
         listing = new Listing()
     }
 
@@ -111,5 +121,110 @@ class ListingTests {
         listing.validate()
 
         assert (listing.errors['contacts']*.code).find { it == 'requiredContactType' }
+    }
+
+    void testMinDraftProperties() {
+        Type type = new Type(title: "type").save(failOnError: true)
+        Profile owner = new Profile(username: 'testAdmin').save(failOnError:true)
+        Agency ag = new Agency(title: "agency", shortName: "a").save(failOnError:true)
+        Category category = new Category(title: 'cat').save(failOnError:true)
+        ContactType contactType = new ContactType(title: "contact type").save(failOnError:true)
+        Contact contact = new Contact(
+            name: "bob",
+            email: "bob@example.com",
+            securePhone: '555-5555',
+            unsecurePhone: '555-555-5555',
+            type: contactType
+        )
+
+        listing = new Listing(title: "test", type: type, owners: [owner], approvalStatus: ApprovalStatus.IN_PROGRESS)
+
+        assert listing.save(failOnError: true)
+
+        listing.approvalStatus = ApprovalStatus.PENDING
+        assert !listing.validate()
+
+        listing.approvalStatus = ApprovalStatus.APPROVED
+        assert !listing.validate()
+
+        listing.approvalStatus = ApprovalStatus.REJECTED
+        assert !listing.validate()
+
+        listing.with {
+            approvalStatus = ApprovalStatus.PENDING
+            width = 10
+            height = 10
+            whatIsNew = "nothing"
+            descriptionShort = "test"
+            isFeatured = true
+            description = "tes tes test"
+            versionName = '1.2.3'
+            requirements = "Netscape Navigator"
+            agency = ag
+            launchUrl = 'https://localhost/asdf'
+            categories = [category]
+            imageSmallUrl = 'https://localhost/asdf'
+            imageMediumUrl = 'https://localhost/asdf'
+            imageLargeUrl = 'https://localhost/asdf'
+            imageXlargeUrl = 'https://localhost/asdf'
+            contacts = [contact]
+            screenshots = [new Screenshot(
+                smallImageUrl: 'https://localhost/asdf',
+                largeImageUrl: 'https://localhost/asdf'
+            )]
+            docUrls = [new DocUrl(
+                name: 'documents',
+                url: 'https://localhost/asdf'
+            )]
+        }
+
+        assert listing.validate()
+
+        def checkAndTest = { valToCheck, prop ->
+            def oldVal = listing[prop]
+            listing[prop] = valToCheck
+
+            assert !listing.validate()
+
+            listing[prop] = oldVal
+        }
+
+        //check that validation fails when these properties are null
+        [
+            'width',
+            'height',
+            'whatIsNew',
+            'descriptionShort',
+            'isFeatured',
+            'description',
+            'versionName',
+            'requirements',
+            'agency',
+            'launchUrl',
+            'categories',
+            'imageSmallUrl',
+            'imageMediumUrl',
+            'imageLargeUrl',
+            'imageXlargeUrl',
+            'contacts',
+            'screenshots'
+        ].each(checkAndTest.curry(null))
+
+        //check that empty lists fail validation
+        ['categories', 'contacts', 'screenshots'].each(checkAndTest.curry([]))
+
+        //check that empty strings fail validation
+        [
+            'whatIsNew',
+            'descriptionShort',
+            'description',
+            'versionName',
+            'requirements',
+            'launchUrl',
+            'imageSmallUrl',
+            'imageMediumUrl',
+            'imageLargeUrl',
+            'imageXlargeUrl'
+        ].each(checkAndTest.curry(""))
     }
 }
