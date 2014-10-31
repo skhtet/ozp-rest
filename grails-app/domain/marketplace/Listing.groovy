@@ -195,8 +195,6 @@ class Listing implements Serializable {
     }
 
     static constraints = {
-        width nullable: true, validator: requiredUnlessInProgress
-        height nullable: true, validator: requiredUnlessInProgress
         whatIsNew nullable: true, maxSize: 250, validator: requiredUnlessInProgress
         descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
         isFeatured nullable: true, validator: requiredUnlessInProgress
@@ -237,20 +235,14 @@ class Listing implements Serializable {
             }
         })
         contacts validator: { val, obj ->
-            def requiredCheck = requiredUnlessInProgress(val, obj)
-
-            if (requiredCheck == true) {
+            if (obj.approvalStatus != ApprovalStatus.IN_PROGRESS) {
                 withNewSession {
                     def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
                         !val.find { contact -> contact.type == type }
                     }
-
-                    if(missingRequiredTypes)
+                    if (missingRequiredTypes)
                         return ['requiredContactType', missingRequiredTypes*.title]
                 }
-            }
-            else {
-                return requiredCheck
             }
         }
         screenshots validator: requiredUnlessInProgress

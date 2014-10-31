@@ -116,19 +116,15 @@ class ListingTests {
         assertNull listing.errors['launchUrl']
     }
 
-    void testRequiredContactTypes() {
-        new ContactType(title: 'requiredType', required: true ).save(flush: true)
-        listing.validate()
-
-        assert (listing.errors['contacts']*.code).find { it == 'requiredContactType' }
-    }
-
     void testMinDraftProperties() {
         Type type = new Type(title: "type").save(failOnError: true)
         Profile owner = new Profile(username: 'testAdmin').save(failOnError:true)
         Agency ag = new Agency(title: "agency", shortName: "a").save(failOnError:true)
         Category category = new Category(title: 'cat').save(failOnError:true)
         ContactType contactType = new ContactType(title: "contact type").save(failOnError:true)
+        ContactType requiredContactType =
+            new ContactType(title: "required contact type", required: true)
+                .save(failOnError:true, flush:true)
         Contact contact = new Contact(
             name: "bob",
             email: "bob@example.com",
@@ -136,8 +132,20 @@ class ListingTests {
             unsecurePhone: '555-555-5555',
             type: contactType
         )
+        Contact requiredContact = new Contact(
+            name: "bob",
+            email: "bob@example.com",
+            securePhone: '555-5555',
+            unsecurePhone: '555-555-5555',
+            type: requiredContactType
+        )
 
-        listing = new Listing(title: "test", type: type, owners: [owner], approvalStatus: ApprovalStatus.IN_PROGRESS)
+        listing = new Listing(
+            title: "test",
+            type: type,
+            owners: [owner],
+            approvalStatus: ApprovalStatus.IN_PROGRESS
+        )
 
         assert listing.save(failOnError: true)
 
@@ -167,7 +175,7 @@ class ListingTests {
             imageMediumUrl = 'https://localhost/asdf'
             imageLargeUrl = 'https://localhost/asdf'
             imageXlargeUrl = 'https://localhost/asdf'
-            contacts = [contact]
+            contacts = [requiredContact]
             screenshots = [new Screenshot(
                 smallImageUrl: 'https://localhost/asdf',
                 largeImageUrl: 'https://localhost/asdf'
@@ -191,8 +199,6 @@ class ListingTests {
 
         //check that validation fails when these properties are null
         [
-            'width',
-            'height',
             'whatIsNew',
             'descriptionShort',
             'isFeatured',
@@ -226,5 +232,9 @@ class ListingTests {
             'imageLargeUrl',
             'imageXlargeUrl'
         ].each(checkAndTest.curry(""))
+
+        //required ContactTypes are required only on non-draft listings
+        listing.contacts = [contact]
+        assert !listing.validate()
     }
 }
