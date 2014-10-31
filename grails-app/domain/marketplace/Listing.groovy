@@ -239,7 +239,7 @@ class Listing implements Serializable {
         contacts validator: { val, obj ->
             def requiredCheck = requiredUnlessInProgress(val, obj)
 
-            if (requiredCheck) {
+            if (requiredCheck == true) {
                 withNewSession {
                     def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
                         !val.find { contact -> contact.type == type }
