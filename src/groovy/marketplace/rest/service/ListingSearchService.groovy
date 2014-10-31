@@ -25,7 +25,7 @@ class ListingSearchService {
                 size: sc.max,
                 from: sc.offset,
                 types: ['marketplace.Listing'],
-                sort: [getSortBuilder(sc)]
+                sort: getSortBuilder(sc)
         ]
 
         def searchData = elasticSearchService.search(searchOptions, getQueryBuilder(sc))
@@ -111,12 +111,24 @@ class ListingSearchService {
         boolFilterBuilder
     }
 
-    private static SortBuilder getSortBuilder(SearchCriteria searchCriteria) {
+    /**
+     * Build a list of Sort Builders. The primary sort order is always what is specified
+     * by the sort query parameter. The secondary sort is average rating, DESC and the tertiary
+     * sort is listing title, ASC. In the case where primary order is average rating, the
+     * secondary order is listing title and there is no tertiary order.
+     *
+     * @param searchCriteria
+     * @return
+     */
+    private static List<SortBuilder> getSortBuilder(SearchCriteria searchCriteria) {
         SortOrder order = SortOrder.valueOf(searchCriteria.order)
-        if(searchCriteria.sort == 'score') {
-            new ScoreSortBuilder().order(order)
-        } else {
-            new FieldSortBuilder(searchCriteria.sort).order(order)
-        }
+        String sort = searchCriteria.sort
+        def sorters = []
+
+        sorters << (sort == 'score' ? new ScoreSortBuilder().order(order) : new FieldSortBuilder(sort).order(order))
+        if(sort != 'avgRate') sorters << new FieldSortBuilder('avgRate').order(SortOrder.DESC)
+        sorters << new FieldSortBuilder('sortTitle').order(SortOrder.ASC)
+
+        sorters
     }
 }
