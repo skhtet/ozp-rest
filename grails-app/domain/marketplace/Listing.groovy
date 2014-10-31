@@ -254,7 +254,6 @@ class Listing implements Serializable {
             }
         }
         screenshots validator: requiredUnlessInProgress
-        docUrls validator: requiredUnlessInProgress
     }
 
     String toString() {

@@ -207,12 +207,11 @@ class ListingTests {
             'imageLargeUrl',
             'imageXlargeUrl',
             'contacts',
-            'screenshots',
-            'docUrls'
+            'screenshots'
         ].each(checkAndTest.curry(null))
 
         //check that empty lists fail validation
-        ['categories', 'contacts', 'screenshots', 'docUrls'].each(checkAndTest.curry([]))
+        ['categories', 'contacts', 'screenshots'].each(checkAndTest.curry([]))
 
         //check that empty strings fail validation
         [
