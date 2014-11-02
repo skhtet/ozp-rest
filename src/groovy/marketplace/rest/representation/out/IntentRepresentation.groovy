@@ -16,6 +16,7 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-intent-v1+json'
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-intents-v1+json'
 
+    final long id
     final String type
     final String action
     final String label
@@ -25,8 +26,9 @@ class IntentRepresentation extends SelfRefRepresentation<Intent> {
                          ObjectUriBuilder<Intent> intentUriBuilder) {
         super(intentUriBuilder.getUri(intent), null, null)
 
-        this.type = intent.type
+        this.id = intent.id
         this.action = intent.action
+        this.type = intent.type
         this.label = intent.label
         this.icon = intent.icon
     }
