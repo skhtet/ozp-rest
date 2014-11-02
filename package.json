@@ -18,6 +18,7 @@
   },
   "scripts": {
     "loadSampleListings": "./node_modules/newman/bin/newman -c postman/createSampleListings.json -e postman/env/localDev.json -n 28 -d postman/data/listingData.json",
-    "loadSampleMetaData": "./node_modules/newman/bin/newman -c postman/createSampleMetaData.json -e postman/env/localDev.json"
+    "loadSampleMetaData": "./node_modules/newman/bin/newman -c postman/createSampleMetaData.json -e postman/env/localDev.json",
+    "loadSampleData": "npm run loadSampleMetaData && npm run loadSampleListings"
   }
 }
