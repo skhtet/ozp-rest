@@ -31,8 +31,11 @@ The output (./target/marketplace.war) can generally be dropped in any servlet co
 In order to load sample data, you need NodeJS installed. Head over to [the Node.js website](http://nodejs.org/) if you need to do that. Once server is up and running, execute:
 ```
 npm install
-npm run loadSampleData
+npm run loadSampleMetaData
+npm run loadSampleListings
 ```
+
+The first script will populate categories, intents, etc and the second script will populate listings.
 
 ## Configure
 
