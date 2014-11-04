@@ -68,6 +68,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
 
     public Long getId() { activity.id }
     public Action getAction() { activity.action }
+    public ProfilePropertyRepresentation getAuthor() { new ProfilePropertyRepresentation(activity.author) }
     public Date getActivityDate() { activity.activityDate }
     public Collection<ChangeDetailJson> getChangeDetails() {
         activity.changeDetails?.collect { new ChangeDetailJson(it) } ?: []

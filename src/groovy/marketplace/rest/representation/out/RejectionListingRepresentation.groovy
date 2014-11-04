@@ -51,9 +51,11 @@ class RejectionListingRepresentation extends AbstractHalRepresentation<Rejection
     }
 
     String getDescription() { rejection.description }
+    ProfilePropertyRepresentation getAuthor() { new ProfilePropertyRepresentation(rejection.author) }
+    String getListingId() { rejection.serviceItem.id }
 
     @Component
-    public static class Factory extends RepresentationFactory<RejectionListing> {
+    public static class Factory implements RepresentationFactory<RejectionListing> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
 

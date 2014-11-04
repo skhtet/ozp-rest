@@ -123,7 +123,7 @@ class ListingRepresentationUnitTest {
 
         testCollectionSizeAndElementType(rep.categories, categories, String.class)
         testCollectionSizeAndElementType(rep.intents, intents, String.class)
-        testCollectionSizeAndElementType(rep.owners, owners, OwnerRepresentation.class)
+        testCollectionSizeAndElementType(rep.owners, owners, ProfilePropertyRepresentation.class)
         testCollectionSizeAndElementType(rep.docUrls, docUrls, DocUrlRepresentation.class)
         testCollectionSizeAndElementType(rep.contacts, contacts, ContactRepresentation.class)
         testCollectionSizeAndElementType(rep.screenshots, screenshots, ScreenshotRepresentation.class)

@@ -79,8 +79,8 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
         new DocUrlRepresentation(it)
     }}
 
-    Collection<OwnerRepresentation> getOwners() { listing.owners.collect {
-        new OwnerRepresentation(it)
+    Collection<ProfilePropertyRepresentation> getOwners() { listing.owners.collect {
+        new ProfilePropertyRepresentation(it)
     }}
 
     private static HalLinks createLinks(Listing listing, ListingUriBuilder listingUriBuilder) {
@@ -137,17 +137,6 @@ class DocUrlRepresentation {
     String getUrl() { docUrl.url }
 }
 
-class OwnerRepresentation {
-    private Profile owner
-
-    OwnerRepresentation(Profile owner) {
-        this.owner = owner
-    }
-
-    String getUsername() { owner.username }
-    String getDisplayName() { owner.displayName }
-}
-
 class ScreenshotRepresentation {
     private Screenshot screenshot
 
@@ -166,8 +155,8 @@ class CurrentRejectionRepresentation {
         this.rejection = rejection
     }
 
-    OwnerRepresentation getAuthor() {
-        new OwnerRepresentation(rejection.author)
+    ProfilePropertyRepresentation getAuthor() {
+        new ProfilePropertyRepresentation(rejection.author)
     }
 
     String getDescription() {
