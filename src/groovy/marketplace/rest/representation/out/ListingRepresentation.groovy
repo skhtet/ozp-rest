@@ -3,7 +3,6 @@ package marketplace.rest.representation.out
 import marketplace.Contact
 import marketplace.DocUrl
 import marketplace.Listing
-import marketplace.Profile
 import marketplace.RejectionListing
 import marketplace.Screenshot
 import marketplace.ApprovalStatus
@@ -55,7 +54,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getAgencyShort() { listing.agency?.shortName }
     Integer getHeight() { listing.height }
     Integer getWidth() { listing.width }
-    Boolean singleton() { listing.singleton }
+    Boolean getSingleton() { listing.singleton }
 
     CurrentRejectionRepresentation getCurrentRejection() { listing.rejectionListings ?
         new CurrentRejectionRepresentation(listing.rejectionListings.first()) : null
