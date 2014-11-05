@@ -1,5 +1,6 @@
 package marketplace.rest.representation.out
 
+import marketplace.Role
 import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -72,6 +73,7 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     Collection<IdRefRepresentation<Agency>> getOrganizations() {
         profile.organizations.collect { new IdRefRepresentation(it) }
     }
+    Role getHighestRole() { profile.highestRole }
 
     @Component
     public static class Factory implements RepresentationFactory<Profile> {
