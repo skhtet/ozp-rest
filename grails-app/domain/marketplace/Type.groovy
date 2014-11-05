@@ -1,6 +1,5 @@
 package marketplace
 
-import org.codehaus.groovy.grails.web.json.JSONObject
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.apache.commons.lang.builder.EqualsBuilder
 
@@ -16,7 +15,7 @@ class Type implements Serializable {
     String description
 
     static constraints = {
-        title blank: false, nullable: false, maxSize: 50
+        title blank: false, nullable: false, maxSize: 50, unique: true
         description nullable: true, maxSize: 255
     }
 

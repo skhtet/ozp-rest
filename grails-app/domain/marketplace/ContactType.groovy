@@ -18,7 +18,7 @@ class ContactType implements Serializable {
     Boolean required = false
 
     static constraints = {
-        title blank: false, maxSize: 50
+        title blank: false, maxSize: 50, unique: true
     }
 
     static mapping = {

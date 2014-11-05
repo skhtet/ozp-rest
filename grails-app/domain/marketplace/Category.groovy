@@ -15,9 +15,10 @@ class Category implements Serializable {
     String description
 
     static constraints = {
-        title blank: false, nullable: false, maxSize: 50
+        title blank: false, nullable: false, maxSize: 50, unique: true
         description nullable: true, maxSize: 255
     }
+
     static mapping = {
         id natural: [properties: ['title'], mutable: true]
         cache true
