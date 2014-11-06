@@ -45,6 +45,38 @@ class ProfileRestService extends RestService<Profile> {
         throw new AccessDeniedException("Profiles cannot be created via the REST interface")
     }
 
+    @Transactional(readOnly=true)
+    public Collection<Profile> getAll(Integer offset, Integer max, Role role) {
+        Profile.createCriteria().list(offset: offset, max: max) {
+            switch (role) {
+                case Role.USER:
+                    or {
+                        eq('highestRole', Role.USER)
+                        eq('highestRole', Role.ORG_STEWARD)
+                        eq('highestRole', Role.APPSMALL_STEWARD)
+                        eq('highestRole', Role.ADMIN)
+                    }
+                    break;
+                case Role.ORG_STEWARD:
+                    or {
+                        eq('highestRole', Role.ORG_STEWARD)
+                        eq('highestRole', Role.APPSMALL_STEWARD)
+                        eq('highestRole', Role.ADMIN)
+                    }
+                    break;
+                case Role.APPSMALL_STEWARD:
+                    or {
+                        eq('highestRole', Role.APPSMALL_STEWARD)
+                        eq('highestRole', Role.ADMIN)
+                    }
+            }
+
+            if (this.sorter) {
+                order(sorter.sortField, sorter.direction.name().toLowerCase())
+            }
+        }
+    }
+
     @Transactional(readOnly = true)
     public Collection<IwcDataObject> getUserData(Long userId) {
         Profile profile = getById(userId)
@@ -103,58 +135,6 @@ class ProfileRestService extends RestService<Profile> {
         Profile.findByUsername(accountService.loggedInUsername, [lock: lock])
     }
 
-    private void authorizeStewardshipUpdate() {
-        checkAdmin("Only admins can alter stewardship assignments")
-    }
-
-    @Transactional
-    public Agency addProfileAsSteward(Long profileId, Long organizationId) {
-        authorizeStewardshipUpdate()
-
-        Profile profile = getById(profileId)
-        Agency organization = agencyRestService.getById(organizationId)
-
-        if (profile.stewardedOrganizations.contains(organization)) {
-            throw new IllegalArgumentException(
-                "This profile is already a steward for this organization")
-        }
-        else {
-            profile.addToStewardedOrganizations(organization)
-            return organization
-        }
-    }
-
-    @Transactional
-    public void removeProfileAsSteward(Long profileId, Long organizationId) {
-        authorizeStewardshipUpdate()
-
-        Profile profile = getById(profileId)
-        Agency organization = agencyRestService.getById(organizationId)
-
-        if (!profile.stewardedOrganizations.contains(organization)) {
-            throw new IllegalArgumentException(
-                "This profile is not a steward for this organization")
-        }
-        else {
-            profile.removeFromStewardedOrganizations(organization)
-        }
-    }
-
-    @Transactional
-    public Collection<Agency> setStewardedOrganizations(Long profileId,
-            Collection<AgencyIdRef> organizations) {
-        authorizeStewardshipUpdate()
-
-        Profile profile = getById(profileId)
-        profile.stewardedOrganizations = organizations.collect {
-            agencyRestService.getById(it.id)
-        }
-
-        save(profile)
-
-        return profile.stewardedOrganizations
-    }
-
     /**
      * Ensure that a Profile object exists for the current user and update it from the security
      * plugin information
@@ -210,6 +190,10 @@ class ProfileRestService extends RestService<Profile> {
 
         if (updated.organizations != original.organizations) {
             checkAdmin("Organization affiliation can only be updated by admins")
+        }
+
+        if (updated.stewardedOrganizations != original.stewardedOrganizations) {
+            checkAdmin("Only admins can alter stewardship assignments")
         }
     }
 

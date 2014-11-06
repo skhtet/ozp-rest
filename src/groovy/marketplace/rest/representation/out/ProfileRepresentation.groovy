@@ -38,13 +38,11 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     private static HalLinks createLinks(Profile profile,
             ProfileUriBuilder profileUriBuilder) {
         URI applicationLibraryUri = profileUriBuilder.getApplicationLibraryUri(profile),
-            stewardshipUri = profileUriBuilder.getStewardedOrganizationsUri(profile),
             userDataUri = profileUriBuilder.getUserDataUri(profile)
 
         new HalLinks([
             new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION_LIBRARY,
                     new Link(applicationLibraryUri)),
-            new AbstractMap.SimpleEntry(OzpRelationType.STEWARDSHIP, new Link(stewardshipUri)),
             new AbstractMap.SimpleEntry(OzpRelationType.USER_DATA, new Link(userDataUri))
         ])
     }
@@ -70,8 +68,11 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     String getBio() { profile.bio }
     Date getCreatedDate() { profile.createdDate }
     Date getLastLogin() { profile.lastLogin }
-    Collection<IdRefRepresentation<Agency>> getOrganizations() {
-        profile.organizations.collect { new IdRefRepresentation(it) }
+    Collection<String> getOrganizations() {
+        profile.organizations*.title
+    }
+    Collection<String> getStewardedOrganizations() {
+        profile.stewardedOrganizations*.title
     }
     Role getHighestRole() { profile.highestRole }
 

@@ -1,4 +1,5 @@
 import marketplace.Constants
+import marketplace.Role
 
 environments {
     production {
@@ -8,7 +9,11 @@ environments {
         marketplace {
             metadata {
                 profiles = [
-                        [username: Constants.SYSTEM_USER_USERNAME, displayName: Constants.SYSTEM_USER_DISPLAYNAME]
+                        [
+                            username: Constants.SYSTEM_USER_USERNAME,
+                            displayName: Constants.SYSTEM_USER_DISPLAYNAME,
+                            highestRole: Role.APPSMALL_STEWARD
+                        ]
                 ]
             }
         }

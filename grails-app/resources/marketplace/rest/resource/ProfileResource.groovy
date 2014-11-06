@@ -33,6 +33,7 @@ import marketplace.Agency
 import marketplace.Listing
 import marketplace.ListingActivity
 import marketplace.ApplicationLibraryEntry
+import marketplace.Role
 
 import marketplace.hal.AbstractHalRepresentation
 import marketplace.hal.PagedCollection
@@ -79,12 +80,19 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
         uriId == 'self' ? service.currentUserProfile.id : uriId as long
     }
 
+    //NOTE: This method does not get called as it no longer has @GET etc.
+    //readAllByRole has replaced it
     @Override
-    @GET
-    @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
     PagedCollection<Profile> readAll(@QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
         super.readAll(offset, max)
+    }
+
+    @GET
+    @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    PagedCollection<Profile> readAllByRole(@QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max, @QueryParam('role') Role role) {
+        new PagedCollection(offset, max, service.getAll(offset, max, role))
     }
 
     @Path('/self')
@@ -328,45 +336,5 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
             @PathParam('listingId') long applicationLibraryEntryId) {
         applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(getProfileId(profileId),
             applicationLibraryEntryId)
-    }
-
-    @Path('/{profileId}/stewarded-organizations')
-    @GET
-    @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    ChildObjectCollection<Profile, Agency> getStewardedOrganizations(
-            @PathParam('profileId') String profileId) {
-        Profile profile = service.getById(getProfileId(profileId))
-        new ChildObjectCollection(profile.stewardedOrganizations, profile)
-    }
-
-    @Path('/{profileId}/stewarded-organizations')
-    @PUT
-    @Produces([AgencyRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    @Consumes([AgencyInputRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    ChildObjectCollection<Profile, Agency> setStewardedOrganizations(
-            @PathParam('profileId') String profileId, Collection<AgencyIdRef> organizations) {
-        long id = getProfileId(profileId)
-
-        service.setStewardedOrganizations(id, organizations)
-        Profile profile = service.getById(id)
-        new ChildObjectCollection(profile.stewardedOrganizations, profile)
-    }
-
-    @Path('/{profileId}/stewarded-organizations')
-    @POST
-    @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    @Consumes([IdRefInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    Response addSteward(@PathParam('profileId') String profileId,
-            IdRefInputRepresentation<Agency, Long> organization) {
-        created service.addProfileAsSteward(getProfileId(profileId), organization.id)
-    }
-
-    @Path('/{profileId}/stewarded-organizations/{organizationId}')
-    @DELETE
-    @Produces([AgencyRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    @Consumes([IdRefInputRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    void removeSteward(@PathParam('profileId') String profileId,
-            @PathParam('organizationId') long organizationId) {
-        service.removeProfileAsSteward(getProfileId(profileId), organizationId)
     }
 }

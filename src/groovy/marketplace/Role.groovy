@@ -26,10 +26,7 @@ enum Role {
      */
     APPSMALL_STEWARD,
 
-    /**
-     * Administrator - has full Steward abilities and can also create
-     * new values of Category, Organization, etc
-     */
+    //TODO remove
     ADMIN
 
     static Role fromGrantedAuthority(GrantedAuthority authority) {
@@ -37,7 +34,7 @@ enum Role {
             case 'ROLE_USER': return USER
             case 'ROLE_ORG_STEWARD': return ORG_STEWARD
             case 'ROLE_APPSMALL_STEWARD': return APPSMALL_STEWARD
-            case 'ROLE_ADMIN': return ADMIN
+            case 'ROLE_ADMIN': return ADMIN //REMOVE
             default: return null
         }
     }

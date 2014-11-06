@@ -20,13 +20,6 @@ class ProfileUriBuilder extends RepresentationResourceUriBuilder<Profile> {
             .buildFromMap(profileId: profile.id)
     }
 
-    URI getStewardedOrganizationsUri(Profile profile) {
-        uriBuilderHolder.builder
-            .path(ProfileResource.class)
-            .path(ProfileResource.class, 'getStewardedOrganizations')
-            .buildFromMap(profileId: profile.id)
-    }
-
     URI getApplicationsUri(Profile profile) {
         uriBuilderHolder.builder
             .path(ProfileResource.class)
