@@ -44,4 +44,15 @@ class Type implements Serializable {
 
         false
     }
+
+    def beforeDelete() {
+        withNewSession {
+            def items = Listing.findAllByType(this)
+
+            if (items) {
+                throw new IllegalArgumentException("Attempted to delete type " +
+                    this.title + " with associated listings")
+            }
+        }
+    }
 }
