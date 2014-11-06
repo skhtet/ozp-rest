@@ -45,4 +45,19 @@ class Category implements Serializable {
 
         false
     }
+
+    def beforeDelete() {
+        withNewSession {
+            def items = Listing.createCriteria().list {
+                categories {
+                    equals(this)
+                }
+            }
+
+            if (items) {
+                throw new IllegalArgumentException("Attempted to delete category " +
+                    this.title + " with associated listings")
+            }
+        }
+    }
 }
