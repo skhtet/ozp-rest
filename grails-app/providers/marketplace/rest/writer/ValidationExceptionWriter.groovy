@@ -21,20 +21,25 @@ class ValidationExceptionWriter extends ThrowableWriterSupport<ValidationExcepti
 
     @Override
     protected Map toBodyMap(ValidationException exception) {
-        super.toBodyMap(exception) + [
+        return [
             //Just get the first part of the error string
             message: exception.message.split('\\n')[0],
-            resolvedMessges: getResolvedMessages(exception.errors)
+            errors: getResolvedMessages(exception.errors)
         ]
     }
 
     //This will resolve the messages based on local and pass them back
-    def getResolvedMessages(def errors){
-        List errMessages = []
+    Map getResolvedMessages(def errors){
+        Map errMessages = [:]
         errors.getAllErrors().each {
             def fieldErrorCode =  it.objectName + "." + it.field + "." + it.code
-                errMessages << grailsApplication.getMainContext().getMessage(fieldErrorCode,
-                    it.arguments, it.defaultMessage, Locale.getDefault())
+            def message = grailsApplication.getMainContext().getMessage(
+                fieldErrorCode,
+                it.arguments,
+                it.defaultMessage,
+                Locale.getDefault()
+            )
+            errMessages[it.field] = errMessages[it.field] ? [errMessages[it.field], message] : message
         }
         errMessages
     }
