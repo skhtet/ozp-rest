@@ -67,6 +67,18 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
 
     ListingResource() {}
 
+    @Override
+    @GET
+    @Produces([
+        ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
+                                     @QueryParam('max') Integer max) {
+        super.readAll(offset, max)
+    }
+
     @Path('/activity')
     @Produces([
         ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
@@ -173,6 +185,11 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     }
 
     @Path('/search')
+    @Produces([
+        ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @GET
     public SearchResult<Listing> search(@Context UriInfo uriInfo) {
         listingSearchService.searchListings(SearchCriteria.fromQueryParams(uriInfo.getQueryParameters(true)))
