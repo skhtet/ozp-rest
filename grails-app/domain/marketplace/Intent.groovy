@@ -37,7 +37,10 @@ class Intent implements Serializable {
         withNewSession {
             def items = Listing.createCriteria().list {
                 intents {
-                    equals(this)
+                    and {
+                        eq("action", this.action)
+                        eq("type", this.type)
+                    }
                 }
             }
 

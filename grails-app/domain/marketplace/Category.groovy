@@ -50,10 +50,9 @@ class Category implements Serializable {
         withNewSession {
             def items = Listing.createCriteria().list {
                 categories {
-                    equals(this)
+                    eq("title", this.title)
                 }
             }
-
             if (items) {
                 throw new IllegalArgumentException("Attempted to delete category " +
                     this.title + " with associated listings")
