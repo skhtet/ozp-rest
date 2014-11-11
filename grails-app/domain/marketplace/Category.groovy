@@ -54,8 +54,8 @@ class Category implements Serializable {
                 }
             }
             if (items) {
-                throw new IllegalArgumentException("Attempted to delete category " +
-                    this.title + " with associated listings")
+                throw new IllegalArgumentException("You cannot delete category " +
+                    this.title + " because it is associated with one or more listings.")
             }
         }
     }
