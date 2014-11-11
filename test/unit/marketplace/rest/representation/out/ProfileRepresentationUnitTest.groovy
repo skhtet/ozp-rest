@@ -79,9 +79,6 @@ class ProfileRepresentationUnitTest {
         assert rep.links.toMap().get(OzpRelationType.APPLICATION_LIBRARY).href ==
             'https://localhost/asdf/profile/235/library'
 
-        assert rep.links.toMap().get(OzpRelationType.STEWARDSHIP).href ==
-            'https://localhost/asdf/profile/235/stewarded-organizations'
-
         assert rep.links.toMap().get(OzpRelationType.USER_DATA).href ==
             'https://localhost/asdf/profile/235/user-data'
     }
