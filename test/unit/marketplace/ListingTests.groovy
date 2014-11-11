@@ -184,6 +184,7 @@ class ListingTests {
                 name: 'documents',
                 url: 'https://localhost/asdf'
             )]
+            tags = ["test"]
         }
 
         assert listing.validate()
@@ -199,7 +200,6 @@ class ListingTests {
 
         //check that validation fails when these properties are null
         [
-            'whatIsNew',
             'descriptionShort',
             'isFeatured',
             'description',
@@ -213,15 +213,15 @@ class ListingTests {
             'imageLargeUrl',
             'imageXlargeUrl',
             'contacts',
-            'screenshots'
+            'screenshots',
+            'tags'
         ].each(checkAndTest.curry(null))
 
         //check that empty lists fail validation
-        ['categories', 'contacts', 'screenshots'].each(checkAndTest.curry([]))
+        ['categories', 'contacts', 'screenshots', 'tags'].each(checkAndTest.curry([]))
 
         //check that empty strings fail validation
         [
-            'whatIsNew',
             'descriptionShort',
             'description',
             'versionName',

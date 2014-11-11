@@ -197,7 +197,7 @@ class Listing implements Serializable {
     static constraints = {
         width nullable: true
         height nullable: true
-        whatIsNew nullable: true, maxSize: 250, validator: requiredUnlessInProgress
+        whatIsNew nullable: true, maxSize: 250
         descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
         isFeatured nullable: true, validator: requiredUnlessInProgress
         title nullable: false, blank: false, maxSize: 255
@@ -231,9 +231,12 @@ class Listing implements Serializable {
                 return 'empty'
             }
         })
-        tags(validator: { ts ->
+        tags(validator: { ts, obj ->
             if (ts.any { it.length() > 16 }) {
                 return 'maxSize.exceeded'
+            }
+            else {
+                return requiredUnlessInProgress(ts, obj)
             }
         })
         contacts validator: { val, obj ->

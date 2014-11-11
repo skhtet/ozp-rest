@@ -85,7 +85,8 @@ class ListingRestServiceUnitTest {
             email: "me@you.com",
             name: "jim bob",
             type: "Test Contact Type"
-        ]]
+        ]],
+        tags: ["test tag"]
     ]
 
     private createGrailsApplication() {
