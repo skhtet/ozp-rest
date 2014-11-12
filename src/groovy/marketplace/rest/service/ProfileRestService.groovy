@@ -1,5 +1,6 @@
 package marketplace.rest.service
 
+import marketplace.Constants
 import marketplace.IwcDataObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -12,6 +13,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.Role
+import marketplace.Sorter
 
 import marketplace.authentication.AccountService
 
@@ -27,7 +29,8 @@ class ProfileRestService extends RestService<Profile> {
 
     @Autowired
     public ProfileRestService(GrailsApplication grailsApplication) {
-        super(grailsApplication, Profile.class, null, null)
+        super(grailsApplication, Profile.class, null,
+            new Sorter<Profile>(Constants.SortDirection.ASC, 'displayName'))
     }
 
     //Keep CGLIB happy
