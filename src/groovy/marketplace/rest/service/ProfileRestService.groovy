@@ -210,6 +210,14 @@ class ProfileRestService extends RestService<Profile> {
         currentUserProfile.hasRole(Role.USER)
     }
 
+    @Transactional(readOnly=true)
+    public boolean isOrgSteward(Agency org) {
+        Profile profile = currentUserProfile
+
+        isAdmin() ||
+            (profile.hasRole(Role.ORG_STEWARD) && profile.stewardedOrganizations.contains(org))
+    }
+
     /**
      * @throws AccessDeniedException if the current user in not an Admin
      * @param msg the Message for the exception
@@ -217,6 +225,15 @@ class ProfileRestService extends RestService<Profile> {
     @Transactional(readOnly=true)
     public void checkAdmin(String msg = "Attempt to access Admin-only functionality") {
         if (!isAdmin()) {
+            throw new AccessDeniedException(msg)
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public void checkOrgSteward(Agency organization,
+            String msg = "Attempt to access Organization-Steward " +
+            "functionality for $organization") {
+        if (!isOrgSteward(organization)) {
             throw new AccessDeniedException(msg)
         }
     }

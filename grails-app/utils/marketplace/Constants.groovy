@@ -162,6 +162,7 @@ class Constants {
             CREATED("Created"),
             MODIFIED("Modified"),
             SUBMITTED("Submitted"),
+            APPROVED_ORG("Approved by Organization"),
             APPROVED("Approved"),
             REJECTED("Rejected"),
             ENABLED("Enabled"),

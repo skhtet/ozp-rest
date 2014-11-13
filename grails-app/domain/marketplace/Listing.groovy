@@ -223,7 +223,7 @@ class Listing implements Serializable {
             matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
         imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE,
             matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        approvalStatus(inList:ApprovalStatus.values().toList())
+        approvalStatus nullable: false
         lastActivity(nullable:true)
         approvedDate(nullable:true)
         owners( validator: { val ->

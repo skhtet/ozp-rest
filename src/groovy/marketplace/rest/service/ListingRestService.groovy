@@ -179,6 +179,9 @@ class ListingRestService extends RestService<Listing> {
                 case ApprovalStatus.APPROVED:
                     doApprove(updated)
                     break
+                case ApprovalStatus.APPROVED_ORG:
+                    doOrgApprove(updated)
+                    break
                 default:
                     //should never happen assuming validateApprovalStatus has been run
                     throw new IllegalStateException("Unexpected approvalStatus transition in " +
@@ -199,6 +202,19 @@ class ListingRestService extends RestService<Listing> {
         profileRestService.checkAdmin()
 
         si.approvedDate = activity.activityDate
+    }
+
+    /**
+     * Business Logic that must happen when a listing is approved at the organization leve.
+     * This method does not actually do the approval, since that occurs during the update
+     */
+    private void doOrgApprove(Listing si) {
+        ListingActivity activity =
+            listingActivityInternalService.addListingActivity(si,
+                Constants.Action.APPROVED_ORG)
+
+        profileRestService.checkOrgSteward(si.agency,
+            "Unauthorized attempt to perform organization approval for $si.agency")
     }
 
     /**
