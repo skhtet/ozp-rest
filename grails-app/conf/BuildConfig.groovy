@@ -34,7 +34,7 @@ grails.war.resources = { stagingDir ->
 
     //Delete sample security configuration
     [
-        'SecurityContext.xml', 
+        'SecurityContext.xml',
         'OzoneConfig.properties',
         'users.properties'
     ].each { delete file: "$classesDir/$it" }
@@ -85,7 +85,7 @@ grails.project.dependency.resolution = {
         //Fix for ClassNotFoundException: javax.ws.rs.ApplicationPath
         runtime('javax.ws.rs:jsr311-api:1.1.1')
 
-        compile('org.ozoneplatform:ozone-security:4.0') {
+        compile('org.ozoneplatform:ozone-security:4.0.1') {
             excludes([group: 'org.springframework'], [name: 'servlet-api'])
         }
 
