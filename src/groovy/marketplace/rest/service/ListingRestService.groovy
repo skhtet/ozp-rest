@@ -222,7 +222,7 @@ class ListingRestService extends RestService<Listing> {
      * RejectionListing to the ServiceItem, and creating the RejectionActivity
      */
     public void reject(Listing si, RejectionListing rejectionListing) {
-        if (si.approvalStatus != ApprovalStatus.PENDING) {
+        if (!(si.approvalStatus in [ApprovalStatus.PENDING, ApprovalStatus.APPROVED_ORG])) {
             throw new IllegalArgumentException("Cannot reject ServiceItem ${si.id} that has " +
                 "approval status of ${si.approvalStatus}")
         }

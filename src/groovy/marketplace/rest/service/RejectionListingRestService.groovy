@@ -37,7 +37,16 @@ class RejectionListingRestService extends ChildObjectRestService<Listing, Reject
     @Override
     protected void authorizeCreate(RejectionListing dto) {
         super.authorizeView(dto)
-        profileRestService.checkAdmin()
+
+        //if it is at the org steward approval step, check to see that the user is
+        //an org steward.  Otherwise it is in the AppsMall steward approval step
+        //and can only be rejected by an AppsMall steward
+        if (dto.serviceItem.approvalStatus == ApprovalStatus.PENDING) {
+            profileRestService.checkOrgSteward(dto.serviceItem.agency)
+        }
+        else {
+            profileRestService.checkAdmin()
+        }
     }
 
     @Override
