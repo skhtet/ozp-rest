@@ -45,7 +45,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     }
 
     public void setAgency(String agencyTitle) {
-        this.agency = new AgencyTitleInputRepresentation(agencyTitle)
+        this.agency = agencyTitle ? new AgencyTitleInputRepresentation(agencyTitle) : null;
     }
 
     public void setCategories(Collection<String> categoryTitles) {
