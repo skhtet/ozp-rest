@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException
 
 import marketplace.RejectionListing
 import marketplace.Listing
+import marketplace.ApprovalStatus
 
 @Service
 class RejectionListingRestService extends ChildObjectRestService<Listing, RejectionListing> {

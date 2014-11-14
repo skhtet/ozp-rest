@@ -67,27 +67,30 @@ class ServiceItemValidatorUnitTest {
         assert adminChanges.contains([pending, approvedOrg])
         assert adminChanges.contains([approvedOrg, approved])
         assert adminChanges.contains([rejected, pending])
+        assert adminChanges.size() == 9
 
         isAdmin = false
         def orgStewardChanges = tryAllStatusChanges()
-        assert adminChanges.contains([inProgress, inProgress])
-        assert adminChanges.contains([pending, pending])
-        assert adminChanges.contains([approvedOrg, approvedOrg])
-        assert adminChanges.contains([approved, approved])
-        assert adminChanges.contains([rejected, rejected])
-        assert adminChanges.contains([inProgress, pending])
-        assert adminChanges.contains([pending, approvedOrg])
-        assert adminChanges.contains([rejected, pending])
+        assert orgStewardChanges.contains([inProgress, inProgress])
+        assert orgStewardChanges.contains([pending, pending])
+        assert orgStewardChanges.contains([approvedOrg, approvedOrg])
+        assert orgStewardChanges.contains([approved, approved])
+        assert orgStewardChanges.contains([rejected, rejected])
+        assert orgStewardChanges.contains([inProgress, pending])
+        assert orgStewardChanges.contains([pending, approvedOrg])
+        assert orgStewardChanges.contains([rejected, pending])
+        assert orgStewardChanges.size() == 8
 
         isOrgSteward = false
         def userChanges = tryAllStatusChanges()
-        assert adminChanges.contains([inProgress, inProgress])
-        assert adminChanges.contains([pending, pending])
-        assert adminChanges.contains([approvedOrg, approvedOrg])
-        assert adminChanges.contains([approved, approved])
-        assert adminChanges.contains([rejected, rejected])
-        assert adminChanges.contains([inProgress, pending])
-        assert adminChanges.contains([rejected, pending])
+        assert userChanges.contains([inProgress, inProgress])
+        assert userChanges.contains([pending, pending])
+        assert userChanges.contains([approvedOrg, approvedOrg])
+        assert userChanges.contains([approved, approved])
+        assert userChanges.contains([rejected, rejected])
+        assert userChanges.contains([inProgress, pending])
+        assert userChanges.contains([rejected, pending])
+        assert userChanges.size() == 7
     }
 
     void testValidateNewApprovalStatus() {

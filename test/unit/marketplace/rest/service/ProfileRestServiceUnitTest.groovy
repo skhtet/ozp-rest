@@ -11,6 +11,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.springframework.security.access.AccessDeniedException
 
 import marketplace.Profile
+import marketplace.Agency
 import marketplace.Role
 
 import marketplace.authentication.AccountService
@@ -28,7 +29,8 @@ class ProfileRestServiceUnitTest {
 
     def currentUser
 
-    Profile admin1, admin2, user1, user2
+    Profile admin1, admin2, user1, user2, orgSteward1, orgSteward2
+    Agency agency1, agency2
 
     private createGrailsApplication() {
         grailsApplication = new DefaultGrailsApplication()
@@ -64,11 +66,19 @@ class ProfileRestServiceUnitTest {
         admin2 = makeProfile('testAdmin2', 2, Role.ADMIN)
         user1 = makeProfile('testUser1', 3, Role.USER)
         user2 = makeProfile('testUser2', 4, Role.USER)
+        orgSteward1 = makeProfile('testOrgSteward1', 5, Role.ORG_STEWARD)
+        orgSteward2 = makeProfile('testOrgSteward2', 6, Role.ORG_STEWARD)
+
+        agency1 = new Agency(title: 'agency 1')
+        agency2 = new Agency(title: 'agency 2')
+
+        orgSteward1.stewardedOrganizations = [agency1]
+        orgSteward2.stewardedOrganizations = [agency1, agency2]
 
         FakeAuditTrailHelper.install()
         ProfileMappedByFix.fixProfileMappedBy()
 
-        mockDomain(Profile.class, [admin1, admin2, user1, user2])
+        mockDomain(Profile.class, [admin1, admin2, user1, user2, orgSteward1, orgSteward2])
 
         createGrailsApplication()
 
@@ -115,5 +125,84 @@ class ProfileRestServiceUnitTest {
 
         currentUser = user1
         assert service.currentUserProfile == currentUser
+    }
+
+    void testIsAdmin() {
+        currentUser = admin1
+        assert service.isAdmin()
+
+        currentUser = orgSteward1
+        assert !service.isAdmin()
+
+        currentUser = user1
+        assert !service.isAdmin()
+    }
+
+    void testIsUser() {
+        currentUser = admin1
+        assert service.isUser()
+
+        currentUser = orgSteward1
+        assert service.isUser()
+
+        currentUser = user1
+        assert service.isUser()
+    }
+
+    void testIsOrgSteward() {
+        currentUser = admin1
+        assert service.isOrgSteward(agency1)
+        assert service.isOrgSteward(agency2)
+
+        currentUser = orgSteward1
+        assert service.isOrgSteward(agency1)
+        assert !service.isOrgSteward(agency2)
+
+        currentUser = orgSteward2
+        assert service.isOrgSteward(agency1)
+        assert service.isOrgSteward(agency2)
+
+        currentUser = user1
+        assert !service.isOrgSteward(agency1)
+        assert !service.isOrgSteward(agency2)
+    }
+
+    void testCheckAdmin() {
+        currentUser = admin1
+        service.checkAdmin()
+
+        currentUser = orgSteward1
+        shouldFail(AccessDeniedException) {
+            service.checkAdmin()
+        }
+
+        currentUser = user1
+        shouldFail(AccessDeniedException) {
+            service.checkAdmin()
+        }
+    }
+
+    void testCheckOrgSteward() {
+        currentUser = admin1
+        service.checkOrgSteward(agency1)
+        service.checkOrgSteward(agency2)
+
+        currentUser = orgSteward1
+        service.checkOrgSteward(agency1)
+        shouldFail(AccessDeniedException) {
+            service.checkOrgSteward(agency2)
+        }
+
+        currentUser = orgSteward2
+        service.checkOrgSteward(agency1)
+        service.checkOrgSteward(agency2)
+
+        currentUser = user1
+        shouldFail(AccessDeniedException) {
+            service.checkOrgSteward(agency1)
+        }
+        shouldFail(AccessDeniedException) {
+            service.checkOrgSteward(agency2)
+        }
     }
 }

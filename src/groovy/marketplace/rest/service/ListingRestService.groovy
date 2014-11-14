@@ -106,12 +106,14 @@ class ListingRestService extends RestService<Listing> {
     protected boolean canView(Listing si) {
         Profile profile = profileRestService.currentUserProfile
 
-        //owners and admins can always view.  For others, there are more rules
-        if (!profileRestService.isAdmin() && !si.isOwner(profile)) {
-
-            //if it is enabled and approved it is visible to everyone
-            if (!(si.isEnabled && si.approvalStatus == ApprovalStatus.APPROVED)) {
-                return false
+        //if it is enabled and approved it is visible to everyone
+        if (!(si.isEnabled && si.approvalStatus == ApprovalStatus.APPROVED)) {
+            //owners and admins can always view
+            if (!profileRestService.isAdmin() && !si.isOwner(profile)) {
+                //stewards can view listings within their agency
+                if (!profileRestService.isOrgSteward(si.agency)) {
+                    return false
+                }
             }
         }
 
@@ -134,7 +136,10 @@ class ListingRestService extends RestService<Listing> {
         if (!(profileRestService.isAdmin())) {
             //non-admin, non-owners can never edit
             if (!existing.isOwner(profile)) {
-                unauthorized()
+                //unless they are an org steward for that listing's org
+                if (!profileRestService.isOrgSteward(existing.agency)) {
+                    unauthorized()
+                }
             }
         }
     }
@@ -222,12 +227,16 @@ class ListingRestService extends RestService<Listing> {
      * RejectionListing to the ServiceItem, and creating the RejectionActivity
      */
     public void reject(Listing si, RejectionListing rejectionListing) {
-        if (!(si.approvalStatus in [ApprovalStatus.PENDING, ApprovalStatus.APPROVED_ORG])) {
+        if (si.approvalStatus == ApprovalStatus.PENDING) {
+            profileRestService.checkOrgSteward(si.agency)
+        }
+        else if (si.approvalStatus == ApprovalStatus.APPROVED_ORG) {
+            profileRestService.checkAdmin()
+        }
+        else {
             throw new IllegalArgumentException("Cannot reject ServiceItem ${si.id} that has " +
                 "approval status of ${si.approvalStatus}")
         }
-
-        profileRestService.checkAdmin()
 
         si.approvalStatus = ApprovalStatus.REJECTED
         listingActivityInternalService.addRejectionActivity(si, rejectionListing)
