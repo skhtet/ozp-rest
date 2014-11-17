@@ -236,17 +236,6 @@ class Listing implements Serializable {
                 return requiredUnlessInProgress(ts, obj)
             }
         })
-        contacts validator: { val, obj ->
-            if (obj.approvalStatus != ApprovalStatus.IN_PROGRESS) {
-                withNewSession {
-                    def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
-                        !val.find { contact -> contact.type == type }
-                    }
-                    if (missingRequiredTypes)
-                        return ['requiredContactType', missingRequiredTypes*.title]
-                }
-            }
-        }
         screenshots validator: requiredUnlessInProgress
     }
 

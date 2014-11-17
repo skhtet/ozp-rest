@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.ApprovalStatus
 import marketplace.Listing
+import marketplace.ContactType
 import org.springframework.stereotype.Component
 
 import marketplace.rest.service.ProfileRestService
@@ -54,8 +55,37 @@ class ListingValidator implements DomainValidator<Listing> {
      */
     private void validateNewApprovalStatus(Listing newObj) {
        if (newObj.approvalStatus != ApprovalStatus.IN_PROGRESS) {
-            throw new IllegalArgumentException("New ServiceItems cannot have an " +
+            throw new IllegalArgumentException("New Listings cannot have an " +
                 "approvalStatus other than ${ApprovalStatus.IN_PROGRESS}")
+        }
+    }
+
+    /**
+     * Check that no required contact types have been removed
+     */
+    private void validateExistingRequiredContactTypes(Map existing, Listing updated) {
+        Collection<ContactType> required = ContactType.findAllByRequired(true),
+            oldContactTypes = existing.contacts*.type,
+            newContactTypes = updated.contacts*.type,
+            missingRequired = oldContactTypes.intersect(required) - newContactTypes
+
+        if (missingRequired) {
+            throw new IllegalArgumentException(
+                "Missing contacts for required types: ${missingRequired}")
+        }
+    }
+
+    /**
+     * Check that all required contact types are present
+     */
+    private void validateAllRequiredContactTypes(Map existing, Listing updated) {
+        Collection<ContactType> required = ContactType.findAllByRequired(true),
+            newContactTypes = updated.contacts*.type,
+            missingRequired = required - newContactTypes
+
+        if (missingRequired) {
+            throw new IllegalArgumentException(
+                "Missing contacts for required types: ${missingRequired}")
         }
     }
 
@@ -68,5 +98,22 @@ class ListingValidator implements DomainValidator<Listing> {
     @Override
     public void validateChanges(Map existing, Listing updated) {
         validateApprovalStatus(existing, updated)
+
+        /**
+         * In order to allow new required contact types to be added without
+         * messing up required listings, some complicated rules needed to be added.
+         * First of all, required contact types are not checked at all for Draft listings.
+         * Then, whenever a listing is submitted, it is checked to ensure that all
+         * currently-existing contact types are present.  Then, further updates check that
+         * no required contact types are removed from the listing, but do not check that
+         * new required contact types are added
+         */
+        if (updated.approvalStatus == ApprovalStatus.PENDING &&
+                existing.approvalStatus != ApprovalStatus.PENDING) {
+            validateAllRequiredContactTypes(existing, updated)
+        }
+        else if (updated.approvalStatus != ApprovalStatus.IN_PROGRESS) {
+            validateExistingRequiredContactTypes(existing, updated)
+        }
     }
 }
