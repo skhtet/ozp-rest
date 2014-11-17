@@ -99,7 +99,7 @@ class Listing implements Serializable {
         'listingActivities',
 
         //these fields are technically auditable, but are associated with a separate activity
-        'relationships',
+        'required',
         'isEnabled',
         'approvalStatus',
         'isFeatured'
@@ -140,6 +140,7 @@ class Listing implements Serializable {
     SortedSet<RejectionListing> rejectionListings
     List<Screenshot> screenshots
     List<ListingActivity> listingActivities
+    Set<Listing> required = new HashSet()
 
     ListingActivity lastActivity
     Agency agency
@@ -155,7 +156,7 @@ class Listing implements Serializable {
         listingActivities: ListingActivity,
         docUrls: DocUrl,
         screenshots: Screenshot,
-        relationships: Relationship,
+        required: Listing,
         contacts: Contact,
         satisfiedScorecards: Scorecard,
         tags: String,
@@ -163,9 +164,6 @@ class Listing implements Serializable {
         applicationLibraryEntries: ApplicationLibraryEntry //necessary to get GORM to
                                                            //cascade the delete
     ]
-
-    //so that GORM knows which property of the relationship is the backref
-    static mappedBy = [relationships: 'owningEntity']
 
     static mapping = {
         cache true
@@ -176,7 +174,6 @@ class Listing implements Serializable {
         rejectionListings batchSize: 50
         screenshots indexColumn: [name: "ordinal", type: Integer], cascade: 'all-delete-orphan'
         contacts cascade: 'all-delete-orphan'
-        relationships cascade: 'all-delete-orphan'
         docUrls cascade: 'all-delete-orphan'
         satisfiedScorecards joinTable: [name: 'service_item_score_card_item',
                                             column: 'score_card_item_id',
@@ -312,7 +309,6 @@ class Listing implements Serializable {
             'listingActivities',
             'docUrls',
             'screenshots',
-            'relationships',
             'contacts'
         ]
 

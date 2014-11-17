@@ -22,13 +22,13 @@ import marketplace.ListingActivity
 import marketplace.RejectionActivity
 import marketplace.RejectionListing
 import marketplace.Intent
-import marketplace.Relationship
 import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.ChangeDetail
 import marketplace.validator.ListingValidator
-import ozone.marketplace.enums.RelationshipType
 
+import marketplace.rest.representation.in.InputRepresentation
+import marketplace.rest.representation.in.ListingIdRef
 import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.ProfilePropertyInputRepresentation
 import marketplace.rest.representation.in.ResourceInputRepresentation
@@ -96,7 +96,6 @@ class ListingRestServiceUnitTest {
         //necessary to get reflection-based marshalling to work
         grailsApplication.addArtefact(DocUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
-        grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
@@ -104,6 +103,7 @@ class ListingRestServiceUnitTest {
 
         FakeAuditTrailHelper.install()
         ProfileMappedByFix.fixProfileMappedBy()
+
     }
 
     private makeServiceItem() {
@@ -173,7 +173,6 @@ class ListingRestServiceUnitTest {
 
         mockDomain(ChangeDetail.class)
         mockDomain(ListingActivity.class)
-        mockDomain(Relationship.class)
         mockDomain(RejectionListing.class)
 
         mockDomain(Type.class, [type1])
@@ -189,6 +188,11 @@ class ListingRestServiceUnitTest {
         this.nonOwner = nonOwner
 
         mockDomain(Listing.class)
+        //grails doesn't appear to mock circular addTo* methods
+        Listing.metaClass.addToRequired = { listing ->
+            delegate.required << listing
+        }
+
         def exampleServiceItem = makeServiceItem()
         exampleServiceItem.save(failOnError:true)
 
@@ -417,24 +421,15 @@ class ListingRestServiceUnitTest {
         assert activity.action == Constants.Action.ENABLED
     }
 
-    //re-activate this test once the ListingInputRepresentation
-    //supports required listings
-    @Ignore
-    void testUpdateRelationshipServiceItemActivity() {
-        def makeRelationship = { related=null ->
-            new Relationship(
-                relationshipType: RelationshipType.REQUIRE,
-                relatedItems: related ?: []
-            )
-        }
-
+    void testUpdateRequiredServiceItemActivity() {
         currentUser = Profile.findByUsername('admin')
 
         def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
         def parent, added, removed
-        def relationship = makeRelationship()
         def relatedItem1 = service.createFromRepresentation(makeServiceItemInputRepresentation())
         def relatedItem2 = service.createFromRepresentation(makeServiceItemInputRepresentation())
+        def relatedItem1Dto = new ListingIdRef(id: relatedItem1.id)
+        def relatedItem2Dto = new ListingIdRef(id: relatedItem2.id)
 
         service.listingActivityInternalService = [
             addListingActivity: { si, action -> },
@@ -445,45 +440,33 @@ class ListingRestServiceUnitTest {
             }
         ] as ListingActivityInternalService
 
-        Listing dto = makeServiceItemInputRepresentation()
-        dto.id = id
-        dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
+        InputRepresentation<Listing> dto = makeServiceItemInputRepresentation()
+        dto.required = [relatedItem1Dto, relatedItem2Dto]
         service.updateById(id, dto)
 
-        assert parent.id == dto.id
         assert added.collect { it.id } as Set == [relatedItem1.id, relatedItem2.id] as Set
         assert removed as Set == [] as Set
 
-        dto.relationships = [makeRelationship([relatedItem1])]
+        dto.required = [relatedItem1Dto]
         service.updateById(id, dto)
 
         assert added as Set == [] as Set
         assert removed.collect {it.id} as Set == [relatedItem2.id] as Set
 
-        dto.relationships = [makeRelationship([relatedItem2])]
+        dto.required = [relatedItem2Dto]
         service.updateById(id, dto)
 
         assert added.collect {it.id} as Set == [relatedItem2.id] as Set
         assert removed.collect {it.id} as Set == [relatedItem1.id] as Set
 
-        dto.relationships = [makeRelationship([relatedItem2])]
+        dto.required = [relatedItem2Dto]
         service.updateById(id, dto)
 
         assert added as Set == [] as Set
         assert removed as Set == [] as Set
     }
 
-    //re-activate this test once the ListingInputRepresentation
-    //supports required listings
-    @Ignore
     void testGetAllRequiredServiceItemsByParentId() {
-        def makeRelationship = { related=null ->
-            new Relationship(
-                relationshipType: RelationshipType.REQUIRE,
-                relatedItems: related ?: []
-            )
-        }
-
         def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
 
         def getRequired = {
@@ -491,54 +474,39 @@ class ListingRestServiceUnitTest {
                 .collect {it.id} as Set
         }
 
-        def relationship = makeRelationship()
         def relatedItem1 = service.createFromRepresentation(makeServiceItemInputRepresentation())
-        def relatedItem2 = makeServiceItemInputRepresentation()
-        relatedItem2 = service.createFromRepresentation(relatedItem2)
+        def relatedItem2 = service.createFromRepresentation(makeServiceItemInputRepresentation())
+        def relatedItem1Dto = new ListingIdRef(id: relatedItem1.id)
+        def relatedItem2Dto = new ListingIdRef(id: relatedItem2.id)
 
         service.listingActivityInternalService = [
             addListingActivity: { si, action -> },
             addRelationshipActivities: { p, a, r -> }
         ] as ListingActivityInternalService
 
-        Listing dto = makeServiceItemInputRepresentation()
-        dto.id = id
-        dto.relationships = [makeRelationship([relatedItem1, relatedItem2])]
+        InputRepresentation<Listing> dto = makeServiceItemInputRepresentation()
+        dto.required = [relatedItem1Dto, relatedItem2Dto]
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem1.id, relatedItem2.id] as Set
 
-        dto.relationships = [makeRelationship([relatedItem1])]
+        dto.required = [relatedItem1Dto]
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem1.id] as Set
 
-        dto.relationships = [makeRelationship([relatedItem2])]
+        dto.required = [relatedItem2Dto]
         service.updateById(id, dto)
 
         assert getRequired() == [relatedItem2.id] as Set
 
-        dto.relationships = [makeRelationship()]
+        dto.required = []
         service.updateById(id, dto)
 
         assert getRequired() == [] as Set
     }
 
-    //re-activate this test once the ListingInputRepresentation
-    //supports required listings
-    @Ignore
     void testGetAllRequiredServiceItemsByParentIdCyclicDependency() {
-        def makeRelationship = { ids=null ->
-            new Relationship(
-                relationshipType: RelationshipType.REQUIRE,
-                relatedItems: ids.collect {
-                    def si = new Listing()
-                    si.id = it
-                    si
-                } ?: []
-            )
-        }
-
         def id
 
         def getRequired = {
@@ -551,22 +519,22 @@ class ListingRestServiceUnitTest {
             addRelationshipActivities: { p, a, r -> }
         ] as ListingActivityInternalService
 
-        def relatedItem1Id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
-        def relatedItem2Id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
+        def relatedItem1Id =
+            service.createFromRepresentation(makeServiceItemInputRepresentation()).id
+        def relatedItem2Id =
+            service.createFromRepresentation(makeServiceItemInputRepresentation()).id
 
         def relatedItem1Dto = makeServiceItemInputRepresentation()
-        relatedItem1Dto.id = relatedItem1Id
-        relatedItem1Dto.relationships = [makeRelationship([relatedItem2Id])]
+        relatedItem1Dto.required = [new ListingIdRef(id: relatedItem2Id)]
 
         def relatedItem2Dto = makeServiceItemInputRepresentation()
-        relatedItem2Dto.id = relatedItem2Id
-        relatedItem2Dto.relationships = [makeRelationship([relatedItem1Id])]
+        relatedItem2Dto.required = [new ListingIdRef(id: relatedItem1Id)]
 
         def relatedItem1 = service.updateById(relatedItem1Id, relatedItem1Dto)
         def relatedItem2 = service.updateById(relatedItem2Id, relatedItem2Dto)
 
         def dto = makeServiceItemInputRepresentation()
-        dto.relationships = [makeRelationship([relatedItem1Id])]
+        dto.required = [new ListingIdRef(id: relatedItem1Id)]
         id = service.createFromRepresentation(dto).id
 
         assert getRequired() == [relatedItem1.id, relatedItem2.id] as Set

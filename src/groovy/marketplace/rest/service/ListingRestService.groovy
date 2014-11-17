@@ -10,9 +10,7 @@ import marketplace.ListingActivity
 import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.RejectionListing
-import marketplace.Relationship
 import marketplace.ListingSnapshot
-import ozone.marketplace.enums.RelationshipType
 import marketplace.validator.ListingValidator
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
@@ -57,12 +55,8 @@ class ListingRestService extends RestService<Listing> {
         Listing child = getById(id)
 
         Listing.createCriteria().list() {
-            relationships {
-                eq('relationshipType', RelationshipType.REQUIRE)
-
-                relatedItems {
-                    eq('id', id)
-                }
+            required {
+                eq('id', id)
             }
         }.grep{ canView(it) }
     }
@@ -73,8 +67,7 @@ class ListingRestService extends RestService<Listing> {
     private Set<Listing> getAllRequiredListings(Listing parent,
             Set<Listing> ignore) {
 
-        Set<Listing> immediateRequired =
-            parent.relationships.collect { it.relatedItems }.flatten() - ignore
+        Set<Listing> immediateRequired = parent.required - ignore
 
         Set<Listing> recursiveRequired = immediateRequired.collect {
             getAllRequiredListings(it, (immediateRequired + ignore + parent))
@@ -246,9 +239,8 @@ class ListingRestService extends RestService<Listing> {
      * Create the appropriate ListingActivities for any relationship changes
      */
     private void updateRelationshipsListingActivity(Listing updated, Map old) {
-        Set<Listing> oldRelated =
-            old?.relationships?.collect { it.relatedItems }?.flatten() ?: new HashSet()
-        Set<Listing> newRelated = updated.relationships.collect { it.relatedItems }.flatten()
+        Set<Listing> oldRelated = old?.required ?: new HashSet()
+        Set<Listing> newRelated = updated.required
 
         Set<Listing> added = newRelated - oldRelated
         Set<Listing> removed = oldRelated - newRelated
@@ -261,17 +253,12 @@ class ListingRestService extends RestService<Listing> {
      * this service item to be deleted
      */
     private void updateRelationshipsForDelete(Listing item) {
-        Set<Relationship> relatedBy = Relationship.findRelationshipsByRelatedItem(item) as Set
-        Set<Relationship> relatedTo = item.relationships as Set
-
         //use a set to ensure no duplicates
-        Set<Listing> relatedByListings = relatedBy.collect { it.owningEntity }
-        Set<Listing> relatedToListings = relatedTo.collect {
-            it.relatedItems
-        }.flatten()
+        Set<Listing> relatedByListings = Listing.findAllByRequired(item) as Set
+        Set<Listing> relatedToListings = item.required as Set
 
-        relatedBy.each { it.removeFromRelatedItems(item) }
-        relatedTo.each { item.removeFromRelationships(it) }
+        relatedByListings.each { it.removeFromRequired(item) }
+        relatedToListings.each { item.removeFromRequired(it) }
 
         //update ListingActivities
         relatedByListings.each {

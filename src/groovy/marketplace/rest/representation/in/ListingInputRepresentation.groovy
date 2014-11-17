@@ -38,6 +38,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Set<CategoryTitleInputRepresentation> categories
     AgencyTitleInputRepresentation agency
     Set<ResourceInputRepresentation> docUrls
+    Set<ListingIdRef> required
     List<ScreenshotInputRepresentation> screenshots
 
     public void setType(String typeTitle) {
