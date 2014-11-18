@@ -67,7 +67,7 @@ class ListingValidator implements DomainValidator<Listing> {
         Collection<ContactType> required = ContactType.findAllByRequired(true),
             oldContactTypes = existing.contacts*.type,
             newContactTypes = updated.contacts*.type,
-            missingRequired = oldContactTypes.intersect(required) - newContactTypes
+            missingRequired = required.intersect(oldContactTypes) - newContactTypes
 
         if (missingRequired) {
             throw new IllegalArgumentException(
@@ -78,7 +78,7 @@ class ListingValidator implements DomainValidator<Listing> {
     /**
      * Check that all required contact types are present
      */
-    private void validateAllRequiredContactTypes(Map existing, Listing updated) {
+    private void validateAllRequiredContactTypes(Listing updated) {
         Collection<ContactType> required = ContactType.findAllByRequired(true),
             newContactTypes = updated.contacts*.type,
             missingRequired = required - newContactTypes
@@ -110,7 +110,7 @@ class ListingValidator implements DomainValidator<Listing> {
          */
         if (updated.approvalStatus == ApprovalStatus.PENDING &&
                 existing.approvalStatus != ApprovalStatus.PENDING) {
-            validateAllRequiredContactTypes(existing, updated)
+            validateAllRequiredContactTypes(updated)
         }
         else if (updated.approvalStatus != ApprovalStatus.IN_PROGRESS) {
             validateExistingRequiredContactTypes(existing, updated)

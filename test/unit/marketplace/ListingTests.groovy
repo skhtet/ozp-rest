@@ -121,24 +121,6 @@ class ListingTests {
         Profile owner = new Profile(username: 'testAdmin').save(failOnError:true)
         Agency ag = new Agency(title: "agency", shortName: "a").save(failOnError:true)
         Category category = new Category(title: 'cat').save(failOnError:true)
-        ContactType contactType = new ContactType(title: "contact type").save(failOnError:true)
-        ContactType requiredContactType =
-            new ContactType(title: "required contact type", required: true)
-                .save(failOnError:true, flush:true)
-        Contact contact = new Contact(
-            name: "bob",
-            email: "bob@example.com",
-            securePhone: '555-5555',
-            unsecurePhone: '555-555-5555',
-            type: contactType
-        )
-        Contact requiredContact = new Contact(
-            name: "bob",
-            email: "bob@example.com",
-            securePhone: '555-5555',
-            unsecurePhone: '555-555-5555',
-            type: requiredContactType
-        )
 
         listing = new Listing(
             title: "test",
@@ -175,7 +157,6 @@ class ListingTests {
             imageMediumUrl = 'https://localhost/asdf'
             imageLargeUrl = 'https://localhost/asdf'
             imageXlargeUrl = 'https://localhost/asdf'
-            contacts = [requiredContact]
             screenshots = [new Screenshot(
                 smallImageUrl: 'https://localhost/asdf',
                 largeImageUrl: 'https://localhost/asdf'
@@ -212,13 +193,12 @@ class ListingTests {
             'imageMediumUrl',
             'imageLargeUrl',
             'imageXlargeUrl',
-            'contacts',
             'screenshots',
             'tags'
         ].each(checkAndTest.curry(null))
 
         //check that empty lists fail validation
-        ['categories', 'contacts', 'screenshots', 'tags'].each(checkAndTest.curry([]))
+        ['categories', 'screenshots', 'tags'].each(checkAndTest.curry([]))
 
         //check that empty strings fail validation
         [
@@ -232,9 +212,5 @@ class ListingTests {
             'imageLargeUrl',
             'imageXlargeUrl'
         ].each(checkAndTest.curry(""))
-
-        //required ContactTypes are required only on non-draft listings
-        listing.contacts = [contact]
-        assert !listing.validate()
     }
 }

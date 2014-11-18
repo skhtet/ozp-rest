@@ -141,6 +141,7 @@ class Listing implements Serializable {
     List<Screenshot> screenshots
     List<ListingActivity> listingActivities
     Set<Listing> required = new HashSet()
+    Set<Contact> contacts = new HashSet()
 
     ListingActivity lastActivity
     Agency agency
