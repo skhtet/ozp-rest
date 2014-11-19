@@ -290,6 +290,14 @@ class Listing implements Serializable {
         Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
     }
 
+    static List<Listing> findAllByRequired(Listing req) {
+        Listing.createCriteria().list() {
+            required {
+                eq('id', req.id)
+            }
+        }
+    }
+
     def beforeValidate() {
         List childProperties = [
             'listingActivities',
