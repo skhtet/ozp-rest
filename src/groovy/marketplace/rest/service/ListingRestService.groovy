@@ -58,6 +58,8 @@ class ListingRestService extends RestService<Listing> {
             required {
                 eq('id', id)
             }
+
+            ne('id', id)
         }.grep{ canView(it) }
     }
 
