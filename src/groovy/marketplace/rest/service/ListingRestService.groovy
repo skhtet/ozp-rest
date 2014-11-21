@@ -204,7 +204,7 @@ class ListingRestService extends RestService<Listing> {
             SQLQuery query = session.createSQLQuery(fullQuery)
 
             if (agency) query.setLong('agencyId', agency.id)
-            if (approvalStatus) query.setString('approvalStatus', approvalStatus)
+            if (approvalStatus) query.setString('approvalStatus', approvalStatus.toString())
             if (enabled) query.setBoolean('enabled', enabled)
 
             //to get List<Map> instead of List<List>
