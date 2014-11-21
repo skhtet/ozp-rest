@@ -79,12 +79,13 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
         MediaType.APPLICATION_JSON
     ])
     FilteredListingsPagedCollection readAll(@QueryParam('offset') Integer offset,
-                                     @QueryParam('max') Integer max,
-                                     @QueryParam('org') AgencyTitleInputRepresentation org,
-                                     @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
-                                     @QueryParam('enabled') Boolean enabled) {
-        new FilteredListingsPagedCollection(offset, max,
-            service.getAllMatchingParams(org, approvalStatus, enabled, offset, max))
+            @QueryParam('max') Integer max,
+            @QueryParam('org') AgencyTitleInputRepresentation org,
+            @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
+            @QueryParam('enabled') Boolean enabled) {
+        new FilteredListingsPagedCollection(
+                service.getAllMatchingParams(org, approvalStatus, enabled, offset, max),
+                org, approvalStatus, enabled, offset, max)
     }
 
     //override to remove annotations

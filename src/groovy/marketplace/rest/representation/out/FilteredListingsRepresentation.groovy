@@ -12,6 +12,8 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.FilteredListingsUriBuilder
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.FilteredListingsPagedCollection
 
 class FilteredListingsRepresentation extends EmbeddedCollectionRepresentation<Listing> {
@@ -22,11 +24,17 @@ class FilteredListingsRepresentation extends EmbeddedCollectionRepresentation<Li
 
     FilteredListingsRepresentation(
             RepresentationFactory<Listing> listingRepFactory,
-            ListingUriBuilder listingUriBuilder,
+            FilteredListingsUriBuilder filteredListingsUriBuilder,
+            ObjectUriBuilder<Listing> listingUriBuilder,
             FilteredListingsPagedCollection collection,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
-        super(listingRepFactory, listingUriBuilder, listingUriBuilder,
-                collection, uriBuilderHolder)
+        super(
+            listingRepFactory,
+            filteredListingsUriBuilder.getCollectionUriBuilder(collection),
+            listingUriBuilder,
+            collection,
+            uriBuilderHolder
+        )
 
         this.counts = collection.counts
     }
@@ -65,12 +73,14 @@ class FilteredListingsRepresentation extends EmbeddedCollectionRepresentation<Li
             RepresentationFactory<FilteredListingsPagedCollection> {
         @Autowired ListingRepresentation.Factory listingRepFactory
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired FilteredListingsUriBuilder.Factory filteredListingsUriBuilderFactory
 
         FilteredListingsRepresentation toRepresentation(
                 FilteredListingsPagedCollection collection,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new FilteredListingsRepresentation(
                     listingRepFactory,
+                    filteredListingsUriBuilderFactory.getBuilder(uriBuilderHolder),
                     listingUriBuilderFactory.getBuilder(uriBuilderHolder),
                     collection,
                     uriBuilderHolder)
