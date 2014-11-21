@@ -6,7 +6,7 @@ import marketplace.ApprovalStatus
 import marketplace.rest.service.ProfileRestService
 
 @TestMixin(GrailsUnitTestMixin)
-class ServiceItemValidatorUnitTest {
+class ListingValidatorUnitTest {
 
     ListingValidator validator
 
