@@ -2,10 +2,17 @@ package marketplace.rest.service
 
 import javax.annotation.security.RolesAllowed
 
-import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.transaction.annotation.Transactional
+
+import org.hibernate.SQLQuery
+import org.hibernate.transform.AliasToEntityMapResultTransformer
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.orm.PagedResultList
+
 import marketplace.Listing
 import marketplace.Agency
 import marketplace.Profile
@@ -14,9 +21,8 @@ import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.RejectionListing
 import marketplace.ListingSnapshot
+import marketplace.FilteredListings
 import marketplace.validator.ListingValidator
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.transaction.annotation.Transactional
 
 import marketplace.rest.representation.in.InputRepresentation
 
@@ -24,7 +30,6 @@ import marketplace.rest.representation.in.InputRepresentation
 class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
     @Autowired ListingActivityInternalService listingActivityInternalService
-    @Autowired SessionFactory sessionFactory
 
     @Autowired
     public ListingRestService(GrailsApplication grailsApplication,
@@ -116,7 +121,7 @@ class ListingRestService extends RestService<Listing> {
      */
     @Override
     @RolesAllowed(['ROLE_ADMIN', 'ROLE_ORG_STEWARD'])
-    public Set<Listing> getAllMatchingParams(
+    public FilteredListings getAllMatchingParams(
             InputRepresentation<Agency> org,
             ApprovalStatus approvalStatus,
             Boolean enabled,
@@ -127,24 +132,100 @@ class ListingRestService extends RestService<Listing> {
             //profileRestService.checkOrgSteward(ag)
         //}
 
-        Listing.createCriteria().list(max: max, offset: offset) {
-            if (ag) {
-                agency {
-                    eq('id', ag.id)
+        //get the listings
+        PagedResultList<Listing> filteredListings =
+            Listing.createCriteria().list(max: max, offset: offset) {
+                if (ag) {
+                    agency {
+                        eq('id', ag.id)
+                    }
+                }
+                //else if (profileRestService.isOrgSteward()) {
+                    //agency {
+                        //eq('id',
+                            //profileRestService.currentUserProfile.stewardedOrganizations*.id)
+                    //}
+                //}
+
+                if (approvalStatus) {
+                    eq('approvalStatus', approvalStatus)
+                }
+
+                if (enabled != null) {
+                    eq('isEnabled', enabled)
                 }
             }
-            //else if (profileRestService.isOrgSteward()) {
-                //agency {
-                    //eq('id', profileRestService.currentUserProfile.stewardedOrganizations*.id)
-                //}
-            //}
 
-            if (approvalStatus) {
-                eq('approvalStatus', approvalStatus)
-            }
+        FilteredListings.Counts counts = getCountsMatchingParams(ag, approvalStatus, enabled)
 
-            if (enabled != null) {
-                eq('isEnabled', enabled)
+        return new FilteredListings(filteredListings, counts)
+    }
+
+    /**
+     * get the counts of listings matching the parameters.
+     */
+    private FilteredListings.Counts getCountsMatchingParams(
+            Agency agency,
+            ApprovalStatus approvalStatus,
+            Boolean enabled) {
+        Listing.withSession { session ->
+            String sqlQuery = """
+                SELECT
+                    a.id AS org_id,
+                    COUNT(l.id) AS org_count,
+                    SUM(CASE l.approval_status WHEN 'IN_PROGRESS' THEN 1 ELSE 0 END)
+                        AS in_progress,
+                    SUM(CASE l.approval_status WHEN 'PENDING' THEN 1 ELSE 0 END) AS pending,
+                    SUM(CASE l.approval_status WHEN 'REJECTED' THEN 1 ELSE 0 END) AS rejected,
+                    SUM(CASE l.approval_status WHEN 'APPROVED_ORG' THEN 1 ELSE 0 END)
+                        AS approved_org,
+                    SUM(CASE l.approval_status WHEN 'APPROVED' THEN 1 ELSE 0 END) AS approved,
+                    SUM(CASE l.is_enabled WHEN TRUE THEN 1 ELSE 0 END) AS enabled
+                FROM
+                    listing AS l LEFT OUTER JOIN
+                    agency AS a ON l.agency_id = a.id
+            """
+
+            String groupBy = " GROUP BY a.id;"
+
+            List<String> whereClauses = [
+                agency ? "a.id = :agencyId" : null,
+                approvalStatus ? "l.approval_status = :approvalStatus" : null,
+                enabled != null ? "l.is_enabled = :enabled" : null
+            ] - null
+
+            //combine the where clauses with AND operations and concatenate the query together.
+            //this would be easier if groovy supported list intersperse
+            String fullQuery = sqlQuery +
+                    (whereClauses ? ' WHERE ' + whereClauses.collect { [it, ' AND '] }
+                        .flatten().sum().replaceAll(/ AND $/, '') : '') +
+                    groupBy
+
+            SQLQuery query = session.createSQLQuery(fullQuery)
+
+            if (agency) query.setLong('agencyId', agency.id)
+            if (approvalStatus) query.setString('approvalStatus', approvalStatus)
+            if (enabled) query.setBoolean('enabled', enabled)
+
+            //to get List<Map> instead of List<List>
+            query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+            List<Map<String, Object>> resultSet = query.list()
+
+            //each row contains the approvalStatus counts for that agency.  Sum them together
+            return resultSet.inject(
+                new FilteredListings.Counts(0, 0, 0, 0, 0, 0, [:])
+            ) { acc, row ->
+                new FilteredListings.Counts(
+                    acc.enabled + row.ENABLED,
+                    acc.inProgress + row.IN_PROGRESS,
+                    acc.pending + row.PENDING,
+                    acc.rejected + row.REJECTED,
+                    acc.approvedOrg + row.APPROVED_ORG,
+                    acc.approved + row.APPROVED,
+                    acc.agencyCounts +
+                        [new AbstractMap.SimpleEntry(row.ORG_ID, row.ORG_COUNT as Integer)]
+                )
             }
         }
     }

@@ -27,6 +27,7 @@ import marketplace.ApprovalStatus
 
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ChildObjectCollection
+import marketplace.rest.FilteredListingsPagedCollection
 import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
@@ -37,6 +38,7 @@ import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
 import marketplace.rest.representation.out.ListingRepresentation
 import marketplace.rest.representation.out.ListingActivityRepresentation
+import marketplace.rest.representation.out.FilteredListingsRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
@@ -72,21 +74,17 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     @GET
     @Produces([
         ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        FilteredListingsRepresentation.COLLECTION_MEDIA_TYPE,
         ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
+    FilteredListingsPagedCollection readAll(@QueryParam('offset') Integer offset,
                                      @QueryParam('max') Integer max,
                                      @QueryParam('org') AgencyTitleInputRepresentation org,
                                      @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
                                      @QueryParam('enabled') Boolean enabled) {
-        if (enabled == null && approvalStatus == null && org == null) {
-            super.readAll(offset, max)
-        }
-        else {
-            new PagedCollection(offset, max,
-                service.getAllMatchingParams(org, approvalStatus, enabled, offset, max))
-        }
+        new FilteredListingsPagedCollection(offset, max,
+            service.getAllMatchingParams(org, approvalStatus, enabled, offset, max))
     }
 
     //override to remove annotations
