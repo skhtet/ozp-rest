@@ -109,26 +109,35 @@ abstract class RestService<T> {
         }
     }
 
-    private static <S> S merge(S object, InputRepresentation<S> representation) {
-        /**
-         * return the object from the database represented by this rep
-         */
-        def getFromDb = { AbstractInputRepresentation rep ->
-            T retval
-            if(rep instanceof IdRefInputRepresentation) {
-                retval = rep.representedClass().get(rep.id)
-            } else if (rep instanceof PropertyRefInputRepresentation) {
-                retval = rep.representedClass().findWhere(rep.identifyingProperties)
-            }
+    /**
+     * @return the object in the database represented by rep
+     */
+    protected static <S> S getFromDb(IdRefInputRepresentation rep) {
+        S retval = rep.representedClass().get(rep.id)
 
-            if (retval == null) {
-                throw new IllegalArgumentException("Attempted to find non-existant object " +
-                    "of type ${rep.representedClass()}")
-            }
-
-            return retval
+        if (retval == null) {
+            throw new IllegalArgumentException("Attempted to find non-existant object " +
+                "of type ${rep.representedClass()}")
         }
 
+        return retval
+    }
+
+    /**
+     * @return the object in the database represented by rep
+     */
+    protected static <S> S getFromDb(PropertyRefInputRepresentation rep) {
+        S retval = rep.representedClass().findWhere(rep.identifyingProperties)
+
+        if (retval == null) {
+            throw new IllegalArgumentException("Attempted to find non-existant object " +
+                "of type ${rep.representedClass()}")
+        }
+
+        return retval
+    }
+
+    private static <S> S merge(S object, InputRepresentation<S> representation) {
         /**
          * get the new value from the representation
          * @param repValue The value taken from the InputRepresentation

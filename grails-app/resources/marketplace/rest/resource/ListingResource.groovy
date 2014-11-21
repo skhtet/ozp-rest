@@ -23,6 +23,7 @@ import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
+import marketplace.ApprovalStatus
 
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ChildObjectCollection
@@ -30,6 +31,7 @@ import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
+import marketplace.rest.representation.in.AgencyTitleInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
@@ -67,7 +69,6 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
 
     ListingResource() {}
 
-    @Override
     @GET
     @Produces([
         ListingRepresentation.COLLECTION_MEDIA_TYPE,
@@ -75,9 +76,23 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
         MediaType.APPLICATION_JSON
     ])
     PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
-                                     @QueryParam('max') Integer max) {
-        super.readAll(offset, max)
+                                     @QueryParam('max') Integer max,
+                                     @QueryParam('org') AgencyTitleInputRepresentation org,
+                                     @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
+                                     @QueryParam('enabled') Boolean enabled) {
+        if (enabled == null && approvalStatus == null && org == null) {
+            super.readAll(offset, max)
+        }
+        else {
+            new PagedCollection(offset, max,
+                service.getAllMatchingParams(org, approvalStatus, enabled, offset, max))
+        }
     }
+
+    //override to remove annotations
+    @Override
+    PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
+                                     @QueryParam('max') Integer max) {}
 
     @Path('/activity')
     @Produces([

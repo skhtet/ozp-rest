@@ -1,10 +1,13 @@
 package marketplace.rest.service
 
+import javax.annotation.security.RolesAllowed
+
 import org.hibernate.SessionFactory
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.Listing
+import marketplace.Agency
 import marketplace.Profile
 import marketplace.ListingActivity
 import marketplace.Constants
@@ -14,6 +17,8 @@ import marketplace.ListingSnapshot
 import marketplace.validator.ListingValidator
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.transaction.annotation.Transactional
+
+import marketplace.rest.representation.in.InputRepresentation
 
 @Service
 class ListingRestService extends RestService<Listing> {
@@ -95,6 +100,53 @@ class ListingRestService extends RestService<Listing> {
         item.applicationLibraryEntries.clear()
 
         super.deleteById(id)
+    }
+
+    /**
+     * Get all Listings that match the passed-in parameters.
+     * The different filters are combined using AND.
+     * @param The organization to filter by.  For those with ROLE_ORG_STEWARD, this must be an
+     * org that they are a steward of.  Can be null to match all orgs (or all orgs an Org Steward
+     * is steward of).
+     * @param approvalStatus The approvalStatus to filter by.  null to match all approvalStatuses
+     * @param enabled True to match only enabled listings. false to match only disabled listings.
+     * null to match all listings
+     *
+     * TODO add org steward stuff once that branch is merged in
+     */
+    @Override
+    @RolesAllowed(['ROLE_ADMIN', 'ROLE_ORG_STEWARD'])
+    public Set<Listing> getAllMatchingParams(
+            InputRepresentation<Agency> org,
+            ApprovalStatus approvalStatus,
+            Boolean enabled,
+            Integer offset, Integer max) {
+        Agency ag = org ? RestService.getFromDb(org) : null
+
+        //if (ag) {
+            //profileRestService.checkOrgSteward(ag)
+        //}
+
+        Listing.createCriteria().list(max: max, offset: offset) {
+            if (ag) {
+                agency {
+                    eq('id', ag.id)
+                }
+            }
+            //else if (profileRestService.isOrgSteward()) {
+                //agency {
+                    //eq('id', profileRestService.currentUserProfile.stewardedOrganizations*.id)
+                //}
+            //}
+
+            if (approvalStatus) {
+                eq('approvalStatus', approvalStatus)
+            }
+
+            if (enabled != null) {
+                eq('isEnabled', enabled)
+            }
+        }
     }
 
     @Override
