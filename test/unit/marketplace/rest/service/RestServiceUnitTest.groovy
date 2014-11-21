@@ -16,7 +16,6 @@ import marketplace.DocUrl
 import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Category
-import marketplace.Relationship
 import marketplace.Profile
 import marketplace.Intent
 import marketplace.Agency
@@ -33,8 +32,6 @@ import marketplace.rest.representation.in.CategoryInputRepresentation
 
 import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
-
-import ozone.marketplace.enums.RelationshipType
 
 @TestMixin(DomainClassUnitTestMixin)
 @Mock([ContactType])
@@ -54,7 +51,7 @@ class RestServiceUnitTest {
         String title
         Long id
         TypeIdRef type
-        Set<InputRepresentation<Relationship>> relationships
+        Set<InputRepresentation<Listing>> required
         Set<ProfileIdRef> owners
         String description
         String launchUrl
@@ -62,24 +59,11 @@ class RestServiceUnitTest {
         ApprovalStatus approvalStatus
     }
 
-    private static class RelationshipInputRepresentation
-            extends AbstractInputRepresentation {
-        RelationshipInputRepresentation() {
-            super(Relationship.class)
-        }
-
-        Set<ListingIdRef> relatedItems
-        RelationshipType relationshipType = RelationshipType.REQUIRE
-    }
-
     private static final exampleServiceItemProps = [
         id: 1,
         title: "test service item",
         type: [ id: 1 ],
-        relationships: [[
-           relationshipType: RelationshipType.REQUIRE,
-            relatedItems: []
-        ]],
+        required: [],
         description: "a test service item",
         launchUrl: "https://localhost/asf",
         owners: [ id: 1 ],
@@ -126,7 +110,6 @@ class RestServiceUnitTest {
 
         mockDomain(Screenshot.class)
         mockDomain(Category.class)
-        mockDomain(Relationship.class)
         mockDomain(Listing.class, [exampleServiceItem])
         mockDomain(Profile.class, [owner, newOwner])
         mockDomain(Type.class, [type])
@@ -140,7 +123,6 @@ class RestServiceUnitTest {
         grailsApplication.addArtefact(DocUrl.class)
         grailsApplication.addArtefact(Screenshot.class)
         grailsApplication.addArtefact(Category.class)
-        grailsApplication.addArtefact(Relationship.class)
         grailsApplication.addArtefact(Intent.class)
         grailsApplication.addArtefact(Listing.class)
         grailsApplication.addArtefact(Contact.class)
@@ -346,16 +328,14 @@ class RestServiceUnitTest {
 
         def ownerRep = new ProfileIdRef(id: 2)
         def typeRep = new TypeIdRef(id: 1)
-        def relationships = new RelationshipInputRepresentation(
-            relatedItems: [new ListingIdRef(id: 1)]
-        )
+        def relationships = new ListingIdRef(id: 1)
 
         def id = restService.getAll(0, 1).iterator().next().id
         InputRepresentation<Listing> updates = new ServiceItemInputRepresentation(exampleServiceItemProps + [
             title: newTitle,
             owners: [ownerRep],
             type: typeRep,
-            relationships: [relationships],
+            required: [relationships],
             id: id
         ])
 
@@ -389,7 +369,6 @@ class RestServiceUnitTest {
     }
 
     void testCreateFromRepresentation() {
-        InputRepresentation<Relationship> newRelationship = new RelationshipInputRepresentation(exampleServiceItemProps.relationships[0])
 
         def ownerId = 1
         ProfileIdRef ownerRep = new ProfileIdRef(id: ownerId)
@@ -400,7 +379,7 @@ class RestServiceUnitTest {
         ServiceItemInputRepresentation newServiceItem = new ServiceItemInputRepresentation(exampleServiceItemProps + [
             owners: [ownerRep],
             type: typeRep,
-            relationships: [newRelationship]
+            required: []
         ] - [id: 1])
 
         Listing retval = restService.createFromRepresentation(newServiceItem)

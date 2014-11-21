@@ -1,27 +1,35 @@
 package marketplace.rest.service
 
-import org.hibernate.SessionFactory
+import javax.annotation.security.RolesAllowed
+
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.transaction.annotation.Transactional
+
+import org.hibernate.SQLQuery
+import org.hibernate.transform.AliasToEntityMapResultTransformer
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.orm.PagedResultList
+
 import marketplace.Listing
+import marketplace.Agency
 import marketplace.Profile
 import marketplace.ListingActivity
 import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.RejectionListing
-import marketplace.Relationship
 import marketplace.ListingSnapshot
-import ozone.marketplace.enums.RelationshipType
+import marketplace.FilteredListings
 import marketplace.validator.ListingValidator
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.transaction.annotation.Transactional
+
+import marketplace.rest.representation.in.InputRepresentation
 
 @Service
 class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
     @Autowired ListingActivityInternalService listingActivityInternalService
-    @Autowired SessionFactory sessionFactory
 
     @Autowired
     public ListingRestService(GrailsApplication grailsApplication,
@@ -57,13 +65,11 @@ class ListingRestService extends RestService<Listing> {
         Listing child = getById(id)
 
         Listing.createCriteria().list() {
-            relationships {
-                eq('relationshipType', RelationshipType.REQUIRE)
-
-                relatedItems {
-                    eq('id', id)
-                }
+            required {
+                eq('id', id)
             }
+
+            ne('id', id)
         }.grep{ canView(it) }
     }
 
@@ -73,8 +79,7 @@ class ListingRestService extends RestService<Listing> {
     private Set<Listing> getAllRequiredListings(Listing parent,
             Set<Listing> ignore) {
 
-        Set<Listing> immediateRequired =
-            parent.relationships.collect { it.relatedItems }.flatten() - ignore
+        Set<Listing> immediateRequired = parent.required - ignore
 
         Set<Listing> recursiveRequired = immediateRequired.collect {
             getAllRequiredListings(it, (immediateRequired + ignore + parent))
@@ -100,6 +105,129 @@ class ListingRestService extends RestService<Listing> {
         item.applicationLibraryEntries.clear()
 
         super.deleteById(id)
+    }
+
+    /**
+     * Get all Listings that match the passed-in parameters.
+     * The different filters are combined using AND.
+     * @param The organization to filter by.  For those with ROLE_ORG_STEWARD, this must be an
+     * org that they are a steward of.  Can be null to match all orgs (or all orgs an Org Steward
+     * is steward of).
+     * @param approvalStatus The approvalStatus to filter by.  null to match all approvalStatuses
+     * @param enabled True to match only enabled listings. false to match only disabled listings.
+     * null to match all listings
+     *
+     * TODO add org steward stuff once that branch is merged in
+     */
+    @Override
+    @RolesAllowed(['ROLE_ADMIN', 'ROLE_ORG_STEWARD'])
+    public FilteredListings getAllMatchingParams(
+            InputRepresentation<Agency> org,
+            ApprovalStatus approvalStatus,
+            Boolean enabled,
+            Integer offset, Integer max) {
+        Agency ag = org ? RestService.getFromDb(org) : null
+
+        //if (ag) {
+            //profileRestService.checkOrgSteward(ag)
+        //}
+
+        //get the listings
+        PagedResultList<Listing> filteredListings =
+            Listing.createCriteria().list(max: max, offset: offset) {
+                if (ag) {
+                    agency {
+                        eq('id', ag.id)
+                    }
+                }
+                //else if (profileRestService.isOrgSteward()) {
+                    //agency {
+                        //eq('id',
+                            //profileRestService.currentUserProfile.stewardedOrganizations*.id)
+                    //}
+                //}
+
+                if (approvalStatus) {
+                    eq('approvalStatus', approvalStatus)
+                }
+
+                if (enabled != null) {
+                    eq('isEnabled', enabled)
+                }
+            }
+
+        FilteredListings.Counts counts = getCountsMatchingParams(ag, approvalStatus, enabled)
+
+        return new FilteredListings(filteredListings, counts)
+    }
+
+    /**
+     * get the counts of listings matching the parameters.
+     */
+    private FilteredListings.Counts getCountsMatchingParams(
+            Agency agency,
+            ApprovalStatus approvalStatus,
+            Boolean enabled) {
+        Listing.withSession { session ->
+            String sqlQuery = """
+                SELECT
+                    a.id AS org_id,
+                    COUNT(l.id) AS org_count,
+                    SUM(CASE l.approval_status WHEN 'IN_PROGRESS' THEN 1 ELSE 0 END)
+                        AS in_progress,
+                    SUM(CASE l.approval_status WHEN 'PENDING' THEN 1 ELSE 0 END) AS pending,
+                    SUM(CASE l.approval_status WHEN 'REJECTED' THEN 1 ELSE 0 END) AS rejected,
+                    SUM(CASE l.approval_status WHEN 'APPROVED_ORG' THEN 1 ELSE 0 END)
+                        AS approved_org,
+                    SUM(CASE l.approval_status WHEN 'APPROVED' THEN 1 ELSE 0 END) AS approved,
+                    SUM(CASE l.is_enabled WHEN TRUE THEN 1 ELSE 0 END) AS enabled
+                FROM
+                    listing AS l LEFT OUTER JOIN
+                    agency AS a ON l.agency_id = a.id
+            """
+
+            String groupBy = " GROUP BY a.id;"
+
+            List<String> whereClauses = [
+                agency ? "a.id = :agencyId" : null,
+                approvalStatus ? "l.approval_status = :approvalStatus" : null,
+                enabled != null ? "l.is_enabled = :enabled" : null
+            ] - null
+
+            //combine the where clauses with AND operations and concatenate the query together.
+            //this would be easier if groovy supported list intersperse
+            String fullQuery = sqlQuery +
+                    (whereClauses ? ' WHERE ' + whereClauses.collect { [it, ' AND '] }
+                        .flatten().sum().replaceAll(/ AND $/, '') : '') +
+                    groupBy
+
+            SQLQuery query = session.createSQLQuery(fullQuery)
+
+            if (agency) query.setLong('agencyId', agency.id)
+            if (approvalStatus) query.setString('approvalStatus', approvalStatus.toString())
+            if (enabled) query.setBoolean('enabled', enabled)
+
+            //to get List<Map> instead of List<List>
+            query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+            List<Map<String, Object>> resultSet = query.list()
+
+            //each row contains the approvalStatus counts for that agency.  Sum them together
+            return resultSet.inject(
+                new FilteredListings.Counts(0, 0, 0, 0, 0, 0, [:])
+            ) { acc, row ->
+                new FilteredListings.Counts(
+                    acc.enabled + row.ENABLED,
+                    acc.inProgress + row.IN_PROGRESS,
+                    acc.pending + row.PENDING,
+                    acc.rejected + row.REJECTED,
+                    acc.approvedOrg + row.APPROVED_ORG,
+                    acc.approved + row.APPROVED,
+                    acc.agencyCounts +
+                        [new AbstractMap.SimpleEntry(row.ORG_ID, row.ORG_COUNT as Integer)]
+                )
+            }
+        }
     }
 
     @Override
@@ -271,9 +399,8 @@ class ListingRestService extends RestService<Listing> {
      * Create the appropriate ListingActivities for any relationship changes
      */
     private void updateRelationshipsListingActivity(Listing updated, Map old) {
-        Set<Listing> oldRelated =
-            old?.relationships?.collect { it.relatedItems }?.flatten() ?: new HashSet()
-        Set<Listing> newRelated = updated.relationships.collect { it.relatedItems }.flatten()
+        Set<Listing> oldRelated = old?.required ?: new HashSet()
+        Set<Listing> newRelated = updated.required
 
         Set<Listing> added = newRelated - oldRelated
         Set<Listing> removed = oldRelated - newRelated
@@ -286,17 +413,12 @@ class ListingRestService extends RestService<Listing> {
      * this service item to be deleted
      */
     private void updateRelationshipsForDelete(Listing item) {
-        Set<Relationship> relatedBy = Relationship.findRelationshipsByRelatedItem(item) as Set
-        Set<Relationship> relatedTo = item.relationships as Set
-
         //use a set to ensure no duplicates
-        Set<Listing> relatedByListings = relatedBy.collect { it.owningEntity }
-        Set<Listing> relatedToListings = relatedTo.collect {
-            it.relatedItems
-        }.flatten()
+        Set<Listing> relatedByListings = Listing.findAllByRequired(item) as Set
+        Set<Listing> relatedToListings = item.required as Set
 
-        relatedBy.each { it.removeFromRelatedItems(item) }
-        relatedTo.each { item.removeFromRelationships(it) }
+        relatedByListings.each { it.removeFromRequired(item) }
+        relatedToListings.each { item.removeFromRequired(it) }
 
         //update ListingActivities
         relatedByListings.each {

@@ -38,6 +38,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Set<CategoryTitleInputRepresentation> categories
     AgencyTitleInputRepresentation agency
     Set<ResourceInputRepresentation> docUrls
+    Set<ListingIdRef> required
     List<ScreenshotInputRepresentation> screenshots
 
     public void setType(String typeTitle) {
@@ -45,7 +46,7 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     }
 
     public void setAgency(String agencyTitle) {
-        this.agency = new AgencyTitleInputRepresentation(agencyTitle)
+        this.agency = agencyTitle ? new AgencyTitleInputRepresentation(agencyTitle) : null;
     }
 
     public void setCategories(Collection<String> categoryTitles) {

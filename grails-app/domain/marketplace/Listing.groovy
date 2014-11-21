@@ -99,7 +99,7 @@ class Listing implements Serializable {
         'listingActivities',
 
         //these fields are technically auditable, but are associated with a separate activity
-        'relationships',
+        'required',
         'isEnabled',
         'approvalStatus',
         'isFeatured'
@@ -140,6 +140,8 @@ class Listing implements Serializable {
     SortedSet<RejectionListing> rejectionListings
     List<Screenshot> screenshots
     List<ListingActivity> listingActivities
+    Set<Listing> required = new HashSet()
+    Set<Contact> contacts = new HashSet()
 
     ListingActivity lastActivity
     Agency agency
@@ -155,7 +157,7 @@ class Listing implements Serializable {
         listingActivities: ListingActivity,
         docUrls: DocUrl,
         screenshots: Screenshot,
-        relationships: Relationship,
+        required: Listing,
         contacts: Contact,
         satisfiedScorecards: Scorecard,
         tags: String,
@@ -163,9 +165,6 @@ class Listing implements Serializable {
         applicationLibraryEntries: ApplicationLibraryEntry //necessary to get GORM to
                                                            //cascade the delete
     ]
-
-    //so that GORM knows which property of the relationship is the backref
-    static mappedBy = [relationships: 'owningEntity']
 
     static mapping = {
         cache true
@@ -176,7 +175,6 @@ class Listing implements Serializable {
         rejectionListings batchSize: 50
         screenshots indexColumn: [name: "ordinal", type: Integer], cascade: 'all-delete-orphan'
         contacts cascade: 'all-delete-orphan'
-        relationships cascade: 'all-delete-orphan'
         docUrls cascade: 'all-delete-orphan'
         satisfiedScorecards joinTable: [name: 'service_item_score_card_item',
                                             column: 'score_card_item_id',
@@ -239,17 +237,6 @@ class Listing implements Serializable {
                 return requiredUnlessInProgress(ts, obj)
             }
         })
-        contacts validator: { val, obj ->
-            if (obj.approvalStatus != ApprovalStatus.IN_PROGRESS) {
-                withNewSession {
-                    def missingRequiredTypes = ContactType.findAllByRequired(true).grep { type ->
-                        !val.find { contact -> contact.type == type }
-                    }
-                    if (missingRequiredTypes)
-                        return ['requiredContactType', missingRequiredTypes*.title]
-                }
-            }
-        }
         screenshots validator: requiredUnlessInProgress
     }
 
@@ -303,6 +290,14 @@ class Listing implements Serializable {
         Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
     }
 
+    static List<Listing> findAllByRequired(Listing req) {
+        Listing.createCriteria().list() {
+            required {
+                eq('id', req.id)
+            }
+        }
+    }
+
     def beforeValidate() {
         List childProperties = [
             'listingActivities',
@@ -312,7 +307,6 @@ class Listing implements Serializable {
             'listingActivities',
             'docUrls',
             'screenshots',
-            'relationships',
             'contacts'
         ]
 

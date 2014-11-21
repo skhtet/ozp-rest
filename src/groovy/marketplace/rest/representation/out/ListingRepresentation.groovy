@@ -82,6 +82,10 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
         new ProfilePropertyRepresentation(it)
     }}
 
+    Set<IdRefRepresentation<Listing>> getRequired() {
+        listing.required.collect { new IdRefRepresentation(it) }
+    }
+
     private static HalLinks createLinks(Listing listing, ListingUriBuilder listingUriBuilder) {
         URI activitiesUri = listingUriBuilder.getListingActivitiesUri(listing),
             commentsUri = listingUriBuilder.getListingCommentsUri(listing),
