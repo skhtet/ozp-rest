@@ -22,6 +22,9 @@ import static javax.servlet.http.HttpServletResponse.*
 
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
+import marketplace.rest.representation.in.AgencyTitleInputRepresentation
+
+import marketplace.testutil.MockPagedResultList
 
 @TestMixin(DomainClassUnitTestMixin)
 class ListingResourceUnitTest {
@@ -54,15 +57,7 @@ class ListingResourceUnitTest {
         def passedParentId, passedParentServiceId, passedOffset, passedMax
         def parent = new Listing()
 
-        /* Mocking PagedResultList, see http://stackoverflow.com/a/19216929 */
-        def mockC = mockFor(org.hibernate.Criteria)
-        mockC.demand.list { return []} //PagedResultList constructor calls this
-        def pagedList = new PagedResultList(null, mockC.createMock()){{
-           //Using a static block to set private variables
-           //since we can't call a constructor here!
-           list = [activity]
-           totalCount = 1
-        }}
+        def pagedList = new MockPagedResultList().createPagedResultList([activity])
 
         def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getByParentId(1..1) { parentId, offset, max ->

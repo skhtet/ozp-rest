@@ -5,19 +5,10 @@ import grails.orm.PagedResultList
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import marketplace.testutil.MockPagedResultList
+
 @TestMixin(GrailsUnitTestMixin)
 class PagedCollectionUnitTest {
-
-    private PagedResultList mockPagedResultList(items, total) {
-        //taken from http://stackoverflow.com/a/19216929
-        def mockC = mockFor(org.hibernate.Criteria)
-        mockC.demand.list { return [] } //PagedResultList constructor calls this
-
-        return new PagedResultList(null, mockC.createMock()){{
-           list = items
-           totalCount = total
-        }}
-    }
 
     //test that Collection methods are passed through to the underlying collection
     void testPassThrough() {
@@ -67,7 +58,8 @@ class PagedCollectionUnitTest {
         Collection items = [1,2,3,4]
 
         assert new PagedCollection(null, null, items).total == 4
-        assert new PagedCollection(null, null, mockPagedResultList(items, 100)).total == 100
+        assert new PagedCollection(null, null,
+            new MockPagedResultList().createPagedResultList(items, 100)).total == 100
     }
 
     void testConstructor() {
@@ -90,9 +82,9 @@ class PagedCollectionUnitTest {
         assert new PagedCollection(1,2,[3,4,5,6]) != new PagedCollection(5,2,[3,4,5,6])
         assert new PagedCollection(1,2,[3,4,5,6]) != new PagedCollection(1,4,[3,4,5,6])
         assert new PagedCollection(1,2,[3,4,5,6]) ==
-            new PagedCollection(1,2,mockPagedResultList([3,4,5,6], 4))
+            new PagedCollection(1,2, new MockPagedResultList().createPagedResultList([3,4,5,6], 4))
         assert new PagedCollection(1,2,[3,4,5,6]) !=
-            new PagedCollection(1,2,mockPagedResultList([3,4,5,6], 400))
+            new PagedCollection(1,2, new MockPagedResultList().createPagedResultList([3,4,5,6], 400))
     }
 
     void testHashCode() {
@@ -107,9 +99,9 @@ class PagedCollectionUnitTest {
             new PagedCollection(5,2,[3,4,5,6]).hashCode()
         assert new PagedCollection(1,2,[3,4,5,6]).hashCode() !=
             new PagedCollection(1,4,[3,4,5,6]).hashCode()
-        assert new PagedCollection(1,2,[3,4,5,6]).hashCode() ==
-            new PagedCollection(1,2,mockPagedResultList([3,4,5,6], 4)).hashCode()
-        assert new PagedCollection(1,2,[3,4,5,6]).hashCode() !=
-            new PagedCollection(1,2,mockPagedResultList([3,4,5,6], 400)).hashCode()
+        assert new PagedCollection(1,2,[3,4,5,6]).hashCode() == new PagedCollection(1,2,
+                new MockPagedResultList().createPagedResultList([3,4,5,6], 4)).hashCode()
+        assert new PagedCollection(1,2,[3,4,5,6]).hashCode() != new PagedCollection(1,2,
+                new MockPagedResultList().createPagedResultList([3,4,5,6], 400)).hashCode()
     }
 }

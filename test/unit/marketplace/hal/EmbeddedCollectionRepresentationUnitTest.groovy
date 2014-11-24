@@ -12,23 +12,14 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
+import marketplace.testutil.MockPagedResultList
+
 @TestMixin(GrailsUnitTestMixin)
 class EmbeddedCollectionRepresentationUnitTest {
     private ApplicationRootUriBuilderHolder makeUriBuilderHolder() {
         ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
             getBaseUriBuilder: { UriBuilder.fromPath('https://localhost/asdf/') }
         ] as UriInfo)
-    }
-
-    private PagedResultList mockPagedResultList(items, total) {
-        //taken from http://stackoverflow.com/a/19216929
-        def mockC = mockFor(org.hibernate.Criteria)
-        mockC.demand.list { return [] } //PagedResultList constructor calls this
-
-        return new PagedResultList(null, mockC.createMock()){{
-           list = items
-           totalCount = total
-        }}
     }
 
     void testSelfLink() {
@@ -101,7 +92,8 @@ class EmbeddedCollectionRepresentationUnitTest {
         //when the inner collection is not paged, the total should be its size
         assert representation.total == 4
 
-        paged = new PagedCollection(null, null, mockPagedResultList(entities, 100))
+        paged = new PagedCollection(null, null,
+            new MockPagedResultList().createPagedResultList(entities, 100))
 
         uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
@@ -132,7 +124,8 @@ class EmbeddedCollectionRepresentationUnitTest {
         assert representation.links.toMap().get(RegisteredRelationType.NEXT) == null
         assert representation.links.toMap().get(RegisteredRelationType.PREV) == null
 
-        paged = new PagedCollection(null, 4, mockPagedResultList(entities, 100))
+        paged = new PagedCollection(null, 4,
+            new MockPagedResultList().createPagedResultList(entities, 100))
 
         uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
@@ -149,7 +142,8 @@ class EmbeddedCollectionRepresentationUnitTest {
             'https://localhost/asdf/api/profile?max=4&offset=4'
 
 
-        paged = new PagedCollection(8, 4, mockPagedResultList(entities, 100))
+        paged = new PagedCollection(8, 4,
+            new MockPagedResultList().createPagedResultList(entities, 100))
 
         uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
@@ -165,7 +159,8 @@ class EmbeddedCollectionRepresentationUnitTest {
         assert representation.links.toMap().get(RegisteredRelationType.NEXT).href ==
             'https://localhost/asdf/api/profile?max=4&offset=12'
 
-        paged = new PagedCollection(96, 4, mockPagedResultList(entities, 100))
+        paged = new PagedCollection(96, 4,
+            new MockPagedResultList().createPagedResultList(entities, 100))
 
         uriBuilderHolder = makeUriBuilderHolder()
         representation = new EmbeddedCollectionRepresentation(
