@@ -209,10 +209,11 @@ class ListingRestService extends RestService<Listing> {
             query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
             List<Map<String, Object>> resultSet = query.list()
+            Map<Integer, Integer> initialAgencyMap = Agency.list().collectEntries { [it.id, 0] }
 
             //each row contains the approvalStatus counts for that agency.  Sum them together
             return resultSet.inject(
-                new FilteredListings.Counts(0, 0, 0, 0, 0, 0, [:])
+                new FilteredListings.Counts(0, 0, 0, 0, 0, 0, initialAgencyMap)
             ) { acc, row ->
                 new FilteredListings.Counts(
                     acc.enabled + row.ENABLED,
