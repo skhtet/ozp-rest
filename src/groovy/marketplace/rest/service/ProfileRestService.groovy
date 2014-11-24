@@ -210,19 +210,27 @@ class ProfileRestService extends RestService<Profile> {
         currentUserProfile.hasRole(Role.USER)
     }
 
+    /**
+     * @return true if the current user is actually an org steward.  Note that this will
+     * return false for users who are admins, even though being an admin implies org steward
+     * capabilities.  The point of this method is to distinguish between org stewards and admins
+     */
+    @Transactional(readOnly=true)
+    public boolean isOrgSteward() {
+        currentUserProfile.hasRole(Role.ORG_STEWARD) && !isAdmin()
+    }
+
+    /**
+     * @return whether or not the current user has org steward privileges over the specified
+     * org.  This will be the case either if they are an admin, or if they are an org steward
+     * whose stewardedOrganizations contains the specified org
+     */
     @Transactional(readOnly=true)
     public boolean isOrgSteward(Agency org) {
         Profile profile = currentUserProfile
 
         isAdmin() ||
             (profile.hasRole(Role.ORG_STEWARD) && profile.stewardedOrganizations.contains(org))
-    }
-
-    @Transactional(readOnly=true)
-    public boolean isOrgSteward() {
-        Profile profile = currentUserProfile
-
-        isAdmin() || profile.hasRole(Role.ORG_STEWARD)
     }
 
     /**
