@@ -214,7 +214,7 @@ class ListingRestService extends RestService<Listing> {
 
             //each row contains the approvalStatus counts for that agency.  Sum them together
             return resultSet.inject(
-                new FilteredListings.Counts(0, 0, 0, 0, 0, 0, [:])
+                new FilteredListings.Counts()
             ) { acc, row ->
                 new FilteredListings.Counts(
                     acc.enabled + row.ENABLED,

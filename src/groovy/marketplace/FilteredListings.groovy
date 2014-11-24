@@ -45,5 +45,9 @@ class FilteredListings {
 
             this.agencyCounts = Collections.unmodifiableMap(agencyCounts)
         }
+
+        Counts() {
+            this(0, 0, 0, 0, 0, 0, [:])
+        }
     }
 }
