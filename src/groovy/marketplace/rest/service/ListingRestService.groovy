@@ -125,23 +125,22 @@ class ListingRestService extends RestService<Listing> {
             Boolean enabled,
             Integer offset, Integer max) {
         Agency ag = org ? RestService.getFromDb(org) : null
+        Collection<Agency> agencies = null
 
         if (ag) {
             profileRestService.checkOrgSteward(ag)
+            agencies = [ag]
+        }
+        else if (profileRestService.isOrgSteward()) {
+            agencies = profileRestService.currentUserProfile.stewardedOrganizations
         }
 
         //get the listings
         PagedResultList<Listing> filteredListings =
             Listing.createCriteria().list(max: max, offset: offset) {
-                if (ag) {
+                if (agencies != null) {
                     agency {
-                        eq('id', ag.id)
-                    }
-                }
-                else if (profileRestService.isOrgSteward()) {
-                    agency {
-                        inList('id',
-                            profileRestService.currentUserProfile.stewardedOrganizations*.id)
+                        inList('id', agencies*.id)
                     }
                 }
 
@@ -154,7 +153,8 @@ class ListingRestService extends RestService<Listing> {
                 }
             }
 
-        FilteredListings.Counts counts = getCountsMatchingParams(ag, approvalStatus, enabled)
+        FilteredListings.Counts counts = getCountsMatchingParams(agencies,
+            approvalStatus, enabled)
 
         return new FilteredListings(filteredListings, counts)
     }
@@ -163,7 +163,7 @@ class ListingRestService extends RestService<Listing> {
      * get the counts of listings matching the parameters.
      */
     private FilteredListings.Counts getCountsMatchingParams(
-            Agency agency,
+            Collection<Agency> agencies,
             ApprovalStatus approvalStatus,
             Boolean enabled) {
         Listing.withSession { session ->
@@ -187,7 +187,7 @@ class ListingRestService extends RestService<Listing> {
             String groupBy = " GROUP BY a.id;"
 
             List<String> whereClauses = [
-                agency ? "a.id = :agencyId" : null,
+                agencies != null ? "a.id in (:agencyList)" : null,
                 approvalStatus ? "l.approval_status = :approvalStatus" : null,
                 enabled != null ? "l.is_enabled = :enabled" : null
             ] - null
@@ -201,9 +201,9 @@ class ListingRestService extends RestService<Listing> {
 
             SQLQuery query = session.createSQLQuery(fullQuery)
 
-            if (agency) query.setLong('agencyId', agency.id)
+            if (agencies != null) query.setParameterList('agencyList', agencies*.id)
             if (approvalStatus) query.setString('approvalStatus', approvalStatus.toString())
-            if (enabled) query.setBoolean('enabled', enabled)
+            if (enabled != null) query.setBoolean('enabled', enabled)
 
             //to get List<Map> instead of List<List>
             query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
