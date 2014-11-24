@@ -116,8 +116,6 @@ class ListingRestService extends RestService<Listing> {
      * @param approvalStatus The approvalStatus to filter by.  null to match all approvalStatuses
      * @param enabled True to match only enabled listings. false to match only disabled listings.
      * null to match all listings
-     *
-     * TODO add org steward stuff once that branch is merged in
      */
     @Override
     @RolesAllowed(['ROLE_ADMIN', 'ROLE_ORG_STEWARD'])
@@ -128,9 +126,9 @@ class ListingRestService extends RestService<Listing> {
             Integer offset, Integer max) {
         Agency ag = org ? RestService.getFromDb(org) : null
 
-        //if (ag) {
-            //profileRestService.checkOrgSteward(ag)
-        //}
+        if (ag) {
+            profileRestService.checkOrgSteward(ag)
+        }
 
         //get the listings
         PagedResultList<Listing> filteredListings =
@@ -140,12 +138,12 @@ class ListingRestService extends RestService<Listing> {
                         eq('id', ag.id)
                     }
                 }
-                //else if (profileRestService.isOrgSteward()) {
-                    //agency {
-                        //eq('id',
-                            //profileRestService.currentUserProfile.stewardedOrganizations*.id)
-                    //}
-                //}
+                else if (profileRestService.isOrgSteward()) {
+                    agency {
+                        inList('id',
+                            profileRestService.currentUserProfile.stewardedOrganizations*.id)
+                    }
+                }
 
                 if (approvalStatus) {
                     eq('approvalStatus', approvalStatus)

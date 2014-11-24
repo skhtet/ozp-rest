@@ -218,6 +218,13 @@ class ProfileRestService extends RestService<Profile> {
             (profile.hasRole(Role.ORG_STEWARD) && profile.stewardedOrganizations.contains(org))
     }
 
+    @Transactional(readOnly=true)
+    public boolean isOrgSteward() {
+        Profile profile = currentUserProfile
+
+        isAdmin() || profile.hasRole(Role.ORG_STEWARD)
+    }
+
     /**
      * @throws AccessDeniedException if the current user in not an Admin
      * @param msg the Message for the exception
