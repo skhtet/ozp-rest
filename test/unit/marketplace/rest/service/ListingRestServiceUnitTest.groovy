@@ -561,4 +561,47 @@ class ListingRestServiceUnitTest {
         assert serviceItems.size() == 1
         assert serviceItems == [approved] as Set
     }
+
+    void testCheckFeaturedFlag() {
+        currentUser = owner
+
+        InputRepresentation<Listing> inputRep = makeServiceItemInputRepresentation()
+
+        //feature = false, should succeed
+        service.createFromRepresentation(inputRep)
+
+        inputRep.isFeatured = true
+        shouldFail(AccessDeniedException) {
+            service.createFromRepresentation(inputRep)
+        }
+
+        //shound succeed; admin can create featured listing
+        currentUser = admin
+        service.createFromRepresentation(inputRep)
+
+        //flag on existing is already false, so this isn't a change and should pass
+        inputRep.isFeatured = false
+        currentUser = owner
+        service.updateById(1, inputRep)
+
+        inputRep.isFeatured = true
+        shouldFail(AccessDeniedException) {
+            service.updateById(1, inputRep)
+        }
+
+        currentUser = admin
+        service.updateById(1, inputRep)
+
+        //TODO add tests with currentUser = steward once the org-approval branch is merged
+
+        //setting it back to false once its true isn't allowed for non-admins either
+        inputRep.isFeatured = false
+        currentUser = owner
+        shouldFail(AccessDeniedException) {
+            service.updateById(1, inputRep)
+        }
+
+        currentUser = admin
+        service.updateById(1, inputRep)
+    }
 }
