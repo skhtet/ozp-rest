@@ -101,6 +101,28 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         public String getRejectionDescription() { activity.rejectionListing.description }
     }
 
+    public static class ModifyRelationshipActivityRepresentation extends
+            ListingActivityRepresentation {
+        //stupid GORM proxy classes prevent decent static typing here
+        ModifyRelationshipActivityRepresentation(ListingActivity activity,
+                ObjectUriBuilder<Listing> listingUriBuilder,
+                ObjectUriBuilder<Profile> profileUriBuilder,
+                RepresentationFactory<Profile> profileRepresentationFactory,
+                ApplicationRootUriBuilderHolder uriBuilderHolder) {
+            super(activity, listingUriBuilder, profileUriBuilder,
+                profileRepresentationFactory, uriBuilderHolder)
+
+            Collection<Listing> relatedListings = activity.items*.listing - null
+
+            this.addLinks(new HalLinks(relatedListings.collect {
+                new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
+                    new Link(listingUriBuilder.getUri(it)))
+            }))
+        }
+
+        public Collection<String> getListings() { activity.items*.title }
+    }
+
     @Component
     public static class Factory implements RepresentationFactory<ListingActivity> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
@@ -127,7 +149,15 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                     uriBuilderHolder
                 )
             }
-            //TODO ModifyRelationshipActivity
+            else if (activity.instanceOf(ModifyRelationshipActivity)) {
+                return new ModifyRelationshipActivityRepresentation(
+                    activity,
+                    listingUriBuilder,
+                    profileUriBuilder,
+                    profileRepresentationFactory,
+                    uriBuilderHolder
+                )
+            }
             else {
                 return new ListingActivityRepresentation(
                     activity,

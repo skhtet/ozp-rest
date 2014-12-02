@@ -17,7 +17,7 @@ class Listing implements Serializable {
     public static final CHANGE_LOG_PROPERTIES = [
         'type', 'owners',
         'categories', 'intents',
-        'contacts',
+        'contacts', 'isFeatured',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
         'versionName', 'imageLargeUrl',
@@ -288,6 +288,14 @@ class Listing implements Serializable {
 
     static List<Listing> findAllByAuthor(Profile user) {
         Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
+    }
+
+    static List<Listing> findAllByRequired(Listing req) {
+        Listing.createCriteria().list() {
+            required {
+                eq('id', req.id)
+            }
+        }
     }
 
     def beforeValidate() {
