@@ -118,10 +118,10 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     public Response createFromFormData(
             @Context UriInfo uriInfo,
             @FormDataParam('listing') ListingInputRepresentation listing,
-            @FormDataParam('imageSmall') FormDataBodyPart imageSmall,
-            @FormDataParam('imageMedium') FormDataBodyPart imageMedium,
-            @FormDataParam('imageLarge') FormDataBodyPart imageLarge,
-            @FormDataParam('imageXlarge') FormDataBodyPart imageXlarge,
+            @FormDataParam('smallIcon') FormDataBodyPart smallIcon,
+            @FormDataParam('largeIcon') FormDataBodyPart largeIcon,
+            @FormDataParam('bannerIcon') FormDataBodyPart bannerIcon,
+            @FormDataParam('featuredBannerIcon') FormDataBodyPart featuredBannerIcon,
             @FormDataParam('screenshotSmall') List<FormDataBodyPart> screenshotsSmall,
             @FormDataParam('screenshotLarge') List<FormDataBodyPart> screenshotsLarge) {
 
@@ -136,16 +136,16 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
             return imageUriBuilder.getUri(image).toString()
         }
 
-        if (imageSmall)  listing.imageSmallUrl  = createImageAndGetUrl(imageSmall)
-        if (imageMedium) listing.imageMediumUrl = createImageAndGetUrl(imageMedium)
-        if (imageLarge)  listing.imageLargeUrl  = createImageAndGetUrl(imageLarge)
-        if (imageXlarge) listing.imageXlargeUrl = createImageAndGetUrl(imageXlarge)
+        if (imageSmall)  listing.smallIcon  = smallIcon
+        if (imageMedium) listing.largeIcon = largeIcon
+        if (imageLarge)  listing.bannerIcon  = bannerIcon
+        if (imageXlarge) listing.featuredBannerIcon = featuredBannerIcon
 
         if (screenshotsSmall && screenshotsLarge) {
             listing.screenshots = [screenshotsSmall, screenshotsLarge].transpose().collect {
                 new ScreenshotInputRepresentation(
-                    smallImageUrl: createImageAndGetUrl(it[0]),
-                    largeImageUrl: createImageAndGetUrl(it[1])
+                    smallImage: it[0],
+                    largeImage: it[1]
                 )
             }
         }

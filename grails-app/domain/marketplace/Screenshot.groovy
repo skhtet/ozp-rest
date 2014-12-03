@@ -15,23 +15,23 @@ class Screenshot implements Serializable {
 
     static searchable = {
         root false
-        smallImageUrl index: 'not_analyzed', excludeFromAll: true
-        largeImageUrl index: 'not_analyzed', excludeFromAll: true
-        only = ['smallImageUrl', 'largeImageUrl']
+        largeImage index: 'not_analyzed', excludeFromAll: true
+        smallImage index: 'not_analyzed', excludeFromAll: true
     }
 
     static belongsTo = [serviceItem: Listing]
+    static embedded = ['largeImage', 'smallImage']
 
-    String smallImageUrl
-    String largeImageUrl
+    ImageReference largeImage
+    ImageReference smallImage
 
     static constraints = {
-        smallImageUrl blank: false, nullable: false, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        largeImageUrl blank: false, nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        smallImage nullable: false
+        largeImage nullable: true
     }
 
-    public String getLargeImageUrl() {
-        this.largeImageUrl == null ? this.smallImageUrl : this.largeImageUrl
+    public ImageReference getLargeImage() {
+        this.largeImage == null ? this.smallImage : this.largeImage
     }
 
     @Override
@@ -47,8 +47,8 @@ class Screenshot implements Serializable {
 
         if(sameType) {
             return new EqualsBuilder()
-                        .append(smallImageUrl, other.smallImageUrl)
-                        .append(largeImageUrl, other.largeImageUrl)
+                        .append(smallImage, other.smallImage)
+                        .append(largeImage, other.largeImage)
                         .isEquals()
         }
         return false
@@ -57,13 +57,8 @@ class Screenshot implements Serializable {
     @Override
     int hashCode() {
         return new HashCodeBuilder()
-                    .append(smallImageUrl)
-                    .append(largeImageUrl)
+                    .append(smallImage)
+                    .append(largeImage)
                     .toHashCode()
-    }
-
-    @Override
-    String toString() {
-        "$largeImageUrl, $smallImageUrl"
     }
 }

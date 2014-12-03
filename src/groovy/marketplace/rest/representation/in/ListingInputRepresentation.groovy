@@ -1,10 +1,15 @@
 package marketplace.rest.representation.in
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+import com.sun.jersey.multipart.FormDataBodyPart
+
 import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Listing
 import marketplace.DocUrl
 import marketplace.ApprovalStatus
+import marketplace.ImageReference
 
 class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
@@ -18,10 +23,10 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     String requirements
     String descriptionShort
     String description
-    String imageLargeUrl
-    String imageMediumUrl
-    String imageSmallUrl
-    String imageXlargeUrl
+    InputRepresentation<ImageReference> featuredBannerIcon
+    InputRepresentation<ImageReference> bannerIcon
+    InputRepresentation<ImageReference> largeIcon
+    InputRepresentation<ImageReference> smallIcon
     String versionName
     String whatIsNew
     Integer width
@@ -56,6 +61,43 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public void setIntents(Collection<String> intents) {
         this.intents = intents.collect { new IntentPropertyRefInputRepresentation(it) }
     }
+
+    //NOTE: These four methods intentionally use the old names for compatibility
+    public void setImageSmallUrl(URI uri) {
+        this.smallIcon = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    public void setImageMediumUrl(URI uri) {
+        this.largeIcon = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    public void setImageLargeUrl(URI uri) {
+        this.bannerIcon = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    public void setImageXlargeUrl(URI uri) {
+        this.featuredBannerIcon = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    @JsonIgnore
+    public void setSmallIcon(FormDataBodyPart formData) {
+        this.smallIcon = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
+
+    @JsonIgnore
+    public void setLargeIcon(FormDataBodyPart formData) {
+        this.largeIcon = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
+
+    @JsonIgnore
+    public void setBannerIcon(FormDataBodyPart formData) {
+        this.featuredBannerIcon = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
+
+    @JsonIgnore
+    public void setFeaturedBannerIcon(FormDataBodyPart formData) {
+        this.featuredBannerIcon = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
 }
 
 class ResourceInputRepresentation extends AbstractInputRepresentation<DocUrl> {
@@ -72,8 +114,26 @@ class ScreenshotInputRepresentation extends AbstractInputRepresentation<Screensh
         super(Screenshot.class)
     }
 
-    String smallImageUrl
-    String largeImageUrl
+    InputRepresentation<ImageReference> smallImage
+    InputRepresentation<ImageReference> largeImage
+
+    public void setSmallImageUrl(URI uri) {
+        this.smallImage = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    public void setLargeImageUrl(URI uri) {
+        this.largeImage = new UriImageReferenceInputRepresentation(uri: uri)
+    }
+
+    @JsonIgnore
+    public void setSmallImage(FormDataBodyPart formData) {
+        this.smallImage = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
+
+    @JsonIgnore
+    public void setLargeImage(FormDataBodyPart formData) {
+        this.largeImage = new EmbeddedImageReferenceInputRepresentation(image: formData)
+    }
 }
 
 class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {

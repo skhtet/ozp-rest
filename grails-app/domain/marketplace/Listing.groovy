@@ -20,10 +20,10 @@ class Listing implements Serializable {
         'contacts', 'isFeatured',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
-        'versionName', 'imageLargeUrl',
-        'imageSmallUrl', 'imageMediumUrl',
+        'versionName', 'bannerIcon',
+        'smallIcon', 'largeIcon',
         'launchUrl', 'docUrls', 'descriptionShort',
-        'screenshots', 'imageXlargeUrl',
+        'screenshots', 'featuredBannerIcon',
         'tags', 'satisfiedScorecards'
 
     ]
@@ -50,10 +50,10 @@ class Listing implements Serializable {
         descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
-        imageSmallUrl index: 'not_analyzed', excludeFromAll: true
-        imageMediumUrl index: 'not_analyzed', excludeFromAll: true
-        imageLargeUrl index: 'not_analyzed', excludeFromAll: true
-        imageXlargeUrl index: 'not_analyzed', excludeFromAll: true
+        smallIcon index: 'not_analyzed', excludeFromAll: true
+        largeIcon index: 'not_analyzed', excludeFromAll: true
+        bannerIcon index: 'not_analyzed', excludeFromAll: true
+        featuredBannerIcon index: 'not_analyzed', excludeFromAll: true
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
         uuid index: 'not_analyzed', excludeFromAll: false
@@ -73,8 +73,8 @@ class Listing implements Serializable {
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'versionName', 'sortTitle', 'isFeatured',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'singleton', 'width', 'height',
-            'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'createdDate', 'editedDate', 'isEnabled', 'tags', 'descriptionShort', 'whatIsNew'
+            'approvalStatus', 'createdDate', 'editedDate', 'isEnabled',
+            'tags', 'descriptionShort', 'whatIsNew'
         ]
     }
 
@@ -105,6 +105,8 @@ class Listing implements Serializable {
         'isFeatured'
     ]]
 
+    static embedded = ['smallIcon', 'largeIcon', 'bannerIcon', 'featuredBannerIcon']
+
     Date approvedDate
 
     String title
@@ -112,10 +114,10 @@ class Listing implements Serializable {
     String launchUrl
     String versionName
     String uuid = UUID.randomUUID()
-    String imageSmallUrl
-    String imageMediumUrl
-    String imageLargeUrl
-    String imageXlargeUrl
+    ImageReference smallIcon
+    ImageReference largeIcon
+    ImageReference bannerIcon
+    ImageReference featuredBannerIcon
     String whatIsNew
     String descriptionShort
     String requirements
@@ -213,14 +215,10 @@ class Listing implements Serializable {
             validator: requiredUnlessInProgress
         categories(nullable: true, validator: requiredUnlessInProgress)
         uuid nullable: false, blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
-        imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
+        smallIcon nullable: true, validator: requiredUnlessInProgress
+        largeIcon nullable: true, validator: requiredUnlessInProgress
+        bannerIcon nullable: true, validator: requiredUnlessInProgress
+        featuredBannerIcon nullable:true, validator: requiredUnlessInProgress
         approvalStatus(inList:ApprovalStatus.values().toList())
         lastActivity(nullable:true)
         approvedDate(nullable:true)
@@ -248,7 +246,7 @@ class Listing implements Serializable {
         return new JSONObject(
             id: id,
             title: title,
-            imageSmallUrl: imageSmallUrl
+            imageSmallUrl: smallIcon
         )
     }
 

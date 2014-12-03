@@ -14,12 +14,14 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageUriBuilder
 
 class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-application-v1+json'
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-applications-v1+json'
 
     private Listing listing
+    private ImageUriBuilder imageUriBuilder
 
     String getName() { listing.title }
     String getType() { listing.type.title }
@@ -31,7 +33,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     Set<String> getTags() { listing.tags }
 
     List<Map<String, String>> getScreenshots() { listing.screenshots.collect { Screenshot sc ->
-        [href: sc.smallImageUrl]
+        [href: imageUriBuilder.getUri(sc.smallIcon).toString()]
     }}
 
     Set<Map<String, String>> getIntents() { listing.intents.collect { Intent intent ->
@@ -41,20 +43,22 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     UiHintsRepresentation getUiHints() { new UiHintsRepresentation(listing) }
 
     Map<String, String> getIcons() {[
-            small: listing.imageSmallUrl,
-            large: listing.imageMediumUrl,
-            banner: listing.imageLargeUrl,
-            featuredBanner: listing.imageXlargeUrl
+            small: imageUriBuilder.getUri(listing.smallIcon).toString(),
+            large: imageUriBuilder.getUri(listing.largeIcon).toString(),
+            banner: imageUriBuilder.getUri(listing.bannerIcon).toString(),
+            featuredBanner: imageUriBuilder.getUri(listing.featuredBannerIcon).toString()
     ]}
 
     //TODO: What is state?
     final String state = 'Active'
 
     ApplicationRepresentation(Listing listing,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageUriBuilder imageUriBuilder) {
         super(listingUriBuilder.getUri(listing), null, null)
 
         this.listing = listing
+        this.imageUriBuilder = imageUriBuilder
 
         this.addLink(RegisteredRelationType.DESCRIBES, new Link(new URI(listing.launchUrl)))
     }
@@ -62,6 +66,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     @Component
     public static class Factory implements RepresentationFactory<Listing> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
 
         public ApplicationRepresentation toRepresentation(
                     Listing listing,
