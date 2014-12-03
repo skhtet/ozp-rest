@@ -29,17 +29,17 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Boolean singleton = false
     Boolean isFeatured = false
     Boolean isEnabled = true
-    Set<String> tags
+    Set<String> tags = new HashSet()
     ApprovalStatus approvalStatus = ApprovalStatus.IN_PROGRESS
     TypeTitleInputRepresentation type
-    Set<IntentPropertyRefInputRepresentation> intents
-    Set<ContactInputRepresentation> contacts
-    Set<ProfilePropertyInputRepresentation> owners
-    Set<CategoryTitleInputRepresentation> categories
+    Set<IntentPropertyRefInputRepresentation> intents = new HashSet()
+    Set<ContactInputRepresentation> contacts = new HashSet()
+    Set<ProfilePropertyInputRepresentation> owners = new HashSet()
+    Set<CategoryTitleInputRepresentation> categories = new HashSet()
     AgencyTitleInputRepresentation agency
-    Set<ResourceInputRepresentation> docUrls
-    Set<ListingIdRef> required
-    List<ScreenshotInputRepresentation> screenshots
+    Set<ResourceInputRepresentation> docUrls = new HashSet()
+    Set<ListingIdRef> required = new HashSet()
+    List<ScreenshotInputRepresentation> screenshots = []
 
     public void setType(String typeTitle) {
         this.type = new TypeTitleInputRepresentation(typeTitle)

@@ -257,6 +257,11 @@ grails.cache.enabled = false
 org.grails.jaxrs.doreader.disable=true
 org.grails.jaxrs.dowriter.disable=true
 
-println "Config loaded"
+//disable grails multipart parsing so that jersey can do it.
+//@see https://code.google.com/p/grails-jaxrs/issues/detail?id=52
+grails.disableCommonsMultipart=true
+grails.web.disable.multipart=true
 
 notifications.enabled = false
+
+println "Config loaded"

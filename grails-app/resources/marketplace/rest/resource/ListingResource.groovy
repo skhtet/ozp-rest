@@ -17,9 +17,13 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
+import com.sun.jersey.multipart.FormDataParam
+import com.sun.jersey.multipart.FormDataBodyPart
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Listing
+import marketplace.Image
 import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
@@ -30,6 +34,7 @@ import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
+import marketplace.rest.representation.in.ScreenshotInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
@@ -39,8 +44,12 @@ import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingActivityRestService
+import marketplace.rest.service.ImageRestService
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
+import marketplace.rest.resource.uribuilder.ImageUriBuilder
 
 import marketplace.hal.PagedCollection
+import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import javax.ws.rs.core.UriInfo
 
@@ -59,6 +68,9 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     @Autowired RejectionListingRestService rejectionListingRestService
     @Autowired ItemCommentRestService itemCommentRestService
     @Autowired ListingSearchService listingSearchService
+    @Autowired ImageRestService imageRestService
+
+    @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
 
     @Autowired
     ListingResource(ListingRestService service) {
@@ -78,6 +90,69 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
                                      @QueryParam('max') Integer max) {
         super.readAll(offset, max)
     }
+
+    /**
+     * A multipart/form-data request is used to upload a listing along with its
+     * images.  For screenshots, there should be a matching number of `screenshotSmall`
+     * and `screenshotLarge` parts which will be combined index-wise to make Screenshot objects.
+     * NOTE: External image URIs can still be included in the listing json, but uploaded images
+     * take precedence
+     *
+     * Expected form parts:
+     * listing (application/vnd.ozp-listing-v1+json or application/json)
+     *   A typical JSON representation of a listing
+     * imageSmall (image/*) A image to be the small icon for the listing
+     * imageMedium (image/*) A image to be the medium icon for the listing
+     * imageLarge (image/*) A image to be the banner for the listing
+     * imageXlarge (image/*) A image to be the featured banner for the listing
+     * screenshotSmall (image/*) One or more images to be the small images in screenshots
+     * screenshotLarge (image/*) One or more images to be the large images in screenshots
+     */
+    @POST
+    @Produces([
+        ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response createFromFormData(
+            @Context UriInfo uriInfo,
+            @FormDataParam('listing') ListingInputRepresentation listing,
+            @FormDataParam('imageSmall') FormDataBodyPart imageSmall,
+            @FormDataParam('imageMedium') FormDataBodyPart imageMedium,
+            @FormDataParam('imageLarge') FormDataBodyPart imageLarge,
+            @FormDataParam('imageXlarge') FormDataBodyPart imageXlarge,
+            @FormDataParam('screenshotSmall') List<FormDataBodyPart> screenshotsSmall,
+            @FormDataParam('screenshotLarge') List<FormDataBodyPart> screenshotsLarge) {
+
+        ObjectUriBuilder<Image> imageUriBuilder =
+            imageUriBuilderFactory.getBuilder(new ApplicationRootUriBuilderHolder(uriInfo))
+
+        //create an image from the form data and get a URL to reference it
+        def createImageAndGetUrl = { FormDataBodyPart formData ->
+            Image image = imageRestService.create(
+                    formData.getValueAs((byte[]).class), formData.MediaType)
+
+            return imageUriBuilder.getUri(image).toString()
+        }
+
+        if (imageSmall)  listing.imageSmallUrl  = createImageAndGetUrl(imageSmall)
+        if (imageMedium) listing.imageMediumUrl = createImageAndGetUrl(imageMedium)
+        if (imageLarge)  listing.imageLargeUrl  = createImageAndGetUrl(imageLarge)
+        if (imageXlarge) listing.imageXlargeUrl = createImageAndGetUrl(imageXlarge)
+
+        if (screenshotsSmall && screenshotsLarge) {
+            listing.screenshots = [screenshotsSmall, screenshotsLarge].transpose().collect {
+                new ScreenshotInputRepresentation(
+                    smallImageUrl: createImageAndGetUrl(it[0]),
+                    largeImageUrl: createImageAndGetUrl(it[1])
+                )
+            }
+        }
+
+        return create(listing)
+    }
+
 
     @Path('/activity')
     @Produces([
