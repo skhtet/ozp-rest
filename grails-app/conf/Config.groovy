@@ -264,4 +264,9 @@ grails.web.disable.multipart=true
 
 notifications.enabled = false
 
+//uncomment to get jaxrs trace logging in the HTTP response headers
+//org.grails.jaxrs.provider.init.parameters=[
+  //'com.sun.jersey.config.feature.Trace': 'true',
+//]
+
 println "Config loaded"
