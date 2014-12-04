@@ -82,10 +82,6 @@ class BootStrap {
 			new Profile(username:username).save()
 		}
 
-        [ApplicationLibraryEntry].each { Class ->
-            JSON.registerObjectMarshaller(Class, { it.asJSON() })
-        }
-
         configureJackson()
     }
 

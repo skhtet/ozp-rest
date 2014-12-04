@@ -31,6 +31,7 @@ import static org.grails.jaxrs.response.Responses.*
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.Listing
+import marketplace.ItemComment
 import marketplace.ListingActivity
 import marketplace.ApplicationLibraryEntry
 import marketplace.Role
@@ -54,10 +55,10 @@ import marketplace.rest.representation.out.ApplicationLibraryEntryRepresentation
 import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.representation.out.ProfileRepresentation
 import marketplace.rest.representation.out.ListingActivityRepresentation
+import marketplace.rest.representation.out.ItemCommentListingRepresentation
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ProfileOwnedListingActivities
-import marketplace.rest.ItemCommentServiceItemDto
 
 @Path('/api/profile')
 @Produces([ProfileRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
@@ -113,14 +114,15 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
 
     @Path('/{profileId}/itemComment')
     @GET
-    @Produces([MediaType.APPLICATION_JSON])
+    @Produces([
+        MediaType.APPLICATION_JSON,
+        ItemCommentListingRepresentation.COLLECTION_MEDIA_TYPE
+    ])
     @Consumes([MediaType.APPLICATION_JSON])
-    List<ItemCommentServiceItemDto> getItemCommentsByAuthorId(
+    ChildObjectCollection<Profile, ItemComment> getItemCommentsByAuthorId(
             @PathParam('profileId') String profileId) {
-        itemCommentRestService.getAllByAuthorId(getProfileId(profileId)).collect {
-            ItemCommentServiceItemDto itemComment = new ItemCommentServiceItemDto(it)
-            itemComment.asJSON()
-        }
+        long id = getProfileId(profileId)
+        new ChildObjectCollection(itemCommentRestService.getAllByAuthorId(id), read(id))
     }
 
     @Path('/{profileId}/activity')
@@ -251,7 +253,8 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @GET
     @Produces([
         ApplicationLibraryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
+        AbstractHalRepresentation.HAL_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
     ])
     ChildObjectCollection<Profile, ApplicationLibraryEntry> getApplicationLibrary(
             @PathParam('profileId') String profileId) {
@@ -259,19 +262,6 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
 
         new ChildObjectCollection(applicationLibraryEntryRestService.getByParentId(id),
             read(id))
-    }
-
-    /**
-     * Remove after the demo and add application/json to the Produces annotation of
-     * getApplicationLibrary
-     */
-    @Path('/{profileId}/library')
-    @GET
-    @Produces([MediaType.APPLICATION_JSON])
-    @Deprecated
-    List<ApplicationLibraryEntry> getNonHalApplicationLibrary(
-            @PathParam('profileId') String profileId) {
-        applicationLibraryEntryRestService.getByParentId(getProfileId(profileId))
     }
 
     @Path('/{profileId}/library')
@@ -312,22 +302,6 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
         new ChildObjectCollection(
             applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(id, library),
             read(id))
-    }
-
-    /** remove after the demo */
-    @Path('/{profileId}/library')
-    @PUT
-    @Produces([MediaType.APPLICATION_JSON])
-    @Consumes([
-        ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
-        MediaType.APPLICATION_JSON
-    ])
-    @Deprecated
-    List<ApplicationLibraryEntry> replaceNonHalApplicationLibrary(
-            @PathParam('profileId') String profileId,
-            List<ApplicationLibraryEntryInputRepresentation> library) {
-        applicationLibraryEntryRestService.replaceAllByParentIdAndRepresentation(getProfileId(profileId),
-            library)
     }
 
     @Path('/{profileId}/library/{listingId}')

@@ -242,14 +242,6 @@ class Listing implements Serializable {
         return "${id}:${title}:${uuid}:${approvalStatus}"
     }
 
-    def asJSONMinimum () {
-        return new JSONObject(
-            id: id,
-            title: title,
-            imageSmallUrl: smallIcon
-        )
-    }
-
     @Override
     int hashCode() {
         new HashCodeBuilder()

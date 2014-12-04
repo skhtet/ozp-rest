@@ -47,18 +47,4 @@ class ApplicationLibraryEntry implements Serializable, Comparable<ApplicationLib
         ownerCompare != 0 ? ownerCompare :
             (folderCompare != 0 ? folderCompare : listingCompare)
     }
-
-    JSONObject asJSON() {
-        new JSONObject(
-            folder: folder,
-            listing: new JSONObject(
-                id: listing.id,
-                uuid: listing.uuid,
-                title: listing.title,
-                imageMediumUrl: listing.imageMediumUrl,
-                imageLargeUrl: listing.imageLargeUrl,
-                launchUrl: listing.launchUrl
-            )
-        )
-    }
 }

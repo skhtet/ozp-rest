@@ -13,15 +13,16 @@ import marketplace.Profile
 
 import marketplace.hal.AbstractRepresentationWriter
 
-import marketplace.rest.representation.out.ApplicationLibraryRepresentation
+import marketplace.rest.representation.out.SimpleApplicationLibraryRepresentation
 import marketplace.rest.ChildObjectCollection
 
 @Provider
-@Produces([ApplicationLibraryRepresentation.MEDIA_TYPE])
-class ApplicationLibraryRepresentationWriter extends
-        AbstractRepresentationWriter<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
+@Produces([SimpleApplicationLibraryRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+class SimpleApplicationLibraryRepresentationWriter extends
+        AbstractRepresentationWriter<Collection<ApplicationLibraryEntry>> {
     @Autowired
-    ApplicationLibraryRepresentationWriter(ApplicationLibraryRepresentation.Factory factory) {
+    SimpleApplicationLibraryRepresentationWriter(
+            SimpleApplicationLibraryRepresentation.Factory factory) {
         super(factory)
     }
 }
