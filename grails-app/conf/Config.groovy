@@ -219,7 +219,7 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 //marketplace.maxListingsToExport=25
 //marketplace.maxProfilesToExport=20
 
-marketplace.imageStoragePath = 'images'
+marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
 
 //Custom quartz configuration goes here.
 quartz {
