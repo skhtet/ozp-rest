@@ -17,7 +17,7 @@ class Listing implements Serializable {
     public static final CHANGE_LOG_PROPERTIES = [
         'type', 'owners',
         'categories', 'intents',
-        'contacts',
+        'contacts', 'isFeatured',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
         'versionName', 'imageLargeUrl',

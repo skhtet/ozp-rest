@@ -292,6 +292,17 @@ class ListingRestService extends RestService<Listing> {
         }
 
         updateRelationshipsListingActivity(updated, original)
+        checkFeaturedFlag(updated, original)
+    }
+
+    private void checkFeaturedFlag(Listing updated, Map original) {
+        Boolean updatedFeatured = updated.isFeatured,
+                originalFeatured = original ? original.isFeatured : false
+
+        if (updatedFeatured != originalFeatured) {
+            profileRestService.checkAdmin(
+                "Attempt by non-admin user to change Featured status on Listing")
+        }
     }
 
     /**
