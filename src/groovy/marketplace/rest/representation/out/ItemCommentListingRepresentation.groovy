@@ -13,7 +13,7 @@ import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import marketplace.rest.resource.uribuilder.ItemCommentUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
-import marketplace.rest.resource.uribuilder.ImageUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 import marketplace.ItemComment
 import marketplace.Listing
@@ -29,7 +29,7 @@ class ItemCommentListingRepresentation extends ItemCommentRepresentation {
             ObjectUriBuilder<Listing> listingUriBuilder,
             ObjectUriBuilder<ItemComment> itemCommentUriBuilder,
             ObjectUriBuilder<Profile> profileUriBuilder,
-            ImageUriBuilder imageUriBuilder) {
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(itemComment, listingUriBuilder, itemCommentUriBuilder, profileUriBuilder)
 
         this.addEmbedded(new HalEmbedded(OzpRelationType.APPLICATION,
@@ -38,12 +38,12 @@ class ItemCommentListingRepresentation extends ItemCommentRepresentation {
 
     private static class ListingRepresentation extends SelfRefRepresentation<Listing> {
         private Listing listing
-        private ImageUriBuilder imageUriBuilder
+        private ImageReferenceUriBuilder imageUriBuilder
 
         ListingRepresentation(
                 Listing listing,
                 ObjectUriBuilder<Listing> listingUriBuilder,
-                ImageUriBuilder imageUriBuilder) {
+                ImageReferenceUriBuilder imageUriBuilder) {
             super(listingUriBuilder.getUri(listing), null, null)
 
             this.listing = listing
@@ -60,7 +60,7 @@ class ItemCommentListingRepresentation extends ItemCommentRepresentation {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
         @Autowired ItemCommentUriBuilder.Factory itemCommentUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
-        @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         @Override
         ItemCommentListingRepresentation toRepresentation(ItemComment itemComment,

@@ -13,7 +13,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
-import marketplace.rest.resource.uribuilder.ImageUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -22,13 +22,13 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-listings-v1+json'
 
     private Listing listing
-    private ImageUriBuilder imageUriBuilder
+    private ImageReferenceUriBuilder imageUriBuilder
 
     public ListingRepresentation(
             Listing listing,
             ApplicationRootUriBuilderHolder uriBuilderHolder,
             ListingUriBuilder listingUriBuilder,
-            ImageUriBuilder imageUriBuilder) {
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(listingUriBuilder.getUri(listing), createLinks(listing, listingUriBuilder), null)
 
         this.listing = listing
@@ -109,7 +109,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     @Component
     public static class Factory implements RepresentationFactory<Listing> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
-        @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         @Override
         public ListingRepresentation toRepresentation(Listing listing,
@@ -149,9 +149,9 @@ class DocUrlRepresentation {
 
 class ScreenshotRepresentation {
     private Screenshot screenshot
-    private ImageUriBuilder imageUriBuilder
+    private ImageReferenceUriBuilder imageUriBuilder
 
-    ScreenshotRepresentation(Screenshot screenshot, ImageUriBuilder imageUriBuilder) {
+    ScreenshotRepresentation(Screenshot screenshot, ImageReferenceUriBuilder imageUriBuilder) {
         this.screenshot = screenshot
         this.imageUriBuilder = imageUriBuilder
     }

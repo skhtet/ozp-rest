@@ -219,6 +219,8 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 //marketplace.maxListingsToExport=25
 //marketplace.maxProfilesToExport=20
 
+marketplace.imageStoragePath = 'images'
+
 //Custom quartz configuration goes here.
 quartz {
     autoStartup = false

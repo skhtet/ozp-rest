@@ -31,7 +31,7 @@ class Screenshot implements Serializable {
     }
 
     public ImageReference getLargeImage() {
-        this.largeImage == null ? this.smallImage : this.largeImage
+        this.largeImage ? this.largeImage : this.smallImage
     }
 
     @Override

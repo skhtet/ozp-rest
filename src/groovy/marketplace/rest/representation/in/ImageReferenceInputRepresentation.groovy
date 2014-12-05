@@ -1,26 +1,22 @@
 package marketplace.rest.representation.in
 
+import javax.ws.rs.core.MediaType
+
 import com.sun.jersey.multipart.FormDataBodyPart
 
 import marketplace.ImageReference
 
-class UriImageReferenceInputRepresentation extends AbstractInputRepresentation<ImageReference> {
-    URI uri
-
-    UriImageReferenceInputRepresentation() {
-        super(ImageReference)
-    }
-}
-
-class EmbeddedImageReferenceInputRepresentation extends
+class ImageReferenceInputRepresentation extends
         AbstractInputRepresentation<ImageReference> {
-    EmbeddedImageReferenceInputRepresentation() {
+    MediaType mediaType
+    byte[] image
+
+    ImageReferenceInputRepresentation() {
         super(ImageReference)
     }
 
-    ImageInputRepresentation image
-
-    public void setImage(FormDataBodyPart formData) {
-        this.image = new ImageInputRepresentation(formData)
+    @Override
+    Map<String, Object> getInputProperties() {
+        [mediaType: mediaType]
     }
 }

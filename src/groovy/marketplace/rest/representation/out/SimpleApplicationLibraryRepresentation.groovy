@@ -19,7 +19,7 @@ import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 
-import marketplace.rest.resource.uribuilder.ImageUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 import marketplace.rest.ChildObjectCollection
 
@@ -30,11 +30,11 @@ class SimpleApplicationLibraryRepresentation extends
     public static final String MEDIA_TYPE = 'application/vnd.ozp-library-simple-v1+json'
 
     private List<ApplicationLibraryEntry> library
-    private ImageUriBuilder imageUriBuilder
+    private ImageReferenceUriBuilder imageUriBuilder
 
     private SimpleApplicationLibraryRepresentation(
             Collection<ApplicationLibraryEntry> library,
-            ImageUriBuilder imageUriBuilder) {
+            ImageReferenceUriBuilder imageUriBuilder) {
         this.library = library as List
         this.imageUriBuilder = imageUriBuilder
     }
@@ -49,11 +49,11 @@ class SimpleApplicationLibraryRepresentation extends
     private static class SimpleApplicationLibraryEntryRepresentation {
 
         private ApplicationLibraryEntry entry
-        private ImageUriBuilder imageUriBuilder
+        private ImageReferenceUriBuilder imageUriBuilder
 
         SimpleApplicationLibraryEntryRepresentation(
                 ApplicationLibraryEntry entry,
-                ImageUriBuilder imageUriBuilder) {
+                ImageReferenceUriBuilder imageUriBuilder) {
             this.entry = entry
             this.imageUriBuilder = imageUriBuilder
         }
@@ -66,9 +66,9 @@ class SimpleApplicationLibraryRepresentation extends
 
     private static class SimpleLibraryApplicationRepresentation {
         private Listing listing
-        private ImageUriBuilder imageUriBuilder
+        private ImageReferenceUriBuilder imageUriBuilder
 
-        SimpleLibraryApplicationRepresentation(Listing listing, ImageUriBuilder imageUriBuilder) {
+        SimpleLibraryApplicationRepresentation(Listing listing, ImageReferenceUriBuilder imageUriBuilder) {
             this.listing = listing
             this.imageUriBuilder = imageUriBuilder
         }
@@ -86,7 +86,7 @@ class SimpleApplicationLibraryRepresentation extends
     @Component
     public static class Factory implements
             RepresentationFactory<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
-        @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         @Override
         SimpleApplicationLibraryRepresentation toRepresentation(

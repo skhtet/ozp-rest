@@ -14,14 +14,14 @@ import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.RepresentationFactory
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
-import marketplace.rest.resource.uribuilder.ImageUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-application-v1+json'
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-applications-v1+json'
 
     private Listing listing
-    private ImageUriBuilder imageUriBuilder
+    private ImageReferenceUriBuilder imageUriBuilder
 
     String getName() { listing.title }
     String getType() { listing.type.title }
@@ -54,7 +54,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
 
     ApplicationRepresentation(Listing listing,
             ObjectUriBuilder<Listing> listingUriBuilder,
-            ImageUriBuilder imageUriBuilder) {
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(listingUriBuilder.getUri(listing), null, null)
 
         this.listing = listing
@@ -66,7 +66,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     @Component
     public static class Factory implements RepresentationFactory<Listing> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
-        @Autowired ImageUriBuilder.Factory imageUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         public ApplicationRepresentation toRepresentation(
                     Listing listing,
