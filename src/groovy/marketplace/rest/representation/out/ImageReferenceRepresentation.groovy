@@ -27,7 +27,9 @@ class ImageReferenceRepresentation extends SelfRefRepresentation<ImageReference>
     }
 
     String getId() { imageReference.id }
-    MediaType getContentType() { MediaType.fromString(imageReference.mediaType) }
+    MediaType getContentType() {
+        MediaType.valueOf(imageReference.mediaType)
+    }
 
     @Component
     public static class Factory implements RepresentationFactory<ImageReference> {

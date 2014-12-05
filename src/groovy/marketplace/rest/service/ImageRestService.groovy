@@ -82,6 +82,8 @@ class ImageRestService extends RestService<ImageReference> {
                 log.warn("Could not close image output stream")
             }
         }
+
+        return imageRef
     }
 
     @Transactional(readOnly=true, propagation=Propagation.SUPPORTS)

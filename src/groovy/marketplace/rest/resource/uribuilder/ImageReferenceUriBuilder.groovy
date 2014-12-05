@@ -24,18 +24,18 @@ class ImageReferenceUriBuilder implements ObjectUriBuilder<ImageReference> {
     }
 
     URI getUri(ImageReference imageRef) {
-        buildUri(uriBuilderHolder.builder)
+        buildUri(uriBuilderHolder.builder, imageRef)
     }
 
     URI getImageUri(ImageReference imageRef) {
         String imageUriBase = grailsApplication.config.marketplace.imageUriBaseOverride
 
-        imageUriBase ? buildUri(UriBuilder.fromUri(imageUriBase)) : getUri(imageRef)
+        imageUriBase ? buildUri(UriBuilder.fromUri(imageUriBase), imageRef) : getUri(imageRef)
     }
 
-    private URI buildUri(UriBuilder base) {
+    private URI buildUri(UriBuilder base, ImageReference imageRef) {
         base.path(ImageResource)
-            .path(ImageResource, 'read')
+            .path(ImageResource, 'getImageReference')
             .buildFromMap(id: imageRef.id)
     }
 
