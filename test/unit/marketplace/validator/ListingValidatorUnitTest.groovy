@@ -21,111 +21,82 @@ class ListingValidatorUnitTest {
     }
 
     void testValidateApprovalStatus() {
-        boolean isAdmin = true
+        boolean isAdmin = true, isOrgSteward = true
+        ApprovalStatus inProgress = ApprovalStatus.IN_PROGRESS,
+                       pending = ApprovalStatus.PENDING,
+                       approvedOrg = ApprovalStatus.APPROVED_ORG,
+                       approved = ApprovalStatus.APPROVED,
+                       rejected = ApprovalStatus.REJECTED
 
-        def profileServiceMock = mockFor(ProfileRestService)
-        profileServiceMock.demand.checkAdmin(1..1000) {
-            if (!isAdmin) throw new IllegalArgumentException("checkAdmin test")
-        }
+        validator.profileRestService = [
+            checkAdmin: { str ->
+                if (!isAdmin) throw new IllegalArgumentException("checkAdmin test")
+            },
 
-        validator.profileRestService = profileServiceMock.createMock()
+            checkOrgSteward: { org, str ->
+                if (!(isOrgSteward || isAdmin))
+                    throw new IllegalArgumentException("checkOrgSteward test")
+            }
+        ] as ProfileRestService
 
-        Map existing = [contacts: []]
+        Map existing = [:]
         Listing dto = new Listing()
 
-        /**
-         * Test different transitions
-         */
+        def tryAllStatusChanges = {
+            def statuses = ApprovalStatus.values()
+            def allChanges = statuses.inject([]) { acc, it1 ->
+                acc + statuses.collect { it2 -> [it1, it2] }
+            }
+            def validChanges = allChanges.collect {
+                existing.approvalStatus = it[0]
+                dto.approvalStatus = it[1]
 
-        existing.approvalStatus = ApprovalStatus.IN_PROGRESS
-        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
-        validator.validateChanges(existing, dto)
+                try {
+                    validator.validateChanges(existing, dto)
+                    return it
+                }
+                catch(IllegalArgumentException e) {
+                    return null
+                }
+            } - null
 
-        dto.approvalStatus = ApprovalStatus.PENDING
-        validator.validateChanges(existing, dto)
-
-        dto.approvalStatus = ApprovalStatus.REJECTED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
+            return validChanges
         }
 
-        dto.approvalStatus = ApprovalStatus.APPROVED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        existing.approvalStatus = ApprovalStatus.PENDING
-        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.PENDING
-        validator.validateChanges(existing, dto)
-
-        //Rejection must be done by creating a RejectionListing. Simply setting approvalStatus
-        //to Rejected should not work
-        dto.approvalStatus = ApprovalStatus.REJECTED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.APPROVED
-        validator.validateChanges(existing, dto)
+        def adminChanges = tryAllStatusChanges()
+        assert adminChanges.contains([inProgress, inProgress])
+        assert adminChanges.contains([pending, pending])
+        assert adminChanges.contains([approvedOrg, approvedOrg])
+        assert adminChanges.contains([approved, approved])
+        assert adminChanges.contains([rejected, rejected])
+        assert adminChanges.contains([inProgress, pending])
+        assert adminChanges.contains([pending, approvedOrg])
+        assert adminChanges.contains([approvedOrg, approved])
+        assert adminChanges.contains([rejected, pending])
+        assert adminChanges.size() == 9
 
         isAdmin = false
-        dto.approvalStatus = ApprovalStatus.APPROVED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
+        def orgStewardChanges = tryAllStatusChanges()
+        assert orgStewardChanges.contains([inProgress, inProgress])
+        assert orgStewardChanges.contains([pending, pending])
+        assert orgStewardChanges.contains([approvedOrg, approvedOrg])
+        assert orgStewardChanges.contains([approved, approved])
+        assert orgStewardChanges.contains([rejected, rejected])
+        assert orgStewardChanges.contains([inProgress, pending])
+        assert orgStewardChanges.contains([pending, approvedOrg])
+        assert orgStewardChanges.contains([rejected, pending])
+        assert orgStewardChanges.size() == 8
 
-        existing.approvalStatus = ApprovalStatus.REJECTED
-        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
-        isAdmin = true
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.REJECTED
-        validator.validateChanges(existing, dto)
-
-        dto.approvalStatus = ApprovalStatus.PENDING
-        validator.validateChanges(existing, dto)
-
-        dto.approvalStatus = ApprovalStatus.APPROVED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        isAdmin = false
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        existing.approvalStatus = ApprovalStatus.APPROVED
-        dto.approvalStatus = ApprovalStatus.IN_PROGRESS
-        isAdmin = true
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.REJECTED
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.PENDING
-        shouldFail(IllegalArgumentException) {
-            validator.validateChanges(existing, dto)
-        }
-
-        dto.approvalStatus = ApprovalStatus.APPROVED
-        validator.validateChanges(existing, dto)
-
-        isAdmin = false
-        validator.validateChanges(existing, dto)
-
-        /* approval status being a valid value at all is comstrained at the domain object level */
+        isOrgSteward = false
+        def userChanges = tryAllStatusChanges()
+        assert userChanges.contains([inProgress, inProgress])
+        assert userChanges.contains([pending, pending])
+        assert userChanges.contains([approvedOrg, approvedOrg])
+        assert userChanges.contains([approved, approved])
+        assert userChanges.contains([rejected, rejected])
+        assert userChanges.contains([inProgress, pending])
+        assert userChanges.contains([rejected, pending])
+        assert userChanges.size() == 7
     }
 
     void testValidateNewApprovalStatus() {

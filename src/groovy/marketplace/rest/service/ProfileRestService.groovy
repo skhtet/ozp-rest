@@ -211,12 +211,44 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     /**
+     * @return true if the current user is actually an org steward.  Note that this will
+     * return false for users who are admins, even though being an admin implies org steward
+     * capabilities.  The point of this method is to distinguish between org stewards and admins
+     */
+    @Transactional(readOnly=true)
+    public boolean isOrgSteward() {
+        currentUserProfile.hasRole(Role.ORG_STEWARD) && !isAdmin()
+    }
+
+    /**
+     * @return whether or not the current user has org steward privileges over the specified
+     * org.  This will be the case either if they are an admin, or if they are an org steward
+     * whose stewardedOrganizations contains the specified org
+     */
+    @Transactional(readOnly=true)
+    public boolean isOrgSteward(Agency org) {
+        Profile profile = currentUserProfile
+
+        isAdmin() ||
+            (profile.hasRole(Role.ORG_STEWARD) && profile.stewardedOrganizations.contains(org))
+    }
+
+    /**
      * @throws AccessDeniedException if the current user in not an Admin
      * @param msg the Message for the exception
      */
     @Transactional(readOnly=true)
     public void checkAdmin(String msg = "Attempt to access Admin-only functionality") {
         if (!isAdmin()) {
+            throw new AccessDeniedException(msg)
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public void checkOrgSteward(Agency organization,
+            String msg = "Attempt to access Organization-Steward " +
+            "functionality for $organization") {
+        if (!isOrgSteward(organization)) {
             throw new AccessDeniedException(msg)
         }
     }

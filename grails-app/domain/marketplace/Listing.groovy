@@ -219,7 +219,7 @@ class Listing implements Serializable {
         largeIcon nullable: true, validator: requiredUnlessInProgress
         bannerIcon nullable: true, validator: requiredUnlessInProgress
         featuredBannerIcon nullable:true, validator: requiredUnlessInProgress
-        approvalStatus(inList:ApprovalStatus.values().toList())
+        approvalStatus nullable: false
         lastActivity(nullable:true)
         approvedDate(nullable:true)
         owners( validator: { val ->

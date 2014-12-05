@@ -26,19 +26,23 @@ import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
+import marketplace.ApprovalStatus
 
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ChildObjectCollection
+import marketplace.rest.FilteredListingsPagedCollection
 import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
 import marketplace.rest.representation.in.ScreenshotInputRepresentation
+import marketplace.rest.representation.in.AgencyTitleInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.representation.out.RejectionListingRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
 import marketplace.rest.representation.out.ListingRepresentation
 import marketplace.rest.representation.out.ListingActivityRepresentation
+import marketplace.rest.representation.out.FilteredListingsRepresentation
 import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
@@ -75,17 +79,27 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
 
     ListingResource() {}
 
-    @Override
     @GET
     @Produces([
         ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        FilteredListingsRepresentation.COLLECTION_MEDIA_TYPE,
         ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
-                                     @QueryParam('max') Integer max) {
-        super.readAll(offset, max)
+    FilteredListingsPagedCollection readAll(@QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max,
+            @QueryParam('org') AgencyTitleInputRepresentation org,
+            @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
+            @QueryParam('enabled') Boolean enabled) {
+        new FilteredListingsPagedCollection(
+                service.getAllMatchingParams(org, approvalStatus, enabled, offset, max),
+                org, approvalStatus, enabled, offset, max)
     }
+
+    //override to remove annotations
+    @Override
+    PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
+                                     @QueryParam('max') Integer max) {}
 
     @Path('/activity')
     @Produces([

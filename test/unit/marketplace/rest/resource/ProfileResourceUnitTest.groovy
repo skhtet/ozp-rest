@@ -21,21 +21,14 @@ import marketplace.rest.service.ListingActivityRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.ListingRestService
 
+import marketplace.testutil.MockPagedResultList
+
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileResourceUnitTest {
 
     ProfileResource resource
 
     def currentUser
-
-    private makePagedResultList(contents) {
-        def mockC = mockFor(org.hibernate.Criteria)
-        mockC.demand.list { return []} //PagedResultList constructor calls this
-        new PagedResultList(null, mockC.createMock()){{
-            list = contents
-            totalCount = contents.size()
-        }}
-    }
 
     void setUp() {
         def testUser = new Profile(username: 'testUser')
@@ -246,7 +239,7 @@ class ProfileResourceUnitTest {
             def listing = new Listing(title: 'listing 1')
             listing.id = 2
 
-            return makePagedResultList([new ListingActivity(
+            return new MockPagedResultList().createPagedResultList([new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
                 listing: listing
@@ -280,7 +273,7 @@ class ProfileResourceUnitTest {
         def listing = new Listing(title: 'listing 1')
         listing.id = 2
 
-        def pagedList = makePagedResultList([new ListingActivity(
+        def pagedList = new MockPagedResultList().createPagedResultList([new ListingActivity(
             action: Constants.Action.CREATED,
             author: Profile.get(1),
             listing: listing
@@ -318,7 +311,7 @@ class ProfileResourceUnitTest {
 
         def listing = new Listing(title: 'listing 1')
         listing.id = 2
-        def pagedList = makePagedResultList([new ListingActivity(
+        def pagedList = new MockPagedResultList().createPagedResultList([new ListingActivity(
             action: Constants.Action.CREATED,
             author: Profile.get(1),
             listing: listing
@@ -371,7 +364,7 @@ class ProfileResourceUnitTest {
             def listing = new Listing(title: 'listing 1')
             listing.id = 2
 
-            return makePagedResultList([new ListingActivity(
+            return new MockPagedResultList().createPagedResultList([new ListingActivity(
                 action: Constants.Action.CREATED,
                 author: Profile.get(1),
                 listing: listing

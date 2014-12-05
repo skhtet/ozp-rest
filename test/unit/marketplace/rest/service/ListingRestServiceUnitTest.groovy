@@ -46,7 +46,7 @@ class ListingRestServiceUnitTest {
 
     ListingRestService service
 
-    Profile currentUser, owner, nonOwner, admin
+    Profile currentUser, owner, nonOwner, steward, admin
     Type type1
     Agency agency1
     ContactType contactType1
@@ -152,6 +152,8 @@ class ListingRestServiceUnitTest {
         nonOwner.id = 2
         def admin = new Profile(username: 'admin')
         admin.id = 3
+        def steward = new Profile(username: 'steward')
+        steward.id = 4
 
 
         type1 = new Type(title: 'Test Type')
@@ -180,10 +182,11 @@ class ListingRestServiceUnitTest {
         mockDomain(Category.class, [category1])
         mockDomain(Agency.class, [agency1])
         mockDomain(Intent.class, [intent])
-        mockDomain(Profile.class, [owner, nonOwner, admin])
+        mockDomain(Profile.class, [owner, nonOwner, admin, steward])
 
         currentUser = admin
         this.admin = admin
+        this.steward = steward
         this.owner = owner
         this.nonOwner = nonOwner
 
@@ -211,6 +214,16 @@ class ListingRestServiceUnitTest {
                 if (!currentUser.username.toLowerCase().contains('admin')) {
                     throw new AccessDeniedException('access denied')
                 }
+            },
+            checkOrgSteward: { org, str=null ->
+                if (!(currentUser.username.toLowerCase().contains('steward') ||
+                        currentUser.username.toLowerCase().contains('admin'))) {
+                    throw new AccessDeniedException('access denied')
+                }
+            },
+            isOrgSteward: { org ->
+                currentUser.username.toLowerCase().contains('steward') ||
+                        currentUser.username.toLowerCase().contains('admin')
             }
         ] as ProfileRestService
 
@@ -272,6 +285,50 @@ class ListingRestServiceUnitTest {
         assertNotNull dto
     }
 
+    void testApproveOrg() {
+        ListingActivity activity
+        ListingInputRepresentation dto
+        Listing listing
+        def id
+
+        service.listingActivityInternalService = [
+            addListingActivity: { si, action ->
+                //creation of the changelog uses the other signature
+                if(action instanceof ListingActivity)
+                    return
+                activity = new ListingActivity(action: action, listing: si)
+            }
+        ] as ListingActivityInternalService
+
+        def approve = {
+            dto = makeServiceItemInputRepresentation()
+            dto.approvalStatus = ApprovalStatus.APPROVED_ORG
+            listing = service.updateById(id, dto)
+        }
+
+        dto = makeServiceItemInputRepresentation()
+
+        id = service.createFromRepresentation(dto).id
+        dto = makeServiceItemInputRepresentation()
+        dto.approvalStatus = ApprovalStatus.PENDING
+        listing = service.updateById(id, dto)
+
+        //users cannot approve
+        shouldFail(AccessDeniedException) {
+            currentUser = this.owner
+            approve()
+        }
+
+        currentUser = steward
+
+        //need to reset the approval status because the unit tests aren't transactional and
+        //the preceding failed change did not get rolled back
+        Listing.get(id).approvalStatus = ApprovalStatus.PENDING
+        approve()
+
+        assert activity.action == Constants.Action.APPROVED_ORG
+    }
+
     void testApprove() {
         ListingActivity activity
         ListingInputRepresentation dto
@@ -297,7 +354,7 @@ class ListingRestServiceUnitTest {
 
         id = service.createFromRepresentation(dto).id
         dto = makeServiceItemInputRepresentation()
-        dto.approvalStatus = ApprovalStatus.PENDING
+        dto.approvalStatus = ApprovalStatus.APPROVED_ORG
         listing = service.updateById(id, dto)
 
         //users cannot approve
@@ -306,11 +363,21 @@ class ListingRestServiceUnitTest {
             approve()
         }
 
+        //stewards cannot globally approve
+        shouldFail(AccessDeniedException) {
+            currentUser = this.steward
+
+            //need to reset the approval status because the unit tests aren't transactional and
+            //the preceding failed change did not get rolled back
+            Listing.get(id).approvalStatus = ApprovalStatus.APPROVED_ORG
+            approve()
+        }
+
         currentUser = admin
 
         //need to reset the approval status because the unit tests aren't transactional and
         //the preceding failed change did not get rolled back
-        Listing.get(id).approvalStatus = ApprovalStatus.PENDING
+        Listing.get(id).approvalStatus = ApprovalStatus.APPROVED_ORG
         approve()
 
         assert activity.action == Constants.Action.APPROVED
@@ -319,7 +386,7 @@ class ListingRestServiceUnitTest {
         assert listing.approvedDate.time > (new Date()).time - 1000
     }
 
-    void testReject() {
+    void testRejectOrg() {
         Listing created
         ListingActivity activity
 
@@ -350,6 +417,54 @@ class ListingRestServiceUnitTest {
 
         shouldFail(AccessDeniedException) {
             currentUser = this.owner
+            reject()
+        }
+
+        currentUser = steward
+        reject()
+
+        assert created.approvalStatus == ApprovalStatus.REJECTED
+        assert activity.rejectionListing.description == 'bad listing'
+        assert activity instanceof RejectionActivity
+        assert created.rejectionListings == [activity.rejectionListing] as SortedSet
+    }
+
+    void testReject() {
+        Listing created
+        ListingActivity activity
+
+        service.listingActivityInternalService = [
+            addRejectionActivity: { si, rejectionListing ->
+                activity = new RejectionActivity(
+                    serviceItem: si,
+                    rejectionListing: rejectionListing
+                )
+            },
+            addListingActivity: { si, action -> }
+        ] as ListingActivityInternalService
+
+        def reject = {
+            service.reject(created, new RejectionListing(
+                description: 'bad listing'
+            ))
+        }
+
+        def id = service.createFromRepresentation(makeServiceItemInputRepresentation()).id
+
+        //make a fresh dto
+        created = makeServiceItem()
+        service.populateDefaults(created)
+        created.id = id
+        created.approvalStatus = ApprovalStatus.APPROVED_ORG
+        created.save(failOnError:true)
+
+        shouldFail(AccessDeniedException) {
+            currentUser = this.owner
+            reject()
+        }
+
+        shouldFail(AccessDeniedException) {
+            currentUser = this.steward
             reject()
         }
 

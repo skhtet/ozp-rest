@@ -4,10 +4,10 @@ import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.ItemComment
 import marketplace.ListingActivity
+import marketplace.FilteredListings
+import marketplace.ApprovalStatus
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
-
-import grails.orm.PagedResultList
 
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
@@ -22,6 +22,9 @@ import static javax.servlet.http.HttpServletResponse.*
 
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
+import marketplace.rest.representation.in.AgencyTitleInputRepresentation
+
+import marketplace.testutil.MockPagedResultList
 
 @TestMixin(DomainClassUnitTestMixin)
 class ListingResourceUnitTest {
@@ -54,15 +57,7 @@ class ListingResourceUnitTest {
         def passedParentId, passedParentServiceId, passedOffset, passedMax
         def parent = new Listing()
 
-        /* Mocking PagedResultList, see http://stackoverflow.com/a/19216929 */
-        def mockC = mockFor(org.hibernate.Criteria)
-        mockC.demand.list { return []} //PagedResultList constructor calls this
-        def pagedList = new PagedResultList(null, mockC.createMock()){{
-           //Using a static block to set private variables
-           //since we can't call a constructor here!
-           list = [activity]
-           totalCount = 1
-        }}
+        def pagedList = new MockPagedResultList().createPagedResultList([activity])
 
         def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
         serviceItemActivityRestServiceMock.demand.getByParentId(1..1) { parentId, offset, max ->
@@ -239,5 +234,46 @@ class ListingResourceUnitTest {
 
         resource.deleteItemComment(1)
         assert passedId == 1
+    }
+
+    void testReadAll() {
+        def offset = 5,
+            max = 2,
+            org = new AgencyTitleInputRepresentation("agency1"),
+            approvalStatus = ApprovalStatus.APPROVED,
+            enabled = false,
+            pagedList = new MockPagedResultList().createPagedResultList([], 2),
+            counts = new FilteredListings.Counts(),
+            serviceRetval = new FilteredListings(pagedList, counts)
+
+        def passedOffset, passedMax, passedOrg, passedApprovalStatus, passedEnabled
+
+        def serviceMock = mockFor(ListingRestService)
+        serviceMock.demand.getAllMatchingParams(1..1) { organization, a, e, off, m ->
+            passedOrg = organization
+            passedApprovalStatus = a
+            passedEnabled = e
+            passedOffset = off
+            passedMax = m
+
+            return serviceRetval
+        }
+
+        resource.service = serviceMock.createMock()
+
+        def retval = resource.readAll(offset, max, org, approvalStatus, enabled)
+
+        assert offset == passedOffset
+        assert max == passedMax
+        assert org == passedOrg
+        assert approvalStatus == passedApprovalStatus
+        assert enabled == passedEnabled
+
+        assert retval.counts == counts
+        assert retval.org == org
+        assert retval.approvalStatus == approvalStatus
+        assert retval.enabled == enabled
+        assert retval.total == 2
+        assert retval.size() == 0
     }
 }
