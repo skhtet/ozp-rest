@@ -11,6 +11,7 @@ import marketplace.Sorter
 import marketplace.Listing
 import marketplace.ItemComment
 import marketplace.Profile
+import marketplace.ApprovalStatus
 
 import marketplace.Constants
 
@@ -40,7 +41,7 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
         //ensure that the Listings's statistics are updated
         listing.removeFromItemComments(obj)
         listing.updateRatingStats()
-
+        
         super.deleteById(id)
     }
 
@@ -107,5 +108,27 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
                 profileRestService.currentUserProfile != original.author) {
             throw new AccessDeniedException("Attempt by non-owner to change comment rating")
         }
+    }
+
+    @Override
+    protected boolean canView(ItemComment comment) {
+        Profile profile = profileRestService.currentUserProfile
+
+        if(comment.listing) {
+            Listing listing = parentClassRestService.getById(comment.listing.id)
+
+            //if it is enabled and approved it is visible to everyone
+            if (!(listing.isEnabled && listing.approvalStatus == ApprovalStatus.APPROVED)) {
+                //owners and admins can always view
+                if (!profileRestService.isAdmin() && !listing.isOwner(profile)) {
+                    //stewards can view listings within their agency
+                    if (!profileRestService.isOrgSteward(listing.agency)) {
+                        return false
+                    }
+                }
+        }
+        }
+
+        return true
     }
 }
