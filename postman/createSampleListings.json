@@ -5,6 +5,12 @@
 	"order": [
 		"fcef61a7-97cd-7ae7-ccda-36de953c3f08",
 		"2eb78733-6c59-e26b-95c0-3ce1a20201bb",
+		"8359b288-8227-538e-2f18-97642605f51b",
+		"d27d86cb-9a9b-b750-d06b-d8a7a26338eb",
+		"eb52f7f0-c38c-312d-5393-7d69bb16204d",
+		"cc5796f8-34f1-1069-658c-529f838f9938",
+		"7c22a087-66c3-31a5-af2c-a183b87ae942",
+		"c5daad04-e1ae-f52b-1137-0b336820573f",
 		"95ffabfb-f0ed-34c0-7fed-428264ed0b58",
 		"f7783698-1c98-0cd1-da2a-537c42d01817",
 		"c73d7710-c49d-2baf-4d21-6cafccd0691d",
@@ -14,6 +20,7 @@
 	"folders": [],
 	"timestamp": 1414632486062,
 	"synced": false,
+	"remoteLink": "",
 	"requests": [
 		{
 			"id": "2eb78733-6c59-e26b-95c0-3ce1a20201bb",
@@ -55,6 +62,60 @@
 			"rawModeData": "{{libraryEntryBody}}"
 		},
 		{
+			"id": "7c22a087-66c3-31a5-af2c-a183b87ae942",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{smallImage}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('smallImageId', id);\n\nvar listingData = postman.getGlobalVariable('listingDataWithImages');\nvar listingDataWithImages = listingData.replace('{{smallImageId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052390814,
+			"name": "Add small screenshot",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
+		},
+		{
+			"id": "8359b288-8227-538e-2f18-97642605f51b",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{smallIcon}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('smallIconId', id);\n\nvar listingData = data.listingData;\nvar listingDataWithImages = listingData.replace('{{smallIconId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052305915,
+			"name": "Add small icon",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
+		},
+		{
 			"id": "95ffabfb-f0ed-34c0-7fed-428264ed0b58",
 			"headers": "Content-Type: application/json\nAccept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
 			"url": "{{baseUrl}}/api/listing/",
@@ -65,13 +126,42 @@
 			"dataMode": "raw",
 			"version": 2,
 			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar currentListing = JSON.parse(responseBody);\ncurrentListing.approvalStatus = 'PENDING';\n\nvar listingBody = JSON.stringify(currentListing);\npostman.setGlobalVariable('modifiedListing', listingBody);\npostman.setGlobalVariable('listingId', currentListing.id);",
-			"time": 1414636240347,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052150923,
 			"name": "Create Listing",
 			"description": "",
 			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
 			"responses": [],
 			"synced": false,
-			"rawModeData": "{{listingData}}"
+			"rawModeData": "{{listingDataWithImages}}"
+		},
+		{
+			"id": "c5daad04-e1ae-f52b-1137-0b336820573f",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{largeImage}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('largeImageId', id);\n\nvar listingData = postman.getGlobalVariable('listingDataWithImages');\nvar listingDataWithImages = listingData.replace('{{largeImageId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052407019,
+			"name": "Add large screenshot",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
 		},
 		{
 			"id": "c73d7710-c49d-2baf-4d21-6cafccd0691d",
@@ -93,6 +183,60 @@
 			"rawModeData": "{{modifiedListing}}"
 		},
 		{
+			"id": "cc5796f8-34f1-1069-658c-529f838f9938",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{featuredBannerIcon}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('featureBannerIconId', id);\n\nvar listingData = postman.getGlobalVariable('listingDataWithImages');\nvar listingDataWithImages = listingData.replace('{{featuredBannerIconId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052373227,
+			"name": "Add featured banner icon",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
+		},
+		{
+			"id": "d27d86cb-9a9b-b750-d06b-d8a7a26338eb",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{largeIcon}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('featureBannerIconId', id);\n\nvar listingData = postman.getGlobalVariable('listingDataWithImages');\nvar listingDataWithImages = listingData.replace('{{largeIconId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1417816663758,
+			"name": "Add large icon",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
+		},
+		{
 			"id": "eb497000-b19a-2094-9599-270ed8040067",
 			"headers": "Content-Type: application/json\nAccept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
 			"url": "{{baseUrl}}/api/listing/{{listingId}}",
@@ -111,6 +255,33 @@
 			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
 			"synced": false,
 			"rawModeData": "{{modifiedListing}}"
+		},
+		{
+			"id": "eb52f7f0-c38c-312d-5393-7d69bb16204d",
+			"headers": "Accept: application/json\nAuthorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\n",
+			"url": "{{baseUrl}}/api/image",
+			"preRequestScript": "",
+			"pathVariables": {},
+			"method": "POST",
+			"data": [
+				{
+					"key": "image",
+					"value": "postman/files/{{bannerIcon}}",
+					"type": "file",
+					"enabled": true
+				}
+			],
+			"dataMode": "params",
+			"version": 2,
+			"tests": "tests[\"Status code is 201\"] = responseCode.code === 201;\n\nvar id = JSON.parse(responseBody).id\npostman.setGlobalVariable('bannerIconId', id);\n\nvar listingData = postman.getGlobalVariable('listingDataWithImages');\nvar listingDataWithImages = listingData.replace('{{bannerIconId}}', id.toString());\npostman.setGlobalVariable('listingDataWithImages', listingDataWithImages);",
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1418052353045,
+			"name": "Add banner icon",
+			"description": "",
+			"collectionId": "7af05c37-541e-4b14-1608-a5f769bb1b21",
+			"responses": [],
+			"synced": false
 		},
 		{
 			"id": "f7783698-1c98-0cd1-da2a-537c42d01817",
