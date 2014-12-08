@@ -6,6 +6,8 @@ import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.Screenshot
 import marketplace.ApprovalStatus
+import marketplace.ImageReference
+
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -44,10 +46,41 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getDescriptionShort() { listing.descriptionShort }
     Long getTotalComments() { listing.totalComments }
     String getLaunchUrl() { listing.launchUrl }
-    String getImageSmallUrl() { imageUriBuilder.getUri(listing.smallIcon).toString() }
-    String getImageMediumUrl() { imageUriBuilder.getUri(listing.largeIcon).toString() }
-    String getImageLargeUrl() { imageUriBuilder.getUri(listing.bannerIcon).toString() }
-    String getImageXlargeUrl() { imageUriBuilder.getUri(listing.featuredBannerIcon).toString() }
+
+    IdRefRepresentation<ImageReference> getSmallIcon() {
+        listing.smallIcon ? new IdRefRepresentation(listing.smallIcon) : null
+    }
+    IdRefRepresentation<ImageReference> getLargeIcon() {
+        listing.largeIcon ? new IdRefRepresentation(listing.largeIcon) : null
+    }
+    IdRefRepresentation<ImageReference> getBannerIcon() {
+        listing.bannerIcon ? new IdRefRepresentation(listing.bannerIcon) : null
+    }
+    IdRefRepresentation<ImageReference> getFeaturedBannerIcon() {
+        listing.featuredBannerIcon ? new IdRefRepresentation(listing.featuredBannerIcon) : null
+    }
+
+    @Deprecated
+    String getImageSmallUrl() {
+        listing.smallIcon ? imageUriBuilder.getUri(listing.smallIcon).toString() : null
+    }
+
+    @Deprecated
+    String getImageMediumUrl() {
+        listing.largeIcon ? imageUriBuilder.getUri(listing.largeIcon).toString() : null
+    }
+
+    @Deprecated
+    String getImageLargeUrl() {
+        listing.bannerIcon ? imageUriBuilder.getUri(listing.bannerIcon).toString() : null
+    }
+
+    @Deprecated
+    String getImageXlargeUrl() {
+        listing.featuredBannerIcon ?
+            imageUriBuilder.getUri(listing.featuredBannerIcon).toString() : null
+    }
+
     String getVersionName() { listing.versionName }
     String getRequirements() { listing.requirements }
     String getWhatIsNew() { listing.whatIsNew }
@@ -156,8 +189,23 @@ class ScreenshotRepresentation {
         this.imageUriBuilder = imageUriBuilder
     }
 
-    String getSmallImageUrl() { imageUriBuilder.getUri(screenshot.smallImage).toString() }
-    String getLargeImageUrl() { imageUriBuilder.getUri(screenshot.largeImage).toString() }
+    IdRefRepresentation<ImageReference> getSmallImage() {
+        screenshot.smallImage ? new IdRefRepresentation(screenshot.smallImage) : null
+    }
+
+    IdRefRepresentation<ImageReference> getLargeImage() {
+        screenshot.largeImage ? new IdRefRepresentation(screenshot.largeImage) : null
+    }
+
+    @Deprecated
+    String getSmallImageUrl() {
+        screenshot.smallImage ? imageUriBuilder.getUri(screenshot.smallImage).toString() : null
+    }
+
+    @Deprecated
+    String getLargeImageUrl() {
+        screenshot.largeImage ? imageUriBuilder.getUri(screenshot.largeImage).toString() : null
+    }
 }
 
 class CurrentRejectionRepresentation {

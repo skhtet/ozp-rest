@@ -14,5 +14,5 @@ class IdRefRepresentation<T> extends AbstractHalRepresentation<T> {
         this.object = object
     }
 
-    public long getId() { object.id }
+    public getId() { object.id }
 }

@@ -50,10 +50,10 @@ class Listing implements Serializable {
         descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
-        smallIcon index: 'not_analyzed', excludeFromAll: true
-        largeIcon index: 'not_analyzed', excludeFromAll: true
-        bannerIcon index: 'not_analyzed', excludeFromAll: true
-        featuredBannerIcon index: 'not_analyzed', excludeFromAll: true
+        smallIcon component: true, excludeFromAll: true
+        largeIcon component: true, excludeFromAll: true
+        bannerIcon component: true, excludeFromAll: true
+        featuredBannerIcon component: true, excludeFromAll: true
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
         uuid index: 'not_analyzed', excludeFromAll: false
@@ -74,7 +74,8 @@ class Listing implements Serializable {
             'description', 'requirements', 'versionName', 'sortTitle', 'isFeatured',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'singleton', 'width', 'height',
             'approvalStatus', 'createdDate', 'editedDate', 'isEnabled',
-            'tags', 'descriptionShort', 'whatIsNew'
+            'tags', 'descriptionShort', 'whatIsNew',
+            'smallIcon', 'largeIcon', 'bannerIcon', 'featuredBannerIcon'
         ]
     }
 

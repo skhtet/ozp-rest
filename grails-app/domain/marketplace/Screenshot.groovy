@@ -15,8 +15,9 @@ class Screenshot implements Serializable {
 
     static searchable = {
         root false
-        largeImage index: 'not_analyzed', excludeFromAll: true
-        smallImage index: 'not_analyzed', excludeFromAll: true
+        largeImage component: true, excludeFromAll: true
+        smallImage component: true, excludeFromAll: true
+        only = ['largeImage', 'smallImage']
     }
 
     static belongsTo = [serviceItem: Listing]
