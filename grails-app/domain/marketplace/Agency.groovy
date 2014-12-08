@@ -8,7 +8,7 @@ class Agency implements Serializable {
         title index: 'not_analyzed'
         icon component: true, excludeFromAll: true
         shortName index: 'not_analyzed', excludeFromAll: true
-        only = ['title', 'shortName', 'iconUrl']
+        only = ['title', 'shortName', 'icon']
     }
 
     String title
