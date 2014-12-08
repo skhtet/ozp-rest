@@ -27,7 +27,6 @@ class AgencyRepresentation extends SelfRefRepresentation<Agency> {
     long getId() { agency.id }
     String getTitle() { agency.title }
     String getShortName() { agency.shortName }
-    URI getIcon() { agency.iconUrl ? new URI(agency.iconUrl) : null }
 
     @Component
     public static class Factory implements RepresentationFactory<Agency> {

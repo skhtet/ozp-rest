@@ -6,19 +6,19 @@ class Agency implements Serializable {
     static searchable = {
         root false
         title index: 'not_analyzed'
-        iconUrl index: 'not_analyzed', excludeFromAll: true
+        icon component: true, excludeFromAll: true
         shortName index: 'not_analyzed', excludeFromAll: true
         only = ['title', 'shortName', 'iconUrl']
     }
 
     String title
-    String iconUrl
+    ImageReference icon
     String shortName
 
     static constraints = {
         title blank: false, maxSize: 255, unique: true
         shortName blank: false, maxSize: 8, unique: true
-        iconUrl nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        icon nullable: true
     }
 
     static transients = { 'description' }
