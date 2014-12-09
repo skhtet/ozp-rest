@@ -24,6 +24,11 @@ class ImageRestService extends RestService<ImageReference> {
 
     private static final Logger log = Logger.getLogger(ImageRestService.class)
 
+    //do not delete images that are younger than a day
+    private static final long GARBAGE_COLLECTION_MIN_AGE = (1000 * 60 * 60 * 24)
+
+    @Autowired ProfileRestService profileRestService
+
     @Autowired
     public ImageRestService(GrailsApplication grailsApplication) {
         super(grailsApplication, ImageReference.class, null, null)
@@ -32,11 +37,48 @@ class ImageRestService extends RestService<ImageReference> {
     ImageRestService() {}
 
     @Override
-    public void deleteById(Object id) {
-        ImageReference img = getById(id)
+    public void deleteById(Object id, boolean deleteFile = true) {
+        profileRestService.checkAdmin()
+
+        ImageReference img = getById(id, true)
+
+        if (deleteFile) {
+            deleteImageFile(getFile(img))
+        }
 
         img.delete(flush: true)
-        img.file.delete()
+    }
+
+    /**
+     * delete the specified file containing an image
+     */
+    private void deleteImageFile(File file) {
+        log.debug "Deleting file for image: $file"
+
+        File parent = file.parentFile
+        assert parent.parentFile == imageDir
+
+        if (file.exists()) file.delete()
+        if (parent.exists() && parent.listFiles().length == 0) {
+            //clean up empty directory
+            parent.delete()
+        }
+    }
+
+    /**
+     * @param skipFileExistenceCheck Unless true, a check will be made to
+     * ensure that the image file exists.  If it doesn't exist, a DomainObjectNotFoundException
+     * will be thrown
+     */
+    @Override
+    public ImageReference getById(Object id, boolean skipFileExistenceCheck=false) {
+        ImageReference imageRef = super.getById(id)
+
+        if (!skipFileExistenceCheck && !getFile(imageRef).exists()) {
+            throw new DomainObjectNotFoundException(ImageReference, id)
+        }
+
+        return imageRef
     }
 
     @Override
@@ -88,9 +130,81 @@ class ImageRestService extends RestService<ImageReference> {
 
     @Transactional(readOnly=true, propagation=Propagation.SUPPORTS)
     public File getFile(ImageReference imageRef) {
-        String pathPrefix = grailsApplication.config.marketplace.imageStoragePath
+        String fileName = imageRef.id, folderName = fileName[0..1]
+        String path = "$folderName/$fileName"
 
-        new File(pathPrefix + '/' + imageRef.path)
+        new File(imageDir, path)
+    }
+
+    @Transactional(readOnly=true, propagation=Propagation.SUPPORTS)
+    public File getImageDir() {
+        new File(grailsApplication.config.marketplace.imageStoragePath)
+    }
+
+    /**
+     * Delete 'orphan' images/ImageReferences.  An image is an orphan if it is at least a day
+     * old and has no Listings, Screenshots, or Agencies referring to it.  Also deletes all image
+     * files that are not referenced by any ImageReference
+     * @return  the number of images deleted
+     */
+    public List<Integer> garbageCollectImages() {
+        profileRestService.checkAdmin()
+
+        Date maxDateToDelete = new Date(new Date().time - GARBAGE_COLLECTION_MIN_AGE)
+
+        //query to find all images which aren't referenced by anything which are at least
+        //a day old
+        Collection<String> imageRefIdsToDelete = ImageReference.executeQuery("""
+                SELECT DISTINCT
+                    ir.id
+                FROM
+                    ImageReference AS ir
+                WHERE
+                    ir.createdDate < :maxDateToDelete AND
+                    ir not in (
+                        SELECT l.smallIcon FROM Listing AS l WHERE l.smallIcon IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT l.largeIcon FROM Listing AS l WHERE l.largeIcon IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT l.bannerIcon FROM Listing AS l WHERE l.bannerIcon IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT l.featuredBannerIcon FROM Listing AS l
+                        WHERE l.featuredBannerIcon IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT s.smallImage FROM Screenshot AS s WHERE s.smallImage IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT s.largeImage FROM Screenshot AS s WHERE s.largeImage IS NOT NULL
+                    ) AND
+                    ir not in (
+                        SELECT a.icon FROM Agency AS a WHERE a.icon IS NOT NULL
+                    )
+            """,
+            [maxDateToDelete: maxDateToDelete],
+            [readOnly: true]
+        )
+
+        imageRefIdsToDelete.each { deleteById(it, false) }
+
+        int deletedOrphanFiles = deleteOrphanFiles()
+
+        return [imageRefIdsToDelete.size(), deletedOrphanFiles]
+    }
+
+    private int deleteOrphanFiles() {
+        Collection<File> toDelete = imageDir.listFiles().collect { dir ->
+            dir.listFiles().grep { file ->
+                ImageReference.get(file.name) == null
+            }
+        }.flatten()
+
+        toDelete.each { deleteImageFile(it) }
+
+        return toDelete.size()
     }
 
     @Override

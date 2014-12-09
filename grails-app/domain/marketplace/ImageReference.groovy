@@ -1,5 +1,6 @@
 package marketplace
 
+@gorm.AuditStamp
 class ImageReference {
     String mediaType
 
@@ -19,10 +20,5 @@ class ImageReference {
 
     static mapping = {
         id generator: 'assigned'
-    }
-
-    public String getPath() {
-        String fileName = id, folderName = fileName[0..1]
-        return "$folderName/$fileName"
     }
 }

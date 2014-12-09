@@ -21,7 +21,6 @@ class Screenshot implements Serializable {
     }
 
     static belongsTo = [serviceItem: Listing]
-    static embedded = ['largeImage', 'smallImage']
 
     ImageReference largeImage
     ImageReference smallImage

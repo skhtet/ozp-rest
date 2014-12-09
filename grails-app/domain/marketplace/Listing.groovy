@@ -106,8 +106,6 @@ class Listing implements Serializable {
         'isFeatured'
     ]]
 
-    static embedded = ['smallIcon', 'largeIcon', 'bannerIcon', 'featuredBannerIcon']
-
     Date approvedDate
 
     String title

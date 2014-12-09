@@ -172,6 +172,8 @@ environments {
             //trace 'org.compass.core.lucene.engine.LuceneSearchEngine'
             //trace 'org.springframework.transaction'
             //trace 'org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager'
+            //trace 'org.hibernate.type'
+            //debug 'org.hibernate.SQL'
 
             //uncomment the filter in src/templates/war/web.xml to use this
             debug 'org.apache.catalina.filters.RequestDumperFilter'
@@ -209,6 +211,14 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 //marketplace.maxProfilesToExport=20
 
 marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
+
+environments {
+    development {
+        //images dir in dev tomcat gets deleted on restart, so use a dir in the source
+        //tree instead
+        marketplace.imageStoragePath = "images"
+    }
+}
 
 //Custom quartz configuration goes here.
 quartz {
