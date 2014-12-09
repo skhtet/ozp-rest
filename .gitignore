@@ -87,6 +87,7 @@ build.number
 jsdoc/
 src/assemble/docs/jsdoc/
 staging/
+images/
 web-app/WEB-INF/classes/
 web-app/js-min/
 web-app/js/mp-api.js
