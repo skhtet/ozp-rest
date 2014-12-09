@@ -196,12 +196,17 @@ class ImageRestService extends RestService<ImageReference> {
     }
 
     private int deleteOrphanFiles() {
-        Collection<File> toDelete = imageDir.listFiles().collect { dir ->
-            dir.listFiles().grep { file ->
-                ImageReference.get(file.name) == null
+        Collection<String> existingIds = ImageReference.createCriteria().list() {
+            projections {
+                id()
             }
+        }
+
+        Collection<File> imageFiles = imageDir.listFiles().collect { dir ->
+            dir.listFiles()
         }.flatten()
 
+        Collection<File> toDelete = imageFiles.grep { !(it.name in existingIds) }
         toDelete.each { deleteImageFile(it) }
 
         return toDelete.size()
