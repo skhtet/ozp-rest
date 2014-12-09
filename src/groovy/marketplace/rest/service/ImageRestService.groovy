@@ -155,7 +155,8 @@ class ImageRestService extends RestService<ImageReference> {
      * Delete 'orphan' images/ImageReferences.  An image is an orphan if it is at least a day
      * old and has no Listings, Screenshots, or Agencies referring to it.  Also deletes all image
      * files that are not referenced by any ImageReference
-     * @return  the number of images deleted
+     * @return a two element list of integers.  The first element is the number of ImageReferences
+     * deleted.  The second number is the number of image files deleted
      */
     public List<Integer> garbageCollectImages() {
         profileRestService.checkAdmin()
@@ -171,33 +172,34 @@ class ImageRestService extends RestService<ImageReference> {
                     ImageReference AS ir
                 WHERE
                     ir.createdDate < :maxDateToDelete AND
-                    ir not in (
-                        SELECT l.smallIcon FROM Listing AS l WHERE l.smallIcon IS NOT NULL
+                    NOT EXISTS (
+                        SELECT 1
+                        FROM Listing AS l
+                        WHERE
+                            (l.smallIcon IS NOT NULL AND l.smallIcon = ir) OR
+                            (l.largeIcon IS NOT NULL AND l.largeIcon = ir) OR
+                            (l.bannerIcon IS NOT NULL AND l.bannerIcon = ir) OR
+                            (l.featuredBannerIcon IS NOT NULL AND l.featuredBannerIcon = ir)
                     ) AND
-                    ir not in (
-                        SELECT l.largeIcon FROM Listing AS l WHERE l.largeIcon IS NOT NULL
+                    NOT EXISTS (
+                        SELECT 1
+                        FROM Screenshot AS s
+                        WHERE
+                            (s.smallImage IS NOT NULL AND s.smallImage = ir) OR
+                            (s.largeImage IS NOT NULL AND s.largeImage = ir)
                     ) AND
-                    ir not in (
-                        SELECT l.bannerIcon FROM Listing AS l WHERE l.bannerIcon IS NOT NULL
-                    ) AND
-                    ir not in (
-                        SELECT l.featuredBannerIcon FROM Listing AS l
-                        WHERE l.featuredBannerIcon IS NOT NULL
-                    ) AND
-                    ir not in (
-                        SELECT s.smallImage FROM Screenshot AS s WHERE s.smallImage IS NOT NULL
-                    ) AND
-                    ir not in (
-                        SELECT s.largeImage FROM Screenshot AS s WHERE s.largeImage IS NOT NULL
-                    ) AND
-                    ir not in (
-                        SELECT a.icon FROM Agency AS a WHERE a.icon IS NOT NULL
+                    NOT EXISTS (
+                        SELECT 1
+                        FROM Agency AS a
+                        WHERE a.icon IS NOT NULL AND a.icon = ir
                     )
             """,
             [maxDateToDelete: maxDateToDelete],
             [readOnly: true]
         )
 
+        //don't delete the files in this step, they'll get deleted in
+        //deleteOrphanFiles below
         imageRefIdsToDelete.each { deleteById(it, false) }
 
         int deletedOrphanFiles = deleteOrphanFiles()
