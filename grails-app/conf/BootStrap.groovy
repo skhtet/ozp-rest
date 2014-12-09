@@ -10,12 +10,18 @@ import org.springframework.context.ApplicationContext
 
 class BootStrap {
     def profileRestService
+    def accountService
     def grailsApplication
     def sessionFactory
     def objectMapper
     def elasticSearchService
 
     def init = { servletContext ->
+        //ensure existence of System user
+        accountService.asSystemUser {
+            profileRestService.login()
+        }
+
 
         /**
          * Sync the search index with the database. All listings that are both Approved and Enabled
@@ -72,8 +78,6 @@ class BootStrap {
                 }
             }
         }
-
-        profileRestService.createRequired()
 
 		log.info "BootStrap init; GrailsUtil.environment: ${GrailsUtil.environment}"
         if (GrailsUtil.environment == "test" || GrailsUtil.environment.startsWith('with_')) {

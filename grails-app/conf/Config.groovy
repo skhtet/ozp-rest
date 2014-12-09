@@ -96,17 +96,6 @@ elasticSearch {
     bulkIndexOnStartup = false
 }
 
-/**
- * Contains values for reference metadata domain objects such as Types, States, and Categories.
- */
-marketplace {
-    metadata {
-        profiles = [
-                [username: marketplace.Constants.SYSTEM_USER_USERNAME, displayName: marketplace.Constants.SYSTEM_USER_DISPLAYNAME]
-        ]
-    }
-}
-
 environments {
     test {
         log4j = {
