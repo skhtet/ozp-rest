@@ -212,6 +212,10 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 
 marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
 
+//set to a list of mediatypes that are allowed to be stored as images.  Note: types that
+//do not start with image/ will not work regardless of this setting
+marketplace.acceptableImageTypes = ['image/png']
+
 environments {
     development {
         //images dir in dev tomcat gets deleted on restart, so use a dir in the source

@@ -19,6 +19,8 @@ import marketplace.rest.DomainObjectNotFoundException
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ImageReferenceInputRepresentation
 
+import marketplace.validator.ImageReferenceValidator
+
 @Service
 class ImageRestService extends RestService<ImageReference> {
 
@@ -27,11 +29,15 @@ class ImageRestService extends RestService<ImageReference> {
     //do not delete images that are younger than a day
     private static final long GARBAGE_COLLECTION_MIN_AGE = (1000 * 60 * 60 * 24)
 
+    //reject images larger than 1MiB
+    private static final int IMAGE_MAX_SIZE = (1 << 20)
+
     @Autowired ProfileRestService profileRestService
 
     @Autowired
-    public ImageRestService(GrailsApplication grailsApplication) {
-        super(grailsApplication, ImageReference.class, null, null)
+    public ImageRestService(GrailsApplication grailsApplication,
+            ImageReferenceValidator imageReferenceValidator) {
+        super(grailsApplication, ImageReference.class, imageReferenceValidator, null)
     }
 
     ImageRestService() {}
@@ -97,6 +103,10 @@ class ImageRestService extends RestService<ImageReference> {
 
         if (imageFile.exists()) {
             throw new IllegalStateException("Trying to create file with path that already exists")
+        }
+
+        if (rep.image.length > IMAGE_MAX_SIZE) {
+            throw new IllegalArgumentException("Images cannot be larger than 1 MiB")
         }
 
         OutputStream stream = new FileOutputStream(imageFile)
