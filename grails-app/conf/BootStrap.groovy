@@ -22,6 +22,8 @@ class BootStrap {
             profileRestService.login()
         }
 
+        disableGrailsExceptionResolver()
+
 
         /**
          * Sync the search index with the database. All listings that are both Approved and Enabled
@@ -92,6 +94,11 @@ class BootStrap {
     private void configureJackson() {
         //use ISO-8601 date format
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
+
+    private void disableGrailsExceptionResolver() {
+        grailsApplication.mainContext.autowireCapableBeanFactory
+            .removeBeanDefinition('exceptionHandler')
     }
 
     def destroy = { servletContext ->
