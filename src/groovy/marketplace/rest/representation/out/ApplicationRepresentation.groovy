@@ -33,7 +33,7 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     Set<String> getTags() { listing.tags }
 
     List<Map<String, String>> getScreenshots() { listing.screenshots.collect { Screenshot sc ->
-        [href: imageUriBuilder.getUri(sc.smallIcon).toString()]
+        [href: imageUriBuilder.getImageUri(sc.smallIcon).toString()]
     }}
 
     Set<Map<String, String>> getIntents() { listing.intents.collect { Intent intent ->
@@ -43,10 +43,10 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     UiHintsRepresentation getUiHints() { new UiHintsRepresentation(listing) }
 
     Map<String, String> getIcons() {[
-            small: imageUriBuilder.getUri(listing.smallIcon).toString(),
-            large: imageUriBuilder.getUri(listing.largeIcon).toString(),
-            banner: imageUriBuilder.getUri(listing.bannerIcon).toString(),
-            featuredBanner: imageUriBuilder.getUri(listing.featuredBannerIcon).toString()
+            small: imageUriBuilder.getImageUri(listing.smallIcon).toString(),
+            large: imageUriBuilder.getImageUri(listing.largeIcon).toString(),
+            banner: imageUriBuilder.getImageUri(listing.bannerIcon).toString(),
+            featuredBanner: imageUriBuilder.getImageUri(listing.featuredBannerIcon).toString()
     ]}
 
     //TODO: What is state?

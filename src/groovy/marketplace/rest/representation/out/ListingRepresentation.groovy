@@ -47,38 +47,30 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     Long getTotalComments() { listing.totalComments }
     String getLaunchUrl() { listing.launchUrl }
 
-    IdRefRepresentation<ImageReference> getSmallIcon() {
-        listing.smallIcon ? new IdRefRepresentation(listing.smallIcon) : null
-    }
-    IdRefRepresentation<ImageReference> getLargeIcon() {
-        listing.largeIcon ? new IdRefRepresentation(listing.largeIcon) : null
-    }
-    IdRefRepresentation<ImageReference> getBannerIcon() {
-        listing.bannerIcon ? new IdRefRepresentation(listing.bannerIcon) : null
-    }
-    IdRefRepresentation<ImageReference> getFeaturedBannerIcon() {
-        listing.featuredBannerIcon ? new IdRefRepresentation(listing.featuredBannerIcon) : null
-    }
+    UUID getSmallIconId() { listing.smallIconId }
+    UUID getLargeIconId() { listing.largeIconId }
+    UUID getBannerIconId() { listing.bannerIconId }
+    UUID getFeaturedBannerIconId() { listing.featuredBannerIconId }
 
     @Deprecated
     String getImageSmallUrl() {
-        listing.smallIcon ? imageUriBuilder.getUri(listing.smallIcon).toString() : null
+        listing.smallIconId ? imageUriBuilder.getImageUri(listing.smallIconId).toString() : null
     }
 
     @Deprecated
     String getImageMediumUrl() {
-        listing.largeIcon ? imageUriBuilder.getUri(listing.largeIcon).toString() : null
+        listing.largeIconId ? imageUriBuilder.getImageUri(listing.largeIconId).toString() : null
     }
 
     @Deprecated
     String getImageLargeUrl() {
-        listing.bannerIcon ? imageUriBuilder.getUri(listing.bannerIcon).toString() : null
+        listing.bannerIconId ? imageUriBuilder.getImageUri(listing.bannerIconId).toString() : null
     }
 
     @Deprecated
     String getImageXlargeUrl() {
-        listing.featuredBannerIcon ?
-            imageUriBuilder.getUri(listing.featuredBannerIcon).toString() : null
+        listing.featuredBannerIconId ?
+            imageUriBuilder.getImageUri(listing.featuredBannerIconId).toString() : null
     }
 
     String getVersionName() { listing.versionName }
@@ -189,22 +181,18 @@ class ScreenshotRepresentation {
         this.imageUriBuilder = imageUriBuilder
     }
 
-    IdRefRepresentation<ImageReference> getSmallImage() {
-        screenshot.smallImage ? new IdRefRepresentation(screenshot.smallImage) : null
-    }
+    UUID getSmallImageId() { screenshot.smallImageId }
 
-    IdRefRepresentation<ImageReference> getLargeImage() {
-        screenshot.largeImage ? new IdRefRepresentation(screenshot.largeImage) : null
-    }
+    UUID getLargeImageId() { screenshot.largeImageId }
 
     @Deprecated
     String getSmallImageUrl() {
-        screenshot.smallImage ? imageUriBuilder.getUri(screenshot.smallImage).toString() : null
+        screenshot.smallImageId ? imageUriBuilder.getImageUri(screenshot.smallImageId).toString() : null
     }
 
     @Deprecated
     String getLargeImageUrl() {
-        screenshot.largeImage ? imageUriBuilder.getUri(screenshot.largeImage).toString() : null
+        screenshot.largeImageId ? imageUriBuilder.getImageUri(screenshot.largeImageId).toString() : null
     }
 }
 

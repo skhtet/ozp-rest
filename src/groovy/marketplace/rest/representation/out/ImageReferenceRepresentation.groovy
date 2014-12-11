@@ -21,15 +21,13 @@ class ImageReferenceRepresentation extends SelfRefRepresentation<ImageReference>
 
     ImageReferenceRepresentation(
             ImageReference imageReference,
-            ObjectUriBuilder<ImageReference> imageReferenceUriBuilder) {
-        super(imageReferenceUriBuilder.getUri(imageReference), null, null)
+            ImageReferenceUriBuilder imageReferenceUriBuilder) {
+        super(imageReferenceUriBuilder.getImageUri(imageReference), null, null)
         this.imageReference = imageReference
     }
 
-    String getId() { imageReference.id }
-    MediaType getContentType() {
-        MediaType.valueOf(imageReference.mediaType)
-    }
+    UUID getId() { imageReference.id }
+    MediaType getContentType() { imageReference.mediaType }
 
     @Component
     public static class Factory implements RepresentationFactory<ImageReference> {

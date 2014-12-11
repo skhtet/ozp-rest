@@ -24,7 +24,6 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.rest.service.ImageRestService
 
 import marketplace.rest.representation.out.ImageReferenceRepresentation
-import marketplace.rest.representation.in.ImageReferenceInputRepresentation
 import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 @Path('/api/image')
@@ -33,21 +32,16 @@ class ImageResource {
     @Autowired ImageReferenceUriBuilder.Factory uriBuilderFactory
 
     @GET
-    @Path('{id}')
+    @Path('{id}.{extension}')
     @Produces('image/*')
     @Consumes()
-    public Response getImage(@PathParam('id') UUID id) {
-        ImageReference image = service.getById(id.toString())
+    public Response getImage(@PathParam('id') UUID id,
+            @PathParam('extension') String fileExtension) {
+        ImageReference reference = new ImageReference(id, service.getMediaType(fileExtension))
 
-        Response.ok(service.getFile(image), image.mediaType).build()
-    }
+        service.get(reference)
 
-    @GET
-    @Path('{id}')
-    @Produces([ImageReferenceRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    @Consumes()
-    public ImageReference getImageReference(@PathParam('id') UUID id) {
-        service.getById(id.toString())
+        Response.ok(path, reference.mediaType).build()
     }
 
     @POST
@@ -57,16 +51,13 @@ class ImageResource {
             @Context UriInfo uriInfo,
             byte[] image,
             @HeaderParam('Content-Type') MediaType requestType) {
-        ImageReference imageRef = service.createFromRepresentation(
-            new ImageReferenceInputRepresentation(
-                mediaType: requestType,
-                image: image
-            )
-        )
+        ImageReference reference = new ImageReference(requestType)
+
+        service.createFromRepresentation(reference, image)
 
         ImageReferenceUriBuilder imageUriBuilder =
             uriBuilderFactory.getBuilder(new ApplicationRootUriBuilderHolder(uriInfo))
-        Response.created(imageUriBuilder.getUri(imageRef)).entity(imageRef).build()
+        Response.created(imageUriBuilder.getImageUri(reference)).entity(reference).build()
     }
 
     /**
@@ -80,6 +71,10 @@ class ImageResource {
     public Response createFromForm(
             @Context UriInfo uriInfo,
             @FormDataParam('image') FormDataBodyPart formData) {
+        if (!formData) {
+            throw new IllegalArgumentException("Request must include a part named 'image'")
+        }
+
         create(uriInfo, formData.getValueAs((byte[]).class), formData.mediaType)
     }
 

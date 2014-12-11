@@ -1,5 +1,15 @@
 package marketplace.rest.service
 
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.Files
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.FileVisitResult
+import java.nio.file.DirectoryStream
+import java.nio.file.PathMatcher
+import java.nio.file.attribute.BasicFileAttributes
+
+
 import javax.ws.rs.core.MediaType
 
 import org.springframework.stereotype.Service
@@ -10,19 +20,24 @@ import org.springframework.security.access.AccessDeniedException
 
 import org.apache.log4j.Logger
 
+import net.sf.ehcache.CacheManager
+import net.sf.ehcache.Cache
+import net.sf.ehcache.Element
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import marketplace.ImageReference
+import marketplace.Listing
+import marketplace.Agency
+import marketplace.Screenshot
 
 import marketplace.rest.DomainObjectNotFoundException
 
 import marketplace.rest.representation.in.InputRepresentation
-import marketplace.rest.representation.in.ImageReferenceInputRepresentation
-
-import marketplace.validator.ImageReferenceValidator
 
 @Service
-class ImageRestService extends RestService<ImageReference> {
+@Transactional(propagation=Propagation.SUPPORTS)
+class ImageRestService {
 
     private static final Logger log = Logger.getLogger(ImageRestService.class)
 
@@ -34,90 +49,50 @@ class ImageRestService extends RestService<ImageReference> {
 
     @Autowired ProfileRestService profileRestService
 
+    private final Map<MediaType, String> mediaTypeToExtension
+    private final Map<String, MediaType> extensionToMediaType
+
+    private final GrailsApplication grailsApplication
+    private final Cache imageReferenceCache
+
     @Autowired
     public ImageRestService(GrailsApplication grailsApplication,
-            ImageReferenceValidator imageReferenceValidator) {
-        super(grailsApplication, ImageReference.class, imageReferenceValidator, null)
+            CacheManager cacheManager) {
+        this.grailsApplication = grailsApplication
+        this.imageReferenceCache = cacheManager.getCache('imageReference')
+
+        mediaTypeToExtension = Collections.unmodifiableMap(
+            grailsApplication.config.marketplace.acceptableImageTypes.collectEntries { k, v ->
+                [MediaType.valueOf(k), v]
+            })
+
+        extensionToMediaType = Collections.unmodifiableMap(
+            mediaTypeToExtension.collectEntries { k, v -> [v, k] })
     }
 
     ImageRestService() {}
 
-    @Override
-    public void deleteById(Object id, boolean deleteFile = true) {
-        profileRestService.checkAdmin()
-
-        ImageReference img = getById(id, true)
-
-        if (deleteFile) {
-            deleteImageFile(getFile(img))
-        }
-
-        img.delete(flush: true)
-    }
-
-    /**
-     * delete the specified file containing an image
-     */
-    private void deleteImageFile(File file) {
-        log.debug "Deleting file for image: $file"
-
-        File parent = file.parentFile
-        assert parent.parentFile == imageDir
-
-        if (file.exists()) file.delete()
-        if (parent.exists() && parent.listFiles().length == 0) {
-            //clean up empty directory
-            parent.delete()
-        }
-    }
-
-    /**
-     * @param skipFileExistenceCheck Unless true, a check will be made to
-     * ensure that the image file exists.  If it doesn't exist, a DomainObjectNotFoundException
-     * will be thrown
-     */
-    @Override
-    public ImageReference getById(Object id, boolean skipFileExistenceCheck=false) {
-        ImageReference imageRef = super.getById(id)
-
-        if (!skipFileExistenceCheck && !getFile(imageRef).exists()) {
-            throw new DomainObjectNotFoundException(ImageReference, id)
-        }
-
-        return imageRef
-    }
-
-    @Override
-    public ImageReference createFromRepresentation(InputRepresentation<ImageReference> rep) {
-        throw new UnsupportedOperationException(
-            "Attempt to create ImageReference from unknown kind of representation")
-    }
-
-    public ImageReference createFromRepresentation(ImageReferenceInputRepresentation rep) {
-        ImageReference imageRef = super.createFromRepresentation(rep)
-
-        File imageFile = getFile(imageRef)
+    public Path createFromRepresentation(ImageReference imageRef, byte[] data) {
+        Path imageFile = getPath(imageRef)
 
         //ensure directory exists
-        imageFile.parentFile.mkdirs()
+        Files.createDirectories(imageFile.parent)
 
-        if (imageFile.exists()) {
+        if (Files.exists(imageFile)) {
             throw new IllegalStateException("Trying to create file with path that already exists")
         }
 
-        if (rep.image.length > IMAGE_MAX_SIZE) {
+        if (data.length > IMAGE_MAX_SIZE) {
             throw new IllegalArgumentException("Images cannot be larger than 1 MiB")
         }
 
-        OutputStream stream = new FileOutputStream(imageFile)
-
         try {
-            stream.write(rep.image)
+            Files.write(imageFile, data)
         }
         catch (IOException e) {
             try {
-                if (imageFile.exists()) {
-                    imageFile.delete()
+                if (Files.exists(imageFile)) {
+                    Files.delete(imageFile)
                 }
             }
             catch (IOException e2) {
@@ -126,117 +101,202 @@ class ImageRestService extends RestService<ImageReference> {
 
             throw e
         }
-        finally {
-            try {
-                stream.close()
-            }
-            catch (IOException e2) {
-                log.warn("Could not close image output stream")
-            }
+
+        imageReferenceCache.put(new Element(imageRef.id, imageRef))
+
+        return imageFile
+    }
+
+    public Path get(ImageReference imageRef) {
+        Path path = getPath(imageRef)
+
+        if (Files.notExists(path)) {
+            throw new DomainObjectNotFoundException(ImageReference.class, imageRef.id)
         }
 
-        return imageRef
-    }
-
-    @Transactional(readOnly=true, propagation=Propagation.SUPPORTS)
-    public File getFile(ImageReference imageRef) {
-        String fileName = imageRef.id, folderName = fileName[0..1]
-        String path = "$folderName/$fileName"
-
-        new File(imageDir, path)
-    }
-
-    @Transactional(readOnly=true, propagation=Propagation.SUPPORTS)
-    public File getImageDir() {
-        new File(grailsApplication.config.marketplace.imageStoragePath)
+        return path
     }
 
     /**
-     * Delete 'orphan' images/ImageReferences.  An image is an orphan if it is at least a day
-     * old and has no Listings, Screenshots, or Agencies referring to it.  Also deletes all image
-     * files that are not referenced by any ImageReference
-     * @return a two element list of integers.  The first element is the number of ImageReferences
-     * deleted.  The second number is the number of image files deleted
+     * Get an image reference that correctly represents the image at the given id.  This
+     * requires searching the file system in order to inspect the file extension of the image
+     * file.
      */
-    public List<Integer> garbageCollectImages() {
-        profileRestService.checkAdmin()
+    public ImageReference getImageReference(UUID id) {
+        Element fromCache = imageReferenceCache.get(id)
 
-        Date maxDateToDelete = new Date(new Date().time - GARBAGE_COLLECTION_MIN_AGE)
+        if (fromCache) {
+            return fromCache.objectValue
+        }
+        else {
+            String fileName = getFileBaseName(id), folderName = getFolder(id)
+            Path folderPath = imageDir.resolve(Paths.get(folderName))
+            Path searchPath = folderPath.resolve(Paths.get(filename))
+            String matcherSpec = "glob:${searchPath.toString()}.*"
 
-        //query to find all images which aren't referenced by anything which are at least
-        //a day old
-        Collection<String> imageRefIdsToDelete = ImageReference.executeQuery("""
-                SELECT DISTINCT
-                    ir.id
-                FROM
-                    ImageReference AS ir
-                WHERE
-                    ir.createdDate < :maxDateToDelete AND
-                    NOT EXISTS (
-                        SELECT 1
-                        FROM Listing AS l
-                        WHERE
-                            (l.smallIcon IS NOT NULL AND l.smallIcon = ir) OR
-                            (l.largeIcon IS NOT NULL AND l.largeIcon = ir) OR
-                            (l.bannerIcon IS NOT NULL AND l.bannerIcon = ir) OR
-                            (l.featuredBannerIcon IS NOT NULL AND l.featuredBannerIcon = ir)
-                    ) AND
-                    NOT EXISTS (
-                        SELECT 1
-                        FROM Screenshot AS s
-                        WHERE
-                            (s.smallImage IS NOT NULL AND s.smallImage = ir) OR
-                            (s.largeImage IS NOT NULL AND s.largeImage = ir)
-                    ) AND
-                    NOT EXISTS (
-                        SELECT 1
-                        FROM Agency AS a
-                        WHERE a.icon IS NOT NULL AND a.icon = ir
-                    )
-            """,
-            [maxDateToDelete: maxDateToDelete],
-            [readOnly: true]
-        )
+            PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
 
-        //don't delete the files in this step, they'll get deleted in
-        //deleteOrphanFiles below
-        imageRefIdsToDelete.each { deleteById(it, false) }
+            DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
+            Path matchedFile
+            try {
+                matchedFile = dirIter.find {
+                    matcher.matches(it)
+                }
+            }
+            finally {
+                dirIter.close()
+            }
 
-        int deletedOrphanFiles = deleteOrphanFiles()
+            if (matchedFile) {
+                //dot is guaranteed to be present based on specified glob pattern
+                String extension = matchedFile.fileName.split('\\.')[1]
+                MediaType mediaType = extensionToMediaType[extension]
+                ImageReference ref = new ImageReference(id, mediaType)
 
-        return [imageRefIdsToDelete.size(), deletedOrphanFiles]
-    }
-
-    private int deleteOrphanFiles() {
-        Collection<String> existingIds = ImageReference.createCriteria().list() {
-            projections {
-                id()
+                imageReferenceCache.put(new Element(id, ref))
+                return ref
+            }
+            else {
+                throw new DomainObjectNotFoundException(ImageReference, id)
             }
         }
-
-        Collection<File> imageFiles = imageDir.listFiles().collect { dir ->
-            dir.listFiles()
-        }.flatten()
-
-        Collection<File> toDelete = imageFiles.grep { !(it.name in existingIds) }
-        toDelete.each { deleteImageFile(it) }
-
-        return toDelete.size()
     }
 
-    @Override
-    protected void authorizeUpdate(ImageReference existing) {
-        throw new AccessDeniedException("Images cannot be updated")
+    /**
+     * @return the name of the file for the image reference, without the extension or dot
+     */
+    private String getFileBaseName(UUID id) {
+        id.toString()
     }
 
-    @Override
-    protected void authorizeCreate(ImageReference newImg) {
-        //anyone can create new images
+    /**
+     * @return the name of the file for the image reference, without the extension or dot
+     */
+    private String getFolder(UUID id) {
+        id.toString()[0..1]
     }
 
-    @Override
-    protected boolean canView(ImageReference img) {
-        //anyone can view images
-        true
+    private Path getPath(ImageReference imageRef) {
+        String fileName = getFileBaseName(imageRef.id), folderName = getFolder(imageRef.id),
+            extension = getFileExtension(imageRef)
+
+        imageDir.resolve(Paths.get(folderName, "$fileName.$extension"))
+    }
+
+    public Path getImageDir() {
+        Paths.get(grailsApplication.config.marketplace.imageStoragePath)
+    }
+
+    public String getFileExtension(ImageReference imageRef) {
+        String extension = mediaTypeToExtension[imageRef.mediaType]
+
+        if (!extension) {
+            throw new IllegalArgumentException(
+                "Could not find extension for image with media type ${imageRef.mediaType}")
+        }
+
+        return extension
+    }
+
+    public MediaType getMediaType(String fileExtension) {
+        MediaType mediaType = extensionToMediaType[fileExtension]
+
+        if (!mediaType) {
+            throw new IllegalArgumentException(
+                "Could not find mediaType for extension $fileExtension")
+        }
+
+        return mediaType
+    }
+
+    /**
+     * Delete 'orphan' images.  An image is an orphan if it is at least a day
+     * old and has no Listings, Screenshots, or Agencies referring to it
+     * @return the number of image files deleted
+     */
+    @Transactional(propagation=Propagation.REQUIRED)
+    public int garbageCollectImages() {
+        profileRestService.checkAdmin()
+
+        long maxDateToDelete = new Date().time - GARBAGE_COLLECTION_MIN_AGE
+        int deletedFiles = 0
+        Set<UUID> idsToKeep =
+            (Listing.createCriteria().list {
+                projections {
+                    property('smallIconId')
+                    property('largeIconId')
+                    property('bannerIconId')
+                    property('featuredBannerIconId')
+                }
+            }.flatten() as Set) +
+            (Screenshot.createCriteria().list {
+                projections {
+                    property('smallImageId')
+                    property('largeImageId')
+                }
+            }.flatten() as Set) +
+            (Agency.createCriteria().list {
+                projections {
+                    property('iconId')
+                }
+            }.flatten() as Set) - null
+
+
+        //ensure image dir exists
+        Files.createDirectories(imageDir)
+
+        //traverse the image directory and delete images that are at least a day old
+        //and are not referenced by any domain object
+        Files.walkFileTree(imageDir, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                    throws IOException {
+                String fileName = file.fileName.toString()
+                log.debug "Visiting file ${fileName}"
+                String[] fileNameParts = fileName.split('\\.')
+
+                if (fileNameParts.length != 2) {
+                    log.warn "Found file with unexpected name: $fileName"
+                }
+
+                UUID uuid = UUID.fromString(fileNameParts[0])
+
+                if (attrs.lastModifiedTime().toMillis() < maxDateToDelete &&
+                        !(uuid in idsToKeep)) {
+
+                    log.debug "Deleting image file $file"
+                    Files.delete(file)
+                    imageReferenceCache.remove(uuid)
+                    deletedFiles++
+                }
+
+                return FileVisitResult.CONTINUE
+            }
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                    throws IOException {
+                if (e) {
+                    // directory iteration failed
+                    throw e
+                } else {
+
+                    //if the directory is empty delete it
+                    DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)
+                    try {
+                        if (!dirStream.iterator().hasNext()) {
+                            log.debug "Deleting empty image directory $dir"
+                            Files.delete(dir)
+                        }
+                    }
+                    finally {
+                        dirStream.close()
+                    }
+
+                    return FileVisitResult.CONTINUE
+                }
+            }
+        })
+
+        return deletedFiles
     }
 }

@@ -10,21 +10,21 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import marketplace.rest.resource.ImageResource
+import marketplace.rest.service.ImageRestService
 import marketplace.ImageReference
 
-class ImageReferenceUriBuilder implements ObjectUriBuilder<ImageReference> {
-    GrailsApplication grailsApplication
-    ApplicationRootUriBuilderHolder uriBuilderHolder
+class ImageReferenceUriBuilder {
+    private GrailsApplication grailsApplication
+    private ImageRestService imageRestService
+    private ApplicationRootUriBuilderHolder uriBuilderHolder
 
     ImageReferenceUriBuilder(
             GrailsApplication grailsApplication,
+            ImageRestService imageRestService,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         this.grailsApplication = grailsApplication
+        this.imageRestService = imageRestService
         this.uriBuilderHolder = uriBuilderHolder
-    }
-
-    URI getUri(ImageReference imageRef) {
-        buildUri(uriBuilderHolder.builder, imageRef)
     }
 
     URI getImageUri(ImageReference imageRef) {
@@ -33,20 +33,28 @@ class ImageReferenceUriBuilder implements ObjectUriBuilder<ImageReference> {
         imageUriBase ? buildUri(UriBuilder.fromUri(imageUriBase), imageRef) : getUri(imageRef)
     }
 
+    //TODO This is a bit of a hack, since it requires reaching into the service layer and
+    //ultimately the file system.  Perhaps figure out a better way some day
+    URI getImageUri(UUID id) {
+        getImageUri(imageRestService.getImageReference(id))
+    }
+
     private URI buildUri(UriBuilder base, ImageReference imageRef) {
+        String extension = imageRestService.getFileExtension(imageRef)
+
         base.path(ImageResource)
-            .path(ImageResource, 'getImageReference')
-            .buildFromMap(id: imageRef.id)
+            .path(ImageResource, 'getImage')
+            .buildFromMap(id: imageRef.id, extension: extension)
     }
 
     @Component
-    public static class Factory implements ObjectUriBuilder.Factory<ImageReference> {
+    public static class Factory {
         @Autowired GrailsApplication grailsApplication
+        @Autowired ImageRestService imageRestService
 
         ImageReferenceUriBuilder getBuilder(
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
-            new ImageReferenceUriBuilder(grailsApplication, uriBuilderHolder)
+            new ImageReferenceUriBuilder(grailsApplication, imageRestService, uriBuilderHolder)
         }
     }
 }
-

@@ -212,9 +212,16 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 
 marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
 
-//set to a list of mediatypes that are allowed to be stored as images.  Note: types that
+//set to a list of mediatypes that are allowed to be stored as images, mapped to the
+//file extension under which they should be stored.  Note: types that
 //do not start with image/ will not work regardless of this setting
-marketplace.acceptableImageTypes = ['image/png']
+marketplace.acceptableImageTypes = [
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    //'image/gif': 'gif',
+    'image/webp': 'webp',
+    'image/svg+xml': 'svg'
+]
 
 environments {
     development {

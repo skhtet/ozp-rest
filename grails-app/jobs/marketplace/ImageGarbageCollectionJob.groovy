@@ -21,15 +21,12 @@ class ImageGarbageCollectionJob {
         log.info "Image Garbage Collection starting"
 
         try {
-            int deletedRefCount, deletedFileCount
             accountService.asSystemUser {
-                List<Integer> counts = imageRestService.garbageCollectImages()
-                deletedRefCount = counts[0]
-                deletedFileCount = counts[1]
-            }
+                int deletedRefCount = imageRestService.garbageCollectImages()
 
-            log.info "Image Garbage Collection complete. " +
-                "Deleted $deletedRefCount ImageReferences and $deletedFileCount files"
+                log.info "Image Garbage Collection complete. " +
+                    "Deleted $deletedRefCount Images"
+            }
         }
         catch (e) {
             log.error "Image Garbage Collection ERROR", e

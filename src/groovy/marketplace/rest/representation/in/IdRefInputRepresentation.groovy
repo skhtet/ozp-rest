@@ -44,7 +44,3 @@ class OwnerIdRef extends IdRefInputRepresentation<Profile, Long> {
 class CategoryIdRef extends IdRefInputRepresentation<Category, Long> {
     CategoryIdRef() { super(Category.class) }
 }
-
-class ImageReferenceIdRef extends IdRefInputRepresentation<ImageReference, UUID> {
-    ImageReferenceIdRef() { super(ImageReference.class) }
-}

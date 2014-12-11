@@ -15,23 +15,23 @@ class Screenshot implements Serializable {
 
     static searchable = {
         root false
-        largeImage component: true, excludeFromAll: true
-        smallImage component: true, excludeFromAll: true
-        only = ['largeImage', 'smallImage']
+        largeImageId index: 'not_analyzed', excludeFromAll: true
+        smallImageId index: 'not_analyzed', excludeFromAll: true
+        only = ['largeImageId', 'smallImageId']
     }
 
     static belongsTo = [serviceItem: Listing]
 
-    ImageReference largeImage
-    ImageReference smallImage
+    UUID largeImageId
+    UUID smallImageId
 
     static constraints = {
-        smallImage nullable: false
-        largeImage nullable: true
+        smallImageId nullable: false
+        largeImageId nullable: true
     }
 
-    public ImageReference getLargeImage() {
-        this.largeImage ? this.largeImage : this.smallImage
+    public UUID getLargeImageId() {
+        this.largeImageId ? this.largeImageId : this.smallImageId
     }
 
     @Override
@@ -47,8 +47,8 @@ class Screenshot implements Serializable {
 
         if(sameType) {
             return new EqualsBuilder()
-                        .append(smallImage, other.smallImage)
-                        .append(largeImage, other.largeImage)
+                        .append(smallImageId, other.smallImageId)
+                        .append(largeImageId, other.largeImageId)
                         .isEquals()
         }
         return false
@@ -57,8 +57,8 @@ class Screenshot implements Serializable {
     @Override
     int hashCode() {
         return new HashCodeBuilder()
-                    .append(smallImage)
-                    .append(largeImage)
+                    .append(smallImageId)
+                    .append(largeImageId)
                     .toHashCode()
     }
 }

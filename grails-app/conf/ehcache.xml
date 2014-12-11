@@ -140,6 +140,15 @@
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </cache>
 
+    <!-- Cache for image references -->
+    <cache name="imageReference"
+           maxElementsInMemory="10000"
+           timeToLiveSeconds="3600"
+           eternal="false"
+           diskPersistent="false"
+           overflowToDisk="false">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
+    </cache>
 
     <cache name="org.ozoneplatform.appconfig.server.domain.model.ApplicationConfiguration"
            maxElementsInMemory="100"

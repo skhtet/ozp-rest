@@ -6,22 +6,20 @@ class Agency implements Serializable {
     static searchable = {
         root false
         title index: 'not_analyzed'
-        icon component: true, excludeFromAll: true
+        iconId index: 'not_analyzed', excludeFromAll: true
         shortName index: 'not_analyzed', excludeFromAll: true
-        only = ['title', 'shortName', 'icon']
+        only = ['title', 'shortName', 'iconId']
     }
 
     String title
-    ImageReference icon
+    UUID iconId
     String shortName
 
     static constraints = {
         title blank: false, maxSize: 255, unique: true
         shortName blank: false, maxSize: 8, unique: true
-        icon nullable: true
+        iconId nullable: true
     }
-
-    static transients = { 'description' }
 
     static mapping = {
         id natural: [properties: ['title'], mutable: true]

@@ -20,10 +20,10 @@ class Listing implements Serializable {
         'contacts', 'isFeatured',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
-        'versionName', 'bannerIcon',
-        'smallIcon', 'largeIcon',
+        'versionName', 'bannerIconId',
+        'smallIconId', 'largeIconId',
         'launchUrl', 'docUrls', 'descriptionShort',
-        'screenshots', 'featuredBannerIcon',
+        'screenshots', 'featuredBannerIconId',
         'tags', 'satisfiedScorecards'
 
     ]
@@ -50,10 +50,10 @@ class Listing implements Serializable {
         descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
-        smallIcon component: true, excludeFromAll: true
-        largeIcon component: true, excludeFromAll: true
-        bannerIcon component: true, excludeFromAll: true
-        featuredBannerIcon component: true, excludeFromAll: true
+        smallIconId index: 'not_analyzed', excludeFromAll: true
+        largeIconId index: 'not_analyzed', excludeFromAll: true
+        bannerIconId index: 'not_analyzed', excludeFromAll: true
+        featuredBannerIconId index: 'not_analyzed', excludeFromAll: true
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
         uuid index: 'not_analyzed', excludeFromAll: false
@@ -75,7 +75,7 @@ class Listing implements Serializable {
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'singleton', 'width', 'height',
             'approvalStatus', 'createdDate', 'editedDate', 'isEnabled',
             'tags', 'descriptionShort', 'whatIsNew',
-            'smallIcon', 'largeIcon', 'bannerIcon', 'featuredBannerIcon'
+            'smallIconId', 'largeIconId', 'bannerIconId', 'featuredBannerIconId'
         ]
     }
 
@@ -113,10 +113,10 @@ class Listing implements Serializable {
     String launchUrl
     String versionName
     String uuid = UUID.randomUUID()
-    ImageReference smallIcon
-    ImageReference largeIcon
-    ImageReference bannerIcon
-    ImageReference featuredBannerIcon
+    UUID smallIconId
+    UUID largeIconId
+    UUID bannerIconId
+    UUID featuredBannerIconId
     String whatIsNew
     String descriptionShort
     String requirements
@@ -214,10 +214,10 @@ class Listing implements Serializable {
             validator: requiredUnlessInProgress
         categories(nullable: true, validator: requiredUnlessInProgress)
         uuid nullable: false, blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
-        smallIcon nullable: true, validator: requiredUnlessInProgress
-        largeIcon nullable: true, validator: requiredUnlessInProgress
-        bannerIcon nullable: true, validator: requiredUnlessInProgress
-        featuredBannerIcon nullable:true, validator: requiredUnlessInProgress
+        smallIconId nullable: true, validator: requiredUnlessInProgress
+        largeIconId nullable: true, validator: requiredUnlessInProgress
+        bannerIconId nullable: true, validator: requiredUnlessInProgress
+        featuredBannerIconId nullable:true, validator: requiredUnlessInProgress
         approvalStatus nullable: false
         lastActivity(nullable:true)
         approvedDate(nullable:true)

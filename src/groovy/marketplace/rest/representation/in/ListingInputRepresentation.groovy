@@ -21,10 +21,10 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     String requirements
     String descriptionShort
     String description
-    ImageReferenceIdRef featuredBannerIcon
-    ImageReferenceIdRef bannerIcon
-    ImageReferenceIdRef largeIcon
-    ImageReferenceIdRef smallIcon
+    UUID featuredBannerIconId
+    UUID bannerIconId
+    UUID largeIconId
+    UUID smallIconId
     String versionName
     String whatIsNew
     Integer width
@@ -75,8 +75,8 @@ class ScreenshotInputRepresentation extends AbstractInputRepresentation<Screensh
         super(Screenshot.class)
     }
 
-    ImageReferenceIdRef smallImage
-    ImageReferenceIdRef largeImage
+    UUID smallImageId
+    UUID largeImageId
 }
 
 class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {
@@ -94,5 +94,4 @@ class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {
     public void setType(String typeTitle) {
         this.type = new ContactTypeTitleInputRepresentation(typeTitle)
     }
-
 }
