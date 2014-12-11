@@ -215,15 +215,24 @@ class ListingRestService extends RestService<Listing> {
             return resultSet.inject(
                 new FilteredListings.Counts(0, 0, 0, 0, 0, 0, initialAgencyMap)
             ) { acc, row ->
+                def enable = (row.ENABLED == null)? row.enabled : row.ENABLED;
+                def inProgress = (row.IN_PROGRESS == null)? row.in_progress : row.IN_PROGRESS;
+                def pending = (row.PENDING == null)? row.pending : row.PENDING;
+                def rejected = (row.REJECTED == null)? row.rejected : row.REJECTED;
+                def approvedOrg = (row.APPROVED_ORG == null)? row.approved_org : row.APPROVED_ORG;
+                def approved = (row.APPROVED == null)? row.approved : row.APPROVED;
+                def orgId = (row.ORG_ID == null)? row.org_id : row.ORG_ID;
+                def orgCount = (row.ORG_COUNT == null)? row.org_count : row.ORG_COUNT;
+
                 new FilteredListings.Counts(
-                    acc.enabled + row.ENABLED,
-                    acc.inProgress + row.IN_PROGRESS,
-                    acc.pending + row.PENDING,
-                    acc.rejected + row.REJECTED,
-                    acc.approvedOrg + row.APPROVED_ORG,
-                    acc.approved + row.APPROVED,
+                    (int) acc.enabled + enable,
+                    (int) acc.inProgress + inProgress,
+                    (int) acc.pending + pending,
+                    (int) acc.rejected + rejected,
+                    (int) acc.approvedOrg + approvedOrg,
+                    (int) acc.approved + approved,
                     acc.agencyCounts +
-                        [new AbstractMap.SimpleEntry(row.ORG_ID, row.ORG_COUNT as Integer)]
+                        [new AbstractMap.SimpleEntry(orgId, orgCount as Integer)]
                 )
             }
         }
