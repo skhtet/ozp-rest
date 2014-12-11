@@ -90,7 +90,7 @@ databaseChangeLog = {
             }
 
             column(name: "title", type: "varchar(50)") {
-                constraints(nullable: "false")
+                constraints(nullable: "false", unique: "true")
             }
         }
 
@@ -388,6 +388,20 @@ databaseChangeLog = {
             column(name: "profile_id", type: "bigint")
         }
 
+        createTable(tableName:"listing_listing") {
+            column(name:"listing_required_id", type:"bigint")
+
+            column(name:"listing_id", type:"bigint")
+        }
+
+        createIndex(indexName:"FK763057C9C50B9241", tableName: "listing_listing") {
+            column(name: "listing_required_id")
+        }
+
+        createIndex(indexName:"FK763057C95A4BEA77", tableName: "listing_listing"){
+            column(name: "listing_id")
+        }
+
         createIndex(indexName: "FK58E626EE1459EB60", tableName: "listing_profile") {
             column(name: "listing_owners_id")
         }
@@ -402,7 +416,8 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "type_id", baseTableName: "listing", constraintName: "FKAD8BA849809495D", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "type", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "created_by_id", baseTableName: "listing", constraintName: "FKAD8BA847666C6D2", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "edited_by_id", baseTableName: "listing", constraintName: "FKAD8BA84E31CB353", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
-
+        addForeignKeyConstraint(baseColumnNames: "listing_required_id", baseTableName: "listing_listing", constraintName:"FK763057C9C50B9241", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", referencesUniqueColumn: "false")
+        addForeignKeyConstraint(baseColumnNames: "listing_id", baseTableName: "listing_listing", constraintName: "FK763057C95A4BEA77", deferrable: "false", intiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", refrencesUniqueColumn: "false")
 
 
 
@@ -443,7 +458,7 @@ databaseChangeLog = {
             }
 
             column(name: "title", type: "varchar(50)") {
-                constraints(nullable: "false")
+                constraints(nullable: "false", unique: "true")
             }
         }
 
@@ -544,7 +559,7 @@ databaseChangeLog = {
             }
 
             column(name: "title", type: "varchar(50)") {
-                constraints(nullable: "false")
+                constraints(nullable: "false", unique: "true")
             }
         }
 
@@ -1082,37 +1097,6 @@ databaseChangeLog = {
 
         addForeignKeyConstraint(baseColumnNames: "rejection_listing_id", baseTableName: "rejection_activity", constraintName: "FKF35C128582548A4A", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "rejection_listing", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "id", baseTableName: "rejection_activity", constraintName: "FKF35C12855416850B", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing_activity", referencesUniqueColumn: "false")
-
-
-
-
-        /**
-         * Relationship
-         */
-        createTable(tableName: "relationship") {
-            column(autoIncrement: 'true', name: 'id', type: 'bigint') {
-                constraints(nullable: 'false', primaryKey: 'true', primaryKeyName: "relationshipPK")
-            }
-
-            column(name: 'version', type: 'bigint') {
-                constraints(nullable: "false")
-            }
-
-            column(name: "owning_entity_id", type: "bigint") {
-                constraints(nullable: "false")
-            }
-
-            column(name: "relationship_type", type: "varchar(255)") {
-                constraints(nullable: "false")
-            }
-        }
-
-        createIndex(indexName: "FKF064763845172AD5", tableName: "relationship") {
-            column(name: "owning_entity_id")
-        }
-
-        addForeignKeyConstraint(baseColumnNames: "owning_entity_id", baseTableName: "relationship", constraintName: "FKF064763845172AD5", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", referencesUniqueColumn: "false")
-
 
 
 
