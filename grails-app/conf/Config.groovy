@@ -212,6 +212,9 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 
 marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
 
+//set to another URI to have the client retrieve images from there
+marketplace.imageUriBaseOverride = null
+
 //set to a list of mediatypes that are allowed to be stored as images, mapped to the
 //file extension under which they should be stored.  Note: types that
 //do not start with image/ will not work regardless of this setting

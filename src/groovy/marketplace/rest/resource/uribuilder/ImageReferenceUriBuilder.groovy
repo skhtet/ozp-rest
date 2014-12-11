@@ -30,7 +30,11 @@ class ImageReferenceUriBuilder {
     URI getImageUri(ImageReference imageRef) {
         String imageUriBase = grailsApplication.config.marketplace.imageUriBaseOverride
 
-        imageUriBase ? buildUri(UriBuilder.fromUri(imageUriBase), imageRef) : getUri(imageRef)
+        buildUri(
+            imageUriBase ? UriBuilder.fromUri(imageUriBase) : uriBuilderHolder.builder,
+            imageRef
+        )
+
     }
 
     //TODO This is a bit of a hack, since it requires reaching into the service layer and

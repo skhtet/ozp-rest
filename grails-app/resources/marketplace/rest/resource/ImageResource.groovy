@@ -39,9 +39,9 @@ class ImageResource {
             @PathParam('extension') String fileExtension) {
         ImageReference reference = new ImageReference(id, service.getMediaType(fileExtension))
 
-        service.get(reference)
+        File file = service.get(reference).toFile()
 
-        Response.ok(path, reference.mediaType).build()
+        Response.ok(file, reference.mediaType).build()
     }
 
     @POST

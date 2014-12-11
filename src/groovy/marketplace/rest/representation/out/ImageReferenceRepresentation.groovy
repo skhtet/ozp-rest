@@ -5,6 +5,9 @@ import javax.ws.rs.core.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.beans.factory.annotation.Autowired
 
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+
 import marketplace.ImageReference
 
 import marketplace.hal.SelfRefRepresentation
@@ -27,6 +30,8 @@ class ImageReferenceRepresentation extends SelfRefRepresentation<ImageReference>
     }
 
     UUID getId() { imageReference.id }
+
+    @JsonSerialize(using=ToStringSerializer.class)
     MediaType getContentType() { imageReference.mediaType }
 
     @Component
