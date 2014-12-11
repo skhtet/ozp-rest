@@ -1,3 +1,13 @@
+### 0.4.1 (2014-12-11)
+
+
+#### Bug Fixes
+
+* **Listing:**
+  * Fix to Listing REST call ([adad87ac](https://github.com/ozone-development/ozp-rest/commit/adad87acee1910b97329edbd07447396f7c5a864))
+  * Listing REST call not working for MySQL ([9629da2a](https://github.com/ozone-development/ozp-rest/commit/9629da2ae245e4c7eb70cc0fdb945d97d3a3db59))
+
+
 ## 0.4.0 (2014-12-09)
 
 
