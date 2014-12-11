@@ -2,8 +2,8 @@
 --  Update Database Script
 --  *********************************************************************
 --  Change Log: changelog.groovy
---  Ran at: 10/30/14 12:13 PM
---  Against: root@localhost@jdbc:mysql://localhost:3306/ozp_empty
+--  Ran at: 12/11/14 2:02 PM
+--  Against: root@localhost@jdbc:mysql://localhost:3306/ozp_rest
 --  Liquibase version: 2.0.5
 --  *********************************************************************
 
@@ -16,7 +16,7 @@ INSERT INTO `DATABASECHANGELOGLOCK` (`ID`, `LOCKED`) VALUES (1, 0);
 --  Create Database Change Log Table
 CREATE TABLE `DATABASECHANGELOG` (`ID` VARCHAR(63) NOT NULL, `AUTHOR` VARCHAR(63) NOT NULL, `FILENAME` VARCHAR(200) NOT NULL, `DATEEXECUTED` DATETIME NOT NULL, `ORDEREXECUTED` INT NOT NULL, `EXECTYPE` VARCHAR(10) NOT NULL, `MD5SUM` VARCHAR(35) NULL, `DESCRIPTION` VARCHAR(255) NULL, `COMMENTS` VARCHAR(255) NULL, `TAG` VARCHAR(255) NULL, `LIQUIBASE` VARCHAR(20) NULL, CONSTRAINT `PK_DATABASECHANGELOG` PRIMARY KEY (`ID`, `AUTHOR`, `FILENAME`)) ENGINE=InnoDB;
 
---  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:a04a157c279c58df8a15fe1bd458df16)
+--  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:03841e95d227200e30d1d4688a55dfc8)
 CREATE TABLE `profile` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `bio` VARCHAR(1000) NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `display_name` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `email` VARCHAR(255) NULL, `highest_role` VARCHAR(255) NOT NULL, `last_login` DATETIME NOT NULL, `username` VARCHAR(255) NOT NULL, CONSTRAINT `profilePK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
 
 CREATE INDEX `FKED8E89A97666C6D2` ON `profile`(`created_by_id`);
@@ -29,7 +29,7 @@ ALTER TABLE `profile` ADD CONSTRAINT `FKED8E89A97666C6D2` FOREIGN KEY (`created_
 
 ALTER TABLE `profile` ADD CONSTRAINT `FKED8E89A9E31CB353` FOREIGN KEY (`edited_by_id`) REFERENCES `profile` (`id`);
 
-CREATE TABLE `type` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `typePK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
+CREATE TABLE `type` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `typePK` PRIMARY KEY (`id`), UNIQUE (`title`)) ENGINE=InnoDB;
 
 CREATE INDEX `FK368F3A7666C6D2` ON `type`(`created_by_id`);
 
@@ -99,6 +99,12 @@ CREATE INDEX `FKAD8BA84B803A812` ON `listing`(`last_activity_id`);
 
 CREATE TABLE `listing_profile` (`listing_owners_id` BIGINT NULL, `profile_id` BIGINT NULL) ENGINE=InnoDB;
 
+CREATE TABLE `listing_listing` (`listing_required_id` BIGINT NULL, `listing_id` BIGINT NULL) ENGINE=InnoDB;
+
+CREATE INDEX `FK763057C9C50B9241` ON `listing_listing`(`listing_required_id`);
+
+CREATE INDEX `FK763057C95A4BEA77` ON `listing_listing`(`listing_id`);
+
 CREATE INDEX `FK58E626EE1459EB60` ON `listing_profile`(`listing_owners_id`);
 
 CREATE INDEX `FK58E626EEC0565C57` ON `listing_profile`(`profile_id`);
@@ -115,11 +121,15 @@ ALTER TABLE `listing` ADD CONSTRAINT `FKAD8BA847666C6D2` FOREIGN KEY (`created_b
 
 ALTER TABLE `listing` ADD CONSTRAINT `FKAD8BA84E31CB353` FOREIGN KEY (`edited_by_id`) REFERENCES `profile` (`id`);
 
+ALTER TABLE `listing_listing` ADD CONSTRAINT `FK763057C9C50B9241` FOREIGN KEY (`listing_required_id`) REFERENCES `listing` (`id`);
+
+ALTER TABLE `listing_listing` ADD CONSTRAINT `FK763057C95A4BEA77` FOREIGN KEY (`listing_id`) REFERENCES `listing` (`id`);
+
 ALTER TABLE `listing_activity` ADD CONSTRAINT `FK9CE7FE6A5A4BEA77` FOREIGN KEY (`listing_id`) REFERENCES `listing` (`id`);
 
 ALTER TABLE `listing` ADD CONSTRAINT `FKAD8BA84B803A812` FOREIGN KEY (`last_activity_id`) REFERENCES `listing_activity` (`id`);
 
-CREATE TABLE `category` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `categoryPK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
+CREATE TABLE `category` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `categoryPK` PRIMARY KEY (`id`), UNIQUE (`title`)) ENGINE=InnoDB;
 
 CREATE INDEX `FK302BCFE7666C6D2` ON `category`(`created_by_id`);
 
@@ -147,7 +157,7 @@ CREATE INDEX `FK6CF91DE85A4BEA77` ON `doc_url`(`listing_id`);
 
 ALTER TABLE `doc_url` ADD CONSTRAINT `FK6CF91DE85A4BEA77` FOREIGN KEY (`listing_id`) REFERENCES `listing` (`id`);
 
-CREATE TABLE `contact_type` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `required` bit NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `contact_typePK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
+CREATE TABLE `contact_type` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `required` bit NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `contact_typePK` PRIMARY KEY (`id`), UNIQUE (`title`)) ENGINE=InnoDB;
 
 CREATE INDEX `FK4C2BB7F97666C6D2` ON `contact_type`(`created_by_id`);
 
@@ -305,12 +315,6 @@ ALTER TABLE `rejection_activity` ADD CONSTRAINT `FKF35C128582548A4A` FOREIGN KEY
 
 ALTER TABLE `rejection_activity` ADD CONSTRAINT `FKF35C12855416850B` FOREIGN KEY (`id`) REFERENCES `listing_activity` (`id`);
 
-CREATE TABLE `relationship` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `owning_entity_id` BIGINT NOT NULL, `relationship_type` VARCHAR(255) NOT NULL, CONSTRAINT `relationshipPK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
-
-CREATE INDEX `FKF064763845172AD5` ON `relationship`(`owning_entity_id`);
-
-ALTER TABLE `relationship` ADD CONSTRAINT `FKF064763845172AD5` FOREIGN KEY (`owning_entity_id`) REFERENCES `listing` (`id`);
-
 CREATE TABLE `listing_snapshot` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `listing_id` BIGINT NULL, `title` VARCHAR(255) NOT NULL, CONSTRAINT `listing_snapsPK` PRIMARY KEY (`id`)) ENGINE=InnoDB;
 
 CREATE INDEX `FK1096E11F5A4BEA77` ON `listing_snapshot`(`listing_id`);
@@ -355,5 +359,5 @@ CREATE INDEX `FKE68D3F715416850B` ON `modify_relationship_activity`(`id`);
 
 ALTER TABLE `modify_relationship_activity` ADD CONSTRAINT `FKE68D3F715416850B` FOREIGN KEY (`id`) REFERENCES `listing_activity` (`id`);
 
-INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x4), Create Table, Create Index (x3), Add Foreign Key Constraint (x5), Create Table, Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:a04a157c279c58df8a15fe1bd458df16', 1);
+INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x4), Create Table, Create Index (x3), Add Foreign Key Constraint (x5), Create Table, Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:03841e95d227200e30d1d4688a55dfc8', 1);
 

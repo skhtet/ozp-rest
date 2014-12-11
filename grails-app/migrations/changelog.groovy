@@ -417,8 +417,7 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "created_by_id", baseTableName: "listing", constraintName: "FKAD8BA847666C6D2", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "edited_by_id", baseTableName: "listing", constraintName: "FKAD8BA84E31CB353", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "listing_required_id", baseTableName: "listing_listing", constraintName:"FK763057C9C50B9241", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", referencesUniqueColumn: "false")
-        addForeignKeyConstraint(baseColumnNames: "listing_id", baseTableName: "listing_listing", constraintName: "FK763057C95A4BEA77", deferrable: "false", intiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", refrencesUniqueColumn: "false")
-
+        addForeignKeyConstraint(baseColumnNames: "listing_id", baseTableName: "listing_listing", constraintName: "FK763057C95A4BEA77", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "listing", referencesUniqueColumn: "false")
 
 
         /**
