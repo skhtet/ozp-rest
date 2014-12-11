@@ -228,7 +228,7 @@ class ListingRestService extends RestService<Listing> {
                     (int) acc.enabled + enable,
                     (int) acc.inProgress + inProgress,
                     (int) acc.pending + pending,
-                    (int) acc.rejected + approved,
+                    (int) acc.rejected + rejected,
                     (int) acc.approvedOrg + approvedOrg,
                     (int) acc.approved + approved,
                     acc.agencyCounts +
