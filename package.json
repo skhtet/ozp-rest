@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/ozone-development/ozp-rest",
   "dependencies": {
-    "newman": "^1.1.2"
+    "newman": "1.1.2"
   },
   "scripts": {
     "loadSampleListings": "./node_modules/newman/bin/newman -c postman/createSampleListings.json -e postman/env/localDev.json -n 28 -d postman/data/listingData.json",
