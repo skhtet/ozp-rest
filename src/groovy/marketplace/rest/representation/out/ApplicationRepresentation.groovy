@@ -32,8 +32,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     Map<String, String> getLaunchUrls() { [default: listing.launchUrl] }
     Set<String> getTags() { listing.tags }
 
-    List<Map<String, String>> getScreenshots() { listing.screenshots.collect { Screenshot sc ->
-        [href: imageUriBuilder.getImageUri(sc.smallIcon).toString()]
+    List<Map<String, URI>> getScreenshots() { listing.screenshots.collect { Screenshot sc ->
+        [href: imageUriBuilder.getImageUri(sc.smallImageId)]
     }}
 
     Set<Map<String, String>> getIntents() { listing.intents.collect { Intent intent ->
@@ -42,11 +42,11 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
 
     UiHintsRepresentation getUiHints() { new UiHintsRepresentation(listing) }
 
-    Map<String, String> getIcons() {[
-            small: imageUriBuilder.getImageUri(listing.smallIcon).toString(),
-            large: imageUriBuilder.getImageUri(listing.largeIcon).toString(),
-            banner: imageUriBuilder.getImageUri(listing.bannerIcon).toString(),
-            featuredBanner: imageUriBuilder.getImageUri(listing.featuredBannerIcon).toString()
+    Map<String, URI> getIcons() {[
+            small: imageUriBuilder.getImageUri(listing.smallIconId),
+            large: imageUriBuilder.getImageUri(listing.largeIconId),
+            banner: imageUriBuilder.getImageUri(listing.bannerIconId),
+            featuredBanner: imageUriBuilder.getImageUri(listing.featuredBannerIconId)
     ]}
 
     //TODO: What is state?
@@ -72,7 +72,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
                     Listing listing,
                     ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ApplicationRepresentation(listing,
-                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder),
+                imageUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }

@@ -68,7 +68,8 @@ class SimpleApplicationLibraryRepresentation extends
         private Listing listing
         private ImageReferenceUriBuilder imageUriBuilder
 
-        SimpleLibraryApplicationRepresentation(Listing listing, ImageReferenceUriBuilder imageUriBuilder) {
+        SimpleLibraryApplicationRepresentation(Listing listing,
+                ImageReferenceUriBuilder imageUriBuilder) {
             this.listing = listing
             this.imageUriBuilder = imageUriBuilder
         }
@@ -76,10 +77,12 @@ class SimpleApplicationLibraryRepresentation extends
         public long getId() { listing.id }
         public String getUuid() { listing.uuid }
         public String getTitle() { listing.title }
-        public URI getImageSmallUrl() { imageUriBuilder.getImageUri(listing.smallIcon) }
-        public URI getImageMediumUrl() { imageUriBuilder.getImageUri(listing.largeIcon) }
-        public URI getImageLargeUrl() { imageUriBuilder.getImageUri(listing.bannerIcon) }
-        public URI getImageXlargeUrl() { imageUriBuilder.getImageUri(listing.featuredBannerIcon) }
+        public URI getImageSmallUrl() { imageUriBuilder.getImageUri(listing.smallIconId) }
+        public URI getImageMediumUrl() { imageUriBuilder.getImageUri(listing.largeIconId) }
+        public URI getImageLargeUrl() { imageUriBuilder.getImageUri(listing.bannerIconId) }
+        public URI getImageXlargeUrl() {
+            imageUriBuilder.getImageUri(listing.featuredBannerIconId)
+        }
         public URI getLaunchUrl() { new URI(listing.launchUrl) }
     }
 

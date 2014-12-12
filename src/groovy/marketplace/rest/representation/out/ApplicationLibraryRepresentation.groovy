@@ -22,6 +22,7 @@ import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 import marketplace.rest.ChildObjectCollection
 
@@ -37,20 +38,24 @@ class ApplicationLibraryRepresentation
 
         FolderRepresentation(String folder, Collection<ApplicationLibraryEntry> entries,
                 ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-                ObjectUriBuilder<Listing> listingUriBuilder) {
-            super(null, createItems(entries, entryUriBuilder, listingUriBuilder, folder))
+                ObjectUriBuilder<Listing> listingUriBuilder,
+                ImageReferenceUriBuilder imageUriBuilder) {
+            super(null, createItems(entries, entryUriBuilder, listingUriBuilder,
+                imageUriBuilder, folder))
             this.folder = folder
         }
 
         private static HalEmbedded createItems(Collection<ApplicationLibraryEntry> entries,
                 ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-                ObjectUriBuilder<Listing> listingUriBuilder, String folder) {
+                ObjectUriBuilder<Listing> listingUriBuilder,
+                ImageReferenceUriBuilder imageUriBuilder,
+                String folder) {
             new HalEmbedded(entries.collect { entry ->
                 assert entry.folder == folder
 
                 new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION,
                     new LibraryApplicationRepresentation(entry, entryUriBuilder,
-                        listingUriBuilder))
+                        listingUriBuilder, imageUriBuilder))
             })
         }
     }
@@ -60,11 +65,12 @@ class ApplicationLibraryRepresentation
             ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
             ObjectUriBuilder<Profile> profileUriBuilder,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(
             entryCollectionUriBuilder.getCollectionUri(library),
             createLinks(library, profileUriBuilder),
-            createFolders(library, entryUriBuilder, listingUriBuilder)
+            createFolders(library, entryUriBuilder, listingUriBuilder, imageUriBuilder)
         )
     }
 
@@ -78,13 +84,14 @@ class ApplicationLibraryRepresentation
     private static HalEmbedded createFolders(
             ChildObjectCollection<Profile, ApplicationLibraryEntry> library,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         List<ApplicationLibraryEntry> entries = library.collection
 
         new HalEmbedded(entries.groupBy([{ it.folder }]).collect { folderName, folderEntries ->
            new AbstractMap.SimpleEntry(RegisteredRelationType.ITEM,
                 new FolderRepresentation(folderName, folderEntries, entryUriBuilder,
-                    listingUriBuilder))
+                    listingUriBuilder, imageUriBuilder))
         })
     }
 
@@ -94,6 +101,7 @@ class ApplicationLibraryRepresentation
         @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         @Override
         ApplicationLibraryRepresentation toRepresentation(
@@ -107,7 +115,8 @@ class ApplicationLibraryRepresentation
                 entryUriBuilder,
                 entryUriBuilder,
                 profileUriBuilderFactory.getBuilder(uriBuilderHolder),
-                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder),
+                imageUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }
