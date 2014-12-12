@@ -5,6 +5,8 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import marketplace.converter.UUIDConverter
+
 /**
  * A Domain class representing a pair of screenshots.  This pair should consist of
  * a large version and a small version of the same image.  The large version is optional.
@@ -15,8 +17,8 @@ class Screenshot implements Serializable {
 
     static searchable = {
         root false
-        largeImageId index: 'not_analyzed', excludeFromAll: true
-        smallImageId index: 'not_analyzed', excludeFromAll: true
+        largeImageId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        smallImageId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
         only = ['largeImageId', 'smallImageId']
     }
 

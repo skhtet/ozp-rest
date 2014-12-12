@@ -1,6 +1,7 @@
 package marketplace
 
 import marketplace.converter.JsonDateConverter
+import marketplace.converter.UUIDConverter
 
 import marketplace.util.Utils
 
@@ -50,10 +51,10 @@ class Listing implements Serializable {
         descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
-        smallIconId index: 'not_analyzed', excludeFromAll: true
-        largeIconId index: 'not_analyzed', excludeFromAll: true
-        bannerIconId index: 'not_analyzed', excludeFromAll: true
-        featuredBannerIconId index: 'not_analyzed', excludeFromAll: true
+        smallIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        largeIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        bannerIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        featuredBannerIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
         uuid index: 'not_analyzed', excludeFromAll: false
