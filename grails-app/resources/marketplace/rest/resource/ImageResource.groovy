@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.UriInfo
 import javax.ws.rs.core.Context
+import javax.ws.rs.core.CacheControl
 
 import com.sun.jersey.multipart.FormDataBodyPart
 import com.sun.jersey.multipart.FormDataParam
@@ -28,6 +29,10 @@ import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 @Path('/api/image')
 class ImageResource {
+    //cache images for a week.  They are immutable, so caching them
+    //for however long should be acceptable
+    private static final int IMAGE_MAX_AGE = (60 * 60 * 24 * 7)
+
     @Autowired ImageRestService service
     @Autowired ImageReferenceUriBuilder.Factory uriBuilderFactory
 
@@ -41,7 +46,11 @@ class ImageResource {
 
         File file = service.get(reference).toFile()
 
-        Response.ok(file, reference.mediaType).build()
+        CacheControl cacheControl = new CacheControl(
+            maxAge: IMAGE_MAX_AGE
+        )
+
+        Response.ok(file, reference.mediaType).cacheControl(cacheControl).build()
     }
 
     @POST
