@@ -14,11 +14,11 @@
   },
   "homepage": "https://github.com/ozone-development/ozp-rest",
   "dependencies": {
-    "newman": "1.1.2"
+    "newman": "^1.1.2"
   },
   "scripts": {
-    "loadSampleListings": "./node_modules/newman/bin/newman -c postman/createSampleListings.json -e postman/env/localDev.json -n 28 -d postman/data/listingData.json",
-    "loadSampleMetaData": "./node_modules/newman/bin/newman -c postman/createSampleMetaData.json -e postman/env/localDev.json",
+    "loadSampleListings": "./node_modules/newman/bin/newman -k -c postman/createSampleListings.json -e postman/env/localDev.json -n 28 -d postman/data/listingData.json",
+    "loadSampleMetaData": "./node_modules/newman/bin/newman -k -c postman/createSampleMetaData.json -e postman/env/localDev.json",
     "loadSampleData": "npm run loadSampleMetaData && npm run loadSampleListings",
     "changelog": "node changelog.js"
   },
