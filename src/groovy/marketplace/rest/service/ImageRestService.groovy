@@ -3,6 +3,7 @@ package marketplace.rest.service
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.Files
+import java.nio.file.FileSystems
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.FileVisitResult
 import java.nio.file.DirectoryStream
@@ -131,7 +132,7 @@ class ImageRestService {
         else {
             String fileName = getFileBaseName(id), folderName = getFolder(id)
             Path folderPath = imageDir.resolve(Paths.get(folderName))
-            Path searchPath = folderPath.resolve(Paths.get(filename))
+            Path searchPath = folderPath.resolve(Paths.get(fileName))
             String matcherSpec = "glob:${searchPath.toString()}.*"
 
             PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
@@ -149,7 +150,7 @@ class ImageRestService {
 
             if (matchedFile) {
                 //dot is guaranteed to be present based on specified glob pattern
-                String extension = matchedFile.fileName.split('\\.')[1]
+                String extension = matchedFile.fileName.toString().split('\\.')[1]
                 MediaType mediaType = extensionToMediaType[extension]
                 ImageReference ref = new ImageReference(id, mediaType)
 
@@ -257,6 +258,7 @@ class ImageRestService {
 
                 if (fileNameParts.length != 2) {
                     log.warn "Found file with unexpected name: $fileName"
+                    return FileVisitResult.CONTINUE
                 }
 
                 UUID uuid = UUID.fromString(fileNameParts[0])
