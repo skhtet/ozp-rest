@@ -68,13 +68,13 @@ class ListingRestServiceUnitTest {
             url: "https://localhost"
         ]],
         screenshots: [[
-            smallImageUrl: "https://localhost",
-            largeImageUrl: "https://localhost"
+            smallImageId: UUID.randomUUID(),
+            largeImageId: UUID.randomUUID()
         ]],
-        imageSmallUrl: "https://localhost/asdf",
-        imageMediumUrl: "https://localhost/asdf",
-        imageLargeUrl: "https://localhost/asdf",
-        imageXlargeUrl: "https://localhost/asdf",
+        smallIconId: UUID.randomUUID(),
+        largeIconId: UUID.randomUUID(),
+        bannerIconId: UUID.randomUUID(),
+        featuredBannerIconId: UUID.randomUUID(),
         whatIsNew: "nothin'",
         descriptionShort: "asdf",
         categories: ["Test Category"],

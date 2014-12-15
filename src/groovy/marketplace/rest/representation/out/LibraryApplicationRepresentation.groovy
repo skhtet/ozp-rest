@@ -55,10 +55,10 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public Map<String, URI> getLaunchUrls() { [default: new URI(listing.launchUrl)] }
     public Map<String, URI> getIcons() {
         [
-            small: imageUriBuilder.getImageUri(listing.smallIconId),
-            large: imageUriBuilder.getImageUri(listing.largeIconId),
-            banner: imageUriBuilder.getImageUri(listing.bannerIconId),
-            featuredBanner: imageUriBuilder.getImageUri(listing.featuredBannerIconId)
+            small: imageUriBuilder.getImageUri((UUID)listing.smallIconId),
+            large: imageUriBuilder.getImageUri((UUID)listing.largeIconId),
+            banner: imageUriBuilder.getImageUri((UUID)listing.bannerIconId),
+            featuredBanner: imageUriBuilder.getImageUri((UUID)listing.featuredBannerIconId)
         ]
     }
     public long getId() { listing.id }

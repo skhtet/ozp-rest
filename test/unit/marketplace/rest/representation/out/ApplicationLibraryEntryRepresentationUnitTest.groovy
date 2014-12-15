@@ -17,6 +17,7 @@ import marketplace.hal.RegisteredRelationType
 
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.ChildObjectCollection
 
@@ -61,6 +62,16 @@ class ApplicationLibraryEntryRepresentationUnitTest {
                 }
             }
         }
+        factory.imageReferenceUriBuilderFactory = new ImageReferenceUriBuilder.Factory() {
+            ImageReferenceUriBuilder getBuilder(
+                    ApplicationRootUriBuilderHolder uriBuilderHolder) {
+                new ImageReferenceUriBuilder(null, null, null) {
+                    URI getImageUri(UUID id) {
+                        new URI("https://localhost/asdf/api/image/$id")
+                    }
+                }
+            }
+        }
     }
 
     void testLinks() {
@@ -100,7 +111,8 @@ class ApplicationLibraryEntryRepresentationUnitTest {
 
         ApplicationLibraryEntry libraryApplicationEntry
         LibraryApplicationRepresentation.metaClass.constructor = { ApplicationLibraryEntry e,
-                ObjectUriBuilder entryUriBuilder, ObjectUriBuilder listingUriBuilder ->
+                ObjectUriBuilder entryUriBuilder, ObjectUriBuilder listingUriBuilder,
+                ImageReferenceUriBuilder imageUriBuilder ->
             libraryApplicationEntry = e
 
             return new AbstractHalRepresentation() {}

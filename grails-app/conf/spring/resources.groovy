@@ -1,5 +1,6 @@
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean
 import marketplace.authentication.SpringSecurityAccountService
 import ozone.utils.ApplicationContextHolder
 import marketplace.search.MarketplaceSearchAuditEventListener
@@ -37,5 +38,9 @@ beans = {
      */
     openSessionInViewInterceptor(OpenSessionInViewInterceptor) {
         sessionFactory = ref('sessionFactory')
+    }
+
+    cacheManager(EhCacheManagerFactoryBean) {
+        configLocation = 'classpath:/ehcache.xml'
     }
 }

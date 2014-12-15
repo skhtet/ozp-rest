@@ -197,7 +197,6 @@ class RestServiceUnitTest {
         def makeRep = {
             new AgencyInputRepresentation(
                 title: "test agency",
-                icon: new URI("https:///"),
                 shortName: 'ta'
             )
         }

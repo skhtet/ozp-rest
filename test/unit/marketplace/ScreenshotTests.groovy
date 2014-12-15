@@ -6,27 +6,27 @@ import org.junit.Test
 @TestFor(Screenshot)
 class ScreenshotTests {
 
-    private final String LARGE_URL = 'https://localhost/large.png'
-    private final String SMALL_URL = 'https://localhost/small.png'
+    private final UUID LARGE_ID = UUID.randomUUID()
+    private final UUID SMALL_ID = UUID.randomUUID()
 
     @Test
     public void testGetLargeImageUrl() {
         Screenshot screenshot = new Screenshot(
-            smallImageUrl: SMALL_URL,
-            largeImageUrl: LARGE_URL
+            smallImageId: SMALL_ID,
+            largeImageId: LARGE_ID
         )
 
-        assert screenshot.largeImageUrl == LARGE_URL
+        assert screenshot.largeImageId == LARGE_ID
     }
 
     @Test
     public void testGetLargeImageUrlMissing() {
         Screenshot screenshot = new Screenshot(
-            smallImageUrl: SMALL_URL
+            smallImageId: SMALL_ID
         )
 
         //should use the small url when the large url is not set
-        assert screenshot.largeImageUrl == SMALL_URL
+        assert screenshot.largeImageId == SMALL_ID
     }
 
     @Test

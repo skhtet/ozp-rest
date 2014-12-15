@@ -10,6 +10,8 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
 import org.springframework.security.access.AccessDeniedException
 
+import net.sf.ehcache.CacheManager
+
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.Role
@@ -82,7 +84,11 @@ class ProfileRestServiceUnitTest {
 
         createGrailsApplication()
 
-        service = new ProfileRestService(grailsApplication)
+        CacheManager cacheManager = [
+            getCache: { String name -> null }
+        ] as CacheManager
+
+        service = new ProfileRestService(grailsApplication, cacheManager)
 
         service.accountService = [
             getLoggedInUsername: { currentUser.username }

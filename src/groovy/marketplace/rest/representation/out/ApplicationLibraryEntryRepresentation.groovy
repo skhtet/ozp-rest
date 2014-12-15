@@ -20,6 +20,7 @@ import marketplace.rest.resource.uribuilder.ChildCollectionUriBuilder
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 class ApplicationLibraryEntryRepresentation
         extends AbstractHalRepresentation<ApplicationLibraryEntry> {
@@ -31,9 +32,10 @@ class ApplicationLibraryEntryRepresentation
             ApplicationLibraryEntry entry,
             ChildCollectionUriBuilder<Profile, ApplicationLibraryEntry> entryCollectionUriBuilder,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(createLinks(entry, entryCollectionUriBuilder, entryUriBuilder),
-            createEmbeddedListing(entry, entryUriBuilder, listingUriBuilder))
+            createEmbeddedListing(entry, entryUriBuilder, listingUriBuilder, imageUriBuilder))
 
         assert entry != null
         assert entry.listing != null
@@ -57,10 +59,11 @@ class ApplicationLibraryEntryRepresentation
 
     private static HalEmbedded createEmbeddedListing(ApplicationLibraryEntry entry,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         new HalEmbedded(OzpRelationType.APPLICATION,
             new LibraryApplicationRepresentation(entry, entryUriBuilder,
-                listingUriBuilder))
+                listingUriBuilder, imageUriBuilder))
     }
 
     public String getFolder() { entry.folder }
@@ -73,6 +76,7 @@ class ApplicationLibraryEntryRepresentation
             implements RepresentationFactory<ApplicationLibraryEntry> {
         @Autowired ApplicationLibraryEntryUriBuilder.Factory entryUriBuilderFactory
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageReferenceUriBuilderFactory
 
         @Override
         ApplicationLibraryEntryRepresentation toRepresentation(ApplicationLibraryEntry entry,
@@ -83,7 +87,8 @@ class ApplicationLibraryEntryRepresentation
             new ApplicationLibraryEntryRepresentation(entry,
                 entryUriBuilder,
                 entryUriBuilder,
-                listingUriBuilderFactory.getBuilder(uriBuilderHolder))
+                listingUriBuilderFactory.getBuilder(uriBuilderHolder),
+                imageReferenceUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }
