@@ -305,6 +305,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     }
 
     @Path('/{profileId}/library/{listingId}')
+    @Consumes()
     @DELETE
     void removeFromApplicationLibrary(@PathParam('profileId') String profileId,
             @PathParam('listingId') long applicationLibraryEntryId) {
