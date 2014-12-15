@@ -27,11 +27,10 @@ import marketplace.rest.service.ImageRestService
 import marketplace.rest.representation.out.ImageReferenceRepresentation
 import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
+import marketplace.rest.filter.CacheControlHeader
+
 @Path('/api/image')
 class ImageResource {
-    //cache images for a week.  They are immutable, so caching them
-    //for however long should be acceptable
-    private static final int IMAGE_MAX_AGE = (60 * 60 * 24 * 7)
 
     @Autowired ImageRestService service
     @Autowired ImageReferenceUriBuilder.Factory uriBuilderFactory
@@ -40,17 +39,13 @@ class ImageResource {
     @Path('{id}.{extension}')
     @Produces('image/*')
     @Consumes()
+    @CacheControlHeader('max-age: 604800')
     public Response getImage(@PathParam('id') UUID id,
             @PathParam('extension') String fileExtension) {
         ImageReference reference = new ImageReference(id, service.getMediaType(fileExtension))
 
         File file = service.get(reference).toFile()
-
-        CacheControl cacheControl = new CacheControl(
-            maxAge: IMAGE_MAX_AGE
-        )
-
-        Response.ok(file, reference.mediaType).cacheControl(cacheControl).build()
+        Response.ok(file, reference.mediaType).build()
     }
 
     @POST
