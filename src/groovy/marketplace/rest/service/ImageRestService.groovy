@@ -86,6 +86,9 @@ class ImageRestService {
         if (data.length > IMAGE_MAX_SIZE) {
             throw new IllegalArgumentException("Images cannot be larger than 1 MiB")
         }
+        else if (data.length == 0) {
+            throw new IllegalArgumentException("Images cannot be empty")
+        }
 
         try {
             Files.write(imageFile, data)
