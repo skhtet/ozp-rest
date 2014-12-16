@@ -1,5 +1,7 @@
 package marketplace.rest.resource
 
+import javax.servlet.http.HttpServletRequest
+
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.Consumes
@@ -19,6 +21,7 @@ import com.sun.jersey.multipart.FormDataParam
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.ImageReference
+import marketplace.ClientAuditData
 
 import marketplace.hal.ApplicationRootUriBuilderHolder
 
@@ -40,11 +43,13 @@ class ImageResource {
     @Produces('image/*')
     @Consumes()
     @CacheControlHeader('max-age: 604800')
-    public Response getImage(@PathParam('id') UUID id,
+    public Response getImage(
+            @Context HttpServletRequest request,
+            @PathParam('id') UUID id,
             @PathParam('extension') String fileExtension) {
         ImageReference reference = new ImageReference(id, service.getMediaType(fileExtension))
 
-        File file = service.get(reference).toFile()
+        File file = service.get(reference, ClientAuditData.fromHttpRequest(request)).toFile()
         Response.ok(file, reference.mediaType).build()
     }
 
@@ -53,11 +58,13 @@ class ImageResource {
     @Consumes('image/*')
     public Response create(
             @Context UriInfo uriInfo,
+            @Context HttpServletRequest request,
             byte[] image,
             @HeaderParam('Content-Type') MediaType requestType) {
         ImageReference reference = new ImageReference(requestType)
 
-        service.createFromRepresentation(reference, image)
+        service.createFromRepresentation(reference, image,
+            ClientAuditData.fromHttpRequest(request))
 
         ImageReferenceUriBuilder imageUriBuilder =
             uriBuilderFactory.getBuilder(new ApplicationRootUriBuilderHolder(uriInfo))
@@ -74,12 +81,13 @@ class ImageResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createFromForm(
             @Context UriInfo uriInfo,
+            @Context HttpServletRequest request,
             @FormDataParam('image') FormDataBodyPart formData) {
         if (!formData) {
             throw new IllegalArgumentException("Request must include a part named 'image'")
         }
 
-        create(uriInfo, formData.getValueAs((byte[]).class), formData.mediaType)
+        create(uriInfo, request, formData.getValueAs((byte[]).class), formData.mediaType)
     }
 
     //PUT isn't allowed, and deletes are handled automatically by a quartz job

@@ -31,16 +31,25 @@ import marketplace.ImageReference
 import marketplace.Listing
 import marketplace.Agency
 import marketplace.Screenshot
+import marketplace.ClientAuditData
 
 import marketplace.rest.DomainObjectNotFoundException
 
 import marketplace.rest.representation.in.InputRepresentation
+
+import org.ozoneplatform.auditing.format.cef.Extension
+import org.ozoneplatform.auditing.format.cef.factory.ExtensionFactory
+import org.ozoneplatform.auditing.enums.EventTypes
+import org.ozoneplatform.auditing.enums.PayloadType
+import org.ozoneplatform.auditing.enums.RequestMethodTypes
+import org.ozoneplatform.auditing.hibernate.AbstractAuditLogListener
 
 @Service
 @Transactional(propagation=Propagation.SUPPORTS)
 class ImageRestService {
 
     private static final Logger log = Logger.getLogger(ImageRestService.class)
+    private static final Logger cefLog = Logger.getLogger(AbstractAuditLogListener.class)
 
     //do not delete images that are younger than a day
     private static final long GARBAGE_COLLECTION_MIN_AGE = (1000 * 60 * 60 * 24)
@@ -73,7 +82,8 @@ class ImageRestService {
 
     ImageRestService() {}
 
-    public Path createFromRepresentation(ImageReference imageRef, byte[] data) {
+    public Path createFromRepresentation(ImageReference imageRef, byte[] data,
+            ClientAuditData auditData) {
         Path imageFile = getPath(imageRef)
 
         //ensure directory exists
@@ -108,15 +118,19 @@ class ImageRestService {
 
         imageReferenceCache.put(new Element(imageRef.id, imageRef))
 
+        logImageCreate(imageRef, auditData)
+
         return imageFile
     }
 
-    public Path get(ImageReference imageRef) {
+    public Path get(ImageReference imageRef, ClientAuditData auditData) {
         Path path = getPath(imageRef)
 
         if (Files.notExists(path)) {
             throw new DomainObjectNotFoundException(ImageReference.class, imageRef.id)
         }
+
+        logImageGet(imageRef, auditData)
 
         return path
     }
@@ -158,6 +172,7 @@ class ImageRestService {
                 ImageReference ref = new ImageReference(id, mediaType)
 
                 imageReferenceCache.put(new Element(id, ref))
+                logImageGet(ref, null)
                 return ref
             }
             else {
@@ -224,6 +239,7 @@ class ImageRestService {
 
         long maxDateToDelete = new Date().time - GARBAGE_COLLECTION_MIN_AGE
         int deletedFiles = 0
+        Path imageDir = this.imageDir
         Set<UUID> idsToKeep =
             (Listing.createCriteria().list {
                 projections {
@@ -270,6 +286,8 @@ class ImageRestService {
                         !(uuid in idsToKeep)) {
 
                     log.debug "Deleting image file $file"
+                    logImageDelete(uuid)
+
                     Files.delete(file)
                     imageReferenceCache.remove(uuid)
                     deletedFiles++
@@ -284,24 +302,88 @@ class ImageRestService {
                     // directory iteration failed
                     throw e
                 } else {
-
-                    //if the directory is empty delete it
-                    DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)
-                    try {
-                        if (!dirStream.iterator().hasNext()) {
-                            log.debug "Deleting empty image directory $dir"
-                            Files.delete(dir)
+                    if (dir == imageDir) {
+                        return FileVisitResult.CONTINUE
+                    }
+                    else {
+                        //if the directory is empty delete it
+                        DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)
+                        try {
+                            if (!dirStream.iterator().hasNext()) {
+                                log.debug "Deleting empty image directory $dir"
+                                Files.delete(dir)
+                            }
                         }
-                    }
-                    finally {
-                        dirStream.close()
-                    }
+                        finally {
+                            dirStream.close()
+                        }
 
-                    return FileVisitResult.CONTINUE
+                        return FileVisitResult.CONTINUE
+                    }
                 }
             }
         })
 
         return deletedFiles
+    }
+
+    private void logImageCreate(ImageReference imageRef, ClientAuditData auditData) {
+        if (grailsApplication.config.cef.enabled) {
+            logImageCef(EventTypes.OBJ_CREATE, imageRef, auditData)
+        }
+    }
+
+    private void logImageGet(ImageReference imageRef, ClientAuditData auditData) {
+        if (grailsApplication.config.cef.verbose && grailsApplication.config.cef.enabled) {
+            logImageCef(EventTypes.OBJ_ACCESS, imageRef, auditData)
+        }
+    }
+
+    private void logImageDelete(UUID id) {
+        if (grailsApplication.config.cef.enabled) {
+            ImageReference imageRef = getImageReference(id)
+
+            logImageCef(EventTypes.OBJ_DELETE, imageRef, null)
+        }
+    }
+
+    private void logImageCef(EventTypes event, ImageReference imageRef,
+            ClientAuditData auditData) {
+        InetAddress localAddress = InetAddress.localHost
+
+        String empty = '',
+            appVersion = grailsApplication.metadata['app.version'],
+            classification = grailsApplication.config.cef.securityLevel ?: Extension.UNKOWN_VALUE,
+            date = ExtensionFactory.eventDateFormatter.clone().format(new Date()),
+            trigger = RequestMethodTypes.USER_INITIATED.getDescription(),
+            source = auditData?.remoteAddr ?: localAddress.hostAddress,
+            dest = auditData?.localAddr ?: localAddress.hostAddress,
+            username = profileRestService.currentUserProfile?.username ?: 'SYSTEM',
+            eventType = event.description,
+            filepath = getPath(imageRef).toString(),
+            payloadType = PayloadType.FILE.getDescription()
+
+        Extension extension = new Extension(
+            "${Extension.EVENT_TYPE}": empty,
+            "${Extension.STATUS}": 'SUCCESS',
+            "${Extension.REASON}": empty,
+            "${Extension.SYSTEM_NOTIFICATIONS}": empty,
+            "${Extension.SYSTEM_VERSION}": appVersion,
+            "${Extension.TRANSACTION_ID}": empty,
+            "${Extension.DESTINATION_CLS}": classification,
+            "${Extension.EVENT_DATE_TIME}": date,
+            "${Extension.EVENT_CLS}": classification,
+            "${Extension.SOURCE}": source,
+            "${Extension.DESTINATION}": dest,
+            "${Extension.TRIGGER}": trigger,
+            "${Extension.USER_ID}": username,
+            "${Extension.EVENT_TYPE}": eventType,
+            "${Extension.PAYLOAD_CLS}": classification,
+            "${Extension.PAYLOAD}": filepath,
+            "${Extension.PAYLOAD_ID}": imageRef.id,
+            "${Extension.PAYLOAD_TYPE}": payloadType
+        )
+
+        cefLog.info extension.toString()
     }
 }
