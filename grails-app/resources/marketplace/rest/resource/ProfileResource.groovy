@@ -56,6 +56,8 @@ import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.representation.out.ProfileRepresentation
 import marketplace.rest.representation.out.ListingActivityRepresentation
 import marketplace.rest.representation.out.ItemCommentListingRepresentation
+import marketplace.rest.representation.out.SimpleApplicationLibraryEntryRepresentation
+import marketplace.rest.representation.out.SimpleApplicationLibraryRepresentation
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ProfileOwnedListingActivities
@@ -253,6 +255,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @GET
     @Produces([
         ApplicationLibraryRepresentation.MEDIA_TYPE,
+        SimpleApplicationLibraryRepresentation.MEDIA_TYPE,
         AbstractHalRepresentation.HAL_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
@@ -268,6 +271,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @POST
     @Produces([
         ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
+        SimpleApplicationLibraryEntryRepresentation.MEDIA_TYPE,
         AbstractHalRepresentation.HAL_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
@@ -287,8 +291,10 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @Path('/{profileId}/library')
     @PUT
     @Produces([
-        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
+        ApplicationLibraryRepresentation.MEDIA_TYPE,
+        SimpleApplicationLibraryRepresentation.MEDIA_TYPE,
+        AbstractHalRepresentation.HAL_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
     ])
     @Consumes([
         ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
