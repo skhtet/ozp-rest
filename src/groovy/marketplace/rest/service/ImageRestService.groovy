@@ -280,7 +280,14 @@ class ImageRestService {
                     return FileVisitResult.CONTINUE
                 }
 
-                UUID uuid = UUID.fromString(fileNameParts[0])
+                UUID uuid
+                try {
+                    uuid = UUID.fromString(fileNameParts[0])
+                }
+                catch (IllegalArgumentException e) {
+                    log.warn "Invalid UUID in filename $fileName"
+                    return FileVisitResult.CONTINUE
+                }
 
                 if (attrs.lastModifiedTime().toMillis() < maxDateToDelete &&
                         !(uuid in idsToKeep)) {

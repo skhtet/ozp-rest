@@ -84,9 +84,7 @@ class ProfileRestServiceUnitTest {
 
         createGrailsApplication()
 
-        CacheManager cacheManager = [
-            getCache: { String name -> null }
-        ] as CacheManager
+        CacheManager cacheManager = CacheManager.create('grails-app/conf/ehcache-test.xml')
 
         service = new ProfileRestService(grailsApplication, cacheManager)
 
