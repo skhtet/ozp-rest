@@ -46,11 +46,21 @@ class SimpleApplicationLibraryEntryRepresentation extends AbstractHalRepresentat
         public long getId() { listing.id }
         public String getUuid() { listing.uuid }
         public String getTitle() { listing.title }
-        public URI getImageSmallUrl() { imageUriBuilder.getImageUri(listing.smallIconId) }
-        public URI getImageMediumUrl() { imageUriBuilder.getImageUri(listing.largeIconId) }
-        public URI getImageLargeUrl() { imageUriBuilder.getImageUri(listing.bannerIconId) }
+        public URI getImageSmallUrl() {
+            UUID id = listing.smallIconId
+            id ? imageUriBuilder.getImageUri(id) : null
+        }
+        public URI getImageMediumUrl() {
+            UUID id = listing.largeIconId
+            id ? imageUriBuilder.getImageUri(id) : null
+        }
+        public URI getImageLargeUrl() {
+            UUID id = listing.bannerIconId
+            id ? imageUriBuilder.getImageUri(id) : null
+        }
         public URI getImageXlargeUrl() {
-            imageUriBuilder.getImageUri(listing.featuredBannerIconId)
+            UUID id = listing.featuredBannerIconId
+            id ? imageUriBuilder.getImageUri(id) : null
         }
         public URI getLaunchUrl() { new URI(listing.launchUrl) }
     }
