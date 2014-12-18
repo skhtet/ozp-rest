@@ -49,6 +49,12 @@ class ImageRestServiceUnitTest {
         'image/bmp': 'bmp'
     ]
 
+    //on Windows systems, all of the paths come back with backslash dir separators.  To
+    //keep things consistent, switch them to forward slashes
+    private toUnixPath(String path) {
+        path.replaceAll('\\\\', '/')
+    }
+
     void setUp() {
         grailsApplication = new DefaultGrailsApplication()
         grailsApplication.config.marketplace.acceptableImageTypes = typeConfig
@@ -92,7 +98,7 @@ class ImageRestServiceUnitTest {
         grailsApplication.config.marketplace.imageStoragePath = pathStr
         Path imageDir = service.getImageDir()
 
-        assert imageDir.toString() == pathStr
+        assert toUnixPath(imageDir.toString()) == pathStr
     }
 
     void testGetMediaType() {
@@ -114,18 +120,18 @@ class ImageRestServiceUnitTest {
 
 
         Files.metaClass.static.createDirectories = { Path dir ->
-            assert dir.toString() == '/var/lib/ozp/images/76'
+            assert toUnixPath(dir.toString()) == '/var/lib/ozp/images/76'
         }
         Files.metaClass.static.exists = { Path p -> exists }
         Files.metaClass.static.write = { Path p, byte[] bytes ->
-            assert p.toString() ==
+            assert toUnixPath(p.toString()) ==
                 '/var/lib/ozp/images/76/7619674d-76c9-435a-afe8-f2ef07803907.png'
             assert bytes == data
         }
 
         Path returned = service.createFromRepresentation(imageRef, data, null)
 
-        assert returned.toString() ==
+        assert toUnixPath(returned.toString()) ==
             '/var/lib/ozp/images/76/7619674d-76c9-435a-afe8-f2ef07803907.png'
 
         ImageReference cachedRef =  cacheManager.getCache('imageReference').get(id).objectValue
@@ -161,7 +167,7 @@ class ImageRestServiceUnitTest {
 
         Path result = service.get(imageRef, null)
 
-        assert result.toString() ==
+        assert toUnixPath(result.toString()) ==
             '/var/lib/ozp/images/76/7619674d-76c9-435a-afe8-f2ef07803907.png'
 
         exists = false
@@ -179,7 +185,7 @@ class ImageRestServiceUnitTest {
         Path pathToFile = null
 
         Files.metaClass.static.newDirectoryStream = { Path p ->
-            assert p.toString() == '/var/lib/ozp/images/76'
+            assert toUnixPath(p.toString()) == '/var/lib/ozp/images/76'
 
             DirectoryStream dStream = [
                 close: {}
@@ -195,7 +201,7 @@ class ImageRestServiceUnitTest {
         FileSystems.metaClass.static.getDefault = { ->
             [
                 getPathMatcher: { String matcherSpec ->
-                    assert matcherSpec ==
+                    assert toUnixPath(matcherSpec) ==
                         'glob:/var/lib/ozp/images/76/7619674d-76c9-435a-afe8-f2ef07803907.*'
 
                     return null
