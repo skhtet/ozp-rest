@@ -293,7 +293,7 @@ class ImageRestService {
                         !(uuid in idsToKeep)) {
 
                     log.debug "Deleting image file $file"
-                    logImageDelete(uuid)
+                    logImageDelete(file)
 
                     Files.delete(file)
                     imageReferenceCache.remove(uuid)
@@ -346,9 +346,22 @@ class ImageRestService {
         }
     }
 
-    private void logImageDelete(UUID id) {
+    private ImageReference getImageRefFromPath(Path path) {
+        String fileName = path.fileName.toString()
+        String[] parts = fileName.split('\\.')
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Cannot construct ImageReference from path $path")
+        }
+
+        UUID id = UUID.fromString(parts[0])
+        MediaType mediaType = getMediaType(parts[1])
+
+        return new ImageReference(id, mediaType)
+    }
+
+    private void logImageDelete(Path path) {
         if (grailsApplication.config.cef.enabled) {
-            ImageReference imageRef = getImageReference(id)
+            ImageReference imageRef = getImageRefFromPath(path)
 
             logImageCef(EventTypes.OBJ_DELETE, imageRef, null)
         }
