@@ -326,7 +326,9 @@ class ListingRestService extends RestService<Listing> {
                 listing.bannerIconId,
                 listing.featuredBannerIconId
             ] +
-            listing.screenshots.collect { [it.smallImageId, it.largeImageId] }.flatten()) as Set
+            listing.screenshots.collect { [it.smallImageId, it.largeImageId] }.flatten() -
+            null
+        ) as Set
 
         //look up each id to ensure it refers to an existing image.  This will
         //throw a DomainObjectNotFoundException if any are missing
