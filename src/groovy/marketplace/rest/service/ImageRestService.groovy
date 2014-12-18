@@ -361,9 +361,17 @@ class ImageRestService {
 
     private void logImageDelete(Path path) {
         if (grailsApplication.config.cef.enabled) {
-            ImageReference imageRef = getImageRefFromPath(path)
+            ImageReference imageRef = null
+            try {
+                imageRef = getImageRefFromPath(path)
+            }
+            catch (IllegalArgumentException e) {
+                log.warn "Could not create CEF log for deletion of $path"
+            }
 
-            logImageCef(EventTypes.OBJ_DELETE, imageRef, null)
+            if (imageRef) {
+                logImageCef(EventTypes.OBJ_DELETE, imageRef, null)
+            }
         }
     }
 
