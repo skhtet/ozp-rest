@@ -13,5 +13,5 @@ class IntentInputRepresentation extends AbstractInputRepresentation<Intent> {
     String type
     String action
     String label
-    String icon
+    UUID iconId
 }

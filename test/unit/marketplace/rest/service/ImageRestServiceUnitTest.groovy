@@ -33,6 +33,7 @@ import marketplace.Profile
 import marketplace.Listing
 import marketplace.Screenshot
 import marketplace.Agency
+import marketplace.Intent
 
 import marketplace.rest.DomainObjectNotFoundException
 
@@ -250,6 +251,9 @@ class ImageRestServiceUnitTest {
             '6d671fbb-5837-4cdf-90a3-ec228a79be81',
             '21371e89-1004-4e4f-a45c-c1c07c79f05c'
         ].collect { UUID.fromString(it) }
+        List<UUID> intentImageUUIDs = [
+            '5703d576-e25f-4101-8d42-be8a8a7fae7f'
+        ].collect { UUID.fromString(it) }
 
         Cache cache = cacheManager.getCache('imageReference')
 
@@ -271,6 +275,9 @@ class ImageRestServiceUnitTest {
         }
         Agency.metaClass.static.createCriteria = { ->
             [ list: { closure -> agencyImageUUIDs } ]
+        }
+        Intent.metaClass.static.createCriteria = { ->
+            [ list: { closure -> intentImageUUIDs } ]
         }
 
         //keep track of what was "deleted"

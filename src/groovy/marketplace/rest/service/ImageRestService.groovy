@@ -31,6 +31,7 @@ import marketplace.ImageReference
 import marketplace.Listing
 import marketplace.Agency
 import marketplace.Screenshot
+import marketplace.Intent
 import marketplace.ClientAuditData
 
 import marketplace.rest.DomainObjectNotFoundException
@@ -230,7 +231,7 @@ class ImageRestService {
 
     /**
      * Delete 'orphan' images.  An image is an orphan if it is at least a day
-     * old and has no Listings, Screenshots, or Agencies referring to it
+     * old and has no Listings, Screenshots, Intents, or Agencies referring to it
      * @return the number of image files deleted
      */
     @Transactional(propagation=Propagation.REQUIRED)
@@ -256,6 +257,11 @@ class ImageRestService {
                 }
             }.flatten() as Set) +
             (Agency.createCriteria().list {
+                projections {
+                    property('iconId')
+                }
+            }.flatten() as Set) +
+            (Intent.createCriteria().list {
                 projections {
                     property('iconId')
                 }

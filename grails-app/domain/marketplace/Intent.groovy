@@ -18,7 +18,7 @@ class Intent implements Serializable {
     String action
     String type
     String label
-    String icon
+    UUID iconId
 
     static mapping = {
         id natural: [properties: ['type', 'action']]
@@ -29,7 +29,7 @@ class Intent implements Serializable {
     static constraints = {
         action blank: false, maxSize: 64, matches: Constants.INTENT_ACTION_REGEX, unique: 'type'
         type blank: false, maxSize: 129, matches: Constants.MEDIA_TYPE_REGEX
-        icon nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        iconId nullable: true
         label nullable: true, maxSize: 255
     }
 
