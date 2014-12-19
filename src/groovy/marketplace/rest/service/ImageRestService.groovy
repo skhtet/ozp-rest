@@ -148,22 +148,26 @@ class ImageRestService {
             return fromCache.objectValue
         }
         else {
-            String fileName = getFileBaseName(id), folderName = getFolder(id)
+            String folderName = getFolder(id)
             Path folderPath = imageDir.resolve(Paths.get(folderName))
-            Path searchPath = folderPath.resolve(Paths.get(fileName))
-            String matcherSpec = "glob:${searchPath.toString()}.*"
-
-            PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
-
-            DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
             Path matchedFile
-            try {
-                matchedFile = dirIter.find {
-                    matcher.matches(it)
+
+            if (Files.exists(folderPath)) {
+                String fileName = getFileBaseName(id)
+                Path searchPath = folderPath.resolve(Paths.get(fileName))
+                String matcherSpec = "glob:${searchPath.toString()}.*"
+
+                PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
+
+                DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
+                try {
+                    matchedFile = dirIter.find {
+                        matcher.matches(it)
+                    }
                 }
-            }
-            finally {
-                dirIter.close()
+                finally {
+                    dirIter.close()
+                }
             }
 
             if (matchedFile) {

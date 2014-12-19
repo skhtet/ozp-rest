@@ -184,6 +184,8 @@ class ImageRestServiceUnitTest {
 
         //start out with no matched file
         Path pathToFile = null
+        boolean dirExists = true
+        Cache cache = cacheManager.getCache('imageReference')
 
         Files.metaClass.static.newDirectoryStream = { Path p ->
             assert toUnixPath(p.toString()) == '/var/lib/ozp/images/76'
@@ -198,6 +200,9 @@ class ImageRestServiceUnitTest {
             }
 
             return dStream
+        }
+        Files.metaClass.static.exists = { Path p ->
+            dirExists
         }
         FileSystems.metaClass.static.getDefault = { ->
             [
@@ -221,9 +226,15 @@ class ImageRestServiceUnitTest {
         assert returnedRef.id == id
         assert returnedRef.mediaType == MediaType.valueOf('image/bmp')
 
-        ImageReference cachedRef = cacheManager.getCache('imageReference').get(id).objectValue
+        ImageReference cachedRef = cache.get(id).objectValue
         assert cachedRef.id == id
         assert cachedRef.mediaType == MediaType.valueOf('image/bmp')
+
+        dirExists = false
+        cache.remove(returnedRef.id)
+        shouldFail(DomainObjectNotFoundException) {
+            service.getImageReference(id)
+        }
     }
 
     void testGarbageCollectImages() {
