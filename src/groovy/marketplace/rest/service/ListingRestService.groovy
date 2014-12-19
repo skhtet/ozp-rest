@@ -26,6 +26,8 @@ import marketplace.validator.ListingValidator
 
 import marketplace.rest.representation.in.InputRepresentation
 
+import marketplace.rest.DomainObjectNotFoundException
+
 @Service
 class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
@@ -332,7 +334,14 @@ class ListingRestService extends RestService<Listing> {
 
         //look up each id to ensure it refers to an existing image.  This will
         //throw a DomainObjectNotFoundException if any are missing
-        imageIds.each { imageRestService.getImageReference(it) }
+        imageIds.each {
+            try {
+                imageRestService.getImageReference(it)
+            }
+            catch (DomainObjectNotFoundException e) {
+                throw new IllegalArgumentException("Invalid image id: $it", e)
+            }
+        }
     }
 
     /**
