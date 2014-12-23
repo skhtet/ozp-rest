@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service
 
 import javax.annotation.security.RolesAllowed
 
+import marketplace.rest.DomainObjectNotFoundException
+
 @Service
 class IntentRestService extends AdminRestService<Intent> {
+    @Autowired
+    ImageRestService imageRestService
+
     @Autowired
     IntentRestService(GrailsApplication grailsApplication) {
         super(grailsApplication, Intent.class, null, null)
@@ -27,6 +32,26 @@ class IntentRestService extends AdminRestService<Intent> {
             throw new IllegalArgumentException('Cannot modify an intent action or type')
         } else {
             super.updateById(id, rep)
+        }
+    }
+
+    @Override
+    protected void postprocess(Intent updated, Map original = null) {
+        super.postprocess(updated, original)
+
+        checkIconReference(updated)
+    }
+
+    private void checkIconReference(updated) {
+        UUID iconId = updated.iconId
+
+        if (iconId) {
+            try {
+                imageRestService.getImageReference(iconId)
+            }
+            catch(DomainObjectNotFoundException e) {
+                throw new IllegalArgumentException("Invalid icon id: $updated.iconId", e)
+            }
         }
     }
 }

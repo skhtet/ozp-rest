@@ -770,37 +770,37 @@ class ListingRestServiceUnitTest {
         service.updateById(listingId, inputRep)
 
         inputRep.smallIconId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
 
         inputRep.smallIconId = validUuids[0]
         inputRep.largeIconId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
 
         inputRep.largeIconId = validUuids[1]
         inputRep.bannerIconId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
 
         inputRep.bannerIconId = validUuids[2]
         inputRep.featuredBannerIconId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
 
         inputRep.featuredBannerIconId = validUuids[3]
         inputRep.screenshots[0].smallImageId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
 
         inputRep.screenshots[0].smallImageId = validUuids[4]
         inputRep.screenshots[0].largeImageId = invalidUuid
-        shouldFail(DomainObjectNotFoundException) {
+        shouldFail(IllegalArgumentException) {
             service.updateById(listingId, inputRep)
         }
     }

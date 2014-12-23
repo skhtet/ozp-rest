@@ -31,6 +31,7 @@ import marketplace.ImageReference
 import marketplace.Listing
 import marketplace.Agency
 import marketplace.Screenshot
+import marketplace.Intent
 import marketplace.ClientAuditData
 
 import marketplace.rest.DomainObjectNotFoundException
@@ -147,22 +148,26 @@ class ImageRestService {
             return fromCache.objectValue
         }
         else {
-            String fileName = getFileBaseName(id), folderName = getFolder(id)
+            String folderName = getFolder(id)
             Path folderPath = imageDir.resolve(Paths.get(folderName))
-            Path searchPath = folderPath.resolve(Paths.get(fileName))
-            String matcherSpec = "glob:${searchPath.toString()}.*"
-
-            PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
-
-            DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
             Path matchedFile
-            try {
-                matchedFile = dirIter.find {
-                    matcher.matches(it)
+
+            if (Files.exists(folderPath)) {
+                String fileName = getFileBaseName(id)
+                Path searchPath = folderPath.resolve(Paths.get(fileName))
+                String matcherSpec = "glob:${searchPath.toString()}.*"
+
+                PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
+
+                DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
+                try {
+                    matchedFile = dirIter.find {
+                        matcher.matches(it)
+                    }
                 }
-            }
-            finally {
-                dirIter.close()
+                finally {
+                    dirIter.close()
+                }
             }
 
             if (matchedFile) {
@@ -230,7 +235,7 @@ class ImageRestService {
 
     /**
      * Delete 'orphan' images.  An image is an orphan if it is at least a day
-     * old and has no Listings, Screenshots, or Agencies referring to it
+     * old and has no Listings, Screenshots, Intents, or Agencies referring to it
      * @return the number of image files deleted
      */
     @Transactional(propagation=Propagation.REQUIRED)
@@ -256,6 +261,11 @@ class ImageRestService {
                 }
             }.flatten() as Set) +
             (Agency.createCriteria().list {
+                projections {
+                    property('iconId')
+                }
+            }.flatten() as Set) +
+            (Intent.createCriteria().list {
                 projections {
                     property('iconId')
                 }

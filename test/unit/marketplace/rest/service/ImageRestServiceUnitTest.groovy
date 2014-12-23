@@ -33,6 +33,7 @@ import marketplace.Profile
 import marketplace.Listing
 import marketplace.Screenshot
 import marketplace.Agency
+import marketplace.Intent
 
 import marketplace.rest.DomainObjectNotFoundException
 
@@ -183,6 +184,8 @@ class ImageRestServiceUnitTest {
 
         //start out with no matched file
         Path pathToFile = null
+        boolean dirExists = true
+        Cache cache = cacheManager.getCache('imageReference')
 
         Files.metaClass.static.newDirectoryStream = { Path p ->
             assert toUnixPath(p.toString()) == '/var/lib/ozp/images/76'
@@ -197,6 +200,9 @@ class ImageRestServiceUnitTest {
             }
 
             return dStream
+        }
+        Files.metaClass.static.exists = { Path p ->
+            dirExists
         }
         FileSystems.metaClass.static.getDefault = { ->
             [
@@ -220,9 +226,15 @@ class ImageRestServiceUnitTest {
         assert returnedRef.id == id
         assert returnedRef.mediaType == MediaType.valueOf('image/bmp')
 
-        ImageReference cachedRef = cacheManager.getCache('imageReference').get(id).objectValue
+        ImageReference cachedRef = cache.get(id).objectValue
         assert cachedRef.id == id
         assert cachedRef.mediaType == MediaType.valueOf('image/bmp')
+
+        dirExists = false
+        cache.remove(returnedRef.id)
+        shouldFail(DomainObjectNotFoundException) {
+            service.getImageReference(id)
+        }
     }
 
     void testGarbageCollectImages() {
@@ -250,6 +262,9 @@ class ImageRestServiceUnitTest {
             '6d671fbb-5837-4cdf-90a3-ec228a79be81',
             '21371e89-1004-4e4f-a45c-c1c07c79f05c'
         ].collect { UUID.fromString(it) }
+        List<UUID> intentImageUUIDs = [
+            '5703d576-e25f-4101-8d42-be8a8a7fae7f'
+        ].collect { UUID.fromString(it) }
 
         Cache cache = cacheManager.getCache('imageReference')
 
@@ -271,6 +286,9 @@ class ImageRestServiceUnitTest {
         }
         Agency.metaClass.static.createCriteria = { ->
             [ list: { closure -> agencyImageUUIDs } ]
+        }
+        Intent.metaClass.static.createCriteria = { ->
+            [ list: { closure -> intentImageUUIDs } ]
         }
 
         //keep track of what was "deleted"
