@@ -42,7 +42,7 @@ grails.war.resources = { stagingDir ->
     delete dir: "$classesDir/ozone-security-beans"
 
     //don't add test ehcache config to war
-    delete "$classesDir/ehcache-test.xml"
+    delete dir: "$classesDir/ehcache-test.xml"
 }
 
 grails.project.dependency.resolution = {
