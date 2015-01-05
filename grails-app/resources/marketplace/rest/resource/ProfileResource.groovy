@@ -250,8 +250,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @Path('/{profileId}/library')
     @GET
     @Produces([
-        ApplicationLibraryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
+        ApplicationLibraryRepresentation.MEDIA_TYPE
     ])
     ChildObjectCollection<Profile, ApplicationLibraryEntry> getApplicationLibrary(
             @PathParam('profileId') String profileId) {
@@ -278,7 +277,6 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @POST
     @Produces([
         ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
     @Consumes([
@@ -297,8 +295,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     @Path('/{profileId}/library')
     @PUT
     @Produces([
-        ApplicationLibraryEntryRepresentation.MEDIA_TYPE,
-        AbstractHalRepresentation.HAL_MEDIA_TYPE
+        ApplicationLibraryEntryRepresentation.MEDIA_TYPE
     ])
     @Consumes([
         ApplicationLibraryEntryInputRepresentation.COLLECTION_MEDIA_TYPE,
