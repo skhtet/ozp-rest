@@ -25,6 +25,9 @@ import marketplace.ItemComment
 import marketplace.ListingActivity
 import marketplace.ApprovalStatus
 
+import marketplace.rest.RequiredListingCollection
+import marketplace.rest.RequiringListingCollection
+
 import marketplace.rest.PagingChildObjectCollection
 import marketplace.rest.ChildObjectCollection
 import marketplace.rest.FilteredListingsPagedCollection
@@ -151,18 +154,32 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
 
     @Path('/{listingId}/requiredListings')
     @GET
-    public Collection<Listing> getRequiredListings(
+    @Produces([
+        ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    public RequiredListingCollection getRequiredListings(
             @PathParam('listingId') long listingId) {
 
-        service.getAllRequiredListingsByParentId(listingId)
+        new RequiredListingCollection(
+            service.getAllRequiredListingsByParentId(listingId),
+            read(listingId)
+        )
     }
 
     @Path('/{listingId}/requiringListings')
     @GET
-    public Collection<Listing> getRequiringListings(
+    @Produces([
+        ListingRepresentation.COLLECTION_MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
+    public RequiringListingCollection getRequiringListings(
             @PathParam('listingId') long listingId) {
 
-        service.getRequiringListingsByChildId(listingId)
+        new RequiringListingCollection(
+            service.getRequiringListingsByChildId(listingId),
+            read(listingId)
+        )
     }
 
     @Path('/{listingId}/itemComment')

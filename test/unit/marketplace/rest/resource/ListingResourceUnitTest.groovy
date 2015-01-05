@@ -6,6 +6,8 @@ import marketplace.ItemComment
 import marketplace.ListingActivity
 import marketplace.FilteredListings
 import marketplace.ApprovalStatus
+import marketplace.rest.RequiringListingCollection
+import marketplace.rest.RequiredListingCollection
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 
@@ -123,18 +125,22 @@ class ListingResourceUnitTest {
         def passedParentId
 
         def serviceItemRestServiceMock = mockFor(ListingRestService)
-        serviceItemRestServiceMock.demand.getAllRequiredListingsByParentId(1..2) {
+        serviceItemRestServiceMock.demand.getAllRequiredListingsByParentId(1..1) {
                 parentId ->
             passedParentId = parentId
             [serviceItem]
         }
+
+        serviceItemRestServiceMock.demand.getById(1..1) { id ->
+            passedParentId = id
+            return serviceItem
+        }
+
         resource.service = serviceItemRestServiceMock.createMock()
 
-        assert resource.getRequiredListings(1) == [serviceItem]
+        def required = resource.getRequiredListings(1)
+        assert required[0] == serviceItem
         assert passedParentId == 1
-
-        resource.getRequiredListings(25)
-        assert passedParentId == 25
     }
 
     void testGetRequiringServiceItems() {
@@ -147,13 +153,19 @@ class ListingResourceUnitTest {
             passedParentId = parentId
             [serviceItem]
         }
+
+        serviceItemRestServiceMock.demand.getById(1..1) { id ->
+            passedParentId = id
+            return serviceItem
+        }
+
         resource.service = serviceItemRestServiceMock.createMock()
 
-        assert resource.getRequiringListings(1) == [serviceItem]
+        def requiring = resource.getRequiringListings(1)
+
+        assert requiring[0] == serviceItem
         assert passedParentId == 1
 
-        resource.getRequiringListings(25)
-        assert passedParentId == 25
     }
 
     void testGetItemCommentsByServiceItem() {
