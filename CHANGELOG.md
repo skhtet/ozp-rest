@@ -1,3 +1,21 @@
+### 0.4.1 (2015-01-07)
+
+
+#### Bug Fixes
+
+* **Application Library:** Removing broken support for application/hal+json ([746766f9](https://github.com/ozone-development/ozp-rest/commit/746766f9441c1948e29c65bc32ce6eee330ce05e))
+* **Listing:** OZF-567: fixed broken self links for required and requiring listings ([79e4e60a](https://github.com/ozone-development/ozp-rest/commit/79e4e60a15b74d931a0b0a6e179cb40804cfd483))
+
+
+### 0.4.1 (2015-01-07)
+
+
+#### Bug Fixes
+
+* **Application Library:** Removing broken support for application/hal+json ([746766f9](https://github.com/ozone-development/ozp-rest/commit/746766f9441c1948e29c65bc32ce6eee330ce05e))
+* **Listing:** OZF-567: fixed broken self links for required and requiring listings ([79e4e60a](https://github.com/ozone-development/ozp-rest/commit/79e4e60a15b74d931a0b0a6e179cb40804cfd483))
+
+
 ### 0.4.1 (2014-12-11)
 
 
