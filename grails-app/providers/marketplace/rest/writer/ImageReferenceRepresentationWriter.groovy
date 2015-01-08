@@ -15,7 +15,8 @@ import marketplace.rest.representation.out.ImageReferenceRepresentation
 @Provider
 @Produces([
     ImageReferenceRepresentation.MEDIA_TYPE,
-    MediaType.APPLICATION_JSON
+    MediaType.APPLICATION_JSON,
+    MediaType.TEXT_PLAIN
 ])
 class ImageReferenceRepresentationWriter extends AbstractRepresentationWriter<ImageReference> {
 

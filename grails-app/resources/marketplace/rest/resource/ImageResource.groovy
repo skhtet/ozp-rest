@@ -77,7 +77,12 @@ class ImageResource {
      * should be in a response part named 'image'
      */
     @POST
-    @Produces([ImageReferenceRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+    @Produces([
+        MediaType.TEXT_PLAIN, //genius IE will try to open a download dialog
+                              //if the content type is not text/plain or text/html
+        ImageReferenceRepresentation.MEDIA_TYPE,
+        MediaType.APPLICATION_JSON
+    ])
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createFromForm(
             @Context UriInfo uriInfo,
