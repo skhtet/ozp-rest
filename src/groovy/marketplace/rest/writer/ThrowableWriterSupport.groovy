@@ -13,7 +13,9 @@ import javax.ws.rs.core.MediaType
 @Provider
 //any json-ish content type can be produced.  This is partially enforced by the implementation
 //of isWriteable
-@Produces(['text/x-json', 'application/*'])
+//Also allow it to return any content type so that it doesn't totally throw up in client
+//requests an image or something
+@Produces(['text/x-json', 'application/*', '*/*'])
 class ThrowableWriterSupport<T extends Throwable> extends AbstractMessageBodyWriter<T> {
     ThrowableWriterSupport() {
         super(Throwable.class)
@@ -25,12 +27,5 @@ class ThrowableWriterSupport<T extends Throwable> extends AbstractMessageBodyWri
             error: true,
             message: exception.message ?: exception.cause?.message ?: exception.getClass().name
         ]
-    }
-
-    @Override
-    boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
-            MediaType mediaType) {
-        (mediaType.subtype.endsWith('json') || mediaType.subtype.endsWith('hal')) &&
-            super.isWriteable(type, genericType, annotations, mediaType)
     }
 }
