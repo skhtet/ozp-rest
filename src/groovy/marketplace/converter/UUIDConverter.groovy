@@ -12,7 +12,7 @@ class UUIDConverter extends PropertyEditorSupport {
 
     @Override
     void setAsText (String text) {
-        setValue(UUID.fromString(text))
+        setValue(text != null ? UUID.fromString(text) : null)
     }
 }
 
