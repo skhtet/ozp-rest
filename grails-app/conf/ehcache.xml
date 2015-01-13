@@ -45,23 +45,7 @@
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </cache>
 
-    <cache name="marketplace.Text"
-           maxElementsInMemory="1000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
     <cache name="marketplace.Category"
-           maxElementsInMemory="1000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-    <cache name="marketplace.State"
            maxElementsInMemory="1000"
            timeToLiveSeconds="3600"
            eternal="false"
@@ -91,55 +75,6 @@
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </cache>
 
-    <!-- Setup Spring Caches here -->
-    <cache name="serviceItemBadgeCache"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-    <cache name="serviceItemIconImageCache"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-
-    <cache name="serviceItemDescriptionCache"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-
-    <cache name="typeIconImageCache"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-
-    <cache name="nuggetCache"
-           maxElementsInMemory="100000"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
     <!-- Cache for image references -->
     <cache name="imageReference"
            maxElementsInMemory="10000"
@@ -157,40 +92,5 @@
            eternal="false"
            diskPersistent="false"
            overflowToDisk="false">
-    </cache>
-
-    <cache name="org.ozoneplatform.appconfig.server.domain.model.ApplicationConfiguration"
-           maxElementsInMemory="100"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-    <cache name="query.org.ozoneplatform.appconfig.server.domain.model.ApplicationConfiguration.findByCode"
-           maxElementsInMemory="100"
-           timeToLiveSeconds="3600"
-           eternal="false"
-           diskPersistent="false"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
-    </cache>
-
-    <!-- Caches required by the security project for sharing security information between
-         cluster nodes. Do not modify these settings -->
-    <cache name="sessionIds"
-           maxElementsInMemory="100000"
-           eternal="true"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
-                                   properties="replicateUpdatesViaCopy=true"/>
-    </cache>
-    <cache name="allowedSessions"
-           maxElementsInMemory="1"
-           eternal="true"
-           overflowToDisk="false">
-        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
-                                   properties="replicateUpdatesViaCopy=true"/>
     </cache>
 </ehcache>
