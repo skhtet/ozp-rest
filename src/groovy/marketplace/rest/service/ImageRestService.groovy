@@ -35,6 +35,8 @@ import marketplace.Intent
 import marketplace.ClientAuditData
 
 import marketplace.rest.DomainObjectNotFoundException
+import marketplace.rest.InvalidContentTypeException
+import marketplace.rest.RequestTooLargeException
 
 import marketplace.rest.representation.in.InputRepresentation
 
@@ -95,7 +97,7 @@ class ImageRestService {
         }
 
         if (data.length > IMAGE_MAX_SIZE) {
-            throw new IllegalArgumentException("Images cannot be larger than 1 MiB")
+            throw new RequestTooLargeException("Images cannot be larger than 1 MiB")
         }
         else if (data.length == 0) {
             throw new IllegalArgumentException("Images cannot be empty")
@@ -215,8 +217,8 @@ class ImageRestService {
         String extension = mediaTypeToExtension[imageRef.mediaType]
 
         if (!extension) {
-            throw new IllegalArgumentException(
-                "Could not find extension for image with media type ${imageRef.mediaType}")
+            throw new InvalidContentTypeException(
+                "Unacceptable media type ${imageRef.mediaType}")
         }
 
         return extension
