@@ -37,6 +37,13 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     String getDescription() { listing.description }
     String getDescriptionShort() { listing.descriptionShort }
     Long getTotalComments() { listing.totalComments }
+    Float getAvgRate() { listing.avgRate }
+    Integer getTotalVotes() { listing.totalVotes }
+    Integer getTotalRate5() { listing.totalRate5 }
+    Integer getTotalRate4() { listing.totalRate4 }
+    Integer getTotalRate3() { listing.totalRate3 }
+    Integer getTotalRate2() { listing.totalRate2 }
+    Integer getTotalRate1() { listing.totalRate1 }
     String getImageSmallUrl() { listing.imageSmallUrl }
     String getLaunchUrl() { listing.launchUrl }
     String getImageMediumUrl() { listing.imageMediumUrl }
