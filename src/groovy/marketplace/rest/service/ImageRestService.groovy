@@ -144,9 +144,11 @@ class ImageRestService {
      * file.
      */
     public ImageReference getImageReference(UUID id) {
+        log.trace("getImageReference($id)")
         Element fromCache = imageReferenceCache.get(id)
 
         if (fromCache) {
+            log.trace("returning image reference from cache: ${fromCache.objectValue}")
             return fromCache.objectValue
         }
         else {
@@ -154,22 +156,35 @@ class ImageRestService {
             Path folderPath = imageDir.resolve(Paths.get(folderName))
             Path matchedFile
 
+            log.trace("folder name for image reference: $folderName")
+            log.trace("path for image reference: $folderPath")
+
             if (Files.exists(folderPath)) {
+                log.trace("path for image reference exists")
+
                 String fileName = getFileBaseName(id)
                 Path searchPath = folderPath.resolve(Paths.get(fileName))
                 String matcherSpec = "glob:${searchPath.toString()}.*"
+
+                log.trace("file name for image reference: $fileName")
+                log.trace("search path for image reference: $searchPath")
+                log.trace("matcher spec for image reference: $matcherSpec")
 
                 PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
 
                 DirectoryStream<Path> dirIter = Files.newDirectoryStream(folderPath)
                 try {
                     matchedFile = dirIter.find {
+                        log.trace("checking file for match: $it")
                         matcher.matches(it)
                     }
                 }
                 finally {
                     dirIter.close()
                 }
+            }
+            else {
+                log.trace("path for image reference does NOT exist")
             }
 
             if (matchedFile) {

@@ -171,6 +171,11 @@
         <appender-ref ref="ozone-async"/>
     </logger>
 
+    <logger name="marketplace.rest.service.ImageRestService" additivity="false">
+        <level value="trace"/>
+        <appender-ref ref="ozone-async"/>
+    </logger>
+
     <root>
         <level value="error" />
         <appender-ref ref="ozone-async" />
