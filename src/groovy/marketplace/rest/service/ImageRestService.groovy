@@ -163,9 +163,11 @@ class ImageRestService {
                 log.trace("path for image reference exists")
 
                 String fileName = getFileBaseName(id)
-                String matcherSpec = "glob:${fileName.toString()}.*"
+                Path searchPath = folderPath.resolve(Paths.get(fileName))
+                String matcherSpec = "glob:${searchPath.toString()}.*"
 
                 log.trace("file name for image reference: $fileName")
+                log.trace("search path for image reference: $searchPath")
                 log.trace("matcher spec for image reference: $matcherSpec")
 
                 PathMatcher matcher = FileSystems.default.getPathMatcher(matcherSpec)
