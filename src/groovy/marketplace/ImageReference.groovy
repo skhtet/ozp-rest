@@ -20,8 +20,4 @@ class ImageReference implements Serializable {
     }
 
     public MediaType getMediaType() { MediaType.valueOf(mediaType) }
-
-    public String toString() {
-        "ImageReference:$id:$mediaType"
-    }
 }
