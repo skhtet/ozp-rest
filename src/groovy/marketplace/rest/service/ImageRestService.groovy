@@ -174,9 +174,7 @@ class ImageRestService {
                 try {
                     matchedFile = dirIter.find {
                         log.trace("checking file for match: $it")
-                        boolean retval = matcher.matches(it)
-                        log.trace("file matches: $retval")
-                        return retval
+                        matcher.matches(it)
                     }
                 }
                 finally {
@@ -188,22 +186,16 @@ class ImageRestService {
             }
 
             if (matchedFile) {
-                log.trace("match found for $id: $matchedFile")
                 //dot is guaranteed to be present based on specified glob pattern
                 String extension = matchedFile.fileName.toString().split('\\.')[1]
                 MediaType mediaType = extensionToMediaType[extension]
                 ImageReference ref = new ImageReference(id, mediaType)
-
-                log.trace("extension: $extension")
-                log.trace("mediaType: $mediaType")
-                log.trace("image reference: $ref")
 
                 imageReferenceCache.put(new Element(id, ref))
                 logImageGet(ref, null)
                 return ref
             }
             else {
-                log.trace("no match found for $id")
                 throw new DomainObjectNotFoundException(ImageReference, id)
             }
         }
