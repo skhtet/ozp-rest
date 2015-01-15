@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.AbstractRepresentationWriter
 
@@ -15,10 +17,13 @@ abstract class ChildObjectCollectionWriter<P,T> extends
      * @param itemFactory The RepresentationFactory for the individual items in
      * the collection
      */
-    protected ChildObjectCollectionWriter(RepresentationFactory<T> itemFactory,
+    protected ChildObjectCollectionWriter(
+            GrailsApplication grailsApplication,
+            RepresentationFactory<T> itemFactory,
             ChildCollectionUriBuilder.Factory<P,T> collectionUriBuilderFactory,
             ObjectUriBuilder.Factory<P> parentUriBuilderFactory) {
-        super(ChildObjectCollectionRepresentation.createFactory(itemFactory,
+        super(grailsApplication,
+                ChildObjectCollectionRepresentation.createFactory(itemFactory,
                 collectionUriBuilderFactory, parentUriBuilderFactory))
     }
 }

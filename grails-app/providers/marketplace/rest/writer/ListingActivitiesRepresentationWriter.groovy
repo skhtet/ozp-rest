@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
@@ -22,9 +24,10 @@ class ListingActivitiesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<ListingActivity>> {
 
     @Autowired
-    ListingActivitiesRepresentationWriter(ListingActivityRepresentation.Factory factory,
+    ListingActivitiesRepresentationWriter(GrailsApplication grailsApplication,
+            ListingActivityRepresentation.Factory factory,
             ListingActivityUriBuilder.Factory listingActivityUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory,
+        super(grailsApplication, EmbeddedCollectionRepresentation.createFactory(factory,
             listingActivityUriBuilderFactory, null))
     }
 }

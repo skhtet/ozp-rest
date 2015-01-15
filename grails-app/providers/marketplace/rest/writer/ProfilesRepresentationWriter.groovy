@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
@@ -23,8 +25,9 @@ class ProfilesRepresentationWriter extends
         AbstractRepresentationWriter<Collection<Profile>> {
 
     @Autowired
-    ProfilesRepresentationWriter(ProfileRepresentation.Factory factory,
+    ProfilesRepresentationWriter(GrailsApplication grailsApplication,
+            ProfileRepresentation.Factory factory,
             ProfileUriBuilder.Factory profileUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(factory, profileUriBuilderFactory))
+        super(grailsApplication, EmbeddedCollectionRepresentation.createFactory(factory, profileUriBuilderFactory))
     }
 }

@@ -6,18 +6,28 @@ import javax.ws.rs.core.UriInfo
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 @TestMixin(GrailsUnitTestMixin)
 class ApplicationRootUriBuilderHolderUnitTest {
     URI baseUri
+    UriInfo uriInfo
     ApplicationRootUriBuilderHolder builderHolder
+
+    GrailsApplication grailsApplication
 
     void setUp() {
         baseUri = new URI('https://localhost/marketplace')
         UriBuilder baseUriBuilder = UriBuilder.fromUri(baseUri)
-        UriInfo uriInfo = [
+        uriInfo = [
             getBaseUriBuilder: { baseUriBuilder }
         ] as UriInfo
-        builderHolder = new ApplicationRootUriBuilderHolder(uriInfo)
+
+        grailsApplication = new DefaultGrailsApplication()
+
+        builderHolder = new ApplicationRootUriBuilderHolder(
+            grailsApplication, uriInfo)
     }
 
     void testGetsBaseUri() {
@@ -40,5 +50,19 @@ class ApplicationRootUriBuilderHolderUnitTest {
         assert builder3.build() != builder4.build()
         assert builder4.build() == baseUri
         assert !builder3.is(builder4)
+    }
+
+    //test that if the marketplace.publicURI configuration is present,
+    //it uses that instead of the UriInfo
+    void testUsesConfiguration() {
+        String confValue = 'https://widgethome:8443/store'
+
+        grailsApplication.config.marketplace.publicURI = confValue
+
+        //the conf is used at construction time so we have to make a new one
+        builderHolder = new ApplicationRootUriBuilderHolder(
+            grailsApplication, uriInfo)
+
+        assert builderHolder.builder.build() == new URI(confValue)
     }
 }

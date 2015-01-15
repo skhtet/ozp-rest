@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
@@ -20,7 +22,8 @@ import marketplace.rest.representation.out.ContactTypeRepresentation
 class ContactTypeRepresentationWriter extends AbstractRepresentationWriter<ContactType> {
 
     @Autowired
-    ContactTypeRepresentationWriter(ContactTypeRepresentation.Factory factory) {
-        super(factory)
+    ContactTypeRepresentationWriter(GrailsApplication grailsApplication,
+            ContactTypeRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

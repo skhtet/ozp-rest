@@ -20,6 +20,8 @@ import com.sun.jersey.multipart.FormDataParam
 
 import org.springframework.beans.factory.annotation.Autowired
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import marketplace.ImageReference
 import marketplace.ClientAuditData
 
@@ -37,6 +39,7 @@ class ImageResource {
 
     @Autowired ImageRestService service
     @Autowired ImageReferenceUriBuilder.Factory uriBuilderFactory
+    @Autowired GrailsApplication grailsApplication
 
     @GET
     @Path('{id}.{extension}')
@@ -67,7 +70,8 @@ class ImageResource {
             ClientAuditData.fromHttpRequest(request))
 
         ImageReferenceUriBuilder imageUriBuilder =
-            uriBuilderFactory.getBuilder(new ApplicationRootUriBuilderHolder(uriInfo))
+            uriBuilderFactory.getBuilder(
+                new ApplicationRootUriBuilderHolder(grailsApplication, uriInfo))
         Response.created(imageUriBuilder.getImageUri(reference)).entity(reference).build()
     }
 

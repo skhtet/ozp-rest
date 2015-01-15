@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Listing
@@ -16,7 +18,8 @@ import marketplace.rest.representation.out.ApplicationRepresentation
 class ApplicationRepresentationWriter extends AbstractRepresentationWriter<Listing> {
 
     @Autowired
-    ApplicationRepresentationWriter(ApplicationRepresentation.Factory factory) {
-        super(factory)
+    ApplicationRepresentationWriter(GrailsApplication grailsApplication,
+            ApplicationRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

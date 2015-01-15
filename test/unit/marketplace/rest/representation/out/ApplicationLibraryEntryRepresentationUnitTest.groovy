@@ -6,6 +6,9 @@ import javax.ws.rs.core.UriInfo
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.ApplicationLibraryEntry
 import marketplace.Profile
 import marketplace.Listing
@@ -29,11 +32,14 @@ class ApplicationLibraryEntryRepresentationUnitTest {
     void setUp() {
         factory = new ApplicationLibraryEntryRepresentation.Factory()
 
-        uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-            getBaseUriBuilder: {
-                UriBuilder.fromPath('https://localhost/asdf/')
-            }
-        ] as UriInfo)
+        uriBuilderHolder = new ApplicationRootUriBuilderHolder(
+            new DefaultGrailsApplication(),
+            [
+                getBaseUriBuilder: {
+                    UriBuilder.fromPath('https://localhost/asdf/')
+                }
+            ] as UriInfo
+        )
 
         factory.entryUriBuilderFactory = new ApplicationLibraryEntryUriBuilder.Factory() {
             ApplicationLibraryEntryUriBuilder getBuilder(

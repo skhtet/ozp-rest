@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import marketplace.Listing
 
 import marketplace.rest.RequiringListingCollection
@@ -23,11 +25,12 @@ import javax.ws.rs.ext.Provider
 class RequiringListingCollectionRepresentationWriter extends AbstractRepresentationWriter<RequiringListingCollection> {
 
     @Autowired
-    RequiringListingCollectionRepresentationWriter(
+    RequiringListingCollectionRepresentationWriter(GrailsApplication grailsApplication,
+
           ListingRepresentation.Factory factory,
           RequiringListingCollectionUriBuilder.Factory collectionUriBuilderFactory,
           ListingUriBuilder.Factory parentUriBuilderFactory) {
-            super(EmbeddedChildCollectionRepresentation.createFactory(factory,
+            super(grailsApplication, EmbeddedChildCollectionRepresentation.createFactory(factory,
               collectionUriBuilderFactory, parentUriBuilderFactory))
     }
 }

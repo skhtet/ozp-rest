@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.hal.AbstractRepresentationWriter
@@ -20,7 +22,8 @@ import marketplace.rest.representation.out.IwcDataObjectRepresentation
 class IwcUserDataRepresentationWriter extends AbstractRepresentationWriter<IwcUserData> {
 
     @Autowired
-    IwcUserDataRepresentationWriter(IwcUserDataRepresentation.Factory factory) {
-        super(factory)
+    IwcUserDataRepresentationWriter(GrailsApplication grailsApplication,
+            IwcUserDataRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

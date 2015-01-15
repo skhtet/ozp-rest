@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.ext.Provider
@@ -20,7 +22,8 @@ import marketplace.rest.representation.out.FilteredListingsRepresentation
 class FilteredListingsRepresentationWriter extends
         AbstractRepresentationWriter<FilteredListingsPagedCollection> {
     @Autowired
-    FilteredListingsRepresentationWriter(FilteredListingsRepresentation.Factory factory) {
-        super(factory)
+    FilteredListingsRepresentationWriter(GrailsApplication grailsApplication,
+            FilteredListingsRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

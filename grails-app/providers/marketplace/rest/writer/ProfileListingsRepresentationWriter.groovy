@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
@@ -21,10 +23,11 @@ import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 class ProfileListingsRepresentationWriter extends ChildObjectCollectionWriter<Profile, Listing> {
     @Autowired
     ProfileListingsRepresentationWriter(
+            GrailsApplication grailsApplication,
             ListingRepresentation.Factory listingRepresentationFactory,
             ProfileListingUriBuilder.Factory profileListingUriBuilderFactory,
             ProfileUriBuilder.Factory profileUriBuilderFactory) {
-        super(listingRepresentationFactory, profileListingUriBuilderFactory,
+        super(grailsApplication, listingRepresentationFactory, profileListingUriBuilderFactory,
             profileUriBuilderFactory)
     }
 }

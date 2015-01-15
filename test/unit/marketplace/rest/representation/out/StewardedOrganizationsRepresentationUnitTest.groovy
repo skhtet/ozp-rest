@@ -6,6 +6,9 @@ import javax.ws.rs.core.UriInfo
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.hal.ApplicationRootUriBuilderHolder
@@ -19,11 +22,14 @@ import marketplace.rest.resource.uribuilder.AgencyUriBuilder
 class StewardedOrganizationsRepresentationUnitTest {
     RepresentationFactory<ChildObjectCollection<Profile, Agency>> factory
 
-    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-        getBaseUriBuilder: {
-            UriBuilder.fromPath('https://localhost/asdf/')
-        }
-    ] as UriInfo)
+    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder(
+        new DefaultGrailsApplication(),
+        [
+            getBaseUriBuilder: {
+                UriBuilder.fromPath('https://localhost/asdf/')
+            }
+        ] as UriInfo
+    )
 
     Collection<Agency> orgs = [ new Agency(title: 'org1'), new Agency(title: 'org2') ]
 

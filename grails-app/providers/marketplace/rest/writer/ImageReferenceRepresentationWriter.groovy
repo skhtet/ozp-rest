@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.ext.Provider
@@ -21,7 +23,8 @@ import marketplace.rest.representation.out.ImageReferenceRepresentation
 class ImageReferenceRepresentationWriter extends AbstractRepresentationWriter<ImageReference> {
 
     @Autowired
-    ImageReferenceRepresentationWriter(ImageReferenceRepresentation.Factory factory) {
-        super(factory)
+    ImageReferenceRepresentationWriter(GrailsApplication grailsApplication,
+            ImageReferenceRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Intent
@@ -21,9 +23,10 @@ import marketplace.rest.resource.uribuilder.IntentUriBuilder
 class IntentsRepresentationWriter extends AbstractRepresentationWriter<Collection<Intent>> {
 
     @Autowired
-    IntentsRepresentationWriter(IntentRepresentation.Factory intentFactory,
+    IntentsRepresentationWriter(GrailsApplication grailsApplication,
+            IntentRepresentation.Factory intentFactory,
             IntentUriBuilder.Factory intentUriBuilderFactory) {
-        super(EmbeddedCollectionRepresentation.createFactory(
+        super(grailsApplication, EmbeddedCollectionRepresentation.createFactory(
                 intentFactory, intentUriBuilderFactory))
     }
 }

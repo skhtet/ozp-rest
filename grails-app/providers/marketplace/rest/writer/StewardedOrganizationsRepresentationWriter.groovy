@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.core.MediaType
@@ -23,7 +25,8 @@ class StewardedOrganizationsRepresentationWriter extends
         AbstractRepresentationWriter<ChildObjectCollection<Profile, Agency>> {
 
     @Autowired
-    StewardedOrganizationsRepresentationWriter(StewardedOrganizationsRepresentation.Factory factory) {
-        super(factory)
+    StewardedOrganizationsRepresentationWriter(GrailsApplication grailsApplication,
+            StewardedOrganizationsRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

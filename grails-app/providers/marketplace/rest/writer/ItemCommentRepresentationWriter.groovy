@@ -6,6 +6,8 @@ import javax.ws.rs.core.MediaType
 
 import org.springframework.beans.factory.annotation.Autowired
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import marketplace.ItemComment
 
 import marketplace.hal.AbstractRepresentationWriter
@@ -16,8 +18,9 @@ import marketplace.rest.representation.out.ItemCommentRepresentation
 @Produces([ItemCommentRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
 class ItemCommentRepresentationWriter extends AbstractRepresentationWriter<ItemComment> {
     @Autowired
-    ItemCommentRepresentationWriter(ItemCommentRepresentation.Factory factory) {
-        super(factory)
+    ItemCommentRepresentationWriter(GrailsApplication grailsApplication,
+            ItemCommentRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }
 

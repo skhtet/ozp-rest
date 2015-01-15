@@ -13,6 +13,8 @@ import com.sun.jersey.multipart.FormDataBodyPart
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import grails.test.mixin.TestMixin
 
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.ClientAuditData
 import marketplace.ImageReference
 
@@ -33,6 +35,7 @@ class ImageResourceUnitTest {
         }
 
         resource = new ImageResource()
+        resource.grailsApplication = new DefaultGrailsApplication()
     }
 
     void testGetImage() {

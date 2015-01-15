@@ -2,6 +2,10 @@ package marketplace.rest.representation.out
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.Agency
 import marketplace.ApprovalStatus
 import marketplace.Contact
@@ -29,11 +33,14 @@ class ListingRepresentationUnitTest {
     static final Long LISTING_ID = 123
 
     ListingRepresentation.Factory factory
-    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
+    ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder(
+        new DefaultGrailsApplication(),
+        [
             getBaseUriBuilder: {
                 UriBuilder.fromPath(BASE_URL)
             }
-    ] as UriInfo)
+        ] as UriInfo
+    )
 
     ContactType contactType = new ContactType(title: 'contact type')
     Set<Profile> owners = [new Profile(username: 'testUser1'), new Profile(username: 'testUser2')] as Set

@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
@@ -20,8 +22,9 @@ import marketplace.rest.representation.out.RejectionListingRepresentation
 class RejectionListingRepresentationWriter extends AbstractRepresentationWriter<RejectionListing> {
 
     @Autowired
-    RejectionListingRepresentationWriter(RejectionListingRepresentation.Factory factory) {
-        super(factory)
+    RejectionListingRepresentationWriter(GrailsApplication grailsApplication,
+            RejectionListingRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }
 

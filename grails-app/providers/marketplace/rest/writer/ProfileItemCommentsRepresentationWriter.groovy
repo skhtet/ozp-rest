@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
@@ -22,10 +24,11 @@ class ProfileItemCommentsRepresentationWriter extends
         ChildObjectCollectionWriter<Profile, ItemComment> {
     @Autowired
     ProfileItemCommentsRepresentationWriter(
+            GrailsApplication grailsApplication,
             ItemCommentListingRepresentation.Factory itemCommentRepresentationFactory,
             ProfileItemCommentUriBuilder.Factory profileItemCommentUriBuilderFactory,
             ProfileUriBuilder.Factory profileUriBuilderFactory) {
-        super(itemCommentRepresentationFactory, profileItemCommentUriBuilderFactory,
+        super(grailsApplication, itemCommentRepresentationFactory, profileItemCommentUriBuilderFactory,
             profileUriBuilderFactory)
     }
 }

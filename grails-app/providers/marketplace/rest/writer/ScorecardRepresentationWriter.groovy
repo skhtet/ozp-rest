@@ -1,5 +1,7 @@
 package marketplace.rest.writer
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Scorecard
@@ -19,7 +21,8 @@ import marketplace.rest.representation.out.ScorecardRepresentation
 class ScorecardRepresentationWriter extends AbstractRepresentationWriter<Scorecard> {
 
     @Autowired
-    ScorecardRepresentationWriter(ScorecardRepresentation.Factory factory) {
-        super(factory)
+    ScorecardRepresentationWriter(GrailsApplication grailsApplication,
+            ScorecardRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

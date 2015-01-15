@@ -9,6 +9,8 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 import marketplace.rest.representation.out.IntentRepresentation
 
 @Provider
@@ -19,7 +21,8 @@ import marketplace.rest.representation.out.IntentRepresentation
 class IntentRepresentationWriter extends AbstractRepresentationWriter<Intent> {
 
     @Autowired
-    IntentRepresentationWriter(IntentRepresentation.Factory factory) {
-        super(factory)
+    IntentRepresentationWriter(GrailsApplication grailsApplication,
+            IntentRepresentation.Factory factory) {
+        super(grailsApplication, factory)
     }
 }

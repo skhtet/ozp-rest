@@ -14,6 +14,8 @@ import grails.converters.JSON
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 @TestMixin(GrailsUnitTestMixin)
 class AbstractRepresentationWriterUnitTest {
     AbstractRepresentationWriter writer
@@ -53,7 +55,8 @@ class AbstractRepresentationWriterUnitTest {
 
     void setUp() {
         writer =
-            new AbstractRepresentationWriter<WrittenClass<? extends Number>>(new Factory<Number>()) {}
+            new AbstractRepresentationWriter<WrittenClass<? extends Number>>(
+                new DefaultGrailsApplication(), new Factory<Number>()) {}
     }
 
     void testIsWriteable() {

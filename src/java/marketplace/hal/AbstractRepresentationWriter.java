@@ -12,6 +12,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.codehaus.groovy.grails.commons.GrailsApplication;
+
 import com.google.common.reflect.TypeToken;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,12 +27,18 @@ public abstract class AbstractRepresentationWriter<T> implements MessageBodyWrit
     private TypeToken<T> type;
     private RepresentationFactory<T> factory;
 
-    public AbstractRepresentationWriter(RepresentationFactory<T> factory) {
+    private GrailsApplication grailsApplication;
+
+    public AbstractRepresentationWriter(GrailsApplication grailsApplication,
+            RepresentationFactory<T> factory) {
         if (factory == null)
             throw new NullPointerException("RepresentationFactory should not be null");
+        if (grailsApplication == null)
+            throw new NullPointerException("GrailsApplication should not be null");
 
         this.type = new TypeToken<T>(getClass()) {};
         this.factory = factory;
+        this.grailsApplication = grailsApplication;
     }
 
     @Autowired
@@ -61,7 +69,7 @@ public abstract class AbstractRepresentationWriter<T> implements MessageBodyWrit
             MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
             throws IOException {
         AbstractHalRepresentation<T> representation = factory.toRepresentation(
-            t, new ApplicationRootUriBuilderHolder(uriInfo));
+            t, new ApplicationRootUriBuilderHolder(grailsApplication, uriInfo));
 
         objectMapper.writeValue(entityStream, representation);
     }

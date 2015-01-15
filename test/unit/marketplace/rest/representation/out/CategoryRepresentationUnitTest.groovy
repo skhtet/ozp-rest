@@ -6,6 +6,9 @@ import javax.ws.rs.core.UriInfo
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.Category
 
 import marketplace.hal.AbstractHalRepresentation
@@ -21,11 +24,14 @@ class CategoryRepresentationUnitTest {
     ApplicationRootUriBuilderHolder uriBuilderHolder
 
     void setUp() {
-        uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-            getBaseUriBuilder: {
-                UriBuilder.fromPath('https://localhost/asdf/')
-            }
-        ] as UriInfo)
+        uriBuilderHolder = new ApplicationRootUriBuilderHolder(
+            new DefaultGrailsApplication(),
+            [
+                getBaseUriBuilder: {
+                    UriBuilder.fromPath('https://localhost/asdf/')
+                }
+            ] as UriInfo
+        )
 
         factory = new CategoryRepresentation.Factory()
 

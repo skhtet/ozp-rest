@@ -10,6 +10,9 @@ import grails.orm.PagedResultList
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 
 import marketplace.testutil.MockPagedResultList
@@ -17,9 +20,12 @@ import marketplace.testutil.MockPagedResultList
 @TestMixin(GrailsUnitTestMixin)
 class EmbeddedCollectionRepresentationUnitTest {
     private ApplicationRootUriBuilderHolder makeUriBuilderHolder() {
-        ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder([
-            getBaseUriBuilder: { UriBuilder.fromPath('https://localhost/asdf/') }
-        ] as UriInfo)
+        ApplicationRootUriBuilderHolder uriBuilderHolder = new ApplicationRootUriBuilderHolder(
+            new DefaultGrailsApplication(),
+                [
+                getBaseUriBuilder: { UriBuilder.fromPath('https://localhost/asdf/') }
+            ] as UriInfo
+        )
     }
 
     void testSelfLink() {
