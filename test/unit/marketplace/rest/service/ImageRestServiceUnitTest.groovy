@@ -208,7 +208,7 @@ class ImageRestServiceUnitTest {
             [
                 getPathMatcher: { String matcherSpec ->
                     assert toUnixPath(matcherSpec) ==
-                        'glob:/var/lib/ozp/images/76/7619674d-76c9-435a-afe8-f2ef07803907.*'
+                        'glob:**/7619674d-76c9-435a-afe8-f2ef07803907.*'
 
                     return null
                 }
