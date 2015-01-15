@@ -26,10 +26,13 @@ import marketplace.validator.ListingValidator
 
 import marketplace.rest.representation.in.InputRepresentation
 
+import marketplace.rest.DomainObjectNotFoundException
+
 @Service
 class ListingRestService extends RestService<Listing> {
     @Autowired ProfileRestService profileRestService
     @Autowired ListingActivityInternalService listingActivityInternalService
+    @Autowired ImageRestService imageRestService
 
     @Autowired
     public ListingRestService(GrailsApplication grailsApplication,
@@ -302,6 +305,7 @@ class ListingRestService extends RestService<Listing> {
 
         updateRelationshipsListingActivity(updated, original)
         checkFeaturedFlag(updated, original)
+        checkImageReferences(updated)
     }
 
     private void checkFeaturedFlag(Listing updated, Map original) {
@@ -311,6 +315,32 @@ class ListingRestService extends RestService<Listing> {
         if (updatedFeatured != originalFeatured) {
             profileRestService.checkAdmin(
                 "Attempt by non-admin user to change Featured status on Listing")
+        }
+    }
+
+    /**
+     * Ensure that the image reference ids point to images that exist
+     */
+    private void checkImageReferences(Listing listing) {
+        Set<UUID> imageIds = ([
+                listing.smallIconId,
+                listing.largeIconId,
+                listing.bannerIconId,
+                listing.featuredBannerIconId
+            ] +
+            listing.screenshots.collect { [it.smallImageId, it.largeImageId] }.flatten() -
+            null
+        ) as Set
+
+        //look up each id to ensure it refers to an existing image.  This will
+        //throw a DomainObjectNotFoundException if any are missing
+        imageIds.each {
+            try {
+                imageRestService.getImageReference(it)
+            }
+            catch (DomainObjectNotFoundException e) {
+                throw new IllegalArgumentException("Invalid image id: $it", e)
+            }
         }
     }
 

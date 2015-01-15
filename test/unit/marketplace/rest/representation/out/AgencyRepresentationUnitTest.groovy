@@ -49,18 +49,4 @@ class AgencyRepresentationUnitTest {
         assert rep.links.toMap().get(RegisteredRelationType.SELF).href ==
             'https://localhost/asdf/agency/test'
     }
-
-    void testGetIcon() {
-        String iconPath = 'https://localhost/icon'
-
-        Agency agency = new Agency()
-        agency.id = 14
-
-        AgencyRepresentation rep = factory.toRepresentation(agency, uriBuilderHolder)
-
-        assert rep.icon == null
-
-        agency.iconUrl = iconPath
-        assert rep.icon == new URI(iconPath)
-    }
 }

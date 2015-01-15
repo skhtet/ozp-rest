@@ -96,17 +96,6 @@ elasticSearch {
     bulkIndexOnStartup = false
 }
 
-/**
- * Contains values for reference metadata domain objects such as Types, States, and Categories.
- */
-marketplace {
-    metadata {
-        profiles = [
-                [username: marketplace.Constants.SYSTEM_USER_USERNAME, displayName: marketplace.Constants.SYSTEM_USER_DISPLAYNAME]
-        ]
-    }
-}
-
 environments {
     test {
         log4j = {
@@ -183,6 +172,8 @@ environments {
             //trace 'org.compass.core.lucene.engine.LuceneSearchEngine'
             //trace 'org.springframework.transaction'
             //trace 'org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager'
+            //trace 'org.hibernate.type'
+            //debug 'org.hibernate.SQL'
 
             //uncomment the filter in src/templates/war/web.xml to use this
             debug 'org.apache.catalina.filters.RequestDumperFilter'
@@ -218,6 +209,30 @@ marketplace.defaultAffiliatedMarketplaceTimeout = 30000
 // A value of null means export all
 //marketplace.maxListingsToExport=25
 //marketplace.maxProfilesToExport=20
+
+marketplace.imageStoragePath = "${System.properties['catalina.home']}/images"
+
+//set to another URI to have the client retrieve images from there
+marketplace.imageUriBaseOverride = null
+
+//set to a list of mediatypes that are allowed to be stored as images, mapped to the
+//file extension under which they should be stored.  Note: types that
+//do not start with image/ will not work regardless of this setting
+marketplace.acceptableImageTypes = [
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    //'image/gif': 'gif',
+    'image/webp': 'webp',
+    'image/svg+xml': 'svg'
+]
+
+environments {
+    development {
+        //images dir in dev tomcat gets deleted on restart, so use a dir in the source
+        //tree instead
+        marketplace.imageStoragePath = "images"
+    }
+}
 
 //Custom quartz configuration goes here.
 quartz {
@@ -257,6 +272,17 @@ grails.cache.enabled = false
 org.grails.jaxrs.doreader.disable=true
 org.grails.jaxrs.dowriter.disable=true
 
-println "Config loaded"
+//disable grails multipart parsing so that jersey can do it.
+//@see https://code.google.com/p/grails-jaxrs/issues/detail?id=52
+grails.disableCommonsMultipart=true
+grails.web.disable.multipart=true
 
 notifications.enabled = false
+
+org.grails.jaxrs.provider.init.parameters=[
+    //uncomment to get jaxrs trace logging in the HTTP response headers
+    //'com.sun.jersey.config.feature.Trace': 'true',
+    'com.sun.jersey.spi.container.ResourceFilters': 'marketplace.rest.filter.CacheFilterFactory'
+]
+
+println "Config loaded"

@@ -27,4 +27,3 @@ class ApplicationLibraryEntryRepresentationWriter
         super(factory)
     }
 }
-

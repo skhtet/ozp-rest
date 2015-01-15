@@ -40,6 +40,9 @@ grails.war.resources = { stagingDir ->
     ].each { delete file: "$classesDir/$it" }
 
     delete dir: "$classesDir/ozone-security-beans"
+
+    //don't add test ehcache config to war
+    delete dir: "$classesDir/ehcache-test.xml"
 }
 
 grails.project.dependency.resolution = {
@@ -85,13 +88,15 @@ grails.project.dependency.resolution = {
         //Fix for ClassNotFoundException: javax.ws.rs.ApplicationPath
         runtime('javax.ws.rs:jsr311-api:1.1.1')
 
-        compile('org.ozoneplatform:ozone-security:4.0.2') {
+        compile('org.ozoneplatform:ozone-security:4.0.3') {
             excludes([group: 'org.springframework'], [name: 'servlet-api'])
         }
 
         compile 'com.google.guava:guava:18.0'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.3.3'
         compile 'com.damnhandy:handy-uri-templates:2.0.2'
+        compile 'com.sun.jersey.contribs:jersey-multipart:1.17'
+
     }
 
     plugins {

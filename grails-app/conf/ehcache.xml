@@ -74,4 +74,23 @@
            overflowToDisk="true">
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
     </cache>
+
+    <!-- Cache for image references -->
+    <cache name="imageReference"
+           maxElementsInMemory="10000"
+           timeToLiveSeconds="3600"
+           eternal="false"
+           diskPersistent="false"
+           overflowToDisk="false">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"/>
+    </cache>
+
+    <!-- Cache of recent Profile usernames used to optimize login -->
+    <cache name="recentLogins"
+           maxElementsInMemory="10000"
+           timeToLiveSeconds="60"
+           eternal="false"
+           diskPersistent="false"
+           overflowToDisk="false">
+    </cache>
 </ehcache>

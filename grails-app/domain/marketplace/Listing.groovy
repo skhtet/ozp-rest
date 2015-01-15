@@ -1,6 +1,7 @@
 package marketplace
 
 import marketplace.converter.JsonDateConverter
+import marketplace.converter.UUIDConverter
 
 import marketplace.util.Utils
 
@@ -20,10 +21,10 @@ class Listing implements Serializable {
         'contacts', 'isFeatured',
         'agency', 'title', 'whatIsNew',
         'description', 'requirements',
-        'versionName', 'imageLargeUrl',
-        'imageSmallUrl', 'imageMediumUrl',
+        'versionName', 'bannerIconId',
+        'smallIconId', 'largeIconId',
         'launchUrl', 'docUrls', 'descriptionShort',
-        'screenshots', 'imageXlargeUrl',
+        'screenshots', 'featuredBannerIconId',
         'tags', 'satisfiedScorecards'
 
     ]
@@ -50,10 +51,10 @@ class Listing implements Serializable {
         descriptionShort boost: 1.4
         versionName index: 'not_analyzed', excludeFromAll: true
         totalComments index: 'not_analyzed', excludeFromAll: true
-        imageSmallUrl index: 'not_analyzed', excludeFromAll: true
-        imageMediumUrl index: 'not_analyzed', excludeFromAll: true
-        imageLargeUrl index: 'not_analyzed', excludeFromAll: true
-        imageXlargeUrl index: 'not_analyzed', excludeFromAll: true
+        smallIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        largeIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        bannerIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        featuredBannerIconId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
         launchUrl index: 'not_analyzed', excludeFromAll: true
         docUrls component: true, excludeFromAll: true
         uuid index: 'not_analyzed', excludeFromAll: false
@@ -73,8 +74,9 @@ class Listing implements Serializable {
             'totalRate3', 'totalRate4', 'totalRate5', 'totalVotes', 'avgRate',
             'description', 'requirements', 'versionName', 'sortTitle', 'isFeatured',
             'title', 'agency', 'docUrls', 'uuid', 'launchUrl', 'singleton', 'width', 'height',
-            'imageXlargeUrl', 'imageLargeUrl', 'imageMediumUrl', 'imageSmallUrl', 'approvalStatus',
-            'createdDate', 'editedDate', 'isEnabled', 'tags', 'descriptionShort', 'whatIsNew'
+            'approvalStatus', 'createdDate', 'editedDate', 'isEnabled',
+            'tags', 'descriptionShort', 'whatIsNew',
+            'smallIconId', 'largeIconId', 'bannerIconId', 'featuredBannerIconId'
         ]
     }
 
@@ -112,10 +114,10 @@ class Listing implements Serializable {
     String launchUrl
     String versionName
     String uuid = UUID.randomUUID()
-    String imageSmallUrl
-    String imageMediumUrl
-    String imageLargeUrl
-    String imageXlargeUrl
+    UUID smallIconId
+    UUID largeIconId
+    UUID bannerIconId
+    UUID featuredBannerIconId
     String whatIsNew
     String descriptionShort
     String requirements
@@ -213,14 +215,10 @@ class Listing implements Serializable {
             validator: requiredUnlessInProgress
         categories(nullable: true, validator: requiredUnlessInProgress)
         uuid nullable: false, blank: false, matches: /^[A-Fa-f\d]{8}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{4}-[A-Fa-f\d]{12}$/
-        imageSmallUrl nullable: true, maxSize: Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageMediumUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageLargeUrl nullable: true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
-        imageXlargeUrl nullable:true, maxSize:Constants.MAX_URL_SIZE,
-            matches: Constants.URL_REGEX, validator: requiredUnlessInProgress
+        smallIconId nullable: true, validator: requiredUnlessInProgress
+        largeIconId nullable: true, validator: requiredUnlessInProgress
+        bannerIconId nullable: true, validator: requiredUnlessInProgress
+        featuredBannerIconId nullable:true, validator: requiredUnlessInProgress
         approvalStatus nullable: false
         lastActivity(nullable:true)
         approvedDate(nullable:true)
@@ -242,14 +240,6 @@ class Listing implements Serializable {
 
     String toString() {
         return "${id}:${title}:${uuid}:${approvalStatus}"
-    }
-
-    def asJSONMinimum () {
-        return new JSONObject(
-            id: id,
-            title: title,
-            imageSmallUrl: imageSmallUrl
-        )
     }
 
     @Override

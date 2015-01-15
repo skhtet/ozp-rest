@@ -5,6 +5,8 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 import org.codehaus.groovy.grails.web.json.JSONObject
 
+import marketplace.converter.UUIDConverter
+
 /**
  * A Domain class representing a pair of screenshots.  This pair should consist of
  * a large version and a small version of the same image.  The large version is optional.
@@ -15,23 +17,23 @@ class Screenshot implements Serializable {
 
     static searchable = {
         root false
-        smallImageUrl index: 'not_analyzed', excludeFromAll: true
-        largeImageUrl index: 'not_analyzed', excludeFromAll: true
-        only = ['smallImageUrl', 'largeImageUrl']
+        largeImageId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        smallImageId index: 'not_analyzed', excludeFromAll: true, converter: UUIDConverter
+        only = ['largeImageId', 'smallImageId']
     }
 
     static belongsTo = [serviceItem: Listing]
 
-    String smallImageUrl
-    String largeImageUrl
+    UUID largeImageId
+    UUID smallImageId
 
     static constraints = {
-        smallImageUrl blank: false, nullable: false, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
-        largeImageUrl blank: false, nullable: true, maxSize: Constants.MAX_URL_SIZE, matches: Constants.URL_REGEX
+        smallImageId nullable: false
+        largeImageId nullable: true
     }
 
-    public String getLargeImageUrl() {
-        this.largeImageUrl == null ? this.smallImageUrl : this.largeImageUrl
+    public UUID getLargeImageId() {
+        this.largeImageId ? this.largeImageId : this.smallImageId
     }
 
     @Override
@@ -47,8 +49,8 @@ class Screenshot implements Serializable {
 
         if(sameType) {
             return new EqualsBuilder()
-                        .append(smallImageUrl, other.smallImageUrl)
-                        .append(largeImageUrl, other.largeImageUrl)
+                        .append(smallImageId, other.smallImageId)
+                        .append(largeImageId, other.largeImageId)
                         .isEquals()
         }
         return false
@@ -57,13 +59,8 @@ class Screenshot implements Serializable {
     @Override
     int hashCode() {
         return new HashCodeBuilder()
-                    .append(smallImageUrl)
-                    .append(largeImageUrl)
+                    .append(smallImageId)
+                    .append(largeImageId)
                     .toHashCode()
-    }
-
-    @Override
-    String toString() {
-        "$largeImageUrl, $smallImageUrl"
     }
 }

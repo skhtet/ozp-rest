@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.security.access.AccessDeniedException
 
+import net.sf.ehcache.CacheManager
+import net.sf.ehcache.Cache
+import net.sf.ehcache.Element
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 import marketplace.Profile
@@ -27,10 +31,14 @@ class ProfileRestService extends RestService<Profile> {
     @Autowired AccountService accountService
     @Autowired AgencyRestService agencyRestService
 
+    private final Cache recentLoginsCache
+
     @Autowired
-    public ProfileRestService(GrailsApplication grailsApplication) {
+    public ProfileRestService(GrailsApplication grailsApplication, CacheManager cacheManager) {
         super(grailsApplication, Profile.class, null,
             new Sorter<Profile>(Constants.SortDirection.ASC, 'displayName'))
+
+        this.recentLoginsCache = cacheManager.getCache('recentLogins')
     }
 
     //Keep CGLIB happy
@@ -144,6 +152,15 @@ class ProfileRestService extends RestService<Profile> {
      */
     @Transactional(isolation=Isolation.READ_COMMITTED)
     public void login() {
+        String username = accountService.loggedInUsername
+
+        //this cache is set to expire items after 1 minute, so any
+        //entry in the cache is a recent login
+        if (recentLoginsCache.get(username)) {
+            return
+        }
+
+        //pessimistically lock for update
         Profile profile = getCurrentUserProfile(true) ?: new Profile(
             username: accountService.loggedInUsername
         )
@@ -164,27 +181,7 @@ class ProfileRestService extends RestService<Profile> {
         }
 
         profile.save(failOnError:true)
-    }
-
-    @Transactional
-    public void createRequired() {
-        def profilesInConfig = grailsApplication.config.marketplace.metadata.profiles
-
-        if (profilesInConfig) {
-            profilesInConfig.each { Map profileInfo ->
-                String username = profileInfo.username
-                if (!Profile.findByUsername(username)) {
-                    log.debug("#### Creating profile: $username")
-                    Profile profile =
-                        new Profile(username: username, displayName: profileInfo.displayName)
-                    profile.save(failOnError:true)
-                } else {
-                    log.info("#### Found user: $username")
-                }
-            }
-        } else {
-            log.error "Profiles metadata info was not found in the loaded config files."
-        }
+        recentLoginsCache.put(new Element(username, null))
     }
 
     @Override

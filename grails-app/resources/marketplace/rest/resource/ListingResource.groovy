@@ -17,6 +17,9 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
+import com.sun.jersey.multipart.FormDataParam
+import com.sun.jersey.multipart.FormDataBodyPart
+
 import org.springframework.beans.factory.annotation.Autowired
 
 import marketplace.Listing
@@ -35,6 +38,7 @@ import marketplace.rest.representation.in.ListingInputRepresentation
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ItemCommentInputRepresentation
 import marketplace.rest.representation.in.RejectionListingInputRepresentation
+import marketplace.rest.representation.in.ScreenshotInputRepresentation
 import marketplace.rest.representation.in.AgencyTitleInputRepresentation
 import marketplace.rest.representation.out.ItemCommentRepresentation
 import marketplace.rest.representation.out.RejectionListingRepresentation
@@ -46,8 +50,11 @@ import marketplace.rest.service.ListingRestService
 import marketplace.rest.service.ItemCommentRestService
 import marketplace.rest.service.RejectionListingRestService
 import marketplace.rest.service.ListingActivityRestService
+import marketplace.rest.service.ImageRestService
+import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 
 import marketplace.hal.PagedCollection
+import marketplace.hal.ApplicationRootUriBuilderHolder
 
 import javax.ws.rs.core.UriInfo
 
@@ -66,6 +73,7 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     @Autowired RejectionListingRestService rejectionListingRestService
     @Autowired ItemCommentRestService itemCommentRestService
     @Autowired ListingSearchService listingSearchService
+    @Autowired ImageRestService imageRestService
 
     @Autowired
     ListingResource(ListingRestService service) {

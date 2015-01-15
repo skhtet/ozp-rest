@@ -1,10 +1,13 @@
 package marketplace.rest.representation.in
 
+import com.sun.jersey.multipart.FormDataBodyPart
+
 import marketplace.Contact
 import marketplace.Screenshot
 import marketplace.Listing
 import marketplace.DocUrl
 import marketplace.ApprovalStatus
+import marketplace.ImageReference
 
 class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-listing-v1+json'
@@ -18,10 +21,10 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     String requirements
     String descriptionShort
     String description
-    String imageLargeUrl
-    String imageMediumUrl
-    String imageSmallUrl
-    String imageXlargeUrl
+    UUID featuredBannerIconId
+    UUID bannerIconId
+    UUID largeIconId
+    UUID smallIconId
     String versionName
     String whatIsNew
     Integer width
@@ -29,17 +32,17 @@ class ListingInputRepresentation extends AbstractInputRepresentation<Listing> {
     Boolean singleton = false
     Boolean isFeatured = false
     Boolean isEnabled = true
-    Set<String> tags
+    Set<String> tags = new HashSet()
     ApprovalStatus approvalStatus = ApprovalStatus.IN_PROGRESS
     TypeTitleInputRepresentation type
-    Set<IntentPropertyRefInputRepresentation> intents
-    Set<ContactInputRepresentation> contacts
-    Set<ProfilePropertyInputRepresentation> owners
-    Set<CategoryTitleInputRepresentation> categories
+    Set<IntentPropertyRefInputRepresentation> intents = new HashSet()
+    Set<ContactInputRepresentation> contacts = new HashSet()
+    Set<ProfilePropertyInputRepresentation> owners = new HashSet()
+    Set<CategoryTitleInputRepresentation> categories = new HashSet()
     AgencyTitleInputRepresentation agency
-    Set<ResourceInputRepresentation> docUrls
-    Set<ListingIdRef> required
-    List<ScreenshotInputRepresentation> screenshots
+    Set<ResourceInputRepresentation> docUrls = new HashSet()
+    Set<ListingIdRef> required = new HashSet()
+    List<ScreenshotInputRepresentation> screenshots = []
 
     public void setType(String typeTitle) {
         this.type = new TypeTitleInputRepresentation(typeTitle)
@@ -72,8 +75,8 @@ class ScreenshotInputRepresentation extends AbstractInputRepresentation<Screensh
         super(Screenshot.class)
     }
 
-    String smallImageUrl
-    String largeImageUrl
+    UUID smallImageId
+    UUID largeImageId
 }
 
 class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {
@@ -91,5 +94,4 @@ class ContactInputRepresentation extends AbstractInputRepresentation<Contact> {
     public void setType(String typeTitle) {
         this.type = new ContactTypeTitleInputRepresentation(typeTitle)
     }
-
 }

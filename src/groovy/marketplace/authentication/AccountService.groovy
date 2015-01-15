@@ -6,8 +6,7 @@ import org.springframework.security.core.GrantedAuthority
 
 /**
  * Interface for getting information about the currently logged
- * in user.  This interface and its implementations should be
- * package-private.  Application-level code that needs info on
+ * in user.  Application-level code that needs info on
  * the current user should be retrieved from the Profile
  */
 @Transactional(propagation=Propagation.SUPPORTS)
@@ -17,4 +16,5 @@ interface AccountService {
     String getLoggedInEmail()
     Collection<? extends GrantedAuthority> getLoggedInUserRoles()
     String getLoggedInOrganization()
+    void asSystemUser(Closure closure)
 }

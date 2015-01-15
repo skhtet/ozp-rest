@@ -17,6 +17,7 @@ import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.OzpRelationType
 import marketplace.hal.RegisteredRelationType
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 import javax.ws.rs.core.UriBuilder
 import javax.ws.rs.core.UriInfo
@@ -50,8 +51,8 @@ class ListingRepresentationUnitTest {
     ]
     Set<DocUrl> docUrls = [new DocUrl(url: 'http://hjkl'),
                            new DocUrl(url: 'http://asdf')] as Set
-    Set<Screenshot> screenshots = [new Screenshot(largeImageUrl: 'https://qwerty'),
-                                   new Screenshot(largeImageUrl: 'https://asqwe')] as Set
+    Set<Screenshot> screenshots = [new Screenshot(largeImageId: UUID.randomUUID()),
+                                   new Screenshot(largeImageUrl: UUID.randomUUID())] as Set
     Set<Intent> intents = [new Intent(type: 'application/json', action: 'edit'),
                            new Intent(type: 'application/json', action: 'view')] as Set
     Type type = new Type(title: 'Web Application')
@@ -112,6 +113,15 @@ class ListingRepresentationUnitTest {
 
                     URI getRequiringListingsUri(Listing listing) {
                         new URI("$_url/listing/${listing.id}/requiringListings")
+                    }
+                }
+            }
+        }
+        factory.imageUriBuilderFactory = new ImageReferenceUriBuilder.Factory() {
+            ImageReferenceUriBuilder getBuilder(ApplicationRootUriBuilderHolder uriBuilderHolder){
+                new ImageReferenceUriBuilder(null, null, null) {
+                    URI getImageUri(UUID id) {
+                        new URI("${ListingRepresentationUnitTest.BASE_URL}/image/$id")
                     }
                 }
             }

@@ -6,6 +6,7 @@ import marketplace.Profile
 import marketplace.Listing
 import marketplace.Type
 import marketplace.Category
+import marketplace.ImageReference
 
 class IdRefInputRepresentation<T, S> extends AbstractInputRepresentation<T> {
     public static final String MEDIA_TYPE = 'application/vnd.ozp-id-ref-v1+json'

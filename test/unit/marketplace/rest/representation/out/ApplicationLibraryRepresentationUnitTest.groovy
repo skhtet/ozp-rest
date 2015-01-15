@@ -19,6 +19,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 import marketplace.rest.ChildObjectCollection
 
 @TestMixin(GrailsUnitTestMixin)
@@ -67,6 +68,16 @@ class ApplicationLibraryRepresentationUnitTest {
                 }
             }
         ] as ListingUriBuilder.Factory
+
+        factory.imageUriBuilderFactory = [
+            getBuilder: { uriBuilderHolder ->
+                new ImageReferenceUriBuilder(null, null, null) {
+                    URI getImageUri(UUID id) {
+                        new URI("https://localhost/asdf/api/image/$id")
+                    }
+                }
+            }
+        ] as ImageReferenceUriBuilder.Factory
     }
 
     void testLinks() {

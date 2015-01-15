@@ -9,6 +9,7 @@ import marketplace.hal.Link
 import marketplace.hal.RegisteredRelationType
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 /**
  * A representation of a Service Item within the Application Library, with all information needed
@@ -17,10 +18,12 @@ import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
 
     private Listing listing
+    private ImageReferenceUriBuilder imageUriBuilder
 
     public LibraryApplicationRepresentation(ApplicationLibraryEntry entry,
             ObjectUriBuilder<ApplicationLibraryEntry> entryUriBuilder,
-            ObjectUriBuilder<Listing> listingUriBuilder) {
+            ObjectUriBuilder<Listing> listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(
             listingUriBuilder.getUri(entry.listing),
             createLinks(entry, entryUriBuilder),
@@ -28,6 +31,7 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
         )
 
         this.listing = entry.listing
+        this.imageUriBuilder = imageUriBuilder
     }
 
     private static HalLinks createLinks(ApplicationLibraryEntry entry,
@@ -51,10 +55,10 @@ class LibraryApplicationRepresentation extends SelfRefRepresentation<Listing> {
     public Map<String, URI> getLaunchUrls() { [default: new URI(listing.launchUrl)] }
     public Map<String, URI> getIcons() {
         [
-            small: new URI(listing.imageSmallUrl),
-            large: new URI(listing.imageMediumUrl),
-            banner: new URI(listing.imageLargeUrl),
-            featuredBanner: new URI(listing.imageXlargeUrl)
+            small: imageUriBuilder.getImageUri((UUID)listing.smallIconId),
+            large: imageUriBuilder.getImageUri((UUID)listing.largeIconId),
+            banner: imageUriBuilder.getImageUri((UUID)listing.bannerIconId),
+            featuredBanner: imageUriBuilder.getImageUri((UUID)listing.featuredBannerIconId)
         ]
     }
     public long getId() { listing.id }

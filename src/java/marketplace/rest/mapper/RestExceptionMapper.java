@@ -15,12 +15,12 @@ public class RestExceptionMapper<E extends Throwable> implements ExceptionMapper
     private static final Logger log = Logger.getLogger(RestExceptionMapper.class);
 
 
-    private final Response.Status responseCode;
+    private final Response.StatusType responseCode;
 
     //whether or not to log the exception
     private final boolean logException;
 
-    protected RestExceptionMapper(Response.Status responseCode) {
+    protected RestExceptionMapper(Response.StatusType responseCode) {
         this.responseCode = responseCode;
 
         //log exceptions that go back to the client as 5xx responses.

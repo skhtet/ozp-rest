@@ -6,6 +6,8 @@ import marketplace.Listing
 import marketplace.RejectionListing
 import marketplace.Screenshot
 import marketplace.ApprovalStatus
+import marketplace.ImageReference
+
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
 import marketplace.hal.Link
@@ -13,6 +15,7 @@ import marketplace.hal.OzpRelationType
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.SelfRefRepresentation
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -21,12 +24,17 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     public static final String COLLECTION_MEDIA_TYPE = 'application/vnd.ozp-listings-v1+json'
 
     private Listing listing
+    private ImageReferenceUriBuilder imageUriBuilder
 
-    public ListingRepresentation(Listing listing, ApplicationRootUriBuilderHolder uriBuilderHolder,
-                                 ListingUriBuilder listingUriBuilder) {
+    public ListingRepresentation(
+            Listing listing,
+            ApplicationRootUriBuilderHolder uriBuilderHolder,
+            ListingUriBuilder listingUriBuilder,
+            ImageReferenceUriBuilder imageUriBuilder) {
         super(listingUriBuilder.getUri(listing), createLinks(listing, listingUriBuilder), null)
 
         this.listing = listing
+        this.imageUriBuilder = imageUriBuilder
     }
 
     Long getId() { listing.id }
@@ -44,11 +52,34 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     Integer getTotalRate3() { listing.totalRate3 }
     Integer getTotalRate2() { listing.totalRate2 }
     Integer getTotalRate1() { listing.totalRate1 }
-    String getImageSmallUrl() { listing.imageSmallUrl }
     String getLaunchUrl() { listing.launchUrl }
-    String getImageMediumUrl() { listing.imageMediumUrl }
-    String getImageLargeUrl() { listing.imageLargeUrl }
-    String getImageXlargeUrl() { listing.imageXlargeUrl }
+
+    UUID getSmallIconId() { listing.smallIconId }
+    UUID getLargeIconId() { listing.largeIconId }
+    UUID getBannerIconId() { listing.bannerIconId }
+    UUID getFeaturedBannerIconId() { listing.featuredBannerIconId }
+
+    @Deprecated
+    String getImageSmallUrl() {
+        listing.smallIconId ? imageUriBuilder.getImageUri(listing.smallIconId).toString() : null
+    }
+
+    @Deprecated
+    String getImageMediumUrl() {
+        listing.largeIconId ? imageUriBuilder.getImageUri(listing.largeIconId).toString() : null
+    }
+
+    @Deprecated
+    String getImageLargeUrl() {
+        listing.bannerIconId ? imageUriBuilder.getImageUri(listing.bannerIconId).toString() : null
+    }
+
+    @Deprecated
+    String getImageXlargeUrl() {
+        listing.featuredBannerIconId ?
+            imageUriBuilder.getImageUri(listing.featuredBannerIconId).toString() : null
+    }
+
     String getVersionName() { listing.versionName }
     String getRequirements() { listing.requirements }
     String getWhatIsNew() { listing.whatIsNew }
@@ -74,7 +105,7 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
     }}
 
     Collection<ScreenshotRepresentation> getScreenshots() { listing.screenshots.collect {
-        new ScreenshotRepresentation(it)
+        new ScreenshotRepresentation(it, imageUriBuilder)
     }}
 
     Collection<ContactRepresentation> getContacts() { listing.contacts.collect {
@@ -109,14 +140,15 @@ class ListingRepresentation extends SelfRefRepresentation<Listing> {
 
     @Component
     public static class Factory implements RepresentationFactory<Listing> {
-        @Autowired
-        ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
+        @Autowired ImageReferenceUriBuilder.Factory imageUriBuilderFactory
 
         @Override
         public ListingRepresentation toRepresentation(Listing listing,
                                                       ApplicationRootUriBuilderHolder uriBuilderHolder) {
             new ListingRepresentation(listing, uriBuilderHolder,
-                    listingUriBuilderFactory.getBuilder(uriBuilderHolder))
+                    listingUriBuilderFactory.getBuilder(uriBuilderHolder),
+                    imageUriBuilderFactory.getBuilder(uriBuilderHolder))
         }
     }
 }
@@ -149,13 +181,26 @@ class DocUrlRepresentation {
 
 class ScreenshotRepresentation {
     private Screenshot screenshot
+    private ImageReferenceUriBuilder imageUriBuilder
 
-    ScreenshotRepresentation(Screenshot screenshot) {
+    ScreenshotRepresentation(Screenshot screenshot, ImageReferenceUriBuilder imageUriBuilder) {
         this.screenshot = screenshot
+        this.imageUriBuilder = imageUriBuilder
     }
 
-    String getSmallImageUrl() { screenshot.smallImageUrl }
-    String getLargeImageUrl() { screenshot.largeImageUrl }
+    UUID getSmallImageId() { screenshot.smallImageId }
+
+    UUID getLargeImageId() { screenshot.largeImageId }
+
+    @Deprecated
+    String getSmallImageUrl() {
+        screenshot.smallImageId ? imageUriBuilder.getImageUri(screenshot.smallImageId).toString() : null
+    }
+
+    @Deprecated
+    String getLargeImageUrl() {
+        screenshot.largeImageId ? imageUriBuilder.getImageUri(screenshot.largeImageId).toString() : null
+    }
 }
 
 class CurrentRejectionRepresentation {

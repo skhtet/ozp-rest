@@ -103,6 +103,11 @@
         <appender-ref ref="ozone-async"/>
     </logger>
 
+    <logger name="grails.app.jobs" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="ozone-async"/>
+    </logger>
+
     <!-- For security logging, set this log level to "info". -->
     <logger name="ozone.marketplace.util.AuditLogListener" additivity="false">
         <level value="info"/>

@@ -25,7 +25,10 @@ import marketplace.Intent
 import marketplace.Constants
 import marketplace.ApprovalStatus
 import marketplace.ChangeDetail
+import marketplace.ImageReference
 import marketplace.validator.ListingValidator
+
+import marketplace.rest.DomainObjectNotFoundException
 
 import marketplace.rest.representation.in.InputRepresentation
 import marketplace.rest.representation.in.ListingIdRef
@@ -68,13 +71,13 @@ class ListingRestServiceUnitTest {
             url: "https://localhost"
         ]],
         screenshots: [[
-            smallImageUrl: "https://localhost",
-            largeImageUrl: "https://localhost"
+            smallImageId: UUID.randomUUID(),
+            largeImageId: UUID.randomUUID()
         ]],
-        imageSmallUrl: "https://localhost/asdf",
-        imageMediumUrl: "https://localhost/asdf",
-        imageLargeUrl: "https://localhost/asdf",
-        imageXlargeUrl: "https://localhost/asdf",
+        smallIconId: UUID.randomUUID(),
+        largeIconId: UUID.randomUUID(),
+        bannerIconId: UUID.randomUUID(),
+        featuredBannerIconId: UUID.randomUUID(),
         whatIsNew: "nothin'",
         descriptionShort: "asdf",
         categories: ["Test Category"],
@@ -230,6 +233,10 @@ class ListingRestServiceUnitTest {
         service.listingActivityInternalService = [
             addListingActivity: {si, action -> }
         ] as ListingActivityInternalService
+
+        service.imageRestService = [
+            getImageReference: { UUID id -> null }
+        ] as ImageRestService
 
         //dirty checking isn't mocked in unit tests, so we need to mock
         //the method that relies on it
@@ -718,5 +725,83 @@ class ListingRestServiceUnitTest {
 
         currentUser = admin
         service.updateById(1, inputRep)
+    }
+
+    void testCheckImageReferences() {
+        Set<UUID> validUuids = [
+            'b51edc00-8252-47b7-aaf3-877684484aee',
+            'c3a8308a-1999-4657-bbb9-84e48735c3f1',
+            '2adf81bd-e200-4361-8447-bdad242c41fa',
+            'df25575f-61f9-4540-8734-7f9007664a26',
+            '7f022216-b68b-4006-833f-5aef1eaed486',
+            'fe1d3929-b3c8-4121-8c62-fc3deeb81080',
+            '2f371731-0f0b-48a7-8d50-c9023768f65e',
+            'ccc1c980-33ee-4379-b558-d4e13040b351',
+            '485e3938-866d-46b3-afc6-ec95e759e87d',
+            '6eb33e0b-e27b-4445-8185-8d81450b33a7'
+        ].collect { UUID.fromString(it) }
+
+        UUID invalidUuid = UUID.fromString('bf3d4db7-53d0-483e-82a4-d1bb3c1dfba1')
+
+        service.imageRestService = [
+            getImageReference: { UUID id ->
+                if (!(id in validUuids)) {
+                    throw new DomainObjectNotFoundException(ImageReference.class, id)
+                }
+                else {
+                    return null
+                }
+            }
+        ] as ImageRestService
+
+        InputRepresentation<Listing> inputRep = makeServiceItemInputRepresentation()
+        inputRep.smallIconId = validUuids[0]
+        inputRep.largeIconId = validUuids[1]
+        inputRep.bannerIconId = validUuids[2]
+        inputRep.featuredBannerIconId = validUuids[3]
+        inputRep.screenshots = [new ScreenshotInputRepresentation(
+            smallImageId: validUuids[4],
+            largeImageId: validUuids[5]
+        )]
+
+        def listingId = service.createFromRepresentation(inputRep).id
+
+        inputRep.smallIconId = validUuids[6]
+        service.updateById(listingId, inputRep)
+
+        inputRep.smallIconId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
+
+        inputRep.smallIconId = validUuids[0]
+        inputRep.largeIconId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
+
+        inputRep.largeIconId = validUuids[1]
+        inputRep.bannerIconId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
+
+        inputRep.bannerIconId = validUuids[2]
+        inputRep.featuredBannerIconId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
+
+        inputRep.featuredBannerIconId = validUuids[3]
+        inputRep.screenshots[0].smallImageId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
+
+        inputRep.screenshots[0].smallImageId = validUuids[4]
+        inputRep.screenshots[0].largeImageId = invalidUuid
+        shouldFail(IllegalArgumentException) {
+            service.updateById(listingId, inputRep)
+        }
     }
 }

@@ -25,7 +25,7 @@ class RepresentationResourceUnitTest {
 
     private static final agencyProps = [
         title: "Agency Name",
-        icon: new URI("https://localhost/icon.png")
+        shortName: "AN"
     ]
 
     void setUp() {
@@ -96,20 +96,19 @@ class RepresentationResourceUnitTest {
 
     void testUpdate() {
         final id = 1, newName = 'New Name',
-            newIcon = new URI('icon2.png')
+            newShortName = 'NN'
 
         def existingAgency = new Agency(agencyProps)
         existingAgency.id = id
         def updates = new AgencyInputRepresentation(
             title: newName,
-            icon: newIcon
+            shortName: newShortName
         )
 
         restService = [
             updateById: { Long serviceId, InputRepresentation<Agency> rep ->
                 assert serviceId == id
                 existingAgency.properties = rep.inputProperties
-                existingAgency.iconUrl = rep.icon.toString()
                 existingAgency
             }
         ] as RestService
@@ -119,7 +118,7 @@ class RepresentationResourceUnitTest {
         Agency agency = resource.update(id, updates)
         assert agency instanceof Agency
         assert agency.title == newName
-        assert agency.iconUrl == newIcon.toString()
+        assert agency.shortName == newShortName.toString()
         assert agency.id == id
     }
 

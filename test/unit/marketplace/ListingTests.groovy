@@ -153,13 +153,13 @@ class ListingTests {
             agency = ag
             launchUrl = 'https://localhost/asdf'
             categories = [category]
-            imageSmallUrl = 'https://localhost/asdf'
-            imageMediumUrl = 'https://localhost/asdf'
-            imageLargeUrl = 'https://localhost/asdf'
-            imageXlargeUrl = 'https://localhost/asdf'
+            smallIconId = UUID.randomUUID()
+            largeIconId = UUID.randomUUID()
+            bannerIconId = UUID.randomUUID()
+            featuredBannerIconId = UUID.randomUUID()
             screenshots = [new Screenshot(
-                smallImageUrl: 'https://localhost/asdf',
-                largeImageUrl: 'https://localhost/asdf'
+                smallImageId: UUID.randomUUID(),
+                largeImageId: UUID.randomUUID()
             )]
             docUrls = [new DocUrl(
                 name: 'documents',
@@ -189,10 +189,10 @@ class ListingTests {
             'agency',
             'launchUrl',
             'categories',
-            'imageSmallUrl',
-            'imageMediumUrl',
-            'imageLargeUrl',
-            'imageXlargeUrl',
+            'smallIconId',
+            'largeIconId',
+            'bannerIconId',
+            'featuredBannerIconId',
             'screenshots',
             'tags'
         ].each(checkAndTest.curry(null))
@@ -206,11 +206,7 @@ class ListingTests {
             'description',
             'versionName',
             'requirements',
-            'launchUrl',
-            'imageSmallUrl',
-            'imageMediumUrl',
-            'imageLargeUrl',
-            'imageXlargeUrl'
+            'launchUrl'
         ].each(checkAndTest.curry(""))
     }
 }

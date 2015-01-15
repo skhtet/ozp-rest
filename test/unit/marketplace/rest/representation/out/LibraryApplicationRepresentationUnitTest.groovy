@@ -15,6 +15,7 @@ import marketplace.hal.RegisteredRelationType
 import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ApplicationLibraryEntryUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
+import marketplace.rest.resource.uribuilder.ImageReferenceUriBuilder
 
 @TestMixin(GrailsUnitTestMixin)
 class LibraryApplicationRepresentationUnitTest {
@@ -30,14 +31,20 @@ class LibraryApplicationRepresentationUnitTest {
     ObjectUriBuilder<Listing> listingUriBuilder =
         new ListingUriBuilder(uriBuilderHolder)
 
+    ImageReferenceUriBuilder ImageReferenceUriBuilder =
+        new ImageReferenceUriBuilder(null, null, uriBuilderHolder) {
+            URI getImageUri(UUID id) {
+                new URI("https://localhost/asdf/image/$id")
+            }
+        }
+
     Listing serviceItem = new Listing(
         title: 'Listing 1',
-        imageSmallUrl: "https://localhost/small",
-        imageMediumUrl: "https://localhost/med",
-        imageLargeUrl: "https://localhost/large",
-        imageXlargeUrl: "https://localhost/xlarge",
-        launchUrl: 'https://localhost/launch',
-        uuid: '124q2034985-4952-39'
+        smallIconId: UUID.randomUUID(),
+        largeIconId: UUID.randomUUID(),
+        bannerIconId: UUID.randomUUID(),
+        featuredBannerIconId: UUID.randomUUID(),
+        launchUrl: 'https://localhost/launch'
     )
 
     Profile profile = new Profile()
@@ -54,7 +61,8 @@ class LibraryApplicationRepresentationUnitTest {
 
     void testLinks() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder,
+                    listingUriBuilder, ImageReferenceUriBuilder)
 
         assert rep.links.toMap().get(RegisteredRelationType.DESCRIBES).href ==
             serviceItem.launchUrl
@@ -68,18 +76,24 @@ class LibraryApplicationRepresentationUnitTest {
 
     void testGetLaunchUrls() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder,
+                    imageReferenceUriBuilder)
 
         assert rep.launchUrls.default == new URI(serviceItem.launchUrl)
     }
 
     void testGetIcons() {
         LibraryApplicationRepresentation rep =
-            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder)
+            new LibraryApplicationRepresentation(entry, entryUriBuilder, listingUriBuilder,
+                    imageReferenceUriBuilder)
 
-        assert rep.icons.small == new URI(serviceItem.imageSmallUrl)
-        assert rep.icons.large == new URI(serviceItem.imageMediumUrl)
-        assert rep.icons.banner == new URI(serviceItem.imageLargeUrl)
-        assert rep.icons.featuredBanner == new URI(serviceItem.imageXlargeUrl)
+        assert rep.icons.small ==
+            new URI("https://localhost/asdf/image/${serviceItem.smallIconId}")
+        assert rep.icons.large ==
+            new URI("https://localhost/asdf/image/${serviceItem.largeIconId}")
+        assert rep.icons.banner ==
+            new URI("https://localhost/asdf/image/${serviceItem.bannerIconId}")
+        assert rep.icons.featuredBanner ==
+            new URI("https://localhost/asdf/image/${serviceItem.featuredBannerIconId}")
     }
 }

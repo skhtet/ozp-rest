@@ -17,7 +17,7 @@ import marketplace.rest.representation.out.ApplicationLibraryRepresentation
 import marketplace.rest.ChildObjectCollection
 
 @Provider
-@Produces([ApplicationLibraryRepresentation.MEDIA_TYPE, MediaType.APPLICATION_JSON])
+@Produces([ApplicationLibraryRepresentation.MEDIA_TYPE])
 class ApplicationLibraryRepresentationWriter extends
         AbstractRepresentationWriter<ChildObjectCollection<Profile, ApplicationLibraryEntry>> {
     @Autowired
