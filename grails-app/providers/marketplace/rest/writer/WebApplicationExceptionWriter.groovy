@@ -19,9 +19,15 @@ class WebApplicationExceptionWriter extends ThrowableWriterSupport<WebApplicatio
         WebApplicationException.class.isAssignableFrom(type)
     }
 
-    //WebApplicationExceptions have no way to get a decent message out of them
+    //WebApplicationExceptions that aren't based on another exception
+    //have no way to get a decent message out of them
     @Override
     protected Map toBodyMap(WebApplicationException exception) {
-        [ error: true ]
+        if (exception.cause) {
+            super.toBodyMap(exception)
+        }
+        else {
+            [ error: true ]
+        }
     }
 }
