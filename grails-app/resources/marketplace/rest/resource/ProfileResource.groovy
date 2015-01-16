@@ -1,12 +1,15 @@
 package marketplace.rest.resource
 
 import marketplace.IwcDataObject
+import marketplace.Notification
 import marketplace.rest.IwcUserApplications
 import marketplace.rest.IwcUserData
 import marketplace.rest.IwcUserIntents
+import marketplace.rest.representation.in.NotificationInputRepresentation
 import marketplace.rest.representation.out.ApplicationRepresentation
 import marketplace.rest.representation.out.IntentRepresentation
 import marketplace.rest.representation.out.IwcDataObjectRepresentation
+import marketplace.rest.representation.out.NotificationRepresentation
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.HeaderParam
@@ -315,4 +318,36 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
         applicationLibraryEntryRestService.deleteByParentIdAndServiceItemId(getProfileId(profileId),
             applicationLibraryEntryId)
     }
+
+    /**
+     * Return all unread notifications for this user
+     */
+    @GET
+    @Path('/{profileId}/notification')
+    @Produces([
+            NotificationRepresentation.COLLECTION_MEDIA_TYPE,
+            MediaType.APPLICATION_JSON
+    ])
+    ChildObjectCollection<Profile, Notification> getNotification(
+            @PathParam('profileId') String profileIdStr) {
+        long profileId = getProfileId(profileIdStr)
+        Set<Notification> notifications = service.getUnreadNotifications(profileId)
+        new ChildObjectCollection(notifications, read(profileId))
+    }
+
+    /**
+     * Mark a notification as read for a given user
+     */
+    @Path('/{profileId}/notification/{notificationId}')
+    @DELETE
+    @Produces([
+            NotificationRepresentation.MEDIA_TYPE,
+            MediaType.APPLICATION_JSON
+    ])
+    void dismissNotification(@PathParam('profileId') String profileIdStr,
+                                 @PathParam('notificationId') String notificationIdStr) {
+        long profileId = getProfileId(profileIdStr)
+        service.dismissNotification(profileId, Long.parseLong(notificationIdStr))
+    }
+
 }

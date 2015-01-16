@@ -14,12 +14,14 @@ import net.sf.ehcache.Element
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
+import marketplace.Notification
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.Role
 import marketplace.Sorter
 
 import marketplace.authentication.AccountService
+import marketplace.rest.service.NotificationRestService
 
 import javax.ws.rs.core.MediaType
 
@@ -30,6 +32,7 @@ import marketplace.rest.DomainObjectNotFoundException
 class ProfileRestService extends RestService<Profile> {
     @Autowired AccountService accountService
     @Autowired AgencyRestService agencyRestService
+    @Autowired NotificationRestService notificationRestService
 
     private final Cache recentLoginsCache
 
@@ -249,4 +252,41 @@ class ProfileRestService extends RestService<Profile> {
             throw new AccessDeniedException(msg)
         }
     }
+
+    /**
+     * Mark this Notification as dismissed for the given user
+     */
+    @Transactional
+    public void dismissNotification(long profileId, long notificationId) {
+        def profile = getById(profileId)
+        authorizeUpdate(profile)
+        def notification = notificationRestService.getById(notificationId)
+        // If it already exists, the insert will fail silently
+        profile.dismissedNotifications.add(notification)
+        this.save(profile)
+    }
+
+    /**
+     * Get all unexpired Notifications that this user hasn't dismissed yet
+     */
+    @Transactional(readOnly=true)
+    public List<Notification> getUnreadNotifications(long profileId) {
+        def now = new Date()
+        def profile = getById(profileId)
+        Notification.findAll("from Notification as notification where notification.expiresDate > :now and :profile not member of notification.dismissedBy", [now: now, profile: profile])
+    }
+
+    /**
+     * Remove this notification from all Profile.dismissedNotifications in preparation for deletion
+     */
+    @Transactional
+    public void clearNotificationFromDismissed(long notificationId) {
+        def notification = notificationRestService.getById(notificationId)
+        def profiles = Profile.findAll("from Profile as p where :notification member of p.dismissedNotifications", [notification: notification])
+        for (p in profiles) {
+            p.dismissedNotifications.removeAll{it.id == notification.id}
+            this.save(p)
+        }
+    }
+
 }

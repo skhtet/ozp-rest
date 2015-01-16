@@ -15,6 +15,7 @@ import net.sf.ehcache.CacheManager
 import marketplace.Profile
 import marketplace.Agency
 import marketplace.Role
+import marketplace.Notification
 
 import marketplace.authentication.AccountService
 
@@ -22,6 +23,8 @@ import marketplace.testutil.FakeAuditTrailHelper
 import marketplace.testutil.ProfileMappedByFix
 
 import marketplace.rest.representation.in.InputRepresentation
+
+import java.text.SimpleDateFormat
 
 @TestMixin(DomainClassUnitTestMixin)
 class ProfileRestServiceUnitTest {
@@ -209,4 +212,39 @@ class ProfileRestServiceUnitTest {
             service.checkOrgSteward(agency2)
         }
     }
+
+    // TODO: won't work because HQL isn't supported in unit tests in Grails 2.3.x
+//    void testGetUnreadNotifications() {
+//        currentUser = admin1
+//        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy")
+//        // add expired notifications
+//        def notification1 = new Notification(
+//                expiresDate: sdf.parse("01/19/1999"),
+//                message: "This notification has long since past"
+//        )
+//
+//        // add unexpired unread notifications
+//        def notification2 = new Notification(
+//                expiresDate: sdf.parse("05/19/2030"),
+//                message: "This notification is valid and unread"
+//        )
+//
+//        // add unexpired read notifications
+//        def notification3 = new Notification(
+//                expiresDate: sdf.parse("05/19/2024"),
+//                message: "This notification is valid but has been dismissed"
+//        )
+//
+//        mockDomain(Notification.class, [notification1, notification2, notification3])
+//
+//        currentUser.dismissedNotifications.add(notification3)
+//
+//        mockDomain(Profile.class, [currentUser])
+//
+//        def notifications = service.getUnreadNotifications(currentUser.id)
+//
+//        assertEquals(1, notifications.size())
+//        assertNotNull(notifications)
+//    }
+
 }

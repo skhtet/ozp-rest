@@ -18,7 +18,8 @@ class Profile implements Serializable {
         applicationLibrary: ApplicationLibraryEntry,
         organizations: Agency,
         stewardedOrganizations: Agency,
-        iwcData: IwcDataObject
+        iwcData: IwcDataObject,
+        dismissedNotifications: Notification
     ]
 
     List<ApplicationLibraryEntry> applicationLibrary = new LinkedList()
@@ -50,6 +51,7 @@ class Profile implements Serializable {
 
     Set<Agency> organizations = new HashSet()
     Set<Agency> stewardedOrganizations = new HashSet()
+    Set<Notification> dismissedNotifications = new HashSet()
 
     static constraints = {
         username blank: false, nullable: false, unique: true, maxSize: 255

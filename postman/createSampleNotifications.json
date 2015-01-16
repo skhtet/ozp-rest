@@ -1,0 +1,39 @@
+{
+  "id":"01910c4a-2e7a-75a7-f23c-8d89e3733b09",
+  "name":"createNotifications",
+  "timestamp":1422302640255,
+  "requests":[
+    {
+      "collectionId":"01910c4a-2e7a-75a7-f23c-8d89e3733b09",
+      "id":"43da3e79-4dc4-e4af-44fd-8ea07ddcdc20",
+      "name":"createSecondNotification",
+      "description":"Creates the second notification",
+      "url":"https://localhost:8443/marketplace/api/notification",
+      "method":"POST",
+      "headers":"Authorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\nContent-Type: application/json\n",
+      "data":"{\"expiresDate\": \"2015-01-29T13:00:00Z\", \"message\": \"goodbye, world\"}",
+      "dataMode":"raw",
+      "timestamp":0,
+      "responses":[
+
+      ],
+      "version":2
+    },
+    {
+      "collectionId":"01910c4a-2e7a-75a7-f23c-8d89e3733b09",
+      "id":"ffc19f9d-4ccc-d9cd-7716-76104d4443af",
+      "name":"createFirstNotification",
+      "description":"Creates the first notification",
+      "url":"https://localhost:8443/marketplace/api/notification",
+      "method":"POST",
+      "headers":"Authorization: Basic dGVzdEFkbWluMTpwYXNzd29yZA==\nContent-Type: application/json\n",
+      "data":"{\"expiresDate\": \"2015-01-27T03:00:00Z\", \"message\": \"hello, world\"}",
+      "dataMode":"raw",
+      "timestamp":0,
+      "responses":[
+
+      ],
+      "version":2
+    }
+  ]
+}

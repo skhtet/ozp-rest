@@ -61,7 +61,57 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "edited_by_id", baseTableName: "profile", constraintName: "FKED8E89A9E31CB353", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
 
 
+        /**
+         * Notification
+         */
+        createTable(tableName: "notification") {
+            column(autoIncrement: 'true', name: 'id', type: 'bigint') {
+                constraints(nullable: 'false', primaryKey: 'true', primaryKeyName: "notificationPK")
+            }
 
+            column(name: 'version', type: 'bigint') {
+                constraints(nullable: "false")
+            }
+
+            column(name: "created_by_id", type: "bigint")
+
+            column(name: "created_date", type: "datetime") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "edited_by_id", type: "bigint")
+
+            column(name: "edited_date", type: "datetime") {
+                constraints(nullable: "false")
+            }
+
+            column(name: "message", type: "varchar(150)")
+
+            column(name: "expires_date", type: "datetime") {
+                constraints(nullable: "false")
+            }
+        }
+        createIndex(indexName: "notification_created_by_idx", tableName: "notification") {
+            column(name: "created_by_id")
+        }
+
+        createIndex(indexName: "notification_edited_by_idx", tableName: "notification") {
+            column(name: "edited_by_id")
+        }
+
+        createIndex(indexName: "notification_expires_date_idx", tableName: "notification") {
+            column(name: "expires_date")
+        }
+
+        addForeignKeyConstraint(baseColumnNames: "created_by_id", baseTableName: "notification", constraintName: "notification_created_by_idx", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
+        addForeignKeyConstraint(baseColumnNames: "edited_by_id", baseTableName: "notification", constraintName: "notification_edited_by_idx", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
+
+        createTable(tableName: "profile_dismissed_notifications") {
+            column(name: "notification_id", type: "bigint")
+            column(name: "profile_id", type: "bigint")
+        }
+        addForeignKeyConstraint(baseColumnNames: "notification_id", baseTableName: "profile_dismissed_notifications", constraintName: "profile_notification_notification_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "notification", referencesUniqueColumn: "false")
+        addForeignKeyConstraint(baseColumnNames: "profile_id", baseTableName: "profile_dismissed_notifications", constraintName: "profile_notification_profile_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
 
         /**
          * Type
