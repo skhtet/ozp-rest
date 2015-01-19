@@ -136,7 +136,7 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "icon_url", type: "varchar(2083)")
+            column(name: "icon_id", type: "binary(16)")
 
             column(name: "short_name", type: "varchar(8)") {
                 constraints(nullable: "false")
@@ -300,13 +300,13 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "image_large_url", type: "varchar(2083)")
+            column(name: "small_icon_id", type: "binary(16)")
 
-            column(name: "image_medium_url", type: "varchar(2083)")
+            column(name: "large_icon_id", type: "binary(16)")
 
-            column(name: "image_small_url", type: "varchar(2083)")
+            column(name: "banner_icon_id", type: "binary(16)")
 
-            column(name: "image_xlarge_url", type: "varchar(2083)")
+            column(name: "featured_banner_icon_id", type: "binary(16)")
 
             column(name: "is_enabled", type: "bit") {
                 constraints(nullable: "false")
@@ -680,7 +680,7 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "icon", type: "varchar(2083)")
+            column(name: "icon_id", type: "binary(16)")
 
             column(name: "label", type: "varchar(255)")
 
@@ -750,13 +750,13 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "large_image_url", type: "varchar(2083)")
+            column(name: "large_image_id", type: "binary(16)")
 
             column(name: "service_item_id", type: "bigint") {
                 constraints(nullable: "false")
             }
 
-            column(name: "small_image_url", type: "varchar(2083)") {
+            column(name: "small_image_id", type: "binary(16)") {
                 constraints(nullable: "false")
             }
 
