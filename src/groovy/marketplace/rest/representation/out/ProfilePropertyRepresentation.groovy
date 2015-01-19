@@ -15,6 +15,7 @@ class ProfilePropertyRepresentation {
         this.owner = owner
     }
 
+    Long getId() { owner.id }
     String getUsername() { owner.username }
     String getDisplayName() { owner.displayName }
 }

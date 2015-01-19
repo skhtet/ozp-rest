@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import marketplace.hal.SelfRefRepresentation
 import marketplace.hal.ApplicationRootUriBuilderHolder
 import marketplace.hal.HalLinks
-import marketplace.hal.HalEmbedded
 import marketplace.hal.Link
 import marketplace.hal.RepresentationFactory
 import marketplace.hal.OzpRelationType
@@ -16,8 +15,6 @@ import marketplace.rest.resource.uribuilder.ObjectUriBuilder
 import marketplace.rest.resource.uribuilder.ListingUriBuilder
 import marketplace.rest.resource.uribuilder.ItemCommentUriBuilder
 import marketplace.rest.resource.uribuilder.ProfileUriBuilder
-
-import marketplace.rest.representation.out.ProfileShortRepresentation
 
 import marketplace.ItemComment
 import marketplace.Listing
@@ -33,25 +30,14 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
     ItemCommentRepresentation(ItemComment itemComment,
             ObjectUriBuilder<Listing> listingUriBuilder,
             ObjectUriBuilder<ItemComment> itemCommentUriBuiler,
-            ObjectUriBuilder<Profile> profileUriBuilder,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            ProfileShortRepresentation.Factory profileShortRepresentationFactory) {
+            ObjectUriBuilder<Profile> profileUriBuilder) {
         super(
             itemCommentUriBuiler.getUri(itemComment),
             createLinks(itemComment, listingUriBuilder, profileUriBuilder),
-            createEmbedded(itemComment, uriBuilderHolder, profileShortRepresentationFactory)
+            null
         )
 
         this.itemComment = itemComment
-    }
-
-    private static HalEmbedded createEmbedded(ItemComment itemComment,
-            ApplicationRootUriBuilderHolder uriBuilderHolder,
-            ProfileShortRepresentation.Factory profileShortRepresentationFactory){
-
-        ProfileShortRepresentation profileRepresentation = profileShortRepresentationFactory.toRepresentation(itemComment.author, uriBuilderHolder)
-
-        new HalEmbedded(RegisteredRelationType.AUTHOR, profileRepresentation)
     }
 
     private static HalLinks createLinks(ItemComment itemComment,
@@ -63,20 +49,22 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
 
         new HalLinks([
             new AbstractMap.SimpleEntry(OzpRelationType.APPLICATION, new Link(appUri)),
-            new AbstractMap.SimpleEntry(RegisteredRelationType.AUTHOR, new Link(authorUri))
+            new AbstractMap.SimpleEntry(RegisteredRelationType.VIA, new Link(authorUri))
         ])
     }
 
     public Long getId() { itemComment.id }
     public Integer getRate() { itemComment.rate }
     public String getText() { itemComment.text }
+    Date getCreatedDate() { itemComment.createdDate }
+    Date getUpdatedDate() { itemComment.updatedDate }
+    public ProfilePropertyRepresentation getAuthor() { new ProfilePropertyRepresentation(itemComment.author) }
 
     @Component
     public static class Factory implements RepresentationFactory<ItemComment> {
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
         @Autowired ItemCommentUriBuilder.Factory itemCommentUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
-        @Autowired ProfileShortRepresentation.Factory profileShortRepresentationFactory
 
         @Override
         ItemCommentRepresentation toRepresentation(ItemComment itemComment,
@@ -85,9 +73,7 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
             new ItemCommentRepresentation(itemComment,
                 listingUriBuilderFactory.getBuilder(uriBuilderHolder),
                 itemCommentUriBuilderFactory.getBuilder(uriBuilderHolder),
-                profileUriBuilderFactory.getBuilder(uriBuilderHolder),
-                uriBuilderHolder,
-                profileShortRepresentationFactory
+                profileUriBuilderFactory.getBuilder(uriBuilderHolder)
             )
         }
     }
