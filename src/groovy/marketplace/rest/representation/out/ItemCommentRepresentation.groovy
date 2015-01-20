@@ -57,7 +57,7 @@ class ItemCommentRepresentation extends SelfRefRepresentation<ItemComment> {
     public Integer getRate() { itemComment.rate }
     public String getText() { itemComment.text }
     Date getCreatedDate() { itemComment.createdDate }
-    Date getEditedDateDate() { itemComment.editedDate }
+    Date getEditedDate() { itemComment.editedDate }
     public ProfilePropertyRepresentation getAuthor() { new ProfilePropertyRepresentation(itemComment.author) }
 
     @Component
