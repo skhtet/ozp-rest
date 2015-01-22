@@ -37,7 +37,8 @@ class ApplicationRepresentation extends SelfRefRepresentation<Listing> {
     }}
 
     Set<Map<String, String>> getIntents() { listing.intents.collect { Intent intent ->
-        [type: intent.type, action: intent.action, icon: intent.icon, label: intent.label]
+        [type: intent.type, action: intent.action,
+         icon: !intent.iconId ? "": imageUriBuilder.getImageUri(intent.iconId).toString(), label: intent.label]
     }}
 
     UiHintsRepresentation getUiHints() { new UiHintsRepresentation(listing) }
