@@ -1,3 +1,11 @@
+### 0.5.1 (2015-01-22)
+
+
+#### Bug Fixes
+
+* **ApplicationRepresentation:** change icon to iconId ([951e03ab](https://github.com/ozone-development/ozp-rest/commit/951e03ab02d77e3c2cf4468320c72baf1a82f024))
+
+
 ## 0.5.0 (2015-01-22)
 
 
