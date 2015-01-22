@@ -1,3 +1,66 @@
+## 0.5.0 (2015-01-22)
+
+
+#### Bug Fixes
+
+* **Exceptions:** OZF-827 Re-add exception messages that were accidentially suppressed ([4c5bd41b](https://github.com/ozone-development/ozp-rest/commit/4c5bd41b2fcefe8fc4cc0ac3bc435fc9e58f418b))
+* **HTTP Caching:**
+  * Missing config to enable caching annotation ([dd294288](https://github.com/ozone-development/ozp-rest/commit/dd294288d92719c2c15291bda29ca1887f3503de))
+  * Adding no-cache headers to most responses ([1bfb9c33](https://github.com/ozone-development/ozp-rest/commit/1bfb9c33f63ecfa639a36acf5f7ad33e268d7d46))
+* **Library:** OZF-732 Fix app lib PUT ([aed8ca09](https://github.com/ozone-development/ozp-rest/commit/aed8ca091e80674861f8e6011c6b05a23dea727f))
+* **URIs:** OZF-821 Explicit configuration for system public URI ([2a09b296](https://github.com/ozone-development/ozp-rest/commit/2a09b29638a3b509c435bf2e48a7ca3cd43c40e5))
+
+
+#### Features
+
+* **Image Server:**
+  * OZF-446 Store icons and images locally ([a08222ca](https://github.com/ozone-development/ozp-rest/commit/a08222cabe6ab941c6dbea32cd391d488dde82be))
+  * Another attempt to fix globs on Windows ([6853c1c3](https://github.com/ozone-development/ozp-rest/commit/6853c1c3e87454b3dd6d9f19fd5c6f4592ed6e9a))
+  * Possible fix for Windows image path matching issue ([5d324b8e](https://github.com/ozone-development/ozp-rest/commit/5d324b8efe6f289626c5b11cd4c6f3b5a9da8f19))
+  * Fix NullPointerException in marketplace.converter.UUIDConverter ([b3c1836e](https://github.com/ozone-development/ozp-rest/commit/b3c1836eca063e131672a62c10e56ead50deafd3))
+  * Refine error responses ([9e30e31a](https://github.com/ozone-development/ozp-rest/commit/9e30e31ade44d89906ba1bfef8a9843d95e71025))
+  * Tweaking Content-Types for IE workaround ([d22551a2](https://github.com/ozone-development/ozp-rest/commit/d22551a23dd4aeb8a591137672cd353a13c60c4a))
+  * Allowing ThrowableWriter to respond to any Accept header ([e02704d8](https://github.com/ozone-development/ozp-rest/commit/e02704d817988c83be471b5d4826f46e750f952d))
+  * fix build config for creating wars ([9c246a52](https://github.com/ozone-development/ozp-rest/commit/9c246a52f359fc8a5d49a59dfe6f3af43524c858))
+  * getImageReference handle missing directory ([3c2ecedd](https://github.com/ozone-development/ozp-rest/commit/3c2ecedd70495be3dbc430923cf1b944a14b2309))
+  * OZF-740 Correct HTTP response for invalid image id on listing ([f143c5cf](https://github.com/ozone-development/ozp-rest/commit/f143c5cf8fc4dd4620cc670be029397a0c7bdb02))
+  * OZF-739 Checking intent for invalid iconId ([fadd1044](https://github.com/ozone-development/ozp-rest/commit/fadd1044af2ca95823bd531be0bbd14c83f20ea2))
+  * OZF-739 Use Image Server for intents icons ([ebe85b15](https://github.com/ozone-development/ozp-rest/commit/ebe85b15cdda8b565a3169e0a24b4c1be0324185))
+  * OZF-733 Fix null image id handling ([eb706330](https://github.com/ozone-development/ozp-rest/commit/eb706330f2ab66aeb8bf6074b8108aeaf9ff0b9c))
+  * OZF-738 Fix listing null image issue ([f8008ef4](https://github.com/ozone-development/ozp-rest/commit/f8008ef442a378782fbf33401fe3e0c79cc3bf66))
+  * OZF-737 Optimize delete logging and hopefully avoid bug ([d7842a14](https://github.com/ozone-development/ozp-rest/commit/d7842a1446ad234d3d3ddb37abd1e0a8b458754d))
+  * Add image id validation for listing update ([410be694](https://github.com/ozone-development/ozp-rest/commit/410be69430a78fe397cec0dd372d97c623c973a5))
+  * Image CEF logging ([74709662](https://github.com/ozone-development/ozp-rest/commit/7470966212cffa3b56fb115a905859ed98ca5335))
+  * Update security plugin with new ehcache settings ([f393c063](https://github.com/ozone-development/ozp-rest/commit/f393c063faf187cad7b6764f0e9fecd1c66648c0))
+  * Disallowing empty images ([89276dfb](https://github.com/ozone-development/ozp-rest/commit/89276dfb3a3bb3262f4d1d9dd9b3993321a7747f))
+  * Fix refactor of ApplicationLibrary reps ([db115fed](https://github.com/ozone-development/ozp-rest/commit/db115feda4f1bf9a72f14fea618e4a0ec4c5af19))
+  * Fix additional representation image links ([7fd64279](https://github.com/ozone-development/ozp-rest/commit/7fd64279e4a30c306442db0ae1eaefc67ae2ffb4))
+  * ImageRestService fixes ([f85891b7](https://github.com/ozone-development/ozp-rest/commit/f85891b77dad72b93b92549d69b5a5b3eb29f785))
+  * Aggressive HTTP caching ([783d0d03](https://github.com/ozone-development/ozp-rest/commit/783d0d0355d32d16fc8cef047690c580aaf0c3ef))
+  * Improve login performance ([4759f659](https://github.com/ozone-development/ozp-rest/commit/4759f659d9473af2a83d1dc8131e7adf8a2dd03a))
+  * Fix elasticsearch indexing ([8c0507d7](https://github.com/ozone-development/ozp-rest/commit/8c0507d7f5cd4a7efa49294add6e9082c1b84bc8))
+  * Fix image REST issues ([f348a074](https://github.com/ozone-development/ozp-rest/commit/f348a074952907850275fee360c7a75c0e390d88))
+  * Switch to purely filesystem-based image storage ([3e541ec8](https://github.com/ozone-development/ozp-rest/commit/3e541ec894db071e20911e8a3f768953786e04db))
+  * Optimized cleanup query ([5a065f15](https://github.com/ozone-development/ozp-rest/commit/5a065f15b7731af5e20e2c59f9da7cab5d397e59))
+  * Validation for max size and allowed content type ([968ff5c6](https://github.com/ozone-development/ozp-rest/commit/968ff5c659bb291c37838b54391f33dc8e1996a2))
+  * Optimize n+1 SQL query in image cleanup job ([eef800b2](https://github.com/ozone-development/ozp-rest/commit/eef800b2ff87ba627664ddb2a5e668afbac67a1b))
+  * Image cleanup job ([45309061](https://github.com/ozone-development/ozp-rest/commit/45309061432359805a81e5ddca2b360f32c4730c))
+  * Fix Agency searchable mapping ([288015f8](https://github.com/ozone-development/ozp-rest/commit/288015f87aa6b84107f162f7038551454a8fe6d0))
+  * Update Agency ([5218a971](https://github.com/ozone-development/ozp-rest/commit/5218a971f687561a283b4101487fe5c464899098))
+  * add image references to reps and search index ([70c3e19d](https://github.com/ozone-development/ozp-rest/commit/70c3e19d85cb318f9c0eff8a519012e7b00028ab))
+  * form-data endpoint for compatibility ([95dc5543](https://github.com/ozone-development/ozp-rest/commit/95dc5543974a64e5e6f591a2235be4b722f4e484))
+  * Switch to file-backed image server and individual uploads ([cc6e1a42](https://github.com/ozone-development/ozp-rest/commit/cc6e1a42aec96f42edbb998e23f4caeeb12f7eea))
+  * Use Image class for listings ([18f54eb9](https://github.com/ozone-development/ozp-rest/commit/18f54eb9b0ca8955c41d437d5a41868fdd787b3a))
+  * Initial services and resources ([467c2473](https://github.com/ozone-development/ozp-rest/commit/467c2473f80e3a9c4dd881255fcdb8299c810dc7))
+  * Initial Image domain class ([a9dcdf0f](https://github.com/ozone-development/ozp-rest/commit/a9dcdf0f921a8cf2ea56484d62ba7b69856a275a))
+* **Review Tab:** OZF-483: getting appropriate information in the JSON response ([cdcead7d](https://github.com/ozone-development/ozp-rest/commit/cdcead7dc8e3733e53b99b70cb2e25e831c848ea))
+* **Reviews Tab:**
+  * OZF-483 fix typo ([82139643](https://github.com/ozone-development/ozp-rest/commit/821396437ebe91f489a8c1d47008da5998ac654d))
+  * OZF-483 bug fix updatedDate should be editedDate ([fd16b4c4](https://github.com/ozone-development/ozp-rest/commit/fd16b4c4d4874c6162c184c6236a765557f3b90f))
+  * OZF-483: include profile id, createdDate, updatedDate with review ([43289791](https://github.com/ozone-development/ozp-rest/commit/43289791259bb53a0ee48fe3ec90d609164ead70))
+  * OZF-483: include profile with review ([5c49ecb9](https://github.com/ozone-development/ozp-rest/commit/5c49ecb96e4f5c0eddffafaae52011ca2aaf5ad2))
+
+
 ### 0.4.1 (2015-01-07)
 
 
