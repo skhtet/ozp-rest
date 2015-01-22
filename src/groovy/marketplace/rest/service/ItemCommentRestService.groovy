@@ -66,7 +66,8 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
         super.authorizeUpdate(existing)
 
         //comment authors and admins are allowed
-        if (profileRestService.currentUserProfile != existing.author) {
+        if (!profileRestService.currentUserProfile.stewardedOrganizations.contains(existing.listing.agency) &&
+                profileRestService.currentUserProfile != existing.author) {
             profileRestService.checkAdmin("Attempt by non-admin to update another user's comment")
         }
     }
