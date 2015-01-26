@@ -4,8 +4,8 @@ import grails.util.*
 environments {
     production {
         dataSource {
-            //IMPORTANT: Change to "none" for a real production database with the tables already
-            //existing
+            //IMPORTANT: Change to "none" for a real production database with the
+            //tables already existing
             dbCreate = "update"
             username = "sa"
             password = ""
@@ -53,12 +53,18 @@ cef {
         vendor = "OZONE"
         // The device product name
         product = "Store"
+        version = "500-27_L2::1.3"
     }
     // The CEF version
     version = 0
 
     enabled = true
+
+    //set true to log database reads as well as modifications
+    //WARNING - creates an enormous amount of logs
     verbose = false
+
+    securityLevel = null
 }
 
 //local file path where uploaded images are stored.  The server process must have write access
