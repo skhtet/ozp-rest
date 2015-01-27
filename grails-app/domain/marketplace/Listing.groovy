@@ -276,8 +276,16 @@ class Listing implements Serializable {
         owners?.find { it.username == user.username }
     }
 
-    static List<Listing> findAllByAuthor(Profile user) {
-        Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
+    static List<Listing> findAllByAuthor(Profile user, Map options = [:]) {
+        Listing.createCriteria().list {
+            owners {
+                eq('id', user.id)
+            }
+
+            if (options.sort && options.order) {
+                order(options.sort, options.order)
+            }
+        }
     }
 
     static List<Listing> findAllByRequired(Listing req) {
