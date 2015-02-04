@@ -101,6 +101,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                 RepresentationFactory<Profile> profileRepresentationFactory,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             super(activity, listingUriBuilder, profileUriBuilder,
+                listingActivityListingRepresentationFactory,
                 profileRepresentationFactory, uriBuilderHolder)
         }
 
@@ -117,6 +118,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                 RepresentationFactory<Profile> profileRepresentationFactory,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             super(activity, listingUriBuilder, profileUriBuilder,
+                listingActivityListingRepresentationFactory,
                 profileRepresentationFactory, uriBuilderHolder)
 
             Collection<Listing> relatedListings = activity.items*.listing - null
