@@ -113,6 +113,7 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "notification_id", baseTableName: "profile_dismissed_notifications", constraintName: "profile_notification_notification_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "notification", referencesUniqueColumn: "false")
         addForeignKeyConstraint(baseColumnNames: "profile_id", baseTableName: "profile_dismissed_notifications", constraintName: "profile_notification_profile_id_fk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile", referencesUniqueColumn: "false")
 
+
         /**
          * Type
          */
@@ -186,7 +187,7 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "icon_id", type: "binary(16)")
+            column(name: "icon_id", type: "varchar(128)")
 
             column(name: "short_name", type: "varchar(8)") {
                 constraints(nullable: "false")
@@ -350,13 +351,13 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "small_icon_id", type: "binary(16)")
+            column(name: "small_icon_id", type: "varchar(128)")
 
-            column(name: "large_icon_id", type: "binary(16)")
+            column(name: "large_icon_id", type: "varchar(128)")
 
-            column(name: "banner_icon_id", type: "binary(16)")
+            column(name: "banner_icon_id", type: "varchar(128)")
 
-            column(name: "featured_banner_icon_id", type: "binary(16)")
+            column(name: "featured_banner_icon_id", type: "varchar(128)")
 
             column(name: "is_enabled", type: "bit") {
                 constraints(nullable: "false")
@@ -730,7 +731,7 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "icon_id", type: "binary(16)")
+            column(name: "icon_id", type: "varchar(128)")
 
             column(name: "label", type: "varchar(255)")
 
@@ -800,13 +801,13 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "large_image_id", type: "binary(16)")
+            column(name: "large_image_id", type: "varchar(16)")
 
             column(name: "service_item_id", type: "bigint") {
                 constraints(nullable: "false")
             }
 
-            column(name: "small_image_id", type: "binary(16)") {
+            column(name: "small_image_id", type: "varchar(16)") {
                 constraints(nullable: "false")
             }
 
