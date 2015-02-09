@@ -68,6 +68,7 @@ class ProfileRepresentation extends SelfRefRepresentation<Profile> {
     String getBio() { profile.bio }
     Date getCreatedDate() { profile.createdDate }
     Date getLastLogin() { profile.lastLogin }
+    boolean getLaunchInWebtop() { profile.launchInWebtop }
     Collection<String> getOrganizations() {
         profile.organizations*.title
     }

@@ -10,6 +10,8 @@ class ProfileInputRepresentation extends AbstractInputRepresentation<Profile> {
     }
 
     String bio
+    boolean launchInWebtop
+
     Set<AgencyTitleInputRepresentation> organizations
     Set<AgencyTitleInputRepresentation> stewardedOrganizations
 }
