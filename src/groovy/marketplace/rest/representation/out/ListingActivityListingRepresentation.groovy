@@ -31,7 +31,11 @@ class ListingActivityListingRepresentation extends AbstractHalRepresentation<Lis
     Long getId() { listing.id }
     String getTitle() { listing.title }
     String getAgency() { listing.agency }
-    String getIconUrl() { imageReferenceUriBuilder.getImageUri(listing.largeIconId) }
+    String getIconUrl() {
+        if(listing.largeIconId){
+            imageReferenceUriBuilder.getImageUri(listing.largeIconId)
+        }        
+    }
 
     @Component
     public static class Factory implements RepresentationFactory<Listing> {
