@@ -38,19 +38,31 @@ class ListingResourceUnitTest {
 
     void testGetActivitiesForServiceItems() {
         ListingActivity activity = new ListingActivity()
-        def passedOffset, passedMax
+
+        def offset = 5,
+            max = 2,
+            org = new AgencyTitleInputRepresentation("agency1")
+
+        def pagedList = new MockPagedResultList().createPagedResultList([activity])
+
+        def passedOffset, passedMax, passedOrg
 
         def serviceItemActivityRestServiceMock = mockFor(ListingActivityRestService)
-        serviceItemActivityRestServiceMock.demand.getAll(1..1) { offset, max ->
-            passedOffset = offset
-            passedMax = max
-            [activity]
+        serviceItemActivityRestServiceMock.demand.getAllMatchingParams(1..1) { o, m, organization ->
+            passedOrg = organization
+            passedOffset = o
+            passedMax = m
+
+            return pagedList
         }
+
         resource.listingActivityRestService = serviceItemActivityRestServiceMock.createMock()
 
-        assert resource.getActivitiesForListings(1,2) == new PagedCollection(1, 2, [activity])
-        assert passedOffset == 1
-        assert passedMax == 2
+        def retval = resource.getActivitiesForListings(offset, max, org)
+
+        assert offset == passedOffset
+        assert max == passedMax
+        assert org == passedOrg
     }
 
     void testGetServiceItemActivitiesForServiceItem() {
