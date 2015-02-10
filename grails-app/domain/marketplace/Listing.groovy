@@ -198,7 +198,7 @@ class Listing implements Serializable {
         width nullable: true
         height nullable: true
         whatIsNew nullable: true, maxSize: 250
-        descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
+        descriptionShort nullable: true, maxSize: 100, validator: requiredUnlessInProgress
         isFeatured nullable: true, validator: requiredUnlessInProgress
         title nullable: false, blank: false, maxSize: 255
         description maxSize: 4000, nullable: true, validator: requiredUnlessInProgress
