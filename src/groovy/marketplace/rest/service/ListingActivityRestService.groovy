@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.hibernate.criterion.CriteriaSpecification
 import javax.annotation.security.RolesAllowed
 import marketplace.Listing
 import marketplace.Agency
@@ -62,44 +63,40 @@ class ListingActivityRestService
 
 
     /**
-     * Get all Listings that match the passed-in parameters.
+     * Get all listing activities that match the passed-in parameters.
      * The different filters are combined using AND.
      * @param The organization to filter by.  For those with ROLE_ORG_STEWARD, this must be an
      * org that they are a steward of.  Can be null to match all orgs (or all orgs an Org Steward
      * is steward of).
-     * @param approvalStatus The approvalStatus to filter by.  null to match all approvalStatuses
-     * @param enabled True to match only enabled listings. false to match only disabled listings.
-     * null to match all listings
      */
      @Transactional(readOnly=true)
      @RolesAllowed(['ROLE_ADMIN', 'ROLE_ORG_STEWARD'])
      public List<ListingActivity> getAllMatchingParams(
             Integer offset,
-            Integer max,
-            InputRepresentation<Agency> org) {
-        Agency ag = org ? RestService.getFromDb(org) : null
+            Integer max) {
         Collection<Agency> agencies = null
 
-        if (ag) {
-            profileRestService.checkOrgSteward(ag)
-            agencies = [ag]
-        }
-        else if (profileRestService.isOrgSteward()) {
+        if (profileRestService.isOrgSteward()) {
             agencies = profileRestService.currentUserProfile.stewardedOrganizations
         }
 
+        Long userId = profileRestService.currentUserProfile.id
+
         //get the listing activity
         ListingActivity.createCriteria().list(max: max, offset: offset) {
-            listing {
-                if (agencies != null) {
-                    agency {
-                        inList('id', agencies*.id)
+            if (profileRestService.isOrgSteward()) {
+                listing {
+                    or {
+                        owners {
+                            eq('id', userId)
+                        }
+                        agency(CriteriaSpecification.LEFT_JOIN) {
+                            inList('id', agencies*.id)
+                        }
                     }
-                }    
+                }
             }
-
             order(sorter.sortField, sorter.direction.name().toLowerCase())
-
         }
     }
 }

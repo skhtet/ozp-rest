@@ -104,36 +104,6 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     PagedCollection<Listing> readAll(@QueryParam('offset') Integer offset,
                                      @QueryParam('max') Integer max) {}
 
-    // @Path('/activity')
-    // @Produces([
-    //     ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
-    //     MediaType.APPLICATION_JSON
-    // ])
-    // @GET
-    // public PagedCollection<ListingActivity> getActivitiesForListings(
-    //         @QueryParam('offset') Integer offset,
-    //         @QueryParam('max') Integer max) {
-    //     new PagedCollection(offset, max, listingActivityRestService.getAll(offset, max))
-    // }
-
-    // @GET
-    // @Produces([
-    //     ListingRepresentation.COLLECTION_MEDIA_TYPE,
-    //     FilteredListingsRepresentation.COLLECTION_MEDIA_TYPE,
-    //     ApplicationRepresentation.COLLECTION_MEDIA_TYPE,
-    //     MediaType.APPLICATION_JSON
-    // ])
-    // FilteredListingsPagedCollection readAll(@QueryParam('offset') Integer offset,
-    //         @QueryParam('max') Integer max,
-    //         @QueryParam('org') AgencyTitleInputRepresentation org,
-    //         @QueryParam('approvalStatus') ApprovalStatus approvalStatus,
-    //         @QueryParam('enabled') Boolean enabled) {
-    //     new FilteredListingsPagedCollection(
-    //             service.getAllMatchingParams(org, approvalStatus, enabled, offset, max),
-    //             org, approvalStatus, enabled, offset, max)
-    // }
-
-
     @Path('/activity')
     @GET
     @Produces([
@@ -142,10 +112,9 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
     ])
     public PagedCollection<ListingActivity> getActivitiesForListings(
         @QueryParam('offset') Integer offset,
-        @QueryParam('max') Integer max,
-        @QueryParam('org') AgencyTitleInputRepresentation org) {
+        @QueryParam('max') Integer max) {
             new PagedCollection(offset, max,
-                listingActivityRestService.getAllMatchingParams(offset, max, org))
+                listingActivityRestService.getAllMatchingParams(offset, max))
         }
 
 
