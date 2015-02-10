@@ -9,7 +9,6 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
 import javax.ws.rs.Consumes
 import javax.ws.rs.QueryParam
-import javax.ws.rs.DefaultValue
 import javax.ws.rs.core.MediaType
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,8 +56,8 @@ class NotificationResource extends RepresentationResource<Notification, Notifica
             MediaType.APPLICATION_JSON
     ])
     @GET
-    PagedCollection<Notification> readAllExpired(@DefaultValue("0") @QueryParam('offset') Integer offset,
-                                                 @DefaultValue("10000") @QueryParam('max') Integer max) {
+    PagedCollection<Notification> readAllExpired(@QueryParam('offset') Integer offset,
+                                                 @QueryParam('max') Integer max) {
         new PagedCollection(offset, max, service.getAllByExpired(true, offset, max))
     }
 
@@ -68,8 +67,8 @@ class NotificationResource extends RepresentationResource<Notification, Notifica
             MediaType.APPLICATION_JSON
     ])
     @GET
-    PagedCollection<Notification> readAllPending(@DefaultValue("0") @QueryParam('offset') Integer offset,
-                                                 @DefaultValue("10000") @QueryParam('max') Integer max) {
+    PagedCollection<Notification> readAllPending(@QueryParam('offset') Integer offset,
+                                                 @QueryParam('max') Integer max) {
         new PagedCollection(offset, max, service.getAllByExpired(false, offset, max))
     }
 

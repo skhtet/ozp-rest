@@ -22,11 +22,13 @@ class NotificationRestService extends AdminRestService<Notification> {
     public Set<Notification> getAllByExpired(Boolean expired, Integer offset, Integer max) {
         def now = new Date()
         if (expired) {
-            Notification.findAll("from Notification as notification where notification.expiresDate < :now", [now: now],
-                    [offset: offset, max: max])
+            Notification.createCriteria().list(offset: offset, max: max) {
+                lt("expiresDate", now)
+            }
         } else {
-            Notification.findAll("from Notification as notification where notification.expiresDate > :now",
-                    [now: now], [offset: offset, max: max])
+            Notification.createCriteria().list(offset: offset, max: max) {
+                gt("expiresDate", now)
+            }
         }
 
     }
