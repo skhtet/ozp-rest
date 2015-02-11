@@ -25,6 +25,7 @@ class Agency implements Serializable {
 
     static mapping = {
         id natural: [properties: ['title'], mutable: true]
+        iconId sqlType: "binary", length: 16
     }
 
     @Override

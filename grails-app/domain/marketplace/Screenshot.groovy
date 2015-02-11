@@ -32,6 +32,11 @@ class Screenshot implements Serializable {
         largeImageId nullable: true
     }
 
+    static mapping = {
+        smallImageId sqlType: "binary", length: 16
+        largeImageId sqlType: "binary", length: 16
+    }
+
     public UUID getLargeImageId() {
         this.largeImageId ? this.largeImageId : this.smallImageId
     }

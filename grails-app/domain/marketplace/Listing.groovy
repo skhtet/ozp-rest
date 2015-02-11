@@ -182,6 +182,10 @@ class Listing implements Serializable {
                                             column: 'score_card_item_id',
                                             key: 'service_item_id']
         applicationLibraryEntries cascade: 'all-delete-orphan'
+        smallIconId sqlType: "binary", length: 16
+        largeIconId sqlType: "binary", length: 16
+        bannerIconId sqlType: "binary", length: 16
+        featuredBannerIconId sqlType: "binary", length: 16
     }
 
     //A closure to use to validate that properties are present on a listing

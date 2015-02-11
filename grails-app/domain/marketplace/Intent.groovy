@@ -24,6 +24,7 @@ class Intent implements Serializable {
         id natural: [properties: ['type', 'action']]
         cache true
         batchSize 50
+        iconId sqlType: "binary", length: 16
     }
 
     static constraints = {
