@@ -273,7 +273,7 @@ class ProfileRestService extends RestService<Profile> {
     public List<Notification> getUnreadNotifications(long profileId) {
         def now = new Date()
         def profile = getById(profileId)
-        Notification.findAll("from Notification as notification where notification.expiresDate > :now and :profile not member of notification.dismissedBy", [now: now, profile: profile])
+        Notification.findAll("from Notification as notification where notification.expiresDate > :now and :profile not member of notification.dismissedBy order by expiresDate desc", [now: now, profile: profile])
     }
 
     /**

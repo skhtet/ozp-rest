@@ -331,8 +331,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     ChildObjectCollection<Profile, Notification> getNotification(
             @PathParam('profileId') String profileIdStr) {
         long profileId = getProfileId(profileIdStr)
-        Set<Notification> notifications = service.getUnreadNotifications(profileId)
-        new ChildObjectCollection(notifications, read(profileId))
+        new ChildObjectCollection(service.getUnreadNotifications(profileId), read(profileId))
     }
 
     /**
