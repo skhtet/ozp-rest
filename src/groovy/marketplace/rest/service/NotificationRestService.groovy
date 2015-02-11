@@ -19,17 +19,16 @@ class NotificationRestService extends AdminRestService<Notification> {
     NotificationRestService() {}
 
     @Transactional(readOnly=true)
-    public Set<Notification> getAllByExpired(Boolean expired, Integer offset, Integer max) {
+    public List<Notification> getAllByExpired(Boolean expired, Integer offset, Integer max) {
         def now = new Date()
-        if (expired) {
-            Notification.createCriteria().list(offset: offset, max: max) {
+
+        Notification.createCriteria().list(offset: offset, max: max, sort: "expiresDate", order: "desc") {
+            if (expired) {
                 lt("expiresDate", now)
             }
-        } else {
-            Notification.createCriteria().list(offset: offset, max: max) {
+            else {
                 gt("expiresDate", now)
             }
         }
-
     }
 }
