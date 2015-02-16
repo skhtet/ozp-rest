@@ -57,7 +57,8 @@ class ProfileRestService extends RestService<Profile> {
     }
 
     @Transactional(readOnly=true)
-    public Collection<Profile> getAll(Integer offset, Integer max, Role role) {
+    public Collection<Profile> getAll(Integer offset, Integer max, Role role,
+            String displayNameStartsWith) {
         Profile.createCriteria().list(offset: offset, max: max) {
             switch (role) {
                 case Role.USER:
@@ -80,6 +81,10 @@ class ProfileRestService extends RestService<Profile> {
                         eq('highestRole', Role.APPSMALL_STEWARD)
                         eq('highestRole', Role.ADMIN)
                     }
+            }
+
+            if (displayNameStartsWith) {
+                ilike('displayName', "${displayNameStartsWith}%")
             }
 
             if (this.sorter) {

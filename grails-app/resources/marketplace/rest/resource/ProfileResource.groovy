@@ -84,7 +84,7 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
     }
 
     //NOTE: This method does not get called as it no longer has @GET etc.
-    //readAllByRole has replaced it
+    //readAllByParams has replaced it
     @Override
     PagedCollection<Profile> readAll(@QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max) {
@@ -93,9 +93,13 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
 
     @GET
     @Produces([ProfileRepresentation.COLLECTION_MEDIA_TYPE, MediaType.APPLICATION_JSON])
-    PagedCollection<Profile> readAllByRole(@QueryParam('offset') Integer offset,
-            @QueryParam('max') Integer max, @QueryParam('role') Role role) {
-        new PagedCollection(offset, max, service.getAll(offset, max, role))
+    PagedCollection<Profile> readAllByParams(
+            @QueryParam('offset') Integer offset,
+            @QueryParam('max') Integer max,
+            @QueryParam('role') Role role,
+            @QueryParam('displayNameStartsWith') String displayNameStartsWith) {
+        new PagedCollection<Profile>(offset, max,
+                service.getAll(offset, max, role, displayNameStartsWith))
     }
 
     @Path('/self')
