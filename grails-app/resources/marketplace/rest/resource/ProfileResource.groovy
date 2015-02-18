@@ -97,9 +97,9 @@ class ProfileResource extends RepresentationResource<Profile, ProfileInputRepres
             @QueryParam('offset') Integer offset,
             @QueryParam('max') Integer max,
             @QueryParam('role') Role role,
-            @QueryParam('displayNameStartsWith') String displayNameStartsWith) {
+            @QueryParam('usernameStartsWith') String usernameStartsWith) {
         new PagedCollection<Profile>(offset, max,
-                service.getAll(offset, max, role, displayNameStartsWith))
+                service.getAll(offset, max, role, usernameStartsWith))
     }
 
     @Path('/self')
