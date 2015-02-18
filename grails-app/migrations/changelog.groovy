@@ -43,6 +43,10 @@ databaseChangeLog = {
             column(name: "username", type: "varchar(255)") {
                 constraints(nullable: "false")
             }
+
+            column(name: "launch_in_webtop", type: "boolean") {
+                constraints(nullable: "false")
+            }
         }
 
         createIndex(indexName: "FKED8E89A97666C6D2", tableName: "profile") {

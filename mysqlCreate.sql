@@ -2,7 +2,7 @@
 --  Update Database Script
 --  *********************************************************************
 --  Change Log: changelog.groovy
---  Ran at: 1/19/15 11:23 AM
+--  Ran at: 2/18/15 1:05 PM
 --  Against: root@localhost@jdbc:mysql://localhost/store
 --  Liquibase version: 2.0.5
 --  *********************************************************************
@@ -16,8 +16,8 @@ INSERT INTO `DATABASECHANGELOGLOCK` (`ID`, `LOCKED`) VALUES (1, 0);
 --  Create Database Change Log Table
 CREATE TABLE `DATABASECHANGELOG` (`ID` VARCHAR(63) NOT NULL, `AUTHOR` VARCHAR(63) NOT NULL, `FILENAME` VARCHAR(200) NOT NULL, `DATEEXECUTED` DATETIME NOT NULL, `ORDEREXECUTED` INT NOT NULL, `EXECTYPE` VARCHAR(10) NOT NULL, `MD5SUM` VARCHAR(35) NULL, `DESCRIPTION` VARCHAR(255) NULL, `COMMENTS` VARCHAR(255) NULL, `TAG` VARCHAR(255) NULL, `LIQUIBASE` VARCHAR(20) NULL, CONSTRAINT `PK_DATABASECHANGELOG` PRIMARY KEY (`ID`, `AUTHOR`, `FILENAME`));
 
---  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:ea21a50d1c423dd68c1ecd54f0c3f846)
-CREATE TABLE `profile` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `bio` VARCHAR(1000) NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `display_name` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `email` VARCHAR(255) NULL, `highest_role` VARCHAR(255) NOT NULL, `last_login` DATETIME NOT NULL, `username` VARCHAR(255) NOT NULL, CONSTRAINT `profilePK` PRIMARY KEY (`id`));
+--  Changeset changelog.groovy::ozp-rest-0.1.0-1::ozp-rest::(Checksum: 3:1b55e92750620a44677e226bcd9359b5)
+CREATE TABLE `profile` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `bio` VARCHAR(1000) NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `display_name` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `email` VARCHAR(255) NULL, `highest_role` VARCHAR(255) NOT NULL, `last_login` DATETIME NOT NULL, `username` VARCHAR(255) NOT NULL, `launch_in_webtop` TINYINT(1) NOT NULL, CONSTRAINT `profilePK` PRIMARY KEY (`id`));
 
 CREATE INDEX `FKED8E89A97666C6D2` ON `profile`(`created_by_id`);
 
@@ -28,6 +28,24 @@ CREATE UNIQUE INDEX `UK2e2af56bde6e9cad39c0f4ae1993` ON `profile`(`username`);
 ALTER TABLE `profile` ADD CONSTRAINT `FKED8E89A97666C6D2` FOREIGN KEY (`created_by_id`) REFERENCES `profile` (`id`);
 
 ALTER TABLE `profile` ADD CONSTRAINT `FKED8E89A9E31CB353` FOREIGN KEY (`edited_by_id`) REFERENCES `profile` (`id`);
+
+CREATE TABLE `notification` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `message` VARCHAR(150) NULL, `expires_date` DATETIME NOT NULL, CONSTRAINT `notificationPK` PRIMARY KEY (`id`));
+
+CREATE INDEX `notification_created_by_idx` ON `notification`(`created_by_id`);
+
+CREATE INDEX `notification_edited_by_idx` ON `notification`(`edited_by_id`);
+
+CREATE INDEX `notification_expires_date_idx` ON `notification`(`expires_date`);
+
+ALTER TABLE `notification` ADD CONSTRAINT `notification_created_by_idx` FOREIGN KEY (`created_by_id`) REFERENCES `profile` (`id`);
+
+ALTER TABLE `notification` ADD CONSTRAINT `notification_edited_by_idx` FOREIGN KEY (`edited_by_id`) REFERENCES `profile` (`id`);
+
+CREATE TABLE `profile_dismissed_notifications` (`notification_id` BIGINT NULL, `profile_id` BIGINT NULL);
+
+ALTER TABLE `profile_dismissed_notifications` ADD CONSTRAINT `profile_notification_notification_id_fk` FOREIGN KEY (`notification_id`) REFERENCES `notification` (`id`);
+
+ALTER TABLE `profile_dismissed_notifications` ADD CONSTRAINT `profile_notification_profile_id_fk` FOREIGN KEY (`profile_id`) REFERENCES `profile` (`id`);
 
 CREATE TABLE `type` (`id` BIGINT AUTO_INCREMENT NOT NULL, `version` BIGINT NOT NULL, `created_by_id` BIGINT NULL, `created_date` DATETIME NOT NULL, `description` VARCHAR(255) NULL, `edited_by_id` BIGINT NULL, `edited_date` DATETIME NOT NULL, `title` VARCHAR(50) NOT NULL, CONSTRAINT `typePK` PRIMARY KEY (`id`), UNIQUE (`title`));
 
@@ -359,4 +377,4 @@ CREATE INDEX `FKE68D3F715416850B` ON `modify_relationship_activity`(`id`);
 
 ALTER TABLE `modify_relationship_activity` ADD CONSTRAINT `FKE68D3F715416850B` FOREIGN KEY (`id`) REFERENCES `listing_activity` (`id`);
 
-INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x4), Create Table, Create Index (x3), Add Foreign Key Constraint (x5), Create Table, Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:ea21a50d1c423dd68c1ecd54f0c3f846', 1);
+INSERT INTO `DATABASECHANGELOG` (`AUTHOR`, `COMMENTS`, `DATEEXECUTED`, `DESCRIPTION`, `EXECTYPE`, `FILENAME`, `ID`, `LIQUIBASE`, `MD5SUM`, `ORDEREXECUTED`) VALUES ('ozp-rest', '', NOW(), 'Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create Table, Add Foreign Key Constraint (x2), Create Table, Create Index (x3), Add Foreign Key Constraint (x2), Create ...', 'EXECUTED', 'changelog.groovy', 'ozp-rest-0.1.0-1', '2.0.5', '3:1b55e92750620a44677e226bcd9359b5', 1);
