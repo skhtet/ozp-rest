@@ -41,6 +41,7 @@ import marketplace.rest.RequestTooLargeException
 import marketplace.rest.representation.in.InputRepresentation
 
 import org.ozoneplatform.auditing.format.cef.Extension
+import org.ozoneplatform.auditing.format.cef.CEF
 import org.ozoneplatform.auditing.format.cef.factory.ExtensionFactory
 import org.ozoneplatform.auditing.enums.EventTypes
 import org.ozoneplatform.auditing.enums.PayloadType
@@ -389,10 +390,11 @@ class ImageRestService {
     private void logImageCef(EventTypes event, ImageReference imageRef,
             ClientAuditData auditData) {
         InetAddress localAddress = InetAddress.localHost
+        def cefConfigs = grailsApplication.config.cef
 
         String empty = '',
             appVersion = grailsApplication.metadata['app.version'],
-            classification = grailsApplication.config.cef.securityLevel ?: Extension.UNKOWN_VALUE,
+            classification = cefConfigs.securityLevel ?: Extension.UNKOWN_VALUE,
             date = ExtensionFactory.eventDateFormatter.clone().format(new Date()),
             trigger = RequestMethodTypes.USER_INITIATED.getDescription(),
             source = auditData?.remoteAddr ?: localAddress.hostAddress,
@@ -400,7 +402,27 @@ class ImageRestService {
             username = profileRestService.currentUserProfile?.username ?: 'SYSTEM',
             eventType = event.description,
             filepath = getPath(imageRef).toString(),
-            payloadType = PayloadType.FILE.getDescription()
+            payloadType = PayloadType.FILE.getDescription(),
+            deviceVendor = cefConfigs.device.vendor,
+            deviceProduct = cefConfigs.device.product,
+            deviceVersion = cefConfigs.device.version,
+            description
+
+        //not sure of the meaning here, but matches the severity in AbstractAuditLogListener
+        int severity = 7,
+            cefVersion = cefConfigs.version
+
+        switch(event) {
+            case EventTypes.OBJ_CREATE:
+                description = 'Object was created'
+                break
+            case EventTypes.OBJ_ACCESS:
+                description = 'Object was accessed'
+                break
+            case EventTypes.OBJ_DELETE:
+                description = 'Object was deleted'
+                break
+        }
 
         Extension extension = new Extension(
             "${Extension.EVENT_TYPE}": empty,
@@ -423,6 +445,9 @@ class ImageRestService {
             "${Extension.PAYLOAD_TYPE}": payloadType
         )
 
-        cefLog.info extension.toString()
+        CEF cef = new CEF(cefVersion, deviceVendor, deviceProduct, deviceVersion,
+                eventType, description, severity, extension)
+
+        cefLog.info cef.toString()
     }
 }

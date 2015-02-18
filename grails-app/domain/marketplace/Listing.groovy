@@ -202,7 +202,7 @@ class Listing implements Serializable {
         width nullable: true
         height nullable: true
         whatIsNew nullable: true, maxSize: 250
-        descriptionShort nullable: true, maxSize: 150, validator: requiredUnlessInProgress
+        descriptionShort nullable: true, maxSize: 100, validator: requiredUnlessInProgress
         isFeatured nullable: true, validator: requiredUnlessInProgress
         title nullable: false, blank: false, maxSize: 255
         description maxSize: 4000, nullable: true, validator: requiredUnlessInProgress
@@ -280,8 +280,16 @@ class Listing implements Serializable {
         owners?.find { it.username == user.username }
     }
 
-    static List<Listing> findAllByAuthor(Profile user) {
-        Listing.findAll("from Listing as listing where :user member of listing.owners", [user: user])
+    static List<Listing> findAllByAuthor(Profile user, Map options = [:]) {
+        Listing.createCriteria().list {
+            owners {
+                eq('id', user.id)
+            }
+
+            if (options.sort && options.order) {
+                order(options.sort, options.order)
+            }
+        }
     }
 
     static List<Listing> findAllByRequired(Listing req) {

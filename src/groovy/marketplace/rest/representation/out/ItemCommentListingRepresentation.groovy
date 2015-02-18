@@ -52,7 +52,7 @@ class ItemCommentListingRepresentation extends ItemCommentRepresentation {
 
         public long getId() { listing.id }
         public String getTitle() { listing.title }
-        public URI getImageSmallUrl() { imageUriBuilder.getImageUri(listing.smallIcon) }
+        public URI getImageSmallUrl() { imageUriBuilder.getImageUri(listing.smallIconId) }
     }
 
     @Component

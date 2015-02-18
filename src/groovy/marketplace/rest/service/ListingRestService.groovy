@@ -22,6 +22,7 @@ import marketplace.ApprovalStatus
 import marketplace.RejectionListing
 import marketplace.ListingSnapshot
 import marketplace.FilteredListings
+import marketplace.Sorter
 import marketplace.validator.ListingValidator
 
 import marketplace.rest.representation.in.InputRepresentation
@@ -37,7 +38,8 @@ class ListingRestService extends RestService<Listing> {
     @Autowired
     public ListingRestService(GrailsApplication grailsApplication,
             ListingValidator listingValidator) {
-        super(grailsApplication, Listing.class, listingValidator, null)
+        super(grailsApplication, Listing.class, listingValidator,
+            new Sorter(Constants.SortDirection.ASC, 'title'))
     }
 
     //needed for CGLIB
@@ -46,7 +48,9 @@ class ListingRestService extends RestService<Listing> {
     @Transactional(readOnly=true)
     public Set<Listing> getAllByAuthorId(Long profileId) {
         Profile profile = profileRestService.getById(profileId)
-        Listing.findAllByAuthor(profile).grep { canView(it) } as Set
+        Listing.findAllByAuthor(profile,
+            [sort: this.sorter.sortField, order: this.sorter.direction.toString()]
+        ).grep { canView(it) } as Set
     }
 
     /**
@@ -141,6 +145,8 @@ class ListingRestService extends RestService<Listing> {
         //get the listings
         PagedResultList<Listing> filteredListings =
             Listing.createCriteria().list(max: max, offset: offset) {
+                order(sorter.sortField, sorter.direction.toString())
+
                 if (agencies != null) {
                     agency {
                         inList('id', agencies*.id)

@@ -105,16 +105,18 @@ class ListingResource extends RepresentationResource<Listing, ListingInputRepres
                                      @QueryParam('max') Integer max) {}
 
     @Path('/activity')
+    @GET
     @Produces([
         ListingActivityRepresentation.COLLECTION_MEDIA_TYPE,
         MediaType.APPLICATION_JSON
     ])
-    @GET
     public PagedCollection<ListingActivity> getActivitiesForListings(
-            @QueryParam('offset') Integer offset,
-            @QueryParam('max') Integer max) {
-        new PagedCollection(offset, max, listingActivityRestService.getAll(offset, max))
-    }
+        @QueryParam('offset') Integer offset,
+        @QueryParam('max') Integer max) {
+            new PagedCollection(offset, max,
+                listingActivityRestService.getAllMatchingParams(offset, max))
+        }
+
 
     @Path('/{listingId}/activity')
     @Produces([

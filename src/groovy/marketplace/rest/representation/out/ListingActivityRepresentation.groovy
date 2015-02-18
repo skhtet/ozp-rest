@@ -32,16 +32,20 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         'application/vnd.ozp-listing-activities-v1+json'
 
     protected ListingActivity activity
+    protected AbstractHalRepresentation<Listing> listingActivityListingRepresentation
 
     ListingActivityRepresentation(ListingActivity activity,
             ObjectUriBuilder<Listing> listingUriBuilder,
             ObjectUriBuilder<Profile> profileUriBuilder,
+            RepresentationFactory<Listing> listingActivityListingRepresentationFactory,
             RepresentationFactory<Profile> profileRepresentationFactory,
             ApplicationRootUriBuilderHolder uriBuilderHolder) {
         super(
             createLinks(activity, listingUriBuilder, profileUriBuilder),
             createEmbedded(activity, profileRepresentationFactory, uriBuilderHolder)
         )
+
+        this.listingActivityListingRepresentation = listingActivityListingRepresentationFactory.toRepresentation(activity.listing, uriBuilderHolder)
 
         this.activity = activity
     }
@@ -69,7 +73,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
     public Long getId() { activity.id }
     public Action getAction() { activity.action }
     public ProfilePropertyRepresentation getAuthor() { new ProfilePropertyRepresentation(activity.author) }
-    public ListingPropertyRepresentation getListing() { new ListingPropertyRepresentation(activity.listing) }
+    public ListingActivityListingRepresentation getListing() { listingActivityListingRepresentation }
     public Date getActivityDate() { activity.activityDate }
     public Collection<ChangeDetailJson> getChangeDetails() {
         activity.changeDetails?.collect { new ChangeDetailJson(it) } ?: []
@@ -93,9 +97,11 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         RejectionListingActivityRepresentation(ListingActivity activity,
                 ObjectUriBuilder<Listing> listingUriBuilder,
                 ObjectUriBuilder<Profile> profileUriBuilder,
+                RepresentationFactory<Listing> listingActivityListingRepresentationFactory,
                 RepresentationFactory<Profile> profileRepresentationFactory,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             super(activity, listingUriBuilder, profileUriBuilder,
+                listingActivityListingRepresentationFactory,
                 profileRepresentationFactory, uriBuilderHolder)
         }
 
@@ -108,9 +114,11 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         ModifyRelationshipActivityRepresentation(ListingActivity activity,
                 ObjectUriBuilder<Listing> listingUriBuilder,
                 ObjectUriBuilder<Profile> profileUriBuilder,
+                RepresentationFactory<Listing> listingActivityListingRepresentationFactory,
                 RepresentationFactory<Profile> profileRepresentationFactory,
                 ApplicationRootUriBuilderHolder uriBuilderHolder) {
             super(activity, listingUriBuilder, profileUriBuilder,
+                listingActivityListingRepresentationFactory,
                 profileRepresentationFactory, uriBuilderHolder)
 
             Collection<Listing> relatedListings = activity.items*.listing - null
@@ -129,6 +137,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
         @Autowired ListingUriBuilder.Factory listingUriBuilderFactory
         @Autowired ProfileUriBuilder.Factory profileUriBuilderFactory
         @Autowired ProfileShortRepresentation.Factory profileRepresentationFactory
+        @Autowired ListingActivityListingRepresentation.Factory listingActivityListingRepresentationFactory
 
         @Override
         ListingActivityRepresentation toRepresentation(ListingActivity activity,
@@ -146,6 +155,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                     activity,
                     listingUriBuilder,
                     profileUriBuilder,
+                    listingActivityListingRepresentationFactory,
                     profileRepresentationFactory,
                     uriBuilderHolder
                 )
@@ -155,6 +165,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                     activity,
                     listingUriBuilder,
                     profileUriBuilder,
+                    listingActivityListingRepresentationFactory,
                     profileRepresentationFactory,
                     uriBuilderHolder
                 )
@@ -164,6 +175,7 @@ class ListingActivityRepresentation extends AbstractHalRepresentation<ListingAct
                     activity,
                     listingUriBuilder,
                     profileUriBuilder,
+                    listingActivityListingRepresentationFactory,
                     profileRepresentationFactory,
                     uriBuilderHolder
                 )

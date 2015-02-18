@@ -36,13 +36,18 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
         ItemComment obj = getById(id)
         Listing listing = parentClassRestService.getById(obj.listing.id)
 
+        authorizeUpdate(obj)
+
         listingActivityInternalService.addReviewDeletedActivity(obj)
 
         //ensure that the Listings's statistics are updated
         listing.removeFromItemComments(obj)
         listing.updateRatingStats()
-        
-        super.deleteById(id)
+
+        //judging from GRAILS-7699, delete without flush
+        //isn't particularly reliable, at least in unit tests
+        //if not also certain production databases
+        obj.delete(flush: true)
     }
 
     /**
@@ -65,11 +70,15 @@ class ItemCommentRestService extends ChildObjectRestService<Listing, ItemComment
     protected void authorizeUpdate(ItemComment existing) {
         super.authorizeUpdate(existing)
 
-        //comment authors and admins are allowed
-        if (!profileRestService.currentUserProfile.stewardedOrganizations.contains(existing.listing.agency) &&
-                profileRestService.currentUserProfile != existing.author) {
+        // comment authors and admins are allowed
+        if (profileRestService.currentUserProfile != existing.author) {
+            if (profileRestService.isOrgSteward()) {
+                profileRestService.checkOrgSteward(existing.listing.agency, "Attempt by Org Steward to update another user's comment")
+                return
+            }
             profileRestService.checkAdmin("Attempt by non-admin to update another user's comment")
         }
+
     }
 
     /**

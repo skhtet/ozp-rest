@@ -48,6 +48,10 @@ class Profile implements Serializable {
     //roles a user has
     Role highestRole = Role.USER
 
+    //user-settable preference for whether or not to launch applications into webtop
+    //or a new tab by default
+    boolean launchInWebtop = false
+
 
     Set<Agency> organizations = new HashSet()
     Set<Agency> stewardedOrganizations = new HashSet()
