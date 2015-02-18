@@ -1,3 +1,27 @@
+## 0.7.0 (2015-02-18)
+
+
+#### Bug Fixes
+
+* **Change Log:**
+  * OZF-975: only return icon if one is present ([2c317036](https://github.com/ozone-development/ozp-rest/commit/2c31703699fb5ff1a1f44b411d292e839c94b550))
+  * OZF-911: rejected change logs no longer error out ([d3c04b63](https://github.com/ozone-development/ozp-rest/commit/d3c04b638f2e217ca3e31efe825376fb5d441edb))
+* **ItemCommentListingRepresentation:** GET /profile/{id}/itemComment is not returning all itemComments ([c5ed1738](https://github.com/ozone-development/ozp-rest/commit/c5ed1738d91b450b8fef1c12714c1b5887c08d1c))
+* **Sample Data:** change descriptionShort to less than 100 chars ([98113342](https://github.com/ozone-development/ozp-rest/commit/98113342b4e1548a74e564d05b5416caa2b724e3))
+* **Short Description:** set max size to 100 ([d6b71217](https://github.com/ozone-development/ozp-rest/commit/d6b712177f84d7276eca0e37114c1fd11e939e87))
+
+
+#### Features
+
+* **Adds system notifications** ([aee174e4](https://github.com/ozone-development/ozp-rest/commit/aee174e421ffc85c5e3aee919f5cef6e27027126))
+* **Launch Preference:**
+  * OZF-966 Launch Preference ([5eee6907](https://github.com/ozone-development/ozp-rest/commit/5eee690789ac856c9d98b0713340483cb67d6132))
+  * OZF-966 launchInWebtop preference ([afd4526b](https://github.com/ozone-development/ozp-rest/commit/afd4526bc678ac15c2cec8d82a650b09477041e6))
+* **Recent Activity:**
+  * OZF-567: updated service to add user listings to org steward call ([edccec36](https://github.com/ozone-development/ozp-rest/commit/edccec36ca25b133f4359fca76ce54b38f2a2bfd))
+  * OZF-567: updated service to return filtered listing activities and updated unit  ([de226432](https://github.com/ozone-development/ozp-rest/commit/de22643206982bb58a3f94580c5d81158f917271))
+
+
 ### 0.5.1 (2015-01-22)
 
 
