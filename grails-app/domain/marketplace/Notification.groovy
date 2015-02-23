@@ -26,10 +26,6 @@ class Notification implements Serializable{
             editedBy: 'none'
     ]
 
-    static searchable = {
-        message index: 'not_analyzed'
-    }
-
     // createdDate from @AuditStamp
     // createdBy from @AuditStamp
     Date expiresDate
