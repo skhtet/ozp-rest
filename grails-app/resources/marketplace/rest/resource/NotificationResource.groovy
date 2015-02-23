@@ -1,5 +1,6 @@
 package marketplace.rest.resource
 
+import marketplace.rest.ExpiredNotificationCollection
 import marketplace.rest.service.ProfileRestService
 
 import javax.ws.rs.Path
@@ -56,9 +57,9 @@ class NotificationResource extends RepresentationResource<Notification, Notifica
             MediaType.APPLICATION_JSON
     ])
     @GET
-    PagedCollection<Notification> readAllExpired(@QueryParam('offset') Integer offset,
+    ExpiredNotificationCollection readAllExpired(@QueryParam('offset') Integer offset,
                                                  @QueryParam('max') Integer max) {
-        new PagedCollection(offset, max, service.getAllByExpired(true, offset, max))
+        new ExpiredNotificationCollection(offset, max, service.getAllByExpired(true, offset, max))
     }
 
     @Path('/pending')
