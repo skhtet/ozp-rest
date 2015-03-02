@@ -8,22 +8,22 @@ import javax.ws.rs.ext.Provider
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
-import marketplace.rest.StoreMetadata
+import marketplace.rest.Storefront
 
 import marketplace.hal.AbstractRepresentationWriter
 
-import marketplace.rest.representation.out.StoreMetadataRepresentation
+import marketplace.rest.representation.out.StorefrontRepresentation
 
 @Provider
 @Produces([
-    StoreMetadataRepresentation.MEDIA_TYPE,
+    StorefrontRepresentation.MEDIA_TYPE,
     MediaType.APPLICATION_JSON
 ])
-class StoreMetadataRepresentationWriter extends AbstractRepresentationWriter<StoreMetadata> {
+class StorefrontRepresentationWriter extends AbstractRepresentationWriter<Storefront> {
 
     @Autowired
-    StoreMetadataRepresentationWriter(GrailsApplication grailsApplication,
-            StoreMetadataRepresentation.Factory factory) {
+    StorefrontRepresentationWriter(GrailsApplication grailsApplication,
+            StorefrontRepresentation.Factory factory) {
         super(grailsApplication, factory)
     }
 }
