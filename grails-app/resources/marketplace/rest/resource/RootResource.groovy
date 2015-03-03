@@ -20,7 +20,7 @@ import marketplace.rest.service.TypeRestService
 import marketplace.rest.service.IntentRestService
 import marketplace.rest.service.ContactTypeRestService
 import marketplace.rest.service.AgencyRestService
-import marketplace.rest.service.ListingSearchService
+import marketplace.rest.service.ListingRestService
 
 import marketplace.rest.StoreMetadata
 import marketplace.rest.Storefront
@@ -29,9 +29,6 @@ import marketplace.rest.IwcApi
 import marketplace.rest.representation.out.IwcApiRepresentation
 import marketplace.rest.representation.out.StoreMetadataRepresentation
 import marketplace.rest.representation.out.StorefrontRepresentation
-
-import marketplace.search.SearchCriteria
-import marketplace.search.SearchResult
 
 @Path('api')
 class RootResource {
@@ -42,11 +39,7 @@ class RootResource {
     @Autowired IntentRestService intentRestService
     @Autowired ContactTypeRestService contactTypeRestService
     @Autowired AgencyRestService agencyRestService
-    @Autowired ListingSearchService listingSearchService
-
-    //use a thread pool to perform the three searches of getStorefrontInfo in parallel
-    //for minimum latency
-    @Autowired ThreadPoolTaskExecutor storefrontSearchThreadPool
+    @Autowired ListingRestService listingRestService
 
     @GET
     @Produces([
@@ -85,38 +78,10 @@ class RootResource {
         MediaType.APPLICATION_JSON
     ])
     Storefront getStorefrontInfo() {
-        Callable<SearchResult<Listing>> getFeaturedListings = { ->
-            listingSearchService.searchListings(SearchCriteria.fromQueryParams(
-                isFeatured: ['true'],
-                sort: ['avgRate'],
-                order: ['desc'],
-                max: ['24']
-            ))
-        } as Callable
-
-        Callable<SearchResult<Listing>> getRecentListings = { ->
-            listingSearchService.searchListings(SearchCriteria.fromQueryParams(
-                sort: ['approvedDate'],
-                order: ['desc'],
-                max: ['24']
-            ))
-        } as Callable
-
-        Callable<SearchResult<Listing>> getBestListings = { ->
-            listingSearchService.searchListings(SearchCriteria.fromQueryParams(
-                sort: ['avgRate'],
-                order: ['desc'],
-                max: ['36']
-            ))
-        } as Callable
-
-        Future<SearchResult<Listing>> featuredFuture =
-            storefrontSearchThreadPool.submit((Callable)getFeaturedListings)
-        Future<SearchResult<Listing>> recentFuture =
-            storefrontSearchThreadPool.submit((Callable)getRecentListings)
-        Future<SearchResult<Listing>> bestFuture =
-            storefrontSearchThreadPool.submit((Callable)getBestListings)
-
-        new Storefront(featuredFuture.get(), recentFuture.get(), bestFuture.get())
+        new Storefront(
+            listingRestService.getFeatured(24),
+            listingRestService.getRecent(24),
+            listingRestService.getMostPopular(36)
+        )
     }
 }

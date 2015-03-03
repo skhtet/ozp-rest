@@ -43,9 +43,4 @@ beans = {
     cacheManager(EhCacheManagerFactoryBean) {
         configLocation = 'classpath:/ehcache.xml'
     }
-
-    storefrontSearchThreadPool(org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor) {
-        corePoolSize = 5
-        maxPoolSize = 15
-    }
 }
