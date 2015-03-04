@@ -13,10 +13,13 @@ import marketplace.rest.filter.LegacyHTTPMethod
  * and earlier.  These endpoints still need to exist to support OWF 7 widget compatibility.
  */
 @Path('/api/prefs')
+@Produces([
+    MediaType.APPLICATION_JSON,
+    MediaType.TEXT_HTML
+])
 class LegacyResource {
     @Path('/preference/{namespace}/{name}')
     @PUT
-    @LegacyHTTPMethod
     public /*LegacyPreference*/ Object setPreference(
             @PathParam('namespace') String namespace,
             @PathParam('name') String name,
