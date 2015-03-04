@@ -3,10 +3,13 @@ package marketplace.rest.resource
 import javax.ws.rs.PathParam
 import javax.ws.rs.FormParam
 import javax.ws.rs.Path
+import javax.ws.rs.Produces
 import javax.ws.rs.PUT
+import javax.ws.rs.core.MediaType
 
 import marketplace.rest.filter.LegacyHTTPMethod
 
+import marketplace.rest.LegacyPreference
 
 /**
  * This class contains endpoints that are a carry-over (interface-wise) from OWF 7.x
@@ -20,11 +23,11 @@ import marketplace.rest.filter.LegacyHTTPMethod
 class LegacyResource {
     @Path('/preference/{namespace}/{name}')
     @PUT
-    public /*LegacyPreference*/ Object setPreference(
+    public LegacyPreference setPreference(
             @PathParam('namespace') String namespace,
             @PathParam('name') String name,
             @FormParam('value') String value) {
-        //TODO
-        return null
+        //TODO real impl
+        new LegacyPreference(namespace: namespace, name: name, value: value)
     }
 }
