@@ -1,7 +1,5 @@
 package marketplace.rest.writer
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
-
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.ext.Provider
@@ -12,15 +10,12 @@ import marketplace.rest.LegacyPreference
 
 import marketplace.hal.AbstractWindownameWriter
 
-import marketplace.rest.representation.out.LegacyPreferenceRepresentation
-
 @Provider
-@Produces([MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML])
+@Produces([MediaType.TEXT_HTML])
 class LegacyPreferenceWindownameWriter extends
         AbstractWindownameWriter<LegacyPreference> {
     @Autowired
-    LegacyPreferenceWindownameWriter(GrailsApplication grailsApplication,
-            LegacyPreferenceRepresentation.Factory factory) {
-        super(grailsApplication, factory)
+    LegacyPreferenceWindownameWriter(LegacyPreferenceRepresentationWriter writer) {
+        super(writer)
     }
 }

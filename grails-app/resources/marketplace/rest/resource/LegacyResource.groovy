@@ -7,8 +7,6 @@ import javax.ws.rs.Produces
 import javax.ws.rs.PUT
 import javax.ws.rs.core.MediaType
 
-import marketplace.rest.filter.LegacyHTTPMethod
-
 import marketplace.rest.LegacyPreference
 
 /**

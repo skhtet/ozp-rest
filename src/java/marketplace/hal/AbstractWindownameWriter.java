@@ -23,7 +23,7 @@ import com.google.common.reflect.TypeToken;
  * class for writing out JSON string embedded in HTML suitable for the legacy windowname
  * transport mechanism
  */
-public abstract class AbstractWindownameWriter<T> extends AbstractRepresentationWriter<T> {
+public abstract class AbstractWindownameWriter<T> implements MessageBodyWriter<T> {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     //The beginning of a minimal HTML file which will embed the JSON representation
@@ -38,9 +38,28 @@ public abstract class AbstractWindownameWriter<T> extends AbstractRepresentation
 
     private static final byte[] windownamePostlude = ("';</script>").getBytes(CHARSET);
 
-    public AbstractWindownameWriter(GrailsApplication grailsApplication,
-            RepresentationFactory<T> factory) {
-        super(grailsApplication, factory);
+    private final AbstractRepresentationWriter<T> representationWriter;
+
+    public AbstractWindownameWriter(AbstractRepresentationWriter<T> representationWriter) {
+        if (representationWriter == null) {
+            throw new NullPointerException();
+        }
+
+        this.representationWriter = representationWriter;
+    }
+
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return this.representationWriter.isWriteable(type, genericType,
+                annotations, mediaType);
+    }
+
+    @Override
+    public long getSize(T t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return -1;
     }
 
     @Override
@@ -49,7 +68,10 @@ public abstract class AbstractWindownameWriter<T> extends AbstractRepresentation
             MultivaluedMap<String,Object> httpHeaders, OutputStream entityStream)
             throws IOException {
         entityStream.write(windownamePrelude);
-        super.writeTo(t, type, genericType, annotations, mediaType, httpHeaders, entityStream);
+
+        this.representationWriter.writeTo(t, type, genericType, annotations,
+                mediaType, httpHeaders, entityStream);
+
         entityStream.write(windownamePostlude);
     }
 }
