@@ -1,3 +1,21 @@
+### 0.7.2 (2015-03-23)
+
+
+#### Bug Fixes
+
+* **Notifications:** fix next link for /notification/expired ([ddd2a8ba](https://github.com/ozone-development/ozp-rest/commit/ddd2a8ba2e82037701d2ea546c4c13dc18192ffb))
+* **search:** remove notifications from elasticsearch index ([7e7888a4](https://github.com/ozone-development/ozp-rest/commit/7e7888a430ea297ba9fc8f0a9fe978247456f06d))
+* **styling:** added new graphics for demo apps ([89239fad](https://github.com/ozone-development/ozp-rest/commit/89239fad4fa71a13758dcc0e675de3c7a5ba2980))
+
+
+#### Features
+
+* **Profile Search:**
+  * Search for profiles by username ([cf0838a6](https://github.com/ozone-development/ozp-rest/commit/cf0838a687e560ae477e98dc71afd9ec7000cf5c))
+  * Switch to search by username ([78cd56aa](https://github.com/ozone-development/ozp-rest/commit/78cd56aa43352a6ad08fb5df3599840d48d07228))
+  * query param for finding profiles starting with a string ([20cc884e](https://github.com/ozone-development/ozp-rest/commit/20cc884e7b6371a963243b14f3740e57bf545ea9))
+
+
 ### 0.7.1 (2015-02-18)
 
 
